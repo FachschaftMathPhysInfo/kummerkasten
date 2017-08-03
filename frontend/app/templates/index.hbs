@@ -1,0 +1,71 @@
+{{#paper-content}}
+  {{#paper-card as |card|}}
+    {{#card.title as |title|}}
+      {{#title.text as |text|}}
+        {{#text.headline}}
+          Willkommen beim Kummerkasten!
+        {{/text.headline}}
+      {{/title.text}}
+    {{/card.title}}
+    {{#card.content}}
+      Hier hast du die Möglichkeit deine Dozierenden konstruktiv zu kritisieren oder loben. Wähle einfach im Formular unten die Veranstaltung aus und gebe deiner Nachricht Inhalt und einen Titel.
+    {{/card.content}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.title as |title|}}
+      {{#title.text as |text|}}
+        {{#text.headline}}
+          Kummerformular
+        {{/text.headline}}
+      {{/title.text}}
+    {{/card.title}}
+      {{#card.content}}
+          <div class="flex-100 layout-xs-column layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+        <div class="flex-xs-100 flex-gt-xs-50">
+          {{#paper-card as |pc|}}
+            {{#pc.title as |title|}}
+              {{#title.text as |text|}}
+                {{#text.headline}}
+                  Veranstaltungsauswahl
+                {{/text.headline}}
+              {{/title.text}}
+            {{/pc.title}}
+            {{#pc.content}}
+
+              {{#paper-select label="Fakultät" options=model.faculties selected=selectedFaculty onChange=(action (mut selectedFaculty)) as |fac|}}
+                {{fac.name}}
+              {{/paper-select}}
+              {{#paper-autocomplete disabled=(not selectedFaculty) options=currentfaccourses allowClear=false searchText=(readonly courseSearchText) onSearchTextChange=(action (mut courseSearchText)) selected=selectedCourse search=(action "searchCourses") searchField="name"
+                labelPath="name" placeholder="Veranstaltung auswählen..." loadingMessage="Durchsuche Veranstaltungen" noMatchesMessage="Solch eine Veranstaltung existiert nicht." onSelectionChange=(action (mut selectedCourse)) as |course autocomplete|}}
+                {{paper-autocomplete-highlight
+    label=course.name
+    searchText=autocomplete.searchText
+    flags="i"}}
+              {{/paper-autocomplete}}
+            {{/pc.content}}
+          {{/paper-card}}
+        </div>
+        <div class="flex-xs-100 flex-gt-xs-50">
+          {{#paper-card as |cd|}}
+            {{#cd.title as |title|}}
+              {{#title.text as |text|}}
+                {{#text.headline}}
+                  Kummereingabe
+                {{/text.headline}}
+              {{/title.text}}
+            {{/cd.title}}
+            {{#card.content}}
+              {{paper-input label="Titel" required=true value=title onChange=(action (mut title))}}
+               {{paper-input textarea=true required=true block=true label="Nachricht" maxlength=300 passThru=(hash rows=5 maxRows=5)
+  value=message onChange=(action (mut message))}}
+            {{/card.content}}
+            {{#card.actions}}
+              {{#paper-button disabled=(or (eq (or title "") "") (eq (or message "") "")) onClick=(action "sendComplaint")}}Abschicken{{/paper-button}}
+            {{/card.actions}}
+          {{/paper-card}}
+        </div>
+          </div>
+      {{/card.content}}
+  {{/paper-card}}
+{{/paper-content}}
+{{outlet}}
