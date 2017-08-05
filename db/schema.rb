@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170803084656) do
+ActiveRecord::Schema.define(version: 20170805134255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20170803084656) do
     t.bigint "semester_id"
     t.bigint "coursetype_id"
     t.bigint "faculty_id"
+    t.integer "lsf_id"
     t.index ["coursetype_id"], name: "index_courses_on_coursetype_id"
     t.index ["faculty_id"], name: "index_courses_on_faculty_id"
     t.index ["semester_id"], name: "index_courses_on_semester_id"
@@ -48,6 +49,7 @@ ActiveRecord::Schema.define(version: 20170803084656) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lsf_id"
   end
 
   create_table "has_reads", force: :cascade do |t|
@@ -66,6 +68,8 @@ ActiveRecord::Schema.define(version: 20170803084656) do
     t.string "givenname"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lsf_id"
+    t.string "password"
   end
 
   create_table "lectures", force: :cascade do |t|
@@ -82,6 +86,7 @@ ActiveRecord::Schema.define(version: 20170803084656) do
     t.date "year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lsf_id"
   end
 
   add_foreign_key "complaints", "courses"
