@@ -42,11 +42,12 @@ export default Ember.Controller.extend({
       reviewed:false,
       course:this.get('selectedCourse')
     }).save().then(()=>{
-
       this.set('message','');
       this.set('title','');
-      click('md-autocomplete-wrap button');
-      $('md-autocomplete-wrap button')[0].focus();
+      Ember.$('md-autocomplete-wrap input').get(0).focus();
+      Ember.$('md-autocomplete-wrap button').get(0).click();
+
+      //$('md-autocomplete-wrap button')[0].focus();
       this.get('paperToaster').show("Kummer gespeichert.", {duration: 4000});
     }).catch(()=>{
       this.get('paperToaster').show("Kummer konnte nicht gespeichert werden.", {
