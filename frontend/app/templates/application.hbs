@@ -6,12 +6,12 @@
   closeOnClick=true
   onToggle=(action (mut open))
 flex-layout="column" flex=true }}
-  {{#paper-toolbar tall=true as |toolbar|}}
-    {{#paper-toolbar-tools}}<center>
-      <img src="{{rootURL}}200w.gif" height="140px" width="140px"/><br/>
-      KUMMERKASTEN
-    </center>{{/paper-toolbar-tools}}
-  {{/paper-toolbar}}
+{{#paper-toolbar tall=true as |toolbar|}}
+  {{#paper-toolbar-tools}}<center>
+    <img style="margin: 20px" src="{{rootURL}}200w.gif" height="140px" width="140px"/><br/>
+    KUMMERKASTEN
+  </center>{{/paper-toolbar-tools}}
+{{/paper-toolbar}}
   {{#paper-content padding=false}}
     {{#paper-list}}
       {{#menu-item active=(is-active "index" currentRouteName) onClick=(transition-to "index")}}{{paper-icon "home" class="site-nav-icon"}}Startseite{{/menu-item}}

@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   jsonapi_resources :lectures
   jsonapi_resources :semesters
   mount_ember_app :frontend, to: "/"
+  #devise_for :lecturers, controllers: { sessions: 'sessions' }
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170803084656) do
+ActiveRecord::Schema.define(version: 20170806234302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 20170803084656) do
   create_table "complaints", force: :cascade do |t|
     t.boolean "approved"
     t.string "title"
-    t.string "message"
+    t.text "message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "course_id"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20170803084656) do
     t.bigint "semester_id"
     t.bigint "coursetype_id"
     t.bigint "faculty_id"
+    t.string "abbreviation"
     t.index ["coursetype_id"], name: "index_courses_on_coursetype_id"
     t.index ["faculty_id"], name: "index_courses_on_faculty_id"
     t.index ["semester_id"], name: "index_courses_on_semester_id"
@@ -66,6 +67,18 @@ ActiveRecord::Schema.define(version: 20170803084656) do
     t.string "givenname"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
+    t.string "authentication_token"
+    t.index ["email"], name: "index_lecturers_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_lecturers_on_reset_password_token", unique: true
   end
 
   create_table "lectures", force: :cascade do |t|

@@ -45,3 +45,4 @@ gem 'jsonapi-resources'
 gem 'faker'
 gem "ember-cli-rails", '~> 0.8.0'
 gem 'rails-erd', require: false, group: :development
+gem 'devise'
