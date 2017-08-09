@@ -16,21 +16,23 @@
       {{/menu.trigger}}
       {{#menu.content as |content|}}
       <center style="overflow-x: hidden; overflow-y: hidden;">
-        <div class="layout-column flex-80 layout-wrap" style="justify-content: space-around;">
-          <h2>Anmeldung</h2>
+
           {{#paper-form onSubmit=(action "login") as |form|}}
+          <div class="layout-column flex-80">
+          <h2>Anmeldung</h2>
+
             {{form.input type=email class="md-input-login-container" required=true label="E-Mail" value=email onChange=(action (mut email))}}
             {{form.input type=password class="md-input-login-container" required=true label="Passwort" value=password onChange=(action (mut password))}}
             {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Einloggen{{/form.submit-button}}
-
+            {{#if errorMessage}}
+            <p>
+              <strong>Login fehlgeschlagen:</strong>
+              <code>{{errorMessage}}</code>
+            </p>
+            {{/if}}
+          </div>
           {{/paper-form}}
-          {{#if errorMessage}}
-          <p>
-            <strong>Login fehlgeschlagen:</strong>
-            <code>{{errorMessage}}</code>
-          </p>
-          {{/if}}
-        </div>
+
         </center>
       {{/menu.content}}
     {{/paper-menu}}
@@ -55,57 +57,6 @@
       Hier hast du die Möglichkeit, deine Dozierenden konstruktiv zu kritisieren oder zu loben. Wähle einfach im Formular unten die Veranstaltung aus und gebe deiner Nachricht Inhalt und einen Titel.
     {{/card.content}}
   {{/paper-card}}
-  {{#paper-card as |card|}}
-    {{#card.title as |title|}}
-      {{#title.text as |text|}}
-        {{#text.headline}}
-          Kummerformular
-        {{/text.headline}}
-      {{/title.text}}
-    {{/card.title}}
-      {{#card.content}}
-      {{#paper-form onSubmit=(action "sendComplaint") as |form|}}
-      <div class="layout-column layout-gt-xs-row layout-wrap" style="justify-content: space-around">
-      <div class="layout-column flex-gt-xs-80">
-      {{#form.autocomplete
-          allowClear=true
-          required=true
-          selected=selectedCourse
-          searchField="name"
-          labelPath="name"
-          label="Veranstaltung"
-          search=(action "searchCourses")
-          placeholder="Veranstaltung auswählen"
-          loadingMessage="Durchsuche Veranstaltungen..."
-          noMatchesMessage="Oops, eine solche Veranstaltung existiert nicht."
-          onSelectionChange=(pipe (action (mut selectedCourse))(action "focusTitle")) as |c autocomplete|}}
-        <strong>{{paper-autocomplete-highlight
-              label=c.name
-              searchText=autocomplete.searchText
-              flags="i"}}</strong> {{#if c.lecturerssearch.isPending}}...{{else}}<em>{{paper-autocomplete-highlight
-                    label=c.lecturerssearch.content
-                    searchText=autocomplete.searchText
-                    flags="i"}}</em>{{/if}}{{#if c.facultyname.isPending}}...{{else}} {{c.facultyname.content}}{{/if}}
-              {{/form.autocomplete}}
-            </div>
-              <div class="flex-gt-xs-15">
-                {{#form.select required=true id=2 label="Semester" options=model.semesters selected=selectedSemester onChange=(pipe (action (mut selectedSemester)) (action "clearCourse")) as |sem|}}
-                {{sem.name}}
-                {{/form.select}}
-              </div>
-            <div class="layout-column flex-100" style="justify-content: space-around">
-              {{form.input required=true id=3 label="Titel" value=title onChange=(action (mut title))}}
-            </div>
-                <div class="layout-column flex-100" style="justify-content: space-around">
-               {{form.input required=true textarea=true block=true label="Nachricht" maxlength=300 passThru=(hash rows=5 maxRows=5)
-  value=message onChange=(action (mut message))}}
-</div>
-</div>
-<div class="layout-row">
-    {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Abschicken{{/form.submit-button}}
-  </div>
-  {{/paper-form}}
-            {{/card.content}}
-  {{/paper-card}}
+{{complaint-form store=store paperToaster=paperToaster model=model}}
 {{/paper-content}}
 {{outlet}}

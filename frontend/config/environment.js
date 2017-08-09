@@ -2,11 +2,14 @@
 'use strict';
 
 module.exports = function(environment) {
-  let ENV = {
+  var ENV = {
     modulePrefix: 'frontend',
     environment,
     rootURL: '/',
     locationType: 'auto',
+    contentSecurityPolicy: {
+      'connect-src': "*"
+    },
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
@@ -46,6 +49,9 @@ module.exports = function(environment) {
   if (environment === 'production') {
 
   }
-
+  ENV['ember-simple-auth'] = {
+    routeAfterAuthentication: 'signed-in',
+    routeIfAlreadyAuthenticated: 'signed-in',
+  };
   return ENV;
 };

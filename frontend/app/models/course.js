@@ -9,25 +9,6 @@ export default DS.Model.extend({
   createdAt:attr('date'),
   lecturers:hasMany('lecturer'),
   semester:belongsTo('semester'),
-  lecturerssearch: Ember.computed('lecturers.[]',function(){
-    var a ='';
-    return DS.PromiseObject.create({
-        promise: this.get('lecturers').then((list)=>{
-                list.forEach((item)=>{
-        a+=item.get('surname');
-        if(item!=this.get('lecturers.lastObject')){
-          a+=', ';
-        }
-      });
-      return a;
-    })
-    });
-  }),
-  facultyname: Ember.computed('faculty',function(){
-    return DS.PromiseObject.create({
-        promise: this.get('faculty').then((fac)=>{
-          return fac.get('name');
-        })
-      });
-  }),
+  lecturernames:attr('string'),
+  facultyname:attr('string'),
 });

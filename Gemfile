@@ -46,3 +46,5 @@ gem 'faker'
 gem "ember-cli-rails", '~> 0.8.0'
 gem 'rails-erd', require: false, group: :development
 gem 'devise'
+gem 'simple_token_authentication', '~> 1.0'
+gem 'rack-cors', :require => 'rack/cors'

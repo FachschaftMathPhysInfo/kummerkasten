@@ -1,0 +1,50 @@
+{{#paper-card as |card|}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}
+        Kummerformular
+      {{/text.headline}}
+    {{/title.text}}
+  {{/card.title}}
+    {{#card.content}}
+    {{#paper-form onSubmit=(action "sendComplaint") as |form|}}
+    <div class="layout-column layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+    <div class="layout-column flex-gt-xs-80">
+    {{#form.autocomplete
+        allowClear=true
+        required=true
+        selected=selectedCourse
+        searchField="name"
+        labelPath="name"
+        label="Veranstaltung"
+        search=(action "searchCourses")
+        placeholder="Veranstaltung auswählen"
+        loadingMessage="Durchsuche Veranstaltungen..."
+        noMatchesMessage="Oops, eine solche Veranstaltung existiert nicht."
+        onSelectionChange=(pipe (action (mut selectedCourse))(action "focusMessage")) as |c autocomplete|}}
+      <strong>{{paper-autocomplete-highlight
+            label=c.name
+            searchText=autocomplete.searchText
+            flags="i"}}</strong> <em>{{paper-autocomplete-highlight
+                  label=c.lecturernames
+                  searchText=autocomplete.searchText
+                  flags="i"}}</em> {{c.facultyname}}
+            {{/form.autocomplete}}
+          </div>
+            <div class="flex-gt-xs-15">
+              {{#form.select required=true label="Semester" options=model.semesters selected=selectedSemester onChange=(pipe (action (mut selectedSemester))(action "clearCourse")) as |sem|}}
+              {{sem.name}}
+              {{/form.select}}
+            </div>
+              <div class="layout-column flex-100" style="justify-content: space-around">
+                {{simple-mde value=message change=(action (mut message)) autoDownloadFontAwesome=true placeholder=placeholder}}
+             {{!form.input required=true textarea=true block=true label="Nachricht" maxlength=300 passThru=(hash rows=5 maxRows=5) value=message onChange=(action (mut message))}}
+</div>
+</div>
+<div class="layout-row">
+  {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Abschicken{{/form.submit-button}}
+</div>
+{{/paper-form}}
+          {{/card.content}}
+{{/paper-card}}
+{{yield}}

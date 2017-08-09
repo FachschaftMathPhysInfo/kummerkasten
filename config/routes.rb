@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount_ember_app :frontend, to: "/"
+  devise_for :lecturers, controllers: { sessions: 'sessions' }
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   jsonapi_resources :complaints
   jsonapi_resources :courses
@@ -8,6 +10,5 @@ Rails.application.routes.draw do
   jsonapi_resources :lecturers
   jsonapi_resources :lectures
   jsonapi_resources :semesters
-  mount_ember_app :frontend, to: "/"
-  #devise_for :lecturers, controllers: { sessions: 'sessions' }
+
 end

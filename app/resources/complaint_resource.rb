@@ -1,5 +1,5 @@
 class ComplaintResource < JSONAPI::Resource
-  attributes :approved, :title, :message, :reviewed
+  attributes :approved, :message, :reviewed
   has_one :course
   has_many :has_reads
   has_many :lecturers

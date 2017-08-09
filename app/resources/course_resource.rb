@@ -5,10 +5,23 @@ class CourseResource < JSONAPI::Resource
   has_many :lectures
   has_many :lecturers
   has_many :complaints
-  attributes :name
+  attributes :name, :facultyname, :lecturernames
+
+  def lecturernames
+    self.lecturers.collect!{|x| x.surname}.join(", ")
+  end
+  def facultyname
+    ""+self.faculty.name
+  end
+  def self.updatable_fields(context)
+    super - [:lecturernames,:facultyname]
+  end
+  def self.creatable_fields(context)
+    super - [:lecturernames,:facultyname]
+  end
   filters :coursesearch, :lecturers, :name, :semester
   filter :coursesearch, apply: ->(records, value, _options) {
     value_regex = Array.wrap(value).join('|')
-    records.joins("INNER JOIN lectures m1 ON m1.course_id = courses.id").joins("INNER JOIN lecturers m2 ON m2.id = m1.lecturer_id WHERE name ILIKE '#{value_regex}' OR m2.surname ILIKE '#{value_regex}'")
-  }
+    records.joins(:lectures => :lecturer).where("name ~* ? OR lecturers.surname ~* ?",value_regex,value_regex).distinct
+}
 end

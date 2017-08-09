@@ -5,7 +5,6 @@ class DeviseLecturers < ActiveRecord::Migration[5.1]
         ## Database authenticatable
         t.string :email,              null: false, default: ""
         t.string :encrypted_password, null: false, default: ""
-        t.string :authentication_token
         ## Recoverable
         t.string   :reset_password_token
         t.datetime :reset_password_sent_at
@@ -35,6 +34,6 @@ class DeviseLecturers < ActiveRecord::Migration[5.1]
       end
 
       add_index :lecturers, :email,                unique: true
-      add_index :lecturers, :reset_password_token, unique: trueend # add_index :users, :unlock_token,         unique: true   end end
+      add_index :lecturers, :reset_password_token, unique: true # add_index :users, :unlock_token,         unique: true   end end
   end
 end
