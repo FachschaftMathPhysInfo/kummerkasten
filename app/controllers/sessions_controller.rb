@@ -6,7 +6,7 @@
 
       yield resource if block_given?
 
-      respond_to do |format|
+      respond_with do |format|
         format.json do
           data = {
             email: self.resource.email,
