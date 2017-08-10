@@ -60,12 +60,10 @@ ActiveRecord::Schema.define(version: 20170809053817) do
   end
 
   create_table "lecturers", force: :cascade do |t|
-    t.string "email"
     t.string "salutation"
     t.string "surname"
     t.string "givenname"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -75,6 +73,8 @@ ActiveRecord::Schema.define(version: 20170809053817) do
     t.datetime "last_sign_in_at"
     t.inet "current_sign_in_ip"
     t.inet "last_sign_in_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "authentication_token", limit: 30
     t.index ["authentication_token"], name: "index_lecturers_on_authentication_token", unique: true
     t.index ["email"], name: "index_lecturers_on_email", unique: true
