@@ -9,10 +9,9 @@
       respond_to do |format|
         format.json do
           data = {
-            email: resource.email,
-            token: resource.authentication_token
+            email: self.resource.email,
+            token: self.resource.authentication_token
           }
-
           render json: data, status: 201
         end
 
