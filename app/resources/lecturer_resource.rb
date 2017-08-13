@@ -1,4 +1,4 @@
-class LecturerResource < JSONAPI::Resource
+class LecturerResource < BaseResource
   attributes :email, :surname, :givenname, :salutation
   has_many :has_reads
   has_many :courses

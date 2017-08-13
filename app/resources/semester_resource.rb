@@ -1,4 +1,4 @@
-class SemesterResource < JSONAPI::Resource
+class SemesterResource < BaseResource
   has_many :courses
   attributes :name, :year
   def self.default_sort

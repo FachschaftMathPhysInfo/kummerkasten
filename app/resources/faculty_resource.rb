@@ -1,4 +1,4 @@
-class FacultyResource < JSONAPI::Resource
+class FacultyResource < BaseResource
   has_many :courses
   attributes :name
 end

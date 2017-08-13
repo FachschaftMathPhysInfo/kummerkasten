@@ -1,4 +1,4 @@
-class CourseResource < JSONAPI::Resource
+class CourseResource < BaseResource
   has_one :semester
   has_one :coursetype
   has_one :faculty

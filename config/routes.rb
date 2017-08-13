@@ -10,5 +10,4 @@ Rails.application.routes.draw do
   jsonapi_resources :lecturers
   jsonapi_resources :lectures
   jsonapi_resources :semesters
-
 end

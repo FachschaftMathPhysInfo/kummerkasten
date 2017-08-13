@@ -1,4 +1,5 @@
   class SessionsController < Devise::SessionsController
+     respond_to :html, :json
     def create
       self.resource = warden.authenticate!(auth_options)
 
