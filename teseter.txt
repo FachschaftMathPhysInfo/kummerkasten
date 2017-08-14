@@ -1,9 +1,0 @@
-<ns:return xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ax23:Vorlesung">
-  <ax23:art>Vorlesung</ax23:art>
-  <ax23:eid>110000</ax23:eid>
-  <ax23:ein>Fakult&#xE4;t f&#xFC;r Mathematik und Informatik</ax23:ein>
-  <ax23:name>Lineare Algebra 2</ax23:name>
-  <ax23:nummer>11BMAV0140 </ax23:nummer>
-  <ax23:semester>SS 2017 </ax23:semester>
-  <ax23:vorID>243912</ax23:vorID>
-</ns:return>
