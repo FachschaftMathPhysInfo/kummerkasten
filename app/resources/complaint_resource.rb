@@ -7,10 +7,4 @@ class ComplaintResource < BaseResource
     self.approved=false
     self.reviewed=false
   end
-  def self.records(options)
-    p options
-    raise "Not logged in" if options.nil?
-    context = options[:context]
-    context[:user].complaints
-  end
 end

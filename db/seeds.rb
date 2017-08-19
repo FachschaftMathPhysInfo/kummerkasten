@@ -8,7 +8,8 @@
 for i in 0..50
   a = Faker::Internet.email
   puts a
-  Lecturer.create!(sign_in_count:0,salutation:'Dear '+Faker::Name.prefix+' '+Faker::Name.suffix,surname:Faker::Name.last_name,password:"123456",givenname:Faker::Name.first_name,email:a)
+  l= Lecturer.create!(sign_in_count:0,salutation:'Dear '+Faker::Name.prefix+' '+Faker::Name.suffix,surname:Faker::Name.last_name,password:"123456",givenname:Faker::Name.first_name,email:a)
+  p l
 end
 
 Coursetype.create!(name: 'Vorlesung')
