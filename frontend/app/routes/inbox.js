@@ -5,6 +5,7 @@ const { service } = Ember.inject;
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
   session: service('session'),
+  
   model:function(){
     return this.store.findAll("complaint");
   },

@@ -37,7 +37,7 @@
               {{/form.select}}
             </div>
               <div class="layout-column flex-100" style="justify-content: space-around">
-                {{simple-mde value=message change=(action (mut message)) autoDownloadFontAwesome=true placeholder=placeholder}}
+                {{simple-mde value=message change=(action (mut message)) autoDownloadFontAwesome=true spellChecker=false  placeholder=placeholder}}
              {{!form.input required=true textarea=true block=true label="Nachricht" maxlength=300 passThru=(hash rows=5 maxRows=5) value=message onChange=(action (mut message))}}
 </div>
 </div>

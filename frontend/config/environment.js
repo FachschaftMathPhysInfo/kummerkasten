@@ -50,8 +50,18 @@ module.exports = function(environment) {
 
   }
   ENV['ember-simple-auth'] = {
-    routeAfterAuthentication: 'login',
-    routeIfAlreadyAuthenticated: '/'
+    routeAfterAuthentication: '/',
+    routeIfAlreadyAuthenticated: 'inbox'
+  };
+  ENV['simpleMDE']= {
+      spellChecker:false,
+      autoDownloadFontAwesome:true
+    };
+  ENV['moment']={
+    outputFormat:'L',
+    defaultFormat:'DD.MM.YYYY',
+    locale:'de',
+    includeLocales:['de']
   };
   return ENV;
 };

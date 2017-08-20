@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170809053817) do
+ActiveRecord::Schema.define(version: 20170820163041) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,15 @@ ActiveRecord::Schema.define(version: 20170809053817) do
     t.index ["lecturer_id"], name: "index_has_reads_on_lecturer_id"
   end
 
+  create_table "hasreads", force: :cascade do |t|
+    t.bigint "lecturer_id"
+    t.bigint "complaint_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["complaint_id"], name: "index_hasreads_on_complaint_id"
+    t.index ["lecturer_id"], name: "index_hasreads_on_lecturer_id"
+  end
+
   create_table "lecturers", force: :cascade do |t|
     t.string "salutation"
     t.string "surname"
@@ -103,6 +112,8 @@ ActiveRecord::Schema.define(version: 20170809053817) do
   add_foreign_key "courses", "semesters"
   add_foreign_key "has_reads", "complaints"
   add_foreign_key "has_reads", "lecturers"
+  add_foreign_key "hasreads", "complaints"
+  add_foreign_key "hasreads", "lecturers"
   add_foreign_key "lectures", "courses"
   add_foreign_key "lectures", "lecturers"
 end

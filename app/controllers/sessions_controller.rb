@@ -11,7 +11,8 @@
         format.json do
           data = {
             email: self.resource.email,
-            authentication_token: self.resource.authentication_token
+            authentication_token: self.resource.authentication_token,
+            id: self.resource.id
           }
           render json: data, status: 201
         end

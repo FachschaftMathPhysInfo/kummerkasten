@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   jsonapi_resources :courses
   jsonapi_resources :coursetypes
   jsonapi_resources :faculties
-  jsonapi_resources :has_reads
+  jsonapi_resources :hasreads
+  get '/lecturers/me', to: 'lecturers#me'
   jsonapi_resources :lecturers
   jsonapi_resources :lectures
   jsonapi_resources :semesters
