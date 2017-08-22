@@ -12,8 +12,8 @@ Router.map(function() {
     this.route('settings');
   });
   this.route('login');
-
-  this.route('frontend', function() {});
+  this.route('/index');
+  this.route('inbox');
 });
 
 export default Router;
