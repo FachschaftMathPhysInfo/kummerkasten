@@ -11,7 +11,7 @@ class ApplicationController < ActionController::API
   def current_user
     current_lecturer
   end
-  private
+  public
   def context
     {user: current_lecturer, lecturer:current_lecturer}
   end

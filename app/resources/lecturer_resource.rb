@@ -1,5 +1,5 @@
 class LecturerResource < BaseResource
-  attributes :email, :surname, :givenname, :salutation
+  attributes :email, :surname, :givenname, :salutation, :notifications
   has_many :hasreads
   has_many :courses
   has_many :complaints, class_name:"Complaint"

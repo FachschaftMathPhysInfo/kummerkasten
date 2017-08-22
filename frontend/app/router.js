@@ -7,8 +7,13 @@ const Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-  this.route('inbox');
+  this.route('inbox', function() {
+    this.route('read');
+    this.route('settings');
+  });
   this.route('login');
+
+  this.route('frontend', function() {});
 });
 
 export default Router;

@@ -1,9 +1,9 @@
 @import 'font';
-@import 'ember-paper';
-@import 'menu';
 @import 'color-math';
 $primary: $color-mathphys;
 $accent: $color-secondary;
+@import 'ember-paper';
+@import 'menu';
 $warn: 'pink';
 
 
