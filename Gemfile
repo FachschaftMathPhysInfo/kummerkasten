@@ -50,3 +50,5 @@ gem 'rails-erd', require: false, group: :development
 gem 'devise'
 gem 'simple_token_authentication'
 gem 'rack-cors', :require => 'rack/cors'
+gem "queue_classic", "~> 3.1.0"
+gem 'whenever', :require => false

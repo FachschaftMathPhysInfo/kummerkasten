@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 20170822111450) do
+ActiveRecord::Schema.define(version: 20170822153431) do
 
 
   # These are extensions that must be enabled in order to support this database
@@ -106,12 +105,34 @@ ActiveRecord::Schema.define(version: 20170822111450) do
     t.index ["lecturer_id"], name: "index_lectures_on_lecturer_id"
   end
 
+  create_table "queue_classic_jobs", force: :cascade do |t|
+    t.text "q_name", null: false
+    t.text "method", null: false
+    t.json "args", null: false
+    t.datetime "locked_at"
+    t.integer "locked_by"
+    t.datetime "created_at", default: -> { "now()" }
+    t.datetime "scheduled_at", default: -> { "now()" }
+    t.index ["q_name", "id"], name: "idx_qc_on_name_only_unlocked", where: "(locked_at IS NULL)"
+    t.index ["scheduled_at", "id"], name: "idx_qc_on_scheduled_at_only_unlocked", where: "(locked_at IS NULL)"
+  end
+
   create_table "semesters", force: :cascade do |t|
     t.string "name"
     t.date "year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "lsf_id"
+  end
+
+  create_table "unnotifiedcomplaints", force: :cascade do |t|
+    t.bigint "lecturer_id"
+    t.bigint "complaint_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "due"
+    t.index ["complaint_id"], name: "index_unnotifiedcomplaints_on_complaint_id"
+    t.index ["lecturer_id"], name: "index_unnotifiedcomplaints_on_lecturer_id"
   end
 
   add_foreign_key "complaints", "courses"
@@ -124,4 +145,6 @@ ActiveRecord::Schema.define(version: 20170822111450) do
   add_foreign_key "hasreads", "lecturers"
   add_foreign_key "lectures", "courses"
   add_foreign_key "lectures", "lecturers"
+  add_foreign_key "unnotifiedcomplaints", "complaints"
+  add_foreign_key "unnotifiedcomplaints", "lecturers"
 end

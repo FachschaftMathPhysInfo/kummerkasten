@@ -8,8 +8,9 @@ export default Ember.Controller.extend({
       console.log(lect);
       let  record= this.store.createRecord('hasread',{complaint:complaint,
         lecturer:this.get("currentUser.user")});
-      console.log(record);
-      record.save();
+      record.save().then(()=>{
+        complaint.unloadRecord();
+      });
     }
   }
 });

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1><%= @lecturer.salutation %> <%= @lecturer.surname%>,</h1>
+    <p>
+      In Ihrem Postfach befinden sich zur Zeit <%= @lecturer.unreadcomplaints.size %> ungelesene Kummernachrichten.
+    </p>
+    <p>
+    Um die Nachrichten zu lesen, melden Sie sich unter folgender Adresse an: <%= @url %>.
+    </p>
+    <p>Danke, dass Sie sich Zeit für das Feedback Ihrer Studierenden nehmen!</p>
+    <p>
+      Ihre Fachschaft MathPhys
+    </p>
+    <p>
+      =====<br/>
+      Sie wollen öfter oder keine Benachrichtigungen erhalten?
+      Managen Sie Ihre Einstellungen unter: <%= @managment_url %>
+    </p>
+  </body>
+</html>

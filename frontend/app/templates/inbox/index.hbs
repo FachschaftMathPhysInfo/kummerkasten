@@ -31,5 +31,11 @@
       {{#paper-button onClick=(action "markasread" complaint)}}Als gelesen markieren{{/paper-button}}
       {{/card.actions}}
     {{/paper-card}}
+    {{else}}
+    {{#paper-card as |card|}}
+      {{#card.content}}
+        Aktuell sind keine neuen Kummer verfügbar.
+      {{/card.content}}
+    {{/paper-card}}
   {{/each}}
   {{outlet}}
