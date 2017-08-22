@@ -7,6 +7,11 @@ const Router = Ember.Router.extend({
 });
 
 Router.map(function() {
+  this.route('inbox', function() {
+    this.route('read');
+    this.route('settings');
+  });
+  this.route('login');
   this.route('/index');
   this.route('inbox');
 });

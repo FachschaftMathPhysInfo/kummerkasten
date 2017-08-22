@@ -1,0 +1,35 @@
+{{#paper-card as |card|}}
+{{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}Herzlich Willkommen!{{/text.headline}}
+      {{#text.subhead}}{{/text.subhead}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#card.content}}
+  {{currentUser.user.salutation}} {{currentUser.user.surname}},
+  <br/>
+  Hier können Sie aktuelle und vergangene Anmerkungen der Studierenden anschauen.
+  Die Kommentare werden von uns, der Fachschaft, sortiert und mögliche Beleidigungen gelöscht.
+  Danke für Ihre Bemühungen!
+  <br/>
+  Ihre Fachschaft MathPhys
+  {{/card.content}}
+{{/paper-card}}
+
+  {{#each model as |complaint|}}
+    {{#paper-card as |card|}}
+    {{#card.title as |title|}}
+        {{#title.text as |text|}}
+          {{#text.headline}}{{complaint.course.name}}{{/text.headline}}
+          {{#text.subhead}}{{moment-format complaint.createdAt locale='de'}}{{/text.subhead}}
+        {{/title.text}}
+      {{/card.title}}
+      {{#card.content}}
+      {{simple-mde-preview complaint.message}}
+      {{/card.content}}
+      {{#card.actions}}
+      {{#paper-button onClick=(action "markasread" complaint)}}Als gelesen markieren{{/paper-button}}
+      {{/card.actions}}
+    {{/paper-card}}
+  {{/each}}
+  {{outlet}}

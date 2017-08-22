@@ -1,4 +1,4 @@
-class CoursetypeResource < JSONAPI::Resource
+class CoursetypeResource < BaseResource
   has_many :courses
   attributes :name
 end

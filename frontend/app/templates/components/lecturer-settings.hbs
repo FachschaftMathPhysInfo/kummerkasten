@@ -1,0 +1,23 @@
+<div class="layout-gt-sm-row">
+  <div class="flex-50">
+
+      <h2>Kommunikation</h2>
+<div class="flex-95 layout-column">
+  {{paper-input value=model.salutation class="flex-30" label="Anrede" onChange=(action (mut model.salutation))}}
+  {{paper-input value=model.givenname class="flex-30" label="Vorname" onChange=(action (mut model.givenname))}}
+  {{paper-input value=model.surname class="flex-30" label="Nachname" onChange=(action (mut model.surname))}}
+  {{paper-input value=model.email class="flex-30" label="E-Mail-Adresse" onChange=(action (mut model.email))}}
+</div>
+</div>
+<div class="flex-50">
+  <h2>Benachrichtigungen</h2>
+{{#paper-radio-group
+  groupValue=(readonly model.notifications)
+  onChange=(action (mut model.notifications)) as |group|}}
+  {{#group.radio value="every"}} Bei neuen Kummer direkt per E-Mail benachrichtigt werden. {{/group.radio}}
+  {{#group.radio value="daily" }} Tägliches Update, falls neuer Kummer hinzugekommen ist. {{/group.radio}}
+  {{#group.radio value="weekly" }} Wöchentliches Update, falls neuer Kummer hinzugekommen ist. {{/group.radio}}
+  {{#group.radio value="never" warn=true}} Keine Benachrichtigungen {{/group.radio}}
+{{/paper-radio-group}}
+</div>
+</div>

@@ -10,15 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170805134255) do
+
+ActiveRecord::Schema.define(version: 20170822111450) do
+
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "complaints", force: :cascade do |t|
     t.boolean "approved"
-    t.string "title"
-    t.string "message"
+    t.text "message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "course_id"
@@ -33,6 +34,7 @@ ActiveRecord::Schema.define(version: 20170805134255) do
     t.bigint "semester_id"
     t.bigint "coursetype_id"
     t.bigint "faculty_id"
+    t.string "abbreviation"
     t.integer "lsf_id"
     t.index ["coursetype_id"], name: "index_courses_on_coursetype_id"
     t.index ["faculty_id"], name: "index_courses_on_faculty_id"
@@ -61,13 +63,36 @@ ActiveRecord::Schema.define(version: 20170805134255) do
     t.index ["lecturer_id"], name: "index_has_reads_on_lecturer_id"
   end
 
+  create_table "hasreads", force: :cascade do |t|
+    t.bigint "lecturer_id"
+    t.bigint "complaint_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["complaint_id"], name: "index_hasreads_on_complaint_id"
+    t.index ["lecturer_id"], name: "index_hasreads_on_lecturer_id"
+  end
+
   create_table "lecturers", force: :cascade do |t|
-    t.string "email"
     t.string "salutation"
     t.string "surname"
     t.string "givenname"
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "authentication_token", limit: 30
+    t.string "notifications", default: "every"
+    t.index ["authentication_token"], name: "index_lecturers_on_authentication_token", unique: true
+    t.index ["email"], name: "index_lecturers_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_lecturers_on_reset_password_token", unique: true
     t.integer "lsf_id"
     t.string "password"
   end
@@ -95,6 +120,8 @@ ActiveRecord::Schema.define(version: 20170805134255) do
   add_foreign_key "courses", "semesters"
   add_foreign_key "has_reads", "complaints"
   add_foreign_key "has_reads", "lecturers"
+  add_foreign_key "hasreads", "complaints"
+  add_foreign_key "hasreads", "lecturers"
   add_foreign_key "lectures", "courses"
   add_foreign_key "lectures", "lecturers"
 end

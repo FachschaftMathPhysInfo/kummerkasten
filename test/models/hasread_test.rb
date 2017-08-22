@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class HasReadTest < ActiveSupport::TestCase
+class HasreadTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

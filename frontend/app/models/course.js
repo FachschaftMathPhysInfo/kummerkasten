@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 const { attr,belongsTo, hasMany } = DS;
 export default DS.Model.extend({
@@ -8,4 +9,6 @@ export default DS.Model.extend({
   createdAt:attr('date'),
   lecturers:hasMany('lecturer'),
   semester:belongsTo('semester'),
+  lecturernames:attr('string'),
+  facultyname:attr('string'),
 });

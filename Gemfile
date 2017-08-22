@@ -42,6 +42,11 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 #JSON-API-Resources
 gem 'jsonapi-resources'
+gem 'pundit'
+gem 'jsonapi-authorization','~> 1.0.0.alpha5'
 gem 'faker'
 gem "ember-cli-rails", '~> 0.8.0'
 gem 'rails-erd', require: false, group: :development
+gem 'devise'
+gem 'simple_token_authentication'
+gem 'rack-cors', :require => 'rack/cors'

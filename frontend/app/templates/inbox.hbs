@@ -1,1 +1,57 @@
+{{#paper-toolbar}}
+  {{#paper-toolbar-tools}}
+    {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
+      {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+        {{paper-icon icon="menu"}}
+      {{/paper-button}}
+    {{/paper-sidenav-toggle}}
+    <h2>Kummerkasten <span class="hide-xs hide-sm">- Übersicht</span></h2>
+    <span class="flex"></span>
+    {{#unless session.isAuthenticated}}
+      {{#paper-menu isOpen=dreipunktemenuisopen position="target-right target" as |menu|}}
+        {{#menu.trigger}}
+          {{#paper-button onClick=null iconButton=true}}
+            {{paper-icon "vpn_key" class="md-menu-origin"}}
+          {{/paper-button}}
+        {{/menu.trigger}}
+        {{#menu.content as |content|}}
+          <center style="overflow-x: hidden; overflow-y: hidden;">
+
+            {{#paper-form onSubmit=(action "login") as |form|}}
+              <div class="layout-column flex-80">
+                <h2>Anmeldung</h2> {{form.input type=email class="md-input-login-container" required=true label="E-Mail" value=email onChange=(action (mut email))}} {{form.input type=password class="md-input-login-container" required=true label="Passwort" value=password onChange=(action (mut password))}}
+                {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Einloggen{{/form.submit-button}}
+                {{#if errorMessage}}
+                  <p>
+                    <strong>Login fehlgeschlagen:</strong>
+                    <code>{{errorMessage}}</code>
+                  </p>
+                {{/if}}
+              </div>
+            {{/paper-form}}
+
+          </center>
+        {{/menu.content}}
+      {{/paper-menu}}
+      {{else}}
+        {{#paper-button onClick=(pipe (action "logout")(transition-to "logout")) iconButton=true}}
+          {{paper-icon "exit_to_app" class="md-menu-origin"}}
+        {{/paper-button}}
+    {{/unless}}
+  {{/paper-toolbar-tools}}
+{{/paper-toolbar}}
+{{#paper-content}}
+{{#paper-tabs primary=true borderBottom=true as |tabs|}}
+  {{#tabs.tab href=(href-to "inbox.index")}}
+    Kummer
+  {{/tabs.tab}}
+  {{#tabs.tab href=(href-to "inbox.read")}}
+    gelesene
+  {{/tabs.tab}}
+  {{#tabs.tab href=(href-to "inbox.settings")}}
+    Einstellungen
+  {{/tabs.tab}}
+{{/paper-tabs}}
+
 {{outlet}}
+{{/paper-content}}

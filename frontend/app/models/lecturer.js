@@ -5,7 +5,7 @@ export default DS.Model.extend({
   surname:attr('string'),
   givenname:attr('string'),
   email:attr('string'),
-  createdAt:attr('date'),
+  notifications:attr('string'),
   //readcomplaints:hasMany('complaint'),
   //complaints:hasMany('complaint'),
   courses:hasMany('course')

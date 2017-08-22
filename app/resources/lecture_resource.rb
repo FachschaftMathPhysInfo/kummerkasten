@@ -1,2 +1,2 @@
-class LectureResource < JSONAPI::Resource
+class LectureResource < BaseResource
 end
