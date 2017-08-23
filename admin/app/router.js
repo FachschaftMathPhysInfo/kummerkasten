@@ -7,6 +7,15 @@ const Router = Ember.Router.extend({
 });
 
 Router.map(function() {
+  this.route('management', function() {
+    this.route('general', function() {
+      this.route('faculties');
+      this.route('coursetypes');
+    });
+    this.route('lecturers');
+    this.route('courses');
+  });
+  this.route('import');
 });
 
 export default Router;

@@ -1,5 +1,30 @@
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
+{{#paper-sidenav-container class="layout-row layout-xs-column"}}
+{{#paper-sidenav
+  class="md-whiteframe-z2 site-sidenav flex overflow-x-hidden"
+  name="left2"
+  open=open
+  closeOnClick=true
+  onToggle=(action (mut open))
+flex-layout="column" flex=true }}
+{{#paper-toolbar tall=true as |toolbar|}}
+  {{#paper-toolbar-tools}}<center>
+    <img style="margin: 20px" src="{{rootURL}}200w.gif" height="140px" width="140px"/><br/>
+    KUMMERKASTEN
+  </center>{{/paper-toolbar-tools}}
+{{/paper-toolbar}}
+  {{#paper-content padding=false}}
+    {{#paper-list}}
+      {{#menu-item active=(is-active "index" currentRouteName) onClick=(transition-to "index")}}{{paper-icon "home" class="site-nav-icon"}}Startseite{{/menu-item}}
+      {{#menu-item onClick=(transition-to "inbox") active=(is-active "inbox" currentRouteName)}}{{paper-icon "toc" class="site-nav-icon"}}Übersicht{{/menu-item}}
 
-{{outlet}}
+
+    {{/paper-list}}
+  {{/paper-content}}
+{{/paper-sidenav}}
+
+  {{#paper-content flex-layout="column" class="flex row layout-column overflow-x-hidden"}}
+    {{outlet}}
+     {{paper-toaster}}
+    {{/paper-content}}
+
+ {{/paper-sidenav-container}}

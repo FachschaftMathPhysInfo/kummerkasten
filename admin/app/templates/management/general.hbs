@@ -1,0 +1,13 @@
+{{#paper-tabs primary=true borderBottom=true as |tabs|}}
+  {{#tabs.tab href=(href-to "management.general.index")}}
+    Semester
+  {{/tabs.tab}}
+  {{#tabs.tab href=(href-to "management.general.faculties")}}
+    Fakultäten
+  {{/tabs.tab}}
+  {{#tabs.tab href=(href-to "management.general.coursetypes")}}
+    brVeranstaltungstypen
+  {{/tabs.tab}}
+{{/paper-tabs}}
+
+{{liquid-outlet class="md-padding"}}
