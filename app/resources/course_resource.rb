@@ -5,7 +5,7 @@ class CourseResource < BaseResource
   has_many :lectures
   has_many :lecturers
   has_many :complaints
-  attributes :name, :facultyname, :lecturernames
+  attributes :name, :facultyname, :lecturernames, :lsf_id
 
   def lecturernames
     self.lecturers.collect!{|x| x.surname}.join(", ")

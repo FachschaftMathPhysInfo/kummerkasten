@@ -1,1 +1,57 @@
-{{outlet}}
+{{#paper-card as |card|}}
+    {{#card.title as |title|}}
+      {{#title.text as |text|}}
+        {{#text.headline}}
+          Neue Veranstaltung anlegen:
+        {{/text.headline}}
+      {{/title.text}}
+    {{/card.title}}
+    {{#paper-form onSubmit=(action "saveCourse") as |form|}}
+    {{#card.content}}
+    {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
+    {{form.input value=lsfid type="number" required=true onChange=(action (mut lsfid))}}
+    {{form.input value=abbv required=true onChange=(action (mut abbv))}}
+    {{form.chips readOnly=readOnly removeItem=(action "removeLecturerName") addItem=(action "addLecturerName") placeholder="Dozierendes hinzufügen" content=lecturers options=model.alllecturers
+  requireMatch=true}}
+    {{/card.content}}
+    {{#card.actions}}
+    {{#form.submit-button raised=true primary=true}}Speichern{{/form.submit-button}}
+    {{/card.actions}}
+    {{/paper-form}}
+  {{/paper-card}}
+{{#paper-card as |card|}}
+{{#card.title as |title|}}
+  {{#title.text as |text|}}
+    {{#text.headline}}
+      {{paper-icon "rate review"}} Kurse
+    {{/text.headline}}
+  {{/title.text}}
+{{/card.title}}
+{{#card.content}}
+{{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
+          {{#table.head as |head|}}
+            {{head.column}}
+            {{#head.column}}Name{{/head.column}}
+            {{#head.column}}Abkürzung{{/head.column}}
+            {{#head.column}}Dozierende{{/head.column}}
+            {{#head.column}}LSF-ID{{/head.column}}
+            {{#head.column}}Optionen{{/head.column}}
+            {{/table.head}}
+          {{#table.body as |body|}}
+            {{#each (sort-by table.sortDesc model) as |cs|}}
+              {{#body.row edit=true as |row|}}
+              {{#row.cell}}{{paper-icon "rate review" }}{{/row.cell}}
+                {{#row.cell}}{{cs.name}}{{/row.cell}}
+                {{#row.cell}}{{cs.abbreviation}}{{/row.cell}}
+                  {{#row.cell}}{{#each cs.lecturers as |lec index|}}{{#if index}},{{/if}}{{lec.surname}}{{/each}}{{/row.cell}}
+                {{#row.cell}}{{cs.lsfid}}{{/row.cell}}
+                {{#row.cell edit=true as |cell|}}
+                {{#paper-button iconButton=true onClick=(action "editCourse" cs)}}{{paper-icon "edit"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "deleteCourse" cs)}}{{paper-icon "delete"}}{{/paper-button}}
+                {{/row.cell}}
+              {{/body.row}}
+            {{/each}}
+          {{/table.body}}
+        {{/paper-data-table}}
+{{/card.content}}
+{{/paper-card}}
