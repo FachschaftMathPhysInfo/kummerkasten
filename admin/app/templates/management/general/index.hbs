@@ -8,12 +8,17 @@
     {{/card.title}}
     {{#paper-form onSubmit=(action "saveSemester") as |form|}}
     {{#card.content}}
-    {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
-    {{paper-pikaday format="MM.YYYY" placeholder="Semesterstartdatum" required=true value=date}}
-    {{form.input value=lsfid type="number" required=true onChange=(action (mut lsfid))}}
+    {{form.input value=name onChange=(action (mut name)) label="Name" required=true }}
+    {{paper-pikaday label="Semesterstartdatum"
+            required=true
+            value=(readonly (moment-format year "MM.YYYY"))
+            onSelection=(action (mut year))
+            onChange=(action (mut year))
+        required=true}}
+    {{form.input onChange=(action (mut lsfid)) value=lsfid label="LSF-ID" type="number" required=true }}
     {{/card.content}}
     {{#card.actions}}
-    {{#form.submit-button raised=true primary=true}}Speichern{{/form.submit-button}}
+    {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Speichern{{/form.submit-button}}
     {{/card.actions}}
     {{/paper-form}}
   {{/paper-card}}
@@ -51,3 +56,5 @@
         {{/paper-data-table}}
 {{/card.content}}
 {{/paper-card}}
+{{#if showEditSemesterDialog}}{{edit-semester-dialog closeDialog=(action "closeEditDialog") title='Bearbeite Semester' semester=currentSemester}}{{/if}}
+{{#if showDeleteSemesterDialog}}{{delete-dependency-dialog store=store closeDialog=(action "closeDeleteSemesterDialog") objekt=currentSemester}}{{/if}}

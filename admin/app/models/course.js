@@ -5,7 +5,7 @@ export default DS.Model.extend({
   complaints:hasMany('complaint'),
   name:attr('string'),
   faculty:belongsTo('faculty'),
-  coursetype:attr('coursetype'),
+  coursetype:belongsTo('coursetype'),
   createdAt:attr('date'),
   lecturers:hasMany('lecturer'),
   semester:belongsTo('semester'),

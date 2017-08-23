@@ -9,10 +9,10 @@
     {{#paper-form onSubmit=(action "saveFaculty") as |form|}}
     {{#card.content}}
     {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
-    {{form.input value=lsfid type="number" required=true onChange=(action (mut lsfid))}}
+    {{form.input value=lsfid label="LSF-ID" type="number" required=true onChange=(action (mut lsfid))}}
     {{/card.content}}
     {{#card.actions}}
-    {{#form.submit-button raised=true primary=true}}Speichern{{/form.submit-button}}
+    {{#form.submit-button raised=true primary=true disabled=form.isInvalid}}Speichern{{/form.submit-button}}
     {{/card.actions}}
     {{/paper-form}}
   {{/paper-card}}
@@ -48,3 +48,5 @@
         {{/paper-data-table}}
 {{/card.content}}
 {{/paper-card}}
+{{#if showEditFacultyDialog}}{{edit-faculty-dialog closeDialog=(action "closeEditDialog") title='Bearbeite Fakultät' faculty=currentFaculty}}{{/if}}
+{{#if showDeleteFacultyDialog}}{{delete-dependency-dialog store=store closeDialog=(action "closeDeleteFacultyDialog") objekt=currentFaculty}}{{/if}}

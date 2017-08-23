@@ -1,6 +1,8 @@
 class ApplicationPolicy
   attr_reader :user, :record
-
+  def isAdmin?
+    true
+  end
   def initialize(user, record)
     p "User:", user
     p "Record:", record

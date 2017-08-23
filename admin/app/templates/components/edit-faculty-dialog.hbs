@@ -1,0 +1,24 @@
+{{#paper-dialog class="flex-77" onClose=(action "exitDialog" "cancel") origin=dialogOrigin clickOutsideToClose=true}}
+  {{#paper-toolbar}}
+    {{#paper-toolbar-tools}}
+      <h2>{{title}}</h2>
+      <span class="flex"></span>
+      {{#paper-button iconButton=true onClick=(action "exitDialog" "cancel")}}{{paper-icon icon="close"}}{{/paper-button}}
+    {{/paper-toolbar-tools}}
+  {{/paper-toolbar}}
+  {{#paper-form onSubmit=(action "exitDialog" "ok") as |form|}}
+  {{#paper-dialog-content}}
+      <div class="flex layout-column">
+    {{form.input flex=30 label="Name" id="nameinput" tabindex=1 value=faculty.name required=true onChange=(action (mut faculty.name))}}
+    {{form.input flex=30 label="LSF-ID" type="number" id="lsfidinput" tabindex=1 value=faculty.lsfId required=true onChange=(action (mut faculty.lsfId))}}
+    </div>
+  {{/paper-dialog-content}}
+  {{#paper-dialog-actions class="layout-row"}}
+    <span class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+    {{#paper-button tabindex=4 onClick=(action "exitDialog" "cancel")}}Abbrechen{{/paper-button}}
+    {{#paper-button tabindex=3 onClick=(action "exitDialog" "ok") disabled=form.isInvalid}}OK{{/paper-button}}
+    </span>
+  {{/paper-dialog-actions}}
+  {{/paper-form}}
+{{/paper-dialog}}
+{{yield}}

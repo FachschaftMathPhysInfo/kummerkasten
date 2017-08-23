@@ -6,6 +6,7 @@ module.exports = function(environment) {
     modulePrefix: 'admin',
     environment,
     rootURL: '/admin',
+    changeTracker: { trackHasMany: true, auto: true, enableIsDirty: true },
     locationType: 'auto',
     EmberENV: {
       FEATURES: {
