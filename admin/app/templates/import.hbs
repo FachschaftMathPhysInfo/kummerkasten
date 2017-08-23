@@ -1,1 +1,34 @@
-{{outlet}}
+{{#paper-card as |card|}}
+{{#card.title as |title|}}
+        {{#title.text as |text|}}
+          {{#text.headline}}Veranstaltungen importieren{{/text.headline}}
+          {{#text.subhead}}aus dem LSF{{/text.subhead}}
+        {{/title.text}}
+      {{/card.title}}
+      {{#card.content}}
+      {{#paper-autocomplete
+        options=items
+        allowClear=true
+        searchText=(readonly facultySearchText)
+        onSearchTextChange=(action (mut facultySearchText))
+        selected=selectedCountry
+        search=(if simulateQuery (action "searchFaculty"))
+        searchField="name"
+        labelPath="name"
+        placeholder="Suche eine Fakultät..."
+        loadingMessage="Suche nach Fakultät..."
+        noMatchesMessage="Diese Fakultät existiert nicht."
+        onSelectionChange=(action (mut selectedCountry)) as |country autocomplete|}}
+        {{paper-autocomplete-highlight
+          label=country.name
+          searchText=autocomplete.searchText
+          flags="i"}}
+{{/paper-autocomplete}}
+      {{#paper-checkbox value=invite onChange=(action (mut invite))}}
+        Email-Einladungen versenden.
+      {{/paper-checkbox}}
+      {{/card.content}}
+      {{#card.actions}}
+        {{#paper-button disabled=importing}} {{#if importing}}{{paper-progress-circular}}{{/if}} Importieren{{/paper-button}}
+      {{/card.actions}}
+{{/paper-card}}

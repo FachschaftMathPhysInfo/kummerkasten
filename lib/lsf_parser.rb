@@ -271,7 +271,7 @@ end
   end
   end
   ##
-  # Imports faculties by name
+  # Imports faculties by name, current term
   ##
   def self.import(names)
     roots = find_certain_roots(names)
