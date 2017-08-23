@@ -11,5 +11,6 @@ export default DS.Model.extend({
   semester:belongsTo('semester'),
   lecturernames:attr('string'),
   facultyname:attr('string'),
-  lsfId:attr('number')
+  lsfId:attr('number'),
+  complaintCount:attr('number')
 });

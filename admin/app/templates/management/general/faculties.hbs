@@ -8,8 +8,14 @@
     {{/card.title}}
     {{#paper-form onSubmit=(action "saveFaculty") as |form|}}
     {{#card.content}}
+    <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+        <div class="flex-gt-xs-40">
     {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
+  </div>
+  <div class="flex-gt-xs-40">
     {{form.input value=lsfid label="LSF-ID" type="number" required=true onChange=(action (mut lsfid))}}
+  </div>
+</div>
     {{/card.content}}
     {{#card.actions}}
     {{#form.submit-button raised=true primary=true disabled=form.isInvalid}}Speichern{{/form.submit-button}}
@@ -28,8 +34,8 @@
 {{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
           {{#table.head as |head|}}
             {{head.column}}
-            {{#head.column}}Name{{/head.column}}
-            {{#head.column}}LSF-ID{{/head.column}}
+            {{#head.column sortProp="name"}}Name{{/head.column}}
+            {{#head.column sortProp="lsfId"}}LSF-ID{{/head.column}}
             {{#head.column}}Optionen{{/head.column}}
             {{/table.head}}
           {{#table.body as |body|}}

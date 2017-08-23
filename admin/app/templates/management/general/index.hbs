@@ -8,14 +8,22 @@
     {{/card.title}}
     {{#paper-form onSubmit=(action "saveSemester") as |form|}}
     {{#card.content}}
+    <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+        <div class="flex-gt-xs-30">
     {{form.input value=name onChange=(action (mut name)) label="Name" required=true }}
+  </div>
+  <div class="flex-gt-xs-30">
     {{paper-pikaday label="Semesterstartdatum"
             required=true
             value=(readonly (moment-format year "MM.YYYY"))
             onSelection=(action (mut year))
             onChange=(action (mut year))
         required=true}}
+      </div>
+        <div class="flex-gt-xs-30">
     {{form.input onChange=(action (mut lsfid)) value=lsfid label="LSF-ID" type="number" required=true }}
+  </div>
+</div>
     {{/card.content}}
     {{#card.actions}}
     {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Speichern{{/form.submit-button}}
@@ -34,9 +42,9 @@
 {{#paper-data-table sortProp="year" sortDir="desc" selectable=true as |table|}}
           {{#table.head as |head|}}
             {{head.column}}
-            {{#head.column}}Name{{/head.column}}
-            {{#head.column}}Jahr{{/head.column}}
-            {{#head.column}}LSF-ID{{/head.column}}
+            {{#head.column sortProp="name"}}Name{{/head.column}}
+            {{#head.column sortProp="year"}}Jahr{{/head.column}}
+            {{#head.column sortProp="lsfId"}}LSF-ID{{/head.column}}
             {{#head.column}}Optionen{{/head.column}}
             {{/table.head}}
           {{#table.body as |body|}}
