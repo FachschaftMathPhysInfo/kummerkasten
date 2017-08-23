@@ -10,7 +10,13 @@ class ComplaintPolicy < ApplicationPolicy
     true
   end
   def show?
-    true
+    isAdmin? or record.lecturers.contains(user)
+  end
+  def update?
+    isAdmin?
+  end
+  def destroy?
+    isAdmin?
   end
   class Scope < Scope
     def resolve

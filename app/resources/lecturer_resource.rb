@@ -4,7 +4,6 @@ class LecturerResource < BaseResource
   has_many :courses
   has_many :complaints, class_name:"Complaint"
   has_many :readcomplaints, class_name:"Complaint"
-  has_many :unreadcomplaints
   attribute :unreadcomplaints_count
   def unreadcomplaints_count
     @model.unreadcomplaints.size

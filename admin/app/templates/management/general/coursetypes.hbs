@@ -11,7 +11,7 @@
     {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
     {{/card.content}}
     {{#card.actions}}
-    {{#form.submit-button raised=true primary=true}}Speichern{{/form.submit-button}}
+    {{#form.submit-button raised=true primary=true disabled=form.isInvalid}}Speichern{{/form.submit-button}}
     {{/card.actions}}
     {{/paper-form}}
   {{/paper-card}}
@@ -45,3 +45,5 @@
         {{/paper-data-table}}
 {{/card.content}}
 {{/paper-card}}
+{{#if showEditCoursetypeDialog}}{{edit-coursetype-dialog closeDialog=(action "closeEditDialog") title='Bearbeite Veranstaltungstyp' coursetype=currentCoursetype}}{{/if}}
+{{#if showDeleteCoursetypeDialog}}{{delete-dependency-dialog store=store closeDialog=(action "closeDeleteCoursetypeDialog") objekt=currentCoursetype}}{{/if}}

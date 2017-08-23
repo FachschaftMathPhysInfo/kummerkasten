@@ -4,6 +4,5 @@ export default DS.Model.extend({
   name:attr('string'),
   year:attr('date'),
   courses:hasMany('course'),
-  createdAt:attr('date'),
   lsfId:attr('number')
 });
