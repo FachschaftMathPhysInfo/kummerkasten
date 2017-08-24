@@ -2,6 +2,9 @@ class LecturerPolicy < ApplicationPolicy
   def update?
     user==record
   end
+  def index?
+    isAdmin?
+  end
   def create?
    isAdmin?
   end

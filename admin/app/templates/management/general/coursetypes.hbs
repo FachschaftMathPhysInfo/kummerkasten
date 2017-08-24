@@ -8,7 +8,11 @@
     {{/card.title}}
     {{#paper-form onSubmit=(action "saveCoursetype") as |form|}}
     {{#card.content}}
+    <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+        <div class="flex-gt-xs-90">
     {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
+  </div>
+</div>
     {{/card.content}}
     {{#card.actions}}
     {{#form.submit-button raised=true primary=true disabled=form.isInvalid}}Speichern{{/form.submit-button}}
@@ -27,8 +31,8 @@
 {{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
           {{#table.head as |head|}}
             {{head.column}}
-            {{#head.column}}Name{{/head.column}}
-            {{#head.column}}Optionen{{/head.column}}
+            {{#head.column sortProp="name"}}Name{{/head.column}}
+            {{#head.column }}Optionen{{/head.column}}
             {{/table.head}}
           {{#table.body as |body|}}
             {{#each (sort-by table.sortDesc model) as |ct|}}
