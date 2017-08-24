@@ -1,34 +1,41 @@
 {{#paper-card as |card|}}
-{{#card.title as |title|}}
-        {{#title.text as |text|}}
-          {{#text.headline}}Veranstaltungen importieren{{/text.headline}}
-          {{#text.subhead}}aus dem LSF{{/text.subhead}}
-        {{/title.text}}
-      {{/card.title}}
-      {{#card.content}}
-      {{#paper-autocomplete
-        options=items
-        allowClear=true
-        searchText=(readonly facultySearchText)
-        onSearchTextChange=(action (mut facultySearchText))
-        selected=selectedCountry
-        search=(if simulateQuery (action "searchFaculty"))
-        searchField="name"
-        labelPath="name"
-        placeholder="Suche eine Fakultät..."
-        loadingMessage="Suche nach Fakultät..."
-        noMatchesMessage="Diese Fakultät existiert nicht."
-        onSelectionChange=(action (mut selectedCountry)) as |country autocomplete|}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}Veranstaltungen importieren{{/text.headline}}
+      {{#text.subhead}}aus dem LSF{{/text.subhead}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#card.content}}
+  <div class="layout-gt-xs-row" style="justify-content: space-around">
+    <div class="flex-gt-xs-80">
+      {{#paper-autocomplete allowClear=true searchText=(readonly facultySearchText) onSearchTextChange=(action (mut facultySearchText)) selected=selectedFaculty search=(action "searchFaculty") searchField="name" labelPath="name"
+      label="Fakultät" placeholder="Suche eine Fakultät..."
+        loadingMessage="Suche nach Fakultät..." noMatchesMessage="Diese Fakultät existiert nicht." onSelectionChange=(action (mut selectedFaculty)) as |faculty autocomplete|}}
         {{paper-autocomplete-highlight
-          label=country.name
+          label=faculty.name
           searchText=autocomplete.searchText
-          flags="i"}}
-{{/paper-autocomplete}}
+          flags="i"}} <emph>{{faculty.lsfId}}</emph>
+      {{/paper-autocomplete}}
+    </div>
+    <div class="flex-gt-xs-20">
+      {{#paper-select required=true label="Semester" options=model selected=selectedSemester onChange=(action (mut selectedSemester)) as |sem|}}
+        {{sem.name}}
+      {{/paper-select}}
+    </div>
+  </div>
+    <p>
       {{#paper-checkbox value=invite onChange=(action (mut invite))}}
-        Email-Einladungen versenden.
+        Email-Einladungen versenden. <strong>Achtung:</strong> Überprüfe, ob du dies tuen willst. Es könnte nicht erlaubt sein.
       {{/paper-checkbox}}
-      {{/card.content}}
-      {{#card.actions}}
-        {{#paper-button disabled=importing}} {{#if importing}}{{paper-progress-circular}}{{/if}} Importieren{{/paper-button}}
-      {{/card.actions}}
+    </p>
+    <p>
+      {{currentStatus}}
+    </p>
+  {{/card.content}}
+  {{#card.actions}}
+    {{#paper-button disabled=importing onClick=(action "startImporting")}} Importieren{{/paper-button}}
+  {{/card.actions}}
+  {{#if importing}}
+    {{paper-progress-linear}}
+  {{/if}}
 {{/paper-card}}

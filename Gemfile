@@ -52,3 +52,4 @@ gem 'simple_token_authentication'
 gem 'rack-cors', :require => 'rack/cors'
 gem "queue_classic", "~> 3.1.0"
 gem 'whenever', :require => false
+gem 'redis', '~> 3'

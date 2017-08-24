@@ -52,15 +52,6 @@ ActiveRecord::Schema.define(version: 20170822153431) do
     t.integer "lsf_id"
   end
 
-  create_table "has_reads", force: :cascade do |t|
-    t.bigint "lecturer_id"
-    t.bigint "complaint_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["complaint_id"], name: "index_has_reads_on_complaint_id"
-    t.index ["lecturer_id"], name: "index_has_reads_on_lecturer_id"
-  end
-
   create_table "hasreads", force: :cascade do |t|
     t.bigint "lecturer_id"
     t.bigint "complaint_id"
@@ -74,6 +65,8 @@ ActiveRecord::Schema.define(version: 20170822153431) do
     t.string "salutation"
     t.string "surname"
     t.string "givenname"
+    t.integer "lsf_id"
+    t.string "password"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -88,8 +81,6 @@ ActiveRecord::Schema.define(version: 20170822153431) do
     t.datetime "updated_at", null: false
     t.string "authentication_token", limit: 30
     t.string "notifications", default: "every"
-    t.integer "lsf_id"
-    t.string "password"
     t.index ["authentication_token"], name: "index_lecturers_on_authentication_token", unique: true
     t.index ["email"], name: "index_lecturers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_lecturers_on_reset_password_token", unique: true
@@ -138,8 +129,6 @@ ActiveRecord::Schema.define(version: 20170822153431) do
   add_foreign_key "courses", "coursetypes"
   add_foreign_key "courses", "faculties"
   add_foreign_key "courses", "semesters"
-  add_foreign_key "has_reads", "complaints"
-  add_foreign_key "has_reads", "lecturers"
   add_foreign_key "hasreads", "complaints"
   add_foreign_key "hasreads", "lecturers"
   add_foreign_key "lectures", "courses"
