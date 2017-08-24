@@ -16,6 +16,7 @@ Router.map(function() {
     this.route('courses');
   });
   this.route('import');
+  this.route('approve');
 });
 
 export default Router;

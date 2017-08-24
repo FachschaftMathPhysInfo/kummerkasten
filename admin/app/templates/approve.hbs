@@ -1,0 +1,4 @@
+{{#each model as |complaint|}}
+{{complaint-editor complaint=complaint onApprove=(action "onApprove" complaint) onDismiss=(action "onDismiss" complaint)}}
+{{/each}}
+{{outlet}}
