@@ -21,9 +21,7 @@
   {{#card.content}}
   <div class="layout-gt-xs-row space-around">
     <div class="flex-gt-xs-60">
-      {{#form.select required=true label="Fakultät" options=model.faculties selected=faculty onChange=(action (mut faculty)) as |fac|}}
-      {{fac.name}}
-      {{/form.select}}
+      {{form.input required=true label="Fakultät"  value=faculty onChange=(action (mut faculty))}}
     </div>
     <div class="flex-gt-xs-30">
       {{#form.select required=true label="Semester" options=model selected=selectedSemester onChange=(action (mut selectedSemester)) as |sem|}}

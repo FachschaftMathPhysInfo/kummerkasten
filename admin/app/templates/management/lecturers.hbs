@@ -9,9 +9,7 @@
      <span class="flex"></span>
    {{/paper-toolbar-tools}}
  {{/paper-toolbar}}
- {{#paper-content}}
 {{#paper-card as |card|}}
-<<<<<<< HEAD
   {{#card.title as |title|}}
     {{#title.text as |text|}}
       {{#text.headline}}
@@ -63,7 +61,7 @@
         {{#head.column sortProp="surname" }}Nachname{{/head.column}}
         {{#head.column sortProp="email" }}E-Mail{{/head.column}}
         {{#head.column sortProp="lsfId" }}LSF-ID{{/head.column}}
-        {{#head.column sortProp="unreadcomplaintsCount²" }}ungelesene Nachrichten{{/head.column}}
+        {{#head.column sortProp="unreadcomplaintsCount" }}ungelesene Nachrichten{{/head.column}}
         {{#head.column}}Optionen{{/head.column}}
       {{/table.head}}
       {{#table.body as |body|}}
@@ -87,43 +85,3 @@
 {{/paper-card}}
 {{#if showEditLecturerDialog}}{{edit-lecturer-dialog model=model closeDialog=(action "closeEditDialog") lecturer=currentLecturer}}{{/if}}
 {{#if showDeleteLecturerDialog}}{{delete-dependency-dialog store=store closeDialog=(action "closeDeleteLecturerDialog") objekt=currentLecturer}}{{/if}}
-=======
-{{#card.title as |title|}}
-  {{#title.text as |text|}}
-    {{#text.headline}}
-      {{paper-icon "local library"}} Dozierende
-    {{/text.headline}}
-  {{/title.text}}
-{{/card.title}}
-{{#card.content}}
-{{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
-          {{#table.head as |head|}}
-            {{head.column}}
-            {{#head.column}}Vorname{{/head.column}}
-            {{#head.column}}Nachname{{/head.column}}
-            {{#head.column}}E-Mail{{/head.column}}
-            {{#head.column}}LSF-ID{{/head.column}}
-            {{#head.column}}ungelesene Nachrichten{{/head.column}}
-            {{#head.column}}Optionen{{/head.column}}
-            {{/table.head}}
-          {{#table.body as |body|}}
-            {{#each (sort-by table.sortDesc model) as |lec|}}
-              {{#body.row edit=true as |row|}}
-              {{#row.cell}}{{paper-icon "local library" }}{{/row.cell}}
-                {{#row.cell}}{{lec.givenname}}{{/row.cell}}
-                {{#row.cell}}{{lec.surname}}{{/row.cell}}
-                {{#row.cell}}{{lec.email}}{{/row.cell}}
-                {{#row.cell}}{{lec.lsfId}}{{/row.cell}}
-                {{#row.cell}}{{lec.unreadcomplaintsCount}}{{/row.cell}}
-                {{#row.cell edit=true as |cell|}}
-                {{#paper-button iconButton=true }}{{paper-icon "edit"}}{{/paper-button}}
-                {{#paper-button iconButton=true }}{{paper-icon "delete"}}{{/paper-button}}
-                {{/row.cell}}
-              {{/body.row}}
-            {{/each}}
-          {{/table.body}}
-        {{/paper-data-table}}
-{{/card.content}}
-{{/paper-card}}
-{{/paper-content}}
->>>>>>> 133641e06e3b18fb6552f64856dad20b31111e9f
