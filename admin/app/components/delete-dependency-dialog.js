@@ -18,6 +18,9 @@ export default Ember.Component.extend({
       case 'lecturer' :
         return 'Dozierendes';
         break;
+      case 'course' :
+        return 'Lehrveranstaltung';
+        break;
     }
   }),
   dieseselements: Ember.computed('objekt',function() {
@@ -35,6 +38,9 @@ export default Ember.Component.extend({
         break;
       case 'lecturer' :
         return 'dieses Dozierendes';
+        break;
+      case 'course' :
+        return 'dieser Lehrveranstaltung';
         break;
     }
   }),

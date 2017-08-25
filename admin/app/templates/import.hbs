@@ -5,22 +5,19 @@
       {{#text.subhead}}aus dem LSF{{/text.subhead}}
     {{/title.text}}
   {{/card.title}}
+  {{#paper-form onSubmit=(action "startImporting") as |form|}}
   {{#card.content}}
-  <div class="layout-gt-xs-row" style="justify-content: space-around">
-    <div class="flex-gt-xs-80">
-      {{#paper-autocomplete allowClear=true searchText=(readonly facultySearchText) onSearchTextChange=(action (mut facultySearchText)) selected=selectedFaculty search=(action "searchFaculty") searchField="name" labelPath="name"
-      label="Fakultät" placeholder="Suche eine Fakultät..."
-        loadingMessage="Suche nach Fakultät..." noMatchesMessage="Diese Fakultät existiert nicht." onSelectionChange=(action (mut selectedFaculty)) as |faculty autocomplete|}}
-        {{paper-autocomplete-highlight
-          label=faculty.name
-          searchText=autocomplete.searchText
-          flags="i"}} <emph>{{faculty.lsfId}}</emph>
-      {{/paper-autocomplete}}
+
+  <div class="layout-gt-xs-row space-around">
+    <div class="flex-gt-xs-60">
+      {{#form.select required=true label="Fakultät" options=model.faculties selected=faculty onChange=(action (mut faculty)) as |fac|}}
+      {{fac.name}}
+      {{/form.select}}
     </div>
-    <div class="flex-gt-xs-20">
-      {{#paper-select required=true label="Semester" options=model selected=selectedSemester onChange=(action (mut selectedSemester)) as |sem|}}
+    <div class="flex-gt-xs-30">
+      {{#form.select required=true label="Semester" options=model selected=selectedSemester onChange=(action (mut selectedSemester)) as |sem|}}
         {{sem.name}}
-      {{/paper-select}}
+      {{/form.select}}
     </div>
   </div>
     <p>
@@ -33,8 +30,9 @@
     </p>
   {{/card.content}}
   {{#card.actions}}
-    {{#paper-button disabled=importing onClick=(action "startImporting")}} Importieren{{/paper-button}}
+    {{#form.submit-button disabled=(or form.isInvalid importing)}} Importieren{{/form.submit-button}}
   {{/card.actions}}
+  {{/paper-form}}
   {{#if importing}}
     {{paper-progress-linear}}
   {{/if}}

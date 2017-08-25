@@ -1,9 +1,9 @@
 class Lecturer < ApplicationRecord
-  has_many :lectures
-  has_many :hasreads
-  has_many :unnotifiedcomplaints
-  has_many :courses, :through => :lectures
-  has_many :complaints, :through => :courses
+  has_many :lectures, dependent: :destroy
+  has_many :hasreads, dependent: :destroy
+  has_many :unnotifiedcomplaints, dependent: :destroy
+  has_many :courses, :through => :lectures, dependent: :destroy
+  has_many :complaints, :through => :courses, dependent: :destroy
   has_many :readcomplaints, :through => :hasreads, :source => :complaint, class_name: "Complaint"
   def unreadcomplaints
     self.complaints - self.readcomplaints

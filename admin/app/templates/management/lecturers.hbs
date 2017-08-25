@@ -1,38 +1,76 @@
 {{#paper-card as |card|}}
-{{#card.title as |title|}}
-  {{#title.text as |text|}}
-    {{#text.headline}}
-      {{paper-icon "local library"}} Dozierende
-    {{/text.headline}}
-  {{/title.text}}
-{{/card.title}}
-{{#card.content}}
-{{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
-          {{#table.head as |head|}}
-            {{head.column}}
-            {{#head.column}}Vorname{{/head.column}}
-            {{#head.column}}Nachname{{/head.column}}
-            {{#head.column}}E-Mail{{/head.column}}
-            {{#head.column}}LSF-ID{{/head.column}}
-            {{#head.column}}ungelesene Nachrichten{{/head.column}}
-            {{#head.column}}Optionen{{/head.column}}
-            {{/table.head}}
-          {{#table.body as |body|}}
-            {{#each (sort-by table.sortDesc model) as |lec|}}
-              {{#body.row edit=true as |row|}}
-              {{#row.cell}}{{paper-icon "local library" }}{{/row.cell}}
-                {{#row.cell}}{{lec.givenname}}{{/row.cell}}
-                {{#row.cell}}{{lec.surname}}{{/row.cell}}
-                {{#row.cell}}{{lec.email}}{{/row.cell}}
-                {{#row.cell}}{{lec.lsfid}}{{/row.cell}}
-                {{#row.cell}}{{lec.unreadcomplaints_count}}{{/row.cell}}
-                {{#row.cell edit=true as |cell|}}
-                {{#paper-button iconButton=true onClick=(action "editLecturer" lec)}}{{paper-icon "edit"}}{{/paper-button}}
-                {{#paper-button iconButton=true onClick=(action "deleteLecturer" lec)}}{{paper-icon "delete"}}{{/paper-button}}
-                {{/row.cell}}
-              {{/body.row}}
-            {{/each}}
-          {{/table.body}}
-        {{/paper-data-table}}
-{{/card.content}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}
+        Neues Dozierendes anlegen:
+      {{/text.headline}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#paper-form onSubmit=(action "saveLecturer") as |form|}}
+    {{#card.content}}
+      <div class="layout-gt-xs-row layout-wrap space-around">
+        <div class="flex-gt-xs-45">
+          {{form.input value=surname label="Vorname" required=true onChange=(action (mut givenname))}}
+        </div>
+        <div class="flex-gt-xs-45">
+          {{form.input value=givenname label="Nachname" required=true onChange=(action (mut surname))}}
+        </div>
+      </div>
+      <div class="layout-gt-xs-row layout-wrap space-around">
+        <div class="flex-gt-xs-40">
+          {{form.input value=email label="E-Mail" type="email" required=true onChange=(action (mut email))}}
+        </div>
+        <div class="flex-gt-xs-20">
+          {{form.input value=salutation label="Anrede" required=true onChange=(action (mut salutation))}}
+        </div>
+        <div class="flex-gt-xs-30">
+          {{form.input value=lsfid label="LSF-ID" type="number" required=true onChange=(action (mut lsfid))}}
+        </div>
+      </div>
+    {{/card.content}}
+    {{#card.actions}}
+      {{#form.submit-button raised=true primary=true disabled=form.isInvalid}}Speichern{{/form.submit-button}}
+    {{/card.actions}}
+  {{/paper-form}}
 {{/paper-card}}
+
+{{#paper-card as |card|}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}
+        {{paper-icon "local library"}} Dozierende
+      {{/text.headline}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#card.content}}
+    {{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
+      {{#table.head as |head|}}
+        {{head.column}}
+        {{#head.column sortProp="givenname" }}Vorname{{/head.column}}
+        {{#head.column sortProp="surname" }}Nachname{{/head.column}}
+        {{#head.column sortProp="email" }}E-Mail{{/head.column}}
+        {{#head.column sortProp="lsfId" }}LSF-ID{{/head.column}}
+        {{#head.column sortProp="unreadcomplaintsCount²" }}ungelesene Nachrichten{{/head.column}}
+        {{#head.column}}Optionen{{/head.column}}
+      {{/table.head}}
+      {{#table.body as |body|}}
+        {{#each (sort-by table.sortDesc model) as |lec|}}
+          {{#body.row edit=true as |row|}}
+            {{#row.cell}}{{paper-icon "local library" }}{{/row.cell}}
+            {{#row.cell}}{{lec.givenname}}{{/row.cell}}
+            {{#row.cell}}{{lec.surname}}{{/row.cell}}
+            {{#row.cell}}{{lec.email}}{{/row.cell}}
+            {{#row.cell}}{{lec.lsfid}}{{/row.cell}}
+            {{#row.cell}}{{lec.unreadcomplaintsCount}}{{/row.cell}}
+            {{#row.cell edit=true as |cell|}}
+              {{#paper-button iconButton=true onClick=(action "editLecturer" lec)}}{{paper-icon "edit"}}{{/paper-button}}
+              {{#paper-button iconButton=true onClick=(action "deleteLecturer" lec)}}{{paper-icon "delete"}}{{/paper-button}}
+            {{/row.cell}}
+          {{/body.row}}
+        {{/each}}
+      {{/table.body}}
+    {{/paper-data-table}}
+  {{/card.content}}
+{{/paper-card}}
+{{#if showEditLecturerDialog}}{{edit-lecturer-dialog model=model closeDialog=(action "closeEditDialog") lecturer=currentLecturer}}{{/if}}
+{{#if showDeleteLecturerDialog}}{{delete-dependency-dialog store=store closeDialog=(action "closeDeleteLecturerDialog") objekt=currentLecturer}}{{/if}}

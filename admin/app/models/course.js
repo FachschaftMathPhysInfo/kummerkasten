@@ -6,11 +6,11 @@ export default DS.Model.extend({
   name:attr('string'),
   faculty:belongsTo('faculty'),
   coursetype:belongsTo('coursetype'),
-  createdAt:attr('date'),
   lecturers:hasMany('lecturer'),
   semester:belongsTo('semester'),
   lecturernames:attr('string'),
   facultyname:attr('string'),
+  semestername:attr('string'),
   lsfId:attr('number'),
   complaintCount:attr('number')
 });

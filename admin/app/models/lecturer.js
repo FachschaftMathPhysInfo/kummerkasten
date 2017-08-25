@@ -10,5 +10,8 @@ export default DS.Model.extend({
   //readcomplaints:hasMany('complaint'),
   //complaints:hasMany('complaint'),
   courses:hasMany('course'),
-  lsfId:attr('number')
+  lsfId:attr('number'),
+  name:Ember.computed('surname','givenname',function(){
+    return this.get('givenname')+" "+this.get('surname');
+  })
 });

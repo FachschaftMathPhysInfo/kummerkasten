@@ -8,4 +8,11 @@ class LecturerResource < BaseResource
   def unreadcomplaints_count
     @model.unreadcomplaints.size
   end
+
+    def self.updatable_fields(context)
+      super - [:unreadcomplaints_count]
+    end
+    def self.creatable_fields(context)
+      super - [:unreadcomplaints_count]
+    end
 end

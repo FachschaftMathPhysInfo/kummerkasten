@@ -16,6 +16,18 @@ md-tabs.md-default-theme .md-tab, md-tabs .md-tab{
     color: #{map-get($accent, '100')};
 }
 
+.md-warn{
+  color: #f44336;
+}
+
+.space-around{
+  justify-content: space-around;
+}
+
+md-chips{
+  width: 100%
+}
+
 md-input-container{
   width: 100%;
 }
