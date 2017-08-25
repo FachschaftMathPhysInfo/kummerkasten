@@ -175,7 +175,7 @@ PLATFORMS
 DEPENDENCIES
   byebug
   devise
-  ember-cli-rails (~> 0.8.0)
+  ember-cli-rails
   faker
   jsonapi-authorization (~> 1.0.0.alpha5)
   jsonapi-resources

@@ -1,4 +1,17 @@
+{{#paper-toolbar}}
+   {{#paper-toolbar-tools}}
+    {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
+            {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+      {{paper-icon icon="menu"}}
+      {{/paper-button}}
+    {{/paper-sidenav-toggle}}
+     <h2>Kommentare freischalten</h2>
+     <span class="flex"></span>
+   {{/paper-toolbar-tools}}
+ {{/paper-toolbar}}
+ {{#paper-content}}
 {{#each model as |complaint|}}
 {{complaint-editor complaint=complaint onApprove=(action "onApprove" complaint) onDismiss=(action "onDismiss" complaint)}}
 {{/each}}
 {{outlet}}
+{{/paper-content}}
