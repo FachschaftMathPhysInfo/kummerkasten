@@ -1,13 +1,25 @@
-{{#paper-tabs primary=true borderBottom=true as |tabs|}}
-  {{#tabs.tab href=(href-to "management.general.index")}}
+{{#paper-toolbar}}
+   {{#paper-toolbar-tools}}
+    {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
+            {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+      {{paper-icon icon="menu"}}
+      {{/paper-button}}
+    {{/paper-sidenav-toggle}}
+     <h2>Verwaltung {{paper-icon "chevron right"}} Allgemein</h2>
+     <span class="flex"></span>
+   {{/paper-toolbar-tools}}
+ {{/paper-toolbar}}
+
+{{#paper-tabs selected=currentRouteName primary=true borderBottom=true as |tabs|}}
+  {{#tabs.tab value="management.general.index" href=(href-to "management.general.index")}}
     Semester
   {{/tabs.tab}}
-  {{#tabs.tab href=(href-to "management.general.faculties")}}
+  {{#tabs.tab value="management.general.faculties" href=(href-to "management.general.faculties")}}
     Fakultäten
   {{/tabs.tab}}
-  {{#tabs.tab href=(href-to "management.general.coursetypes")}}
+  {{#tabs.tab value="management.general.coursetypes" href=(href-to "management.general.coursetypes")}}
     Veranstaltungstypen
   {{/tabs.tab}}
 {{/paper-tabs}}
 
-{{liquid-outlet class="md-padding"}}
+{{liquid-outlet class="md-padding overflow-y-scroll"}}

@@ -15,9 +15,15 @@ flex-layout="column" flex=true }}
   {{#paper-content padding=false}}
     {{#paper-list}}
       {{#menu-item active=(is-active "index" currentRouteName) onClick=(transition-to "index")}}{{paper-icon "home" class="site-nav-icon"}}Startseite{{/menu-item}}
-      {{#menu-item onClick=(transition-to "inbox") active=(is-active "inbox" currentRouteName)}}{{paper-icon "toc" class="site-nav-icon"}}Übersicht{{/menu-item}}
-
-
+      {{#menu-item onClick=(transition-to "approve") active=(is-active "inbox" currentRouteName)}}{{paper-icon "done all" class="site-nav-icon"}}Übersicht{{/menu-item}}
+      {{#menu-item onClick=(action (toggle "menuExpanded" this)) expanded=menuExpanded canExpand=true}}{{paper-icon "settings" class="site-nav-icon"}}Management{{/menu-item}}
+<div class="submenu">
+{{#liquid-if menuExpanded}}
+        {{#submenu-item active=(is-active "management.general" currentRouteName) onClick=(transition-to "management.general")}}{{paper-icon "account balance" class="site-nav-icon"}}Allgemein{{/submenu-item}}
+        {{#submenu-item active=(is-active "management.courses" currentRouteName) onClick=(transition-to "management.courses")}}{{paper-icon "rate review" class="site-nav-icon"}}Kurse{{/submenu-item}}
+        {{#submenu-item active=(is-active "management.lecturers" currentRouteName) onClick=(transition-to "management.lecturers")}}{{paper-icon "local library" class="site-nav-icon"}}Dozierende{{/submenu-item}}
+  {{/liquid-if}} </div>
+{{#menu-item onClick=(transition-to "import") active=(is-active "import" currentRouteName)}}{{paper-icon "cloud download" class="site-nav-icon"}}Import{{/menu-item}}
     {{/paper-list}}
   {{/paper-content}}
 {{/paper-sidenav}}
