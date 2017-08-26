@@ -1,0 +1,24 @@
+{{#paper-toolbar}}
+   {{#paper-toolbar-tools}}
+    {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
+            {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+      {{paper-icon icon="menu"}}
+      {{/paper-button}}
+    {{/paper-sidenav-toggle}}
+     <h2>Kommentare freischalten</h2>
+     <span class="flex"></span>
+   {{/paper-toolbar-tools}}
+ {{/paper-toolbar}}
+ {{#paper-tabs selected=currentRouteName primary=true borderBottom=true as |tabs|}}
+   {{#tabs.tab value="review.index" href=(href-to "review.index")}}
+     Unbearbeite
+   {{/tabs.tab}}
+   {{#tabs.tab value="review.approved" href=(href-to "review.approved")}}
+     Angenommene
+   {{/tabs.tab}}
+   {{#tabs.tab value="review.disapproved" href=(href-to "review.disapproved")}}
+     Abgelehnte
+   {{/tabs.tab}}
+ {{/paper-tabs}}
+
+ {{liquid-outlet class="md-padding overflow-y-scroll"}}

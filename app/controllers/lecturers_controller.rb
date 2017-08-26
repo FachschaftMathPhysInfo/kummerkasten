@@ -1,5 +1,5 @@
 class LecturersController < ApplicationController
-  before_action :authenticate_lecturer!
+  before_action :authenticate_lecturer!, only: [:me]
   def me
     a=Object.new
     ob= current_lecturer

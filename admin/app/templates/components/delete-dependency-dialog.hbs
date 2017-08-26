@@ -1,0 +1,49 @@
+{{#paper-dialog class="flex-77" onClose=(action "exitDialog" "cancel") origin=dialogOrigin clickOutsideToClose=true}}
+  {{#paper-toolbar}}
+    {{#paper-toolbar-tools}}
+      <h2>{{elemente}} <strong>{{objekt.name}}</strong> löschen?</h2>
+      <span class="flex"></span>
+      {{#paper-button iconButton=true onClick=(action "exitDialog" "cancel")}}{{paper-icon icon="close"}}{{/paper-button}}
+    {{/paper-toolbar-tools}}
+  {{/paper-toolbar}}
+
+  {{#paper-dialog-content}}
+    <div class="flex layout-column">
+      <p class="md-warn md-button">ACHTUNG !</p>
+      <p> Aufgrund von Verweisen müssten beim Löschen {{dieseselements}} - <strong>{{objekt.name}}</strong> - folgende Änderungen an den Lehrveranstaltungen vorgenommen werden: </p>        <br>
+        {{#paper-data-table sortProp="semester.year" sortDir="desc" selectable=true as |table|}}
+          {{#table.head as |head|}}
+            {{#unless (eq objekttyp "semester")}}{{#head.column}}Semester{{/head.column}}{{/unless}}
+            {{#head.column}}Name{{/head.column}}
+            {{#unless (eq objekttyp "faculty")}}{{#head.column}}Fakultät{{/head.column}}{{/unless}}
+            {{#head.column}}Dozierende{{/head.column}}
+            {{#head.column}}Änderung{{/head.column}}
+          {{/table.head}}
+          {{#table.body as |body|}}
+            {{#each (sort-by table.sortDesc objekt.courses) as |course|}}
+              {{#body.row edit=true as |row|}}
+              {{#unless (eq objekttyp "semester")}}{{#row.cell}}{{course.semester.name}}{{/row.cell}}{{/unless}}
+                {{#row.cell}}{{course.name}}{{/row.cell}}
+                {{#unless (eq objekttyp "faculty")}}{{#row.cell}}{{course.faculty.name}}{{/row.cell}}{{/unless}}
+                {{#row.cell}}
+                  {{#each course.lecturers as |lec index|}}
+                    {{if index ", "}}{{lec.surname}}
+                  {{/each}}
+                {{/row.cell}}
+                {{#row.cell}}
+                  {{#if (compute (action "multiple") course)}}{{elemente}} aus Liste entfernen{{/if}}
+                  {{#unless (compute (action "multiple") course)}}Bericht löschen{{/unless}}
+                {{/row.cell}}
+              {{/body.row}}
+            {{/each}}
+          {{/table.body}}
+        {{/paper-data-table}}
+    </div>
+  {{/paper-dialog-content}}
+  {{#paper-dialog-actions class="layout-row"}}
+    <span class="flex"></span>
+    {{#paper-button onClick=(action "exitDialog" "ok")}}OK{{/paper-button}}
+    {{#paper-button onClick=(action "exitDialog" "cancel")}}Abbrechen{{/paper-button}}
+  {{/paper-dialog-actions}}
+{{/paper-dialog}}
+{{yield}}

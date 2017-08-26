@@ -1,0 +1,28 @@
+{{#paper-card as |card|}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}{{complaint.course.name}}{{/text.headline}}
+      {{#text.subhead}}{{moment-format complaint.createdAt "DD.MM.YYYY"}}{{/text.subhead}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#card.content}}
+    {{simple-mde-preview complaint.message}}
+    {{#if complaint.approved}}
+      {{#paper-list}}
+      {{#paper-subheader}}Leser{{/paper-subheader}}
+      {{#each complaint.readers as |reader|}}
+      {{#paper-item class="md-2-line"}}
+      <div class="md-list-item-text">
+      <h3>{{reader.givenname}} {{reader.surname}}</h3>
+      <h4>{{reader.email}}</h4>
+    </div>
+      {{/paper-item}}
+      {{/each}}
+      {{/paper-list}}
+    {{/if}}
+  {{/card.content}}
+  {{#card.actions}}
+    {{#paper-button warn=true onClick=onDismiss disabled=(not complaint.approved)}}Ablehnen{{/paper-button}}
+    {{#paper-button accent=true onClick=onApprove disabled=complaint.approved}}Akzeptieren{{/paper-button}}
+  {{/card.actions}}
+{{/paper-card}}

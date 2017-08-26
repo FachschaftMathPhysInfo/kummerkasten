@@ -1,0 +1,49 @@
+{{#paper-toolbar}}
+   {{#paper-toolbar-tools}}
+    {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
+            {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+      {{paper-icon icon="menu"}}
+      {{/paper-button}}
+    {{/paper-sidenav-toggle}}
+     <h2>Veranstaltungen importieren</h2>
+     <span class="flex"></span>
+   {{/paper-toolbar-tools}}
+ {{/paper-toolbar}}
+ {{#paper-content}}
+{{#paper-card as |card|}}
+  {{#card.title as |title|}}
+    {{#title.text as |text|}}
+      {{#text.headline}}Veranstaltungen importieren{{/text.headline}}
+      {{#text.subhead}}aus dem LSF{{/text.subhead}}
+    {{/title.text}}
+  {{/card.title}}
+  {{#paper-form onSubmit=(action "startImporting") as |form|}}
+  {{#card.content}}
+  <div class="layout-gt-xs-row space-around">
+    <div class="flex-gt-xs-60">
+      {{form.input required=true label="Fakultät"  value=faculty onChange=(action (mut faculty))}}
+    </div>
+    <div class="flex-gt-xs-30">
+      {{#form.select required=true label="Semester" options=model.semesters selected=selectedSemester onChange=(action (mut selectedSemester)) as |sem|}}
+        {{sem.name}}
+      {{/form.select}}
+    </div>
+  </div>
+    <p>
+      {{#paper-checkbox value=invite onChange=(action (mut invite))}}
+        Email-Einladungen versenden. <strong>Achtung:</strong> Überprüfe, ob du dies tuen willst. Es könnte nicht erlaubt sein.
+      {{/paper-checkbox}}
+    </p>
+    <p>
+      {{currentStatus}}
+    </p>
+  {{/card.content}}
+  {{#card.actions}}
+    {{#form.submit-button disabled=(or form.isInvalid importing)}} Importieren{{/form.submit-button}}
+  {{/card.actions}}
+  {{/paper-form}}
+  {{#if importing}}
+    {{paper-progress-linear}}
+  {{/if}}
+{{/paper-card}}
+{{/paper-content}}
