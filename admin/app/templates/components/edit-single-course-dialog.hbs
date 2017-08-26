@@ -11,21 +11,21 @@
 
       {{form.input value=course.name label="Name" required=true onChange=(action (mut course.name))}}
 
-      {{form.input value=course.lsfId type="number" label="LSF-ID" required=true onChange=(action (mut course.lsfId))}}
+      {{form.input value=course.lsfid type="number" label="LSF-ID" required=true onChange=(action (mut course.lsfid))}}
 
-    {{#form.select required=true label="Veranstaltungstyp" options=model.coursetypes selected=course.coursetype onChange=(action (mut course.coursetype)) as |ct|}}
+    {{#form.select required=true label="Veranstaltungstyp" options=coursetypes selected=course.coursetype onChange=(action (mut course.coursetype)) as |ct|}}
     {{ct.name}}
     {{/form.select}}
 
-        {{#form.select required=true label="Fakultät" options=model.faculties selected=course.faculty onChange=(action (mut course.faculty)) as |fac|}}
+        {{#form.select required=true label="Fakultät" options=faculties selected=course.faculty onChange=(action (mut course.faculty)) as |fac|}}
         {{fac.name}}
         {{/form.select}}
 
-        {{#form.select required=true label="Semester" options=model.semesters selected=course.semester onChange=(action (mut course.semester)) as |sem|}}
+        {{#form.select required=true label="Semester" options=semesters selected=course.semester onChange=(action (mut course.semester)) as |sem|}}
         {{sem.name}}
         {{/form.select}}
 
-  {{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=course.lecturers options=model.lecturers requireMatch=true as |item|}}
+  {{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=course.lecturers options=lecturers requireMatch=true as |item|}}
                   <em>{{item.givenname}}</em> {{item.surname}}
                   {{/paper-chips}}
 {{/paper-dialog-content}}

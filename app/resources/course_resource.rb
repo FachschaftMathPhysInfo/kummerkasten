@@ -27,9 +27,13 @@ class CourseResource < BaseResource
   def self.creatable_fields(context)
     super - [:lecturernames,:facultyname,:semestername,:complaint_count]
   end
-  filters :coursesearch, :lecturers, :name, :semester
+  filters :coursesearch, :lecturers, :nameilike, :semester, :faculty, :semester, :lsf_id, :coursetype
   filter :coursesearch, apply: ->(records, value, _options) {
     value_regex = Array.wrap(value).join('|')
     records.joins(:lectures => :lecturer).where("name ~* ? OR lecturers.surname ~* ?",value_regex,value_regex).distinct
-}
+  }
+  filter :nameilike, apply: ->(records, value, _options) {
+    value_regex = Array.wrap(value).join('|')
+    records.where("name ~* ?",value_regex).distinct
+  }
 end

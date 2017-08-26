@@ -3,6 +3,7 @@ class ComplaintResource < BaseResource
   after_save :notify_lecturer
   has_one :course
   has_many :hasreads
+  has_many :readers
   has_many :lecturers
   filter :reviewed
   filter :read, apply: ->(records, value, _options) {

@@ -24,7 +24,7 @@
       {{form.input required=true label="Fakultät"  value=faculty onChange=(action (mut faculty))}}
     </div>
     <div class="flex-gt-xs-30">
-      {{#form.select required=true label="Semester" options=model selected=selectedSemester onChange=(action (mut selectedSemester)) as |sem|}}
+      {{#form.select required=true label="Semester" options=model.semesters selected=selectedSemester onChange=(action (mut selectedSemester)) as |sem|}}
         {{sem.name}}
       {{/form.select}}
     </div>

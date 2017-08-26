@@ -6,4 +6,6 @@ export default DS.Model.extend({
   course:belongsTo('course'),
   message:attr('string'),
   createdAt:attr('date'),
+  lecturers:hasMany('lecturer'),
+  readers:hasMany('lecturer')
 });

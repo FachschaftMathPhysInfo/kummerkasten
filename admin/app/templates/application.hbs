@@ -15,7 +15,7 @@ flex-layout="column" flex=true }}
   {{#paper-content padding=false}}
     {{#paper-list}}
       {{#menu-item active=(is-active "index" currentRouteName) onClick=(transition-to "index")}}{{paper-icon "home" class="site-nav-icon"}}Startseite{{/menu-item}}
-      {{#menu-item onClick=(transition-to "approve") active=(is-active "inbox" currentRouteName)}}{{paper-icon "done all" class="site-nav-icon"}}Übersicht{{/menu-item}}
+      {{#menu-item onClick=(transition-to "approve") active=(is-active "inbox" currentRouteName)}}{{paper-icon "done all" class="site-nav-icon"}}Überprüfung{{/menu-item}}
       {{#menu-item onClick=(action (toggle "menuExpanded" this)) expanded=menuExpanded canExpand=true}}{{paper-icon "settings" class="site-nav-icon"}}Management{{/menu-item}}
 <div class="submenu">
 {{#liquid-if menuExpanded}}
