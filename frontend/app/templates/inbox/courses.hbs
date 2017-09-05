@@ -14,4 +14,13 @@ Semester: {{c.semester.name}}, Kurstyp: {{c.coursetype.name}}, Fakultät: {{c.fa
   {{#paper-button href="mailto:fachschaft@mathphys.stura.uni-heidelberg.de" warn=true}}Fehler melden{{/paper-button}}
 {{/card.actions}}
 {{/paper-card}}
+{{else}}
+{{#paper-card as |card|}}
+{{#card.content}}
+Für Sie sind zur Zeit keine Veranstaltungen eingetragen.
+{{/card.content}}
+{{#card.actions}}
+  {{#paper-button href="mailto:fachschaft@mathphys.stura.uni-heidelberg.de" warn=true}}Fehler melden{{/paper-button}}
+{{/card.actions}}
+{{/paper-card}}
 {{/each}}
