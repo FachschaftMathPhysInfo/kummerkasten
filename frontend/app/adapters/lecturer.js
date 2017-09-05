@@ -6,6 +6,10 @@ export default ApplicationAdapter.extend({
       delete query.me;
       return `${this._super(...arguments)}/me`;
     }
+    if (query.reset) {
+      delete query.reset;
+      return `${this._super(...arguments)}/reset`;
+    }
 
     return this._super(...arguments);
   }

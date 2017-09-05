@@ -45,7 +45,7 @@ gem 'jsonapi-resources'
 gem 'pundit'
 gem 'jsonapi-authorization','~> 1.0.0.alpha5'
 gem 'faker'
-gem "ember-cli-rails"
+gem "ember-cli-rails", github: "thoughtbot/ember-cli-rails", branch: "master"
 gem 'rails-erd', require: false, group: :development
 gem 'devise'
 gem 'simple_token_authentication'

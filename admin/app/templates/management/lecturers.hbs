@@ -19,12 +19,13 @@
   {{/card.title}}
   {{#paper-form onSubmit=(action "saveLecturer") as |form|}}
     {{#card.content}}
+    <div class="layout-column">
       <div class="layout-gt-xs-row layout-wrap space-around">
         <div class="flex-gt-xs-45">
-          {{form.input value=surname label="Vorname" required=true onChange=(action (mut givenname))}}
+          {{form.input value=givenname label="Vorname" required=true onChange=(action (mut givenname))}}
         </div>
         <div class="flex-gt-xs-45">
-          {{form.input value=givenname label="Nachname" required=true onChange=(action (mut surname))}}
+          {{form.input value=surname label="Nachname" required=true onChange=(action (mut surname))}}
         </div>
       </div>
       <div class="layout-gt-xs-row layout-wrap space-around">
@@ -37,7 +38,11 @@
         <div class="flex-gt-xs-30">
           {{form.input value=lsfid label="LSF-ID" type="number" required=true onChange=(action (mut lsfid))}}
         </div>
+        {{#paper-checkbox value=invite onChange=(action (mut invite))}}
+        Einladung per EMail versenden.
+        {{/paper-checkbox}}
       </div>
+    </div>
     {{/card.content}}
     {{#card.actions}}
       {{#form.submit-button raised=true primary=true disabled=form.isInvalid}}Speichern{{/form.submit-button}}
@@ -76,6 +81,7 @@
             {{#row.cell edit=true as |cell|}}
               {{#paper-button iconButton=true onClick=(action "editLecturer" lec)}}{{paper-icon "edit"}}{{/paper-button}}
               {{#paper-button iconButton=true onClick=(action "deleteLecturer" lec)}}{{paper-icon "delete"}}{{/paper-button}}
+              {{#paper-button iconButton=true onClick=(action "resendPasswordtoLecturer" lec)}}{{paper-icon "fingerprint"}}{{#paper-tooltip position="left"}}Passwort ändern und zusenden{{/paper-tooltip}}{{/paper-button}}
             {{/row.cell}}
           {{/body.row}}
         {{/each}}

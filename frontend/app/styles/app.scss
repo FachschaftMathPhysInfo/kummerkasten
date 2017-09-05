@@ -6,6 +6,13 @@ $accent: $color-secondary;
 @import 'menu';
 $warn: 'pink';
 
+md-tabs.md-default-theme .md-tab.md-active, md-tabs.md-default-theme .md-tab.md-active md-icon, md-tabs.md-default-theme .md-tab.md-focused, md-tabs.md-default-theme .md-tab.md-focused md-icon, md-tabs .md-tab.md-active, md-tabs .md-tab.md-active md-icon, md-tabs .md-tab.md-focused, md-tabs .md-tab.md-focused md-icon{
+  color: #{map-get($accent, 'A200')};
+}
+
+md-tabs.md-default-theme .md-tab, md-tabs .md-tab{
+    color: #{map-get($accent, '100')};
+}
 
 body > [class="ember-view"] {
   max-width: 100%;
