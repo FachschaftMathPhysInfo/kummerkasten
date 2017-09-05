@@ -1,0 +1,17 @@
+{{#each currentUser.user.courses as |c|}}
+{{#paper-card as |card|}}
+{{#card.title as |title|}}
+{{#title.text as |text|}}
+{{#text.headline}}
+{{c.name}}
+{{/text.headline}}
+{{#text.subhead}}
+Semester: {{c.semester.name}}, Kurstyp: {{c.coursetype.name}}, Fakultät: {{c.faculty.name}}
+{{/text.subhead}}
+{{/title.text}}
+{{/card.title}}
+{{#card.actions}}
+  {{#paper-button href="mailto:fachschaft@mathphys.stura.uni-heidelberg.de" warn=true}}Fehler melden{{/paper-button}}
+{{/card.actions}}
+{{/paper-card}}
+{{/each}}

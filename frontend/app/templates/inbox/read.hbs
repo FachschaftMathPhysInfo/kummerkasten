@@ -10,5 +10,11 @@
       {{simple-mde-preview complaint.message}}
       {{/card.content}}
     {{/paper-card}}
+    {{else}}
+    {{#paper-card as |card|}}
+      {{#card.content}}
+      Sie haben keinen gelesenen Kummer.
+      {{/card.content}}
+    {{/paper-card}}
   {{/each}}
   {{outlet}}

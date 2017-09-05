@@ -1,15 +1,8 @@
 class LecturersController < ApplicationController
   before_action :authenticate_lecturer!, only: [:me,:update_password]
   def me
-    a=Object.new
     ob= current_lecturer
-    class << a
-      attr_accessor :type,:attributes,:id
-    end
-    a.attributes=ob
-    a.type="lecturers"
-    a.id=ob.id
-    render json: {data:a}
+    render json: JSONAPI::ResourceSerializer.new(LecturerResource).serialize_to_hash(LecturerResource.new(ob, nil))
   end
   def reset
     l= Lecturer.find(params["id"])
