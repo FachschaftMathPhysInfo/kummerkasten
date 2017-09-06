@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   cableService: Ember.inject.service('cable'),
   setupConsumer: Ember.on('init', function() {
-   var consumer = this.get('cableService').createConsumer('ws://localhost:3000/cable');
+   var consumer = this.get('cableService').createConsumer('ws://'+window.location.host+'/cable');
    this.subscription = consumer.subscriptions.create("StatisticsChannel" , {
      received: (data) => {
        console.log(data);
