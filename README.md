@@ -1,24 +1,45 @@
-# README
+# Kummerkasten
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# Requirements
 
-Things you may want to cover:
+## Ruby version
+The recommended software versions are
+  - rails `>=5.1`
+  - ruby `>=2.3`
+  - node `>=7`
 
-* Ruby version
+## System dependencies
+You should have the following packages installed (see Dockerfile)
+  - `build-essential`
+  - `nodejs`
+  - `npm`
+  - `libpq-dev`
+  - `wget`
+  - `git`
+  - `cron`
 
-* System dependencies
+You should provide a redis instance and an SMTP server.
 
-* Configuration
+We strongly recommend using the Docker--approach:
 
-* Database creation
+# Installation
+## Non-Docker (Development environment)
 
-* Database initialization
+1. Install all needed packages (see above)
+2. Install and start an redis instance: https://redis.io/topics/quickstart
+3. Clone this repository
+4. set the needed environment variables(use `source development.sh` for a quickstart)
+5. Create the needed database: `rake db:create db:migrate`
+6. Precompile the assets: `rake assets:precompile`
+7. Start the engines: `rails s`
 
-* How to run the test suite
+## Docker
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+1. Have an running instance of redis-server and postgresql
+2. Edit the `development.env` accordingly
+3. Build the docker-image `docker build .`
+4. Create the docker container: `docker create --env-file=development.env --name kummerkasten -p 3008:3000 <hash of the image>`
+5. Start the container `docker start kummerkasten`
+6. Create the database, if needed, `docker exec kummerkasten bundle exec rake db:create`
+7. Migrate the database, if needed, `docker exec kummerkasten bundle exec rake db:migrate`
+8. Done! Visit `localhost:3008`

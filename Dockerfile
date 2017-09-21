@@ -4,7 +4,7 @@ LABEL vendor="Fachschaft MathPhys"
 MAINTAINER Henrik Reinstädtler <henrik@mathphys.fsk.uni-heidelberg.de>
 
 RUN apt-get update && apt-get install -qq -y --no-install-recommends \
-build-essential  nodejs npm libpq-dev wget git
+build-essential  nodejs npm libpq-dev wget git cron
 
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 #update nodejs
@@ -25,3 +25,6 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install --binstubs
 #und den rest kopieren
 COPY . .
+ENV RAILS_ENV production
+RUN RAILS_ENV=production PRODUCTION_DATABASE_ADAPTER="postgresql" bundle exec rake assets:precompile
+CMD whenever --update-crontab & rails s

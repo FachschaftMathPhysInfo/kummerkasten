@@ -1,6 +1,6 @@
 redis: &redis
   adapter: redis
-  url: redis://localhost:6379/1
+  url: <%= ENV['PRODUCTION_REDIS_URL'] %>
 
 production: *redis
 development: *redis

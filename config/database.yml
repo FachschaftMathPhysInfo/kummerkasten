@@ -12,9 +12,8 @@ test:
   database: kummerkasten_test
 production:
   <<: *default
-  url: <%= ENV['PRODUCTION_DATABASE_URL'] %>
+  host: <%= ENV['PRODUCTION_DATABASE_HOST'] %>
+  port: <%= ENV['PRODUCTION_DATABASE_PORT'] %>
   database: <%= ENV['PRODUCTION_DATABASE_DATABASE'] %>
   username: <%= ENV['PRODUCTION_DATABASE_USERNAME'] %>
   password: <%= ENV['PRODUCTION_DATABASE_PASSWORD'] %>
-  host: <%= ENV['PRODUCTION_DATABASE_HOST'] %>
-  port: <%= ENV['PRODUCTION_DATABASE_PORT'] %>
