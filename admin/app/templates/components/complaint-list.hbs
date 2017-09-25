@@ -1,0 +1,70 @@
+{{#paper-card as |card|}}
+  {{#card.actions}}
+    {{paper-data-paginator
+limit=limit
+limitOptions=limitOptions
+page=page
+pages=pages
+onChangePage=(action (mut page))
+onChangeLimit=(action (mut limit))
+onIncrementPage=(action 'incrementPage')
+onDecrementPage=(action 'decrementPage')}}
+  {{/card.actions}}
+  {{#if loading}}
+    {{paper-progress-linear}}
+  {{/if}}
+{{/paper-card}}
+
+{{#each complaints as |complaint|}}
+  {{#paper-expansion-panel as |panel|}}
+    {{#panel.collapsed}}
+      <div class="md-panel-title">{{moment-format complaint.createdAt "DD.MM.YYYY HH:MM"}} Uhr</div>
+      <div class="md-panel-summary">{{first-line complaint.message }}</div>
+      {{paper-icon "keyboard_arrow_down"}}
+    {{/panel.collapsed}}
+    {{#panel.expanded as |expanded|}}
+      {{#expanded.header}}
+        <div class="md-panel-title">{{moment-format complaint.createdAt "DD.MM.YYYY HH:mm"}} Uhr</div>
+        <div class="md-panel-summary"></div>
+        {{paper-icon "keyboard_arrow_up"}}
+      {{/expanded.header}}
+      {{#expanded.content}}
+        <div class="layout-row">
+          <div class="flex-gt-xs-50">
+            {{simple-mde-preview complaint.message}}
+          </div>
+          <div style="border-left-style: solid;" class="flex-gt-xs-50">
+            <ul list-style-stype=circle>
+              <li>
+                <strong>Status:</strong>&nbsp;
+                {{#if complaint.reviewed}}
+                  {{#if complaint.approved}}angenommen{{else}}zurückgewiesen{{/if}}{{else}}noch ungeprüft{{/if}}
+                <br>
+                {{#paper-button warn=true disabled=(and (not complaint.approved) complaint.reviewed) onClick=(action "reject" complaint)}}
+                  Ablehnen
+                {{/paper-button}}
+                {{#paper-button accent=true disabled=(and complaint.reviewed complaint.approved) onClick=(action "approve" complaint)}}
+                  Akzeptieren
+                {{/paper-button}}
+              </li>
+              <li>zugehörige Dozierende:<br><br>
+                <ul list-style-type=circle>
+                  {{#each complaint.lecturers as |lec|}}
+                    <li>{{lec.givenname}} {{lec.surname}}:
+                      {{#if (has-read complaint lec)}}gelesen{{else}}ungelesen{{/if}}
+                    </li><br>
+                  {{/each}}
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      {{/expanded.content}}
+      {{#expanded.footer}}
+        <span class="flex"></span>
+        {{#paper-button onClick=(action panel.collapse)}}Schließen{{/paper-button}}
+      {{/expanded.footer}}
+    {{/panel.expanded}}
+  {{/paper-expansion-panel}}
+{{/each}}
