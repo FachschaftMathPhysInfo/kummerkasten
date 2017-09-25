@@ -17,7 +17,10 @@ Router.map(function() {
     this.route('courses');
   });
   this.route('import');
-  this.route('approve');
+  this.route('review', function() {
+    this.route('approved');
+    this.route('disapproved');
+  });
 });
 
 export default Router;

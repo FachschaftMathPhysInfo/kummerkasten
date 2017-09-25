@@ -1,137 +1,125 @@
 {{#paper-toolbar}}
-   {{#paper-toolbar-tools}}
+  {{#paper-toolbar-tools}}
     {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
-            {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
-      {{paper-icon icon="menu"}}
+      {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+        {{paper-icon icon="menu"}}
       {{/paper-button}}
     {{/paper-sidenav-toggle}}
-     <h2>Verwaltung {{paper-icon "chevron right"}} Kurse</h2>
-     <span class="flex"></span>
-   {{/paper-toolbar-tools}}
- {{/paper-toolbar}}
- {{#paper-content}}
-{{#paper-card as |card|}}
-{{#card.title as |title|}}
-  {{#title.text as |text|}}
-    {{#text.headline}}
-      Neue Veranstaltung anlegen:
-    {{/text.headline}}
-  {{/title.text}}
-{{/card.title}}
-{{#paper-form onSubmit=(action "saveCourse") as |form|}}
-  {{#card.content}}
-  <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
-      <div class="flex-gt-xs-40">
-    {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
-    </div>
-      <div class="flex-gt-xs-40">
-    {{form.input value=lsfid type="number" label="LSF-ID" required=true onChange=(action (mut lsfid))}}
-  </div>
+    <h2>Verwaltung {{paper-icon "chevron right"}} Kurse</h2>
+    <span class="flex"></span>
+  {{/paper-toolbar-tools}}
+{{/paper-toolbar}}
+{{#paper-content}}
+  {{#paper-card as |card|}}
+    {{#card.title as |title|}}
+      {{#title.text as |text|}}
+        {{#text.headline}} Neue Veranstaltung anlegen: {{/text.headline}}
+      {{/title.text}}
+    {{/card.title}}
+    {{#paper-form onSubmit=(action "saveCourse") as |form|}}
+      {{#card.content}}
+        <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+          <div class="flex-gt-xs-40">
+            {{form.input value=name label="Name" required=true onChange=(action (mut name))}}
+          </div>
+          <div class="flex-gt-xs-40">
+            {{form.input value=lsfid type="number" label="LSF-ID" required=true onChange=(action (mut lsfid))}}
+          </div>
 
-</div>
-<div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
-<div class="flex-gt-xs-30">
-  {{#form.select required=true label="Veranstaltungstyp" options=model.coursetypes selected=coursetype onChange=(action (mut coursetype)) as |ct|}}
-  {{ct.name}}
-  {{/form.select}}
-  </div>
-    <div class="flex-gt-xs-30">
-      {{#form.select required=true label="Fakultät" options=model.faculties selected=faculty onChange=(action (mut faculty)) as |fac|}}
-      {{fac.name}}
-      {{/form.select}}
-  </div>
-    <div class="flex-gt-xs-30">
-      {{#form.select required=true label="Semester" options=model.semesters selected=semester onChange=(action (mut semester)) as |sem|}}
-      {{sem.name}}
-      {{/form.select}}
-  </div>
-</div>
-<center>
-  <div class="layout-gt-xs-row flex-gt-xs-90 layout-wrap">
-{{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=selected_lecturers options=model.lecturers requireMatch=true as |item|}}
-                <em>{{item.givenname}}</em> {{item.surname}}
-                {{/paper-chips}}
-</div>
-</center>
-  {{/card.content}}
-  {{#card.actions}}
-    {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Speichern{{/form.submit-button}}
-  {{/card.actions}}
-{{/paper-form}}
-{{/paper-card}}
-{{#paper-card as |card|}}
-  {{#card.title as |title|}}
-    {{#title.text as |text|}}
-      {{#text.headline}}
-        {{paper-icon "search"}} Kurssuche
-      {{/text.headline}}
-    {{/title.text}}
-  {{/card.title}}
-  {{#card.content}}
-  <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
-      <div class="flex-gt-xs-40">
-    {{#paper-autocomplete
-        allowClear=true
-        selected=searchtemp
-        searchField="name"
-        searchText=(readonly nameSearchText)
-        labelPath="name"
-        onSearchTextChange=(action (mut nameSearchText))
-        search=(action "searchName")
-        placeholder="Nach Veranstaltungsname suchen"
-        loadingMessage="Durchsuche Veranstaltungen..."
-        noMatchesMessage="Oops, eine solche Veranstaltungsname existiert nicht."
-        onSelectionChange=(action (mut searchtemp)) as |course autocomplete|}}
-      <strong>{{paper-autocomplete-highlight
+        </div>
+        <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+          <div class="flex-gt-xs-30">
+            {{#form.select required=true label="Veranstaltungstyp" options=model.coursetypes selected=coursetype onChange=(action (mut coursetype)) as |ct|}}
+              {{ct.name}}
+            {{/form.select}}
+          </div>
+          <div class="flex-gt-xs-30">
+            {{#form.select required=true label="Fakultät" options=model.faculties selected=faculty onChange=(action (mut faculty)) as |fac|}}
+              {{fac.name}}
+            {{/form.select}}
+          </div>
+          <div class="flex-gt-xs-30">
+            {{#form.select required=true label="Semester" options=model.semesters selected=semester onChange=(action (mut semester)) as |sem|}}
+              {{sem.name}}
+            {{/form.select}}
+          </div>
+        </div>
+        <center>
+          <div class="layout-gt-xs-row flex-gt-xs-90 layout-wrap">
+            {{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=selected_lecturers options=model.lecturers requireMatch=true as |item|}}
+              <em>{{item.givenname}}</em> {{item.surname}}
+            {{/paper-chips}}
+          </div>
+        </center>
+      {{/card.content}}
+      {{#card.actions}}
+        {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Speichern{{/form.submit-button}}
+      {{/card.actions}}
+    {{/paper-form}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.title as |title|}}
+      {{#title.text as |text|}}
+        {{#text.headline}}
+          {{paper-icon "rate review"}} Kurse
+        {{/text.headline}}
+      {{/title.text}}
+    {{/card.title}}
+    {{#card.content}}
+      <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around">
+        <div class="flex-gt-xs-40">
+          {{#paper-autocomplete allowClear=true selected=searchtemp searchField="name" searchText=(readonly nameSearchText) labelPath="name" onSearchTextChange=(action (mut nameSearchText)) search=(action "searchName") placeholder="Nach Veranstaltungsname suchen"
+            loadingMessage="Durchsuche Veranstaltungen..." noMatchesMessage="Oops, eine solche Veranstaltungsname existiert nicht." onSelectionChange=(action (mut searchtemp)) as |course autocomplete|}}
+            <strong>{{paper-autocomplete-highlight
             label=course.name
             searchText=autocomplete.searchText
             flags="i"}}</strong>
-            {{/paper-autocomplete}}
-    </div>
-      <div class="flex-gt-xs-40">
-    {{paper-input value=searchLsfid type="number" label="LSF-ID" onChange=(action (mut searchLsfid))}}
-  </div>
+          {{/paper-autocomplete}}
+        </div>
+        <div class="flex-gt-xs-40">
+          {{paper-input value=searchLsfid type="number" label="LSF-ID" onChange=(action (mut searchLsfid))}}
+        </div>
 
-</div>
-<div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around; margin: 18px 0;">
-<div class="flex-gt-xs-30">
-  {{#paper-autocomplete  options=model.coursetypes allowClear=true searchText=(readonly coursetypeSearchText) onSearchTextChange=(action (mut coursetypeSearchText)) selected=searchCoursetype searchField="name" labelPath="name" placeholder="Suche nach Veranstaltungstyp" loadingMessage="Suche Veranstaltungstypen..."
-  noMatchesMessage="Es gibt keinen solchen Veranstaltungstypen" onSelectionChange=(action (mut searchCoursetype)) as |subject autocomplete|}}
-  {{paper-autocomplete-highlight
+      </div>
+      <div class="layout-gt-xs-row layout-wrap" style="justify-content: space-around; margin: 18px 0;">
+        <div class="flex-gt-xs-30">
+          {{#paper-autocomplete options=model.coursetypes allowClear=true searchText=(readonly coursetypeSearchText) onSearchTextChange=(action (mut coursetypeSearchText)) selected=searchCoursetype searchField="name" labelPath="name" placeholder="Suche nach Veranstaltungstyp"
+            loadingMessage="Suche Veranstaltungstypen..." noMatchesMessage="Es gibt keinen solchen Veranstaltungstypen" onSelectionChange=(action (mut searchCoursetype)) as |subject autocomplete|}}
+            {{paper-autocomplete-highlight
       label=subject.name
       searchText=autocomplete.searchText
       flags="i"}}
-{{/paper-autocomplete}}
-  </div>
-    <div class="flex-gt-xs-30">
-      {{#paper-autocomplete  options=model.faculties allowClear=true searchText=(readonly facultySearchText) onSearchTextChange=(action (mut facultySearchText)) selected=searchFaculty searchField="name" labelPath="name" placeholder="Suche nach Fakultäten" loadingMessage="Suche Faktultäten..."
-      noMatchesMessage="Es gibt keine solche Fakultät" onSelectionChange=(action (mut searchFaculty)) as |subject autocomplete|}}
-      {{paper-autocomplete-highlight
+          {{/paper-autocomplete}}
+        </div>
+        <div class="flex-gt-xs-30">
+          {{#paper-autocomplete options=model.faculties allowClear=true searchText=(readonly facultySearchText) onSearchTextChange=(action (mut facultySearchText)) selected=searchFaculty searchField="name" labelPath="name" placeholder="Suche nach Fakultäten" loadingMessage="Suche Faktultäten..."
+            noMatchesMessage="Es gibt keine solche Fakultät" onSelectionChange=(action (mut searchFaculty)) as |subject autocomplete|}}
+            {{paper-autocomplete-highlight
           label=subject.name
           searchText=autocomplete.searchText
           flags="i"}}
-    {{/paper-autocomplete}}
-  </div>
-    <div class="flex-gt-xs-30">
-      {{#paper-autocomplete  options=model.semesters allowClear=true searchText=(readonly semesterSearchText) onSearchTextChange=(action (mut semesterSearchText)) selected=searchSemester searchField="name" labelPath="name" placeholder="Suche nach Semestern" loadingMessage="Suche Semester..."
-      noMatchesMessage="Es gibt kein solches Semester" onSelectionChange=(action (mut searchSemester)) as |subject autocomplete|}}
-      {{paper-autocomplete-highlight
+          {{/paper-autocomplete}}
+        </div>
+        <div class="flex-gt-xs-30">
+          {{#paper-autocomplete options=model.semesters allowClear=true searchText=(readonly semesterSearchText) onSearchTextChange=(action (mut semesterSearchText)) selected=searchSemester searchField="name" labelPath="name" placeholder="Suche nach Semestern"
+            loadingMessage="Suche Semester..." noMatchesMessage="Es gibt kein solches Semester" onSelectionChange=(action (mut searchSemester)) as |subject autocomplete|}}
+            {{paper-autocomplete-highlight
           label=subject.name
           searchText=autocomplete.searchText
           flags="i"}}
-    {{/paper-autocomplete}}
-  </div>
-</div>
-<center>
-  <div class="layout-gt-xs-row flex-gt-xs-90 layout-wrap">
-{{#paper-chips readOnly=false removeItem=(action "removeLecturerfromSearch") addItem=(action "addLecturertoSearch") placeholder="nach Dozierenden suchen" content=searchLecturers options=model.lecturers requireMatch=true as |item|}}
-                <em>{{item.givenname}}</em> {{item.surname}}
-                {{/paper-chips}}
-</div>
-</center>
-  {{/card.content}}
-  {{#card.actions}}
-  {{paper-data-paginator
+          {{/paper-autocomplete}}
+        </div>
+      </div>
+      <center>
+        <div class="layout-gt-xs-row flex-gt-xs-90 layout-wrap">
+          {{#paper-chips readOnly=false removeItem=(action "removeLecturerfromSearch") addItem=(action "addLecturertoSearch") placeholder="nach Dozierenden suchen" content=searchLecturers options=model.lecturers requireMatch=true as |item|}}
+            <em>{{item.givenname}}</em> {{item.surname}}
+          {{/paper-chips}}
+        </div>
+      </center>
+    {{/card.content}}
+    {{#card.actions}}
+      {{paper-data-paginator
 limit=limit
 limitOptions=limitOptions
 page=page
@@ -140,42 +128,42 @@ onChangePage=(action (mut page))
 onChangeLimit=(action (mut limit))
 onIncrementPage=(action 'incrementPage')
 onDecrementPage=(action 'decrementPage')}}
-  {{/card.actions}}
-  {{#if loading}}
-    {{paper-progress-linear}}
-  {{/if}}
-{{/paper-card}}
-{{#paper-card as |card|}}
-  {{#card.content}}
-  {{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
-    {{#table.head as |head|}}
-      {{head.column}}
-      {{#head.column sortProp="semestername"}}Semester{{/head.column}}
-      {{#head.column sortProp="name"}}Name{{/head.column}}
-      {{#head.column sortProp="facultyname"}}Fakultät{{/head.column}}
-      {{#head.column sortProp="lecturernames"}}Dozierende{{/head.column}}
-      {{#head.column sortProp="complaintCount" }}Kommentare{{/head.column}}
-      {{#head.column}}Optionen{{/head.column}}
-    {{/table.head}}
-    {{#table.body as |body|}}
-      {{#each (sort-by table.sortDesc paginatedResults) as |cs|}}
-        {{#body.row onClick=(transition-to "management.course" cs) edit=true as |row|}}
-          {{#row.cell}}{{paper-icon "rate review" }}{{/row.cell}}
-          {{#row.cell}}{{cs.semestername}}{{/row.cell}}
-          {{#row.cell}}{{cs.name}}{{/row.cell}}
-          {{#row.cell}}{{cs.facultyname}}{{/row.cell}}
-          {{#row.cell}}{{cs.lecturernames}}{{/row.cell}}
-          {{#row.cell}}{{cs.complaintCount}}{{/row.cell}}
-          {{#row.cell edit=true as |cell|}}
-            {{#paper-button iconButton=true onClick=(action "editCourse" cs)}}{{paper-icon "edit"}}{{/paper-button}}
-            {{#paper-button iconButton=true onClick=(action "deleteCourse" cs)}}{{paper-icon "delete"}}{{/paper-button}}
-          {{/row.cell}}
-        {{/body.row}}
-      {{/each}}
-    {{/table.body}}
-  {{/paper-data-table}}
-  {{/card.content}}
-{{/paper-card}}
-{{#if showEditCourseDialog}}{{edit-course-dialog model=model closeDialog=(action "closeEditDialog") title='Bearbeite Veranstaltung' course=currentCourse}}{{/if}}
-{{#if showDeleteCourseDialog}}{{delete-course-dialog closeDialog=(action "closeDeleteCourseDialog") course=currentCourse}}{{/if}}
+    {{/card.actions}}
+    {{#if loading}}
+      {{paper-progress-linear}}
+    {{/if}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      {{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
+        {{#table.head as |head|}}
+          {{head.column}}
+          {{#head.column sortProp="semestername" }}Semester{{/head.column}}
+          {{#head.column sortProp="name" }}Name{{/head.column}}
+          {{#head.column sortProp="facultyname" }}Fakultät{{/head.column}}
+          {{#head.column sortProp="lecturernames" }}Dozierende{{/head.column}}
+          {{#head.column sortProp="complaintCount" }}Kommentare{{/head.column}}
+          {{#head.column}}Optionen{{/head.column}}
+        {{/table.head}}
+        {{#table.body as |body|}}
+          {{#each (sort-by table.sortDesc paginatedResults) as |cs|}}
+            {{#body.row onClick=(transition-to "management.course" cs) edit=true as |row|}}
+              {{#row.cell}}{{paper-icon "rate review" }}{{/row.cell}}
+              {{#row.cell}}{{cs.semestername}}{{/row.cell}}
+              {{#row.cell}}{{cs.name}}{{/row.cell}}
+              {{#row.cell}}{{cs.facultyname}}{{/row.cell}}
+              {{#row.cell}}{{cs.lecturernames}}{{/row.cell}}
+              {{#row.cell}}{{cs.complaintCount}}{{/row.cell}}
+              {{#row.cell edit=true as |cell|}}
+                {{#paper-button iconButton=true onClick=(action "editCourse" cs)}}{{paper-icon "edit"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "deleteCourse" cs)}}{{paper-icon "delete"}}{{/paper-button}}
+              {{/row.cell}}
+            {{/body.row}}
+          {{/each}}
+        {{/table.body}}
+      {{/paper-data-table}}
+    {{/card.content}}
+  {{/paper-card}}
+  {{#if showEditCourseDialog}}{{edit-course-dialog model=model closeDialog=(action "closeEditDialog") title='Bearbeite Veranstaltung' course=currentCourse}}{{/if}}
+  {{#if showDeleteCourseDialog}}{{delete-course-dialog closeDialog=(action "closeDeleteCourseDialog") course=currentCourse}}{{/if}}
 {{/paper-content}}

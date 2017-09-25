@@ -1,0 +1,71 @@
+{{#paper-toolbar}}
+  {{#paper-toolbar-tools}}
+    {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
+      {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+        {{paper-icon icon="menu"}}
+      {{/paper-button}}
+    {{/paper-sidenav-toggle}}
+    <h2>Startseite</h2>
+    <span class="flex"></span>
+  {{/paper-toolbar-tools}}
+{{/paper-toolbar}}
+{{#paper-content}}
+  {{#paper-card as |card|}}
+    {{#card.title as |title|}}
+      {{#title.text as |text|}}
+        {{#text.headline}}
+          Herzlich Willkommen!
+        {{/text.headline}}
+        {{#text.subhead}}im Verwaltungssystem des Kummerkastens{{/text.subhead}}
+      {{/title.text}}
+    {{/card.title}}
+    {{#card.content}}
+    Lieber Fachschafts-Mensch,
+    <p>
+      Danke, dass du dir die Zeit nimmst, den Kummer deiner Mitstudierenden
+      zu sichten. Dies kannst du unter "Überprüfung" tuen. Dort kannst du auch schon
+      freigeschaltete Kommentare nochmals überarbeiten.
+    </p>
+    <p>
+       Ansonsten gibt es die
+      Möglichkeit, die sonstigen Einstellungen zu bearbeiten oder zu importieren, schau einfach in die
+      Leiste links.
+    </p>
+    <p>
+      Dein <code>AK-Entwicklung</code>
+    </p>
+    {{/card.content}}
+  {{/paper-card}}
+  <div class="layout-row layout-wrap">
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      <h1><center>{{newcomplaints}}</center></h1> neue Kommentare in den letzten 24 Stunden.
+    {{/card.content}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      <h1><center>{{approvedcomplaints}}/{{reviewedcomplaints}}</center></h1>
+      freigeschaltete Kommentare.
+    {{/card.content}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      <h1><center>{{coursesize}}</center></h1>
+        Kurse
+    {{/card.content}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      <h1><center>{{lecturerssize}}</center></h1>
+      Dozierende
+    {{/card.content}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      <h1><center>{{facultiessize}}</center></h1>
+      Fakultäten
+    {{/card.content}}
+  {{/paper-card}}
+  {{outlet}}
+</div>
+{{/paper-content}}

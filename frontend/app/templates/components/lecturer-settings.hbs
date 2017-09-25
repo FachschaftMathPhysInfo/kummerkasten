@@ -1,4 +1,4 @@
-<div class="layout-gt-sm-row">
+<div class="layout-gt-sm-row layout-wrap">
   <div class="flex-50">
 
       <h2>Kommunikation</h2>
@@ -19,5 +19,15 @@
   {{#group.radio value="weekly" }} Wöchentliches Update, falls neuer Kummer hinzugekommen ist. {{/group.radio}}
   {{#group.radio value="never" warn=true}} Keine Benachrichtigungen {{/group.radio}}
 {{/paper-radio-group}}
+</div>
+<div class="flex-50">
+
+    <h2>Passwort</h2>
+<div class="flex-95 layout-column">
+{{paper-input type="password" value=current_password class="flex-30" label="aktuelles Passwort" onChange=(action (mut current_password))}}
+{{paper-input value=password type="password"  class="flex-30" label="Passwort" onChange=(action (mut password))}}
+{{paper-input type="password"  value=password_confirmation class="flex-30" label="Passwort wiederholen" onChange=(action (mut password_confirmation))}}
+</div>
+{{#paper-button warn=true onClick=(action "changePassword")}}Passwort ändern{{/paper-button}}
 </div>
 </div>

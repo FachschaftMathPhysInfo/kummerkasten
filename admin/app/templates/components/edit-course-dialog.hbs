@@ -10,7 +10,6 @@
   {{#paper-dialog-content}}
 
       {{form.input value=course.name label="Name" required=true onChange=(action (mut course.name))}}
-
       {{form.input value=course.lsfId type="number" label="LSF-ID" required=true onChange=(action (mut course.lsfId))}}
 
     {{#form.select required=true label="Veranstaltungstyp" options=model.coursetypes selected=course.coursetype onChange=(action (mut course.coursetype)) as |ct|}}

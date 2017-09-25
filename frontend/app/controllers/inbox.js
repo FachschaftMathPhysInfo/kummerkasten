@@ -4,6 +4,8 @@ export default Ember.Controller.extend({
   session:Ember.inject.service('session'),
   currentUser: Ember.inject.service('current-user'),
   paperToaster:Ember.inject.service(),
+   router: Ember.inject.service(),
+   currentRouteName: Ember.computed.reads('router.currentRouteName'),
   actions:{
     login:function(){
       let {email,password}=this.getProperties('email','password');

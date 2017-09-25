@@ -8,14 +8,15 @@
 flex-layout="column" flex=true }}
 {{#paper-toolbar tall=true as |toolbar|}}
   {{#paper-toolbar-tools}}<center>
-    <img style="margin: 20px" src="{{rootURL}}200w.gif" height="140px" width="140px"/><br/>
+    {{svg-jar "icon" width="140px" height="140px"}}<br/>
     KUMMERKASTEN
   </center>{{/paper-toolbar-tools}}
 {{/paper-toolbar}}
   {{#paper-content padding=false}}
     {{#paper-list}}
       {{#menu-item active=(is-active "index" currentRouteName) onClick=(transition-to "index")}}{{paper-icon "home" class="site-nav-icon"}}Startseite{{/menu-item}}
-      {{#menu-item onClick=(transition-to "approve") active=(is-active "inbox" currentRouteName)}}{{paper-icon "done all" class="site-nav-icon"}}Überprüfung{{/menu-item}}
+
+      {{#menu-item onClick=(transition-to "review") active=(is-active "review" currentRouteName)}}{{paper-icon "done all" class="site-nav-icon"}}Überprüfen{{/menu-item}}
       {{#menu-item onClick=(action (toggle "menuExpanded" this)) expanded=menuExpanded canExpand=true}}{{paper-icon "settings" class="site-nav-icon"}}Management{{/menu-item}}
 <div class="submenu">
 {{#liquid-if menuExpanded}}

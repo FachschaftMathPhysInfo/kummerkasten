@@ -7,7 +7,8 @@ class ImportNotificationsChannel < ApplicationCable::Channel
     puts "StartingImporting now"
     LSFParser.set_broadcast_status(true)
     ActionCable.server.broadcast 'import_notifications_channel',message: 'Starte Importiervorgang',importing:true
-    LSFParser.import_with_ids(options["faculty"],options["semester"],options["invite"])
+
+    LSFParser.import_with_ids(options["faculty"],options["term"],options["invite"])
   end
   def unsubscribed
     # Any cleanup needed when channel is unsubscribed

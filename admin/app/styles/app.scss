@@ -9,6 +9,7 @@ $accent: $color-secondary;
 $warn: 'pink';
 @import "ember-paper-expansion-panel";
 
+
 md-tabs.md-default-theme .md-tab.md-active, md-tabs.md-default-theme .md-tab.md-active md-icon, md-tabs.md-default-theme .md-tab.md-focused, md-tabs.md-default-theme .md-tab.md-focused md-icon, md-tabs .md-tab.md-active, md-tabs .md-tab.md-active md-icon, md-tabs .md-tab.md-focused, md-tabs .md-tab.md-focused md-icon{
   color: #{map-get($accent, 'A200')};
 }

@@ -3,9 +3,10 @@ class ComplaintResource < BaseResource
   after_save :notify_lecturer
   has_one :course
   has_many :hasreads
-  has_many :readers
+  has_many :readers, class:"Lecturer"
   has_many :lecturers
   filter :reviewed
+  filter :approved
   filter :read, apply: ->(records, value, _options) {
      return records.joins(:hasreads).where(hasreads: { lecturer: _options[:context][:user] })
   }

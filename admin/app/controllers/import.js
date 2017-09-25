@@ -7,7 +7,7 @@ export default Ember.Controller.extend({
   currentStatus:"Importiervorgang nicht gestartet",
   invite:false,
   setupConsumer: Ember.on('init', function() {
-   var consumer = this.get('cableService').createConsumer('ws://localhost:3000/cable');
+   var consumer = this.get('cableService').createConsumer('ws://'+window.location.host+'/cable');
    this.subscription = consumer.subscriptions.create("ImportNotificationsChannel" , {
      received: (data) => {
       this.set("currentStatus",data.message);
@@ -21,7 +21,8 @@ export default Ember.Controller.extend({
       return this.store.query('faculty', { filter: {name:text}});
     },
     startImporting(){
-      this.get("subscription").perform("start",{invite:this.get("invite"),faculty:this.get("selectedFaculty"),term:this.get("selectedTerm.lsf_id")});
+      this.get("subscription").perform("start",{invite:this.get("invite"),faculty:this.get("faculty"),term:this.get("selectedSemester.lsfId")});
+
     }
   }
 });

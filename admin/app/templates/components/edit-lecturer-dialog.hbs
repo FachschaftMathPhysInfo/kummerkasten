@@ -14,8 +14,7 @@
 
   {{form.input value=lecturer.email label="E-Mail" type="email" required=true onChange=(action (mut lecturer.email))}}
   {{form.input value=lecturer.salutation label="Anrede" required=true onChange=(action (mut lecturer.salutation))}}
-
-  {{form.input value=lecturer.lsfid label="LSF-ID" type="number" required=true onChange=(action (mut lecturer.lsfid))}}
+  {{form.input value=lecturer.lsfId label="LSF-ID" type="number" required=true onChange=(action (mut lecturer.lsfId))}}
 
   {{/paper-dialog-content}}
   {{#paper-dialog-actions class="layout-row"}}

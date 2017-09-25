@@ -41,14 +41,17 @@
   {{/paper-toolbar-tools}}
 {{/paper-toolbar}}
 {{#paper-content}}
-{{#paper-tabs primary=true borderBottom=true as |tabs|}}
-  {{#tabs.tab href=(href-to "inbox.index")}}
+{{#paper-tabs selected=currentRouteName primary=true borderBottom=true as |tabs|}}
+  {{#tabs.tab value="inbox.index" href=(href-to "inbox.index")}}
     Kummer
   {{/tabs.tab}}
-  {{#tabs.tab href=(href-to "inbox.read")}}
+  {{#tabs.tab value="inbox.read" href=(href-to "inbox.read")}}
     gelesene
   {{/tabs.tab}}
-  {{#tabs.tab href=(href-to "inbox.settings")}}
+  {{#tabs.tab value="inbox.courses" href=(href-to "inbox.courses")}}
+    Vorlesungen
+  {{/tabs.tab}}
+  {{#tabs.tab value="inbox.settings" href=(href-to "inbox.settings")}}
     Einstellungen
   {{/tabs.tab}}
 {{/paper-tabs}}

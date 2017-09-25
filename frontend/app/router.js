@@ -10,10 +10,10 @@ Router.map(function() {
   this.route('inbox', function() {
     this.route('read');
     this.route('settings');
+    this.route('courses');
   });
   this.route('login');
   this.route('/index');
-  this.route('inbox');
 });
 
 export default Router;

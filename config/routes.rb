@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     jsonapi_resources :coursetypes
     jsonapi_resources :faculties
     jsonapi_resources :hasreads
+    get '/lecturers/reset', to: 'lecturers#reset'
     jsonapi_resources :lecturers
     jsonapi_resources :lectures
     jsonapi_resources :semesters
@@ -19,6 +20,7 @@ Rails.application.routes.draw do
   jsonapi_resources :faculties
   jsonapi_resources :hasreads
   get '/lecturers/me', to: 'lecturers#me'
+  patch '/lecturers/update_password', to: 'lecturers#update_password'
   jsonapi_resources :lecturers
   jsonapi_resources :lectures
   jsonapi_resources :semesters
