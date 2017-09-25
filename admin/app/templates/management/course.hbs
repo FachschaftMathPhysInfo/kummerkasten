@@ -1,0 +1,107 @@
+{{#paper-toolbar}}
+   {{#paper-toolbar-tools}}
+    {{#paper-sidenav-toggle name="left2" as |toggleAction|}}
+            {{#paper-button classNames="hide-gt-sm" iconButton=true onClick=(action toggleAction)}}
+      {{paper-icon icon="menu"}}
+      {{/paper-button}}
+    {{/paper-sidenav-toggle}}
+     <h2>Verwaltung {{paper-icon "chevron right"}} Kurs {{paper-icon "chevron right"}} {{model.id}}</h2>
+     <span class="flex"></span>
+   {{/paper-toolbar-tools}}
+ {{/paper-toolbar}}
+ {{#paper-content}}
+{{#paper-card as |card|}}
+{{#card.title as |title|}}
+  {{#title.text as |text|}}
+    {{#text.headline}}
+      {{model.name}} - {{model.semester.name}} {{#paper-button iconButton=true onClick=(action "editButton")}}{{paper-icon "edit"}}{{/paper-button}}
+    {{/text.headline}}
+  {{/title.text}}
+{{/card.title}}
+
+{{#unless editable}}
+{{#card.content}}
+{{#paper-list}}
+{{#paper-item class="md-2-line" }}
+<div class="md-list-item-text layout-gt-xs-row space-around layout-wrap">
+  <div class="flex-gt-xs-70">
+        <strong>Name:</strong> {{model.name}}
+      </div>
+      <div class="flex-gt-xs-30">
+      <strong>Kurstyp:</strong> {{model.coursetype.name}}
+      </div>
+  </div>
+          {{/paper-item}}
+        {{paper-divider}}
+        {{#paper-item class="md-2-line" }}
+        <div class="md-list-item-text layout-gt-xs-row space-around layout-wrap">
+          <div class="flex-gt-xs-45">
+        <strong>Fakultät:</strong> {{model.faculty.name}}
+      </div>
+      <div class="flex-gt-xs-35">
+      <strong>Semester:</strong> {{model.semester.name}}
+    </div>
+      <div class="flex-gt-xs-20">
+        <strong>LSF-ID:</strong> {{model.lsfId}}
+      </div>
+    </div>
+          {{/paper-item}}
+        {{paper-divider}}
+        {{#paper-item class="md-2-line" }}
+        <div class="md-list-item-text layout-gt-xs-row layout-wrap">
+        <strong>Dozierende(s):</strong>&nbsp;{{#each model.lecturers as |lec index|}}{{if index ", "}}{{lec.givenname}} {{lec.surname}}{{/each}}
+      </div>
+          {{/paper-item}}
+        {{/paper-list}}
+        {{/card.content}}
+        {{#card.actions}}
+          {{#paper-button iconButton=true onClick=(action "editButton")}}{{paper-icon "edit"}}{{/paper-button}}
+          {{#paper-button iconButton=true onClick=(action (mut showDeleteCourseDialog))}}{{paper-icon "delete"}}{{/paper-button}}
+        {{/card.actions}}
+{{else}}
+{{#paper-form onSubmit=(action "exitEdit" "ok") as |form|}}
+{{#card.content}}
+<div class="layout-gt-xs-row space-around layout-wrap">
+  <div class="flex-gt-xs-70">
+    {{form.input value=model.name label="Name" required=true onChange=(action (mut model.name))}}
+  </div>
+  <div class="flex-gt-xs-30">
+    {{form.input value=model.lsfId type="number" label="LSF-ID" required=true onChange=(action (mut model.lsfId))}}
+  </div>
+</div>
+<div class="layout-gt-xs-row space-around layout-wrap">
+<div class="flex-gt-xs-35">
+  {{#form.select required=true label="Veranstaltungstyp" options=coursetypes selected=model.coursetype onChange=(action (mut model.coursetype)) as |ct|}}
+  {{ct.name}}
+  {{/form.select}}
+    </div>
+<div class="flex-gt-xs-35">
+      {{#form.select required=true label="Fakultät" options=faculties selected=model.faculty onChange=(action (mut model.faculty)) as |fac|}}
+      {{fac.name}}
+      {{/form.select}}
+        </div>
+<div class="flex-gt-xs-30">
+      {{#form.select required=true label="Semester" options=semesters selected=model.semester onChange=(action (mut model.semester)) as |sem|}}
+      {{sem.name}}
+      {{/form.select}}
+  </div>
+    </div>
+    <div class="layout-gt-xs-row space-around layout-wrap">
+{{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=model.lecturers options=lecturers requireMatch=true as |item|}}
+                <em>{{item.givenname}}</em> {{item.surname}}
+                {{/paper-chips}}
+              </div>
+{{/card.content}}
+{{#card.actions}}
+  <span class="layout-gt-xs-row layout-wrap space-around">
+  {{#paper-button onClick=(action "exitEdit" "cancel")}}Abbrechen{{/paper-button}}
+  {{#form.submit-button disabled=form.isInvalid}}Speichern{{/form.submit-button}}
+  </span>
+{{/card.actions}}
+{{/paper-form}}
+{{/unless}}
+        {{/paper-card}}
+        {{complaint-list complaints=model.complaints}}
+
+{{#if showDeleteCourseDialog}}{{delete-course-dialog closeDialog=(action "closeDeleteCourseDialog") course=model}}{{/if}}
+{{/paper-content}}

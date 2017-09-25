@@ -1,7 +1,6 @@
 redis: &redis
   adapter: redis
   url: <%= ENV['PRODUCTION_REDIS_URL'] %>
-
 production: *redis
 development: *redis
 test: *redis

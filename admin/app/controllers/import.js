@@ -21,8 +21,8 @@ export default Ember.Controller.extend({
       return this.store.query('faculty', { filter: {name:text}});
     },
     startImporting(){
-      console.log(this.get("selectedSemester"));
       this.get("subscription").perform("start",{invite:this.get("invite"),faculty:this.get("faculty"),term:this.get("selectedSemester.lsfId")});
+
     }
   }
 });

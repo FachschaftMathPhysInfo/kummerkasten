@@ -7,10 +7,8 @@ const Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-  this.route('/',function(){
-  this.route('index');
-});
   this.route('management', function() {
+    this.route('course',{ path: '/course/:id'});
     this.route('general', function() {
       this.route('faculties');
       this.route('coursetypes');

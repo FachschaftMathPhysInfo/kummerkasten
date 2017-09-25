@@ -10,11 +10,13 @@ class LecturerResource < BaseResource
   end
 
     def self.updatable_fields(context)
+
       super - [:unreadcomplaints_count,:password]
     end
     def self.creatable_fields(context)
       super - [:unreadcomplaints_count]
     end
+
   after_create :send_welcome
   def send_welcome
     if @model.invite
