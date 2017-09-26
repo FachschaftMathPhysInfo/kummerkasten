@@ -22,7 +22,7 @@
     {{/if}}
   {{/card.content}}
   {{#card.actions}}
-    {{#paper-button warn=true onClick=onDismiss disabled=(not complaint.approved)}}Ablehnen{{/paper-button}}
+    {{#paper-button warn=true onClick=onDismiss disabled=(and complaint.reviewed (not complaint.approved))}}Ablehnen{{/paper-button}}
     {{#paper-button accent=true onClick=onApprove disabled=complaint.approved}}Akzeptieren{{/paper-button}}
   {{/card.actions}}
 {{/paper-card}}

@@ -1,5 +1,5 @@
 class ComplaintResource < BaseResource
-  attributes :approved, :message, :reviewed
+  attributes :approved, :message, :reviewed, :created_at
   after_save :notify_lecturer
   has_one :course
   has_many :hasreads
@@ -13,6 +13,12 @@ class ComplaintResource < BaseResource
   filter :unread, apply: ->(records,value,_options) {
     return records.where.not(id:records.joins(:hasreads).where(hasreads:{lecturer:_options[:context][:user]}))
   }
+  def self.updatable_fields(context)
+    super - [:created_at]
+  end
+  def self.creatable_fields(context)
+    super - [:created_at]
+  end
   before_create do
     self.approved=false
     self.reviewed=false
