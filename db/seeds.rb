@@ -28,5 +28,5 @@ for i in 0..30
 end
 for i in 0..100
   Complaint.create!(message: Faker::Lorem.sentence, approved: false, course: Course.offset(rand(Course.count)).first)
-  HasRead.create!(lecturer: Lecturer.offset(rand(Lecturer.count)).first, complaint: Complaint.offset(rand(Complaint.count)).first)
+  Hasread.create!(lecturer: Lecturer.offset(rand(Lecturer.count)).first, complaint: Complaint.offset(rand(Complaint.count)).first)
 end
