@@ -18,7 +18,7 @@ onDecrementPage=(action 'decrementPage')}}
 {{#each complaints as |complaint|}}
   {{#paper-expansion-panel as |panel|}}
     {{#panel.collapsed}}
-      <div class="md-panel-title">{{moment-format complaint.createdAt "DD.MM.YYYY HH:MM"}} Uhr</div>
+      <div class="md-panel-title">{{moment-format complaint.createdAt "DD.MM.YYYY HH:mm"}} Uhr</div>
       <div class="md-panel-summary">{{first-line complaint.message }}</div>
       {{paper-icon "keyboard_arrow_down"}}
     {{/panel.collapsed}}

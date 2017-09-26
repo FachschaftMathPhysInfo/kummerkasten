@@ -1,9 +1,1 @@
-{{#each model as |complaint|}}
-{{complaint-editor complaint=complaint onApprove=(action "onApprove" complaint) onDismiss=(action "onDismiss" complaint)}}
-{{else}}
-{{#paper-card as |card|}}
-{{#card.content}}
-Zur Zeit ist kein Kummer vorhanden, der gesichtet werden müsste.
-{{/card.content}}
-{{/paper-card}}
-{{/each}}
+{{complaint-list complaints=model}}
