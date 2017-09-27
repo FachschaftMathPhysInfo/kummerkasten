@@ -14,7 +14,7 @@ onDecrementPage=(action 'decrementPage')}}
     {{paper-progress-linear}}
   {{/if}}
 {{/paper-card}}
-
+<div class="md-padding">
 {{#each complaints as |complaint|}}
   {{#paper-expansion-panel as |panel|}}
     {{#panel.collapsed}}
@@ -68,3 +68,4 @@ onDecrementPage=(action 'decrementPage')}}
     {{/panel.expanded}}
   {{/paper-expansion-panel}}
 {{/each}}
+</div>
