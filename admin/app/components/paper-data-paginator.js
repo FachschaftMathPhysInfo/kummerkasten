@@ -6,6 +6,7 @@ const {
 
 export default Component.extend({
 	tagName: 'md-table-pagination',
+	multiName: "Berichte",
 	classNames: ['md-table-pagination'],
 	startOffset: computed('page', 'limit', function() {
 		return Math.max((this.get('page') - 1) * this.get('limit') + 1, 1); // 1-based index

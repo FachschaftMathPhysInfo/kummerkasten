@@ -7,7 +7,7 @@
 </div>
 {{/if}}
 <div class="limit-select">
-	<div class="md-table-label">Berichte pro Seite:</div>
+	<div class="md-table-label">{{multiName}} pro Seite:</div>
 	{{#paper-table-selected options=limitOptions selected=limit onChange=onChangeLimit as |limit|}}
 		{{limit}}
 	{{/paper-table-selected}}
