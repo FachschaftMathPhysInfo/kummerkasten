@@ -7,7 +7,7 @@ export default Ember.Controller.extend({
   currentStatus:"Importiervorgang nicht gestartet",
   invite:false,
   setupConsumer: Ember.on('init', function() {
-   var consumer = this.get('cableService').createConsumer('ws://'+window.location.host+'/cable');
+   var consumer = this.get('cableService').createConsumer('wss://'+window.location.host+'/cable');
    this.subscription = consumer.subscriptions.create("ImportNotificationsChannel" , {
      received: (data) => {
       this.set("currentStatus",data.message);
