@@ -267,7 +267,7 @@ end
         c.save!
         course[:profs].each do |prof|
           pr= Lecturer.find_by(lsf_id:prof[:id])
-          anrede = "Sehr geehrte Damen und Herren"
+          anrede = "Sehr geehrte Dame oder Herr"
           case prof[:geschlecht]
           when "W" then
             anrede = "Sehr geehrte Frau"

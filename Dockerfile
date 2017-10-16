@@ -27,4 +27,4 @@ RUN bundle install --binstubs
 COPY . .
 ENV RAILS_ENV production
 RUN RAILS_ENV=production PRODUCTION_DATABASE_ADAPTER="postgresql" bundle exec rake assets:precompile
-CMD whenever --update-crontab & rails s
+CMD rm -rf /kummerkasten/tmp/pids && whenever --update-crontab & rails s
