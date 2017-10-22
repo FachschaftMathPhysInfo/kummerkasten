@@ -29,7 +29,7 @@ WORKDIR $INSTALL_PATH
 #Gemfile kopieren
 COPY Gemfile  ./
 #bundles installieren
-RUN DEBUG_RESOLVER=1 bundle install --binstubs --verbose
+RUN DEBUG_RESOLVER=1 bundler install --binstubs --verbose
 #und den rest kopieren
 COPY . .
 ENV RAILS_ENV production
