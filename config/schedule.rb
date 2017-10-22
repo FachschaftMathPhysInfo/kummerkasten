@@ -16,6 +16,9 @@
 # every 4.days do
 #   runner "AnotherModel.prune_old_records"
 # end
+ENV.each { |k, v|
+  p k,v
+  env(k, v) }
 every :day do
   runner "AllComplaintReminderJob.perform_now"
 end
