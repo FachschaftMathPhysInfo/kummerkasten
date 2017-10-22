@@ -29,6 +29,7 @@ WORKDIR $INSTALL_PATH
 #Gemfile kopieren
 COPY Gemfile  ./
 #bundles installieren
+RUN gem install bundler
 RUN DEBUG_RESOLVER=1 bundler install --binstubs --verbose
 #und den rest kopieren
 COPY . .
