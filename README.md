@@ -41,5 +41,5 @@ We strongly recommend using the Docker--approach:
 4. Create the docker container: `docker create --env-file=development.env --name kummerkasten -p 3008:3000 <hash of the image>`
 5. Start the container `docker start kummerkasten`
 6. Create the database, if needed, `docker exec kummerkasten bundle exec rake db:create`
-7. Migrate the database, if needed, `docker exec kummerkasten bundle exec rake db:migrate`
+7. Migrate the database, if needed, `docker exec kummerkasten bundle exec rake db:migrate qc:update`
 8. Done! Visit `localhost:3008`

@@ -40,4 +40,7 @@ RUN rm -rf /kummerkasten/tmp/pids && bundle exec whenever --update-crontab
 RUN rm -f /etc/service/nginx/down
 ADD webapp.conf /etc/nginx/sites-enabled/webapp.conf
 ADD postgres-env.conf /etc/nginx/main.d/postgres-env.conf
+# Queue classic für mails
+RUN mkdir -p /etc/service/queue_classic
+ADD queue_classic.sh /etc/service/queue_classic/run
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
