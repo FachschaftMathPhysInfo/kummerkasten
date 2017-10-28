@@ -19,7 +19,8 @@
 
             {{#paper-form onSubmit=(action "login") as |form|}}
               <div class="layout-column flex-80">
-                <h2>Anmeldung</h2> {{form.input type=email class="md-input-login-container" required=true label="E-Mail" value=email onChange=(action (mut email))}} {{form.input type=password class="md-input-login-container" required=true label="Passwort" value=password onChange=(action (mut password))}}
+                <h2>Anmeldung</h2> {{form.input type="email" class="md-input-login-container" required=true label="E-Mail" value=email onChange=(action (mut email))}}
+                {{paper-password class="md-input-login-container" required=true label="Passwort" value=password onChange=(action (mut password))}}
                 {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Einloggen{{/form.submit-button}}
                 {{#if errorMessage}}
                   <p>
