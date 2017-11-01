@@ -1,6 +1,6 @@
 class ComplaintPolicy < ApplicationPolicy
   def index?
-    true
+    isAdmin?
   end
   def create?
     true
