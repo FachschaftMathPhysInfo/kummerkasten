@@ -145,3 +145,22 @@ md-content{
    margin: 0px;
    vertical-align: middle;
  }
+
+ #tear{
+   -we21ebkit-animation: falling 5s infinite; /* Safari 4.0 - 8.0 */
+     animation: falling 5s infinite;
+ }
+
+ @-webkit-keyframes falling {
+     0%   {top: 0px;}
+     25%  {top: 9px;}
+     75%  {top: 79px}
+     100% {top: 120px;}
+ }
+
+ @keyframes falling {
+   0%   {top: 0px;}
+   25%  {top: 9px;}
+   75%  {top: 79px}
+   100% {top: 120px;}
+ }
