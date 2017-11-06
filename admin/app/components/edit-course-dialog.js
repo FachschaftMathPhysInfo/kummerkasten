@@ -6,7 +6,6 @@ export default Ember.Component.extend({
       this.sendAction('closeDialog',option);
     },
     addLecturer: function(data) {
-      console.log(this.get('course.lecturers'));
       this.get('course.lecturers').pushObject(data);
     },
     removeLecturer: function(data) {

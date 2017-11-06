@@ -1,6 +1,10 @@
 import Ember from 'ember';
+import { A } from '@ember/array';
+import { computed } from '@ember/object';
 
 export default Ember.Controller.extend({
+  filter:{reviewed:false},
+  store:Ember.inject.service(),
   paperToaster:Ember.inject.service(),
   actions: {
     onApprove(complaint){

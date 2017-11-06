@@ -11,13 +11,13 @@
  {{/paper-toolbar}}
 
 {{#paper-tabs selected=currentRouteName primary=true borderBottom=true as |tabs|}}
-  {{#tabs.tab value="management.general.index" href=(href-to "management.general.index")}}
+  {{#tabs.tab value="management.general.index" onClick=(transition-to 'management.general.index')}}
     Semester
   {{/tabs.tab}}
-  {{#tabs.tab value="management.general.faculties" href=(href-to "management.general.faculties")}}
+  {{#tabs.tab value="management.general.faculties" onClick=(transition-to 'management.general.faculties')}}
     Fakultäten
   {{/tabs.tab}}
-  {{#tabs.tab value="management.general.coursetypes" href=(href-to "management.general.coursetypes")}}
+  {{#tabs.tab value="management.general.coursetypes" onClick=(transition-to 'management.general.coursetypes')}}
     Veranstaltungstypen
   {{/tabs.tab}}
 {{/paper-tabs}}

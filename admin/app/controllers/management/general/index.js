@@ -1,14 +1,12 @@
 import Ember from 'ember';
-import moment from 'moment';
 export default Ember.Controller.extend({
   paperToaster:Ember.inject.service(),
   currentSemester:null,
   showEditSemesterDialog:false,
     showDeleteSemesterDialog:false,
-    year:moment().toDate(),
+    year:new Date(),
   actions:{
     saveSemester:function(){
-      console.log(this.get('year'));
       this.store.createRecord('semester',{name:this.get('name'),lsfId:this.get('lsfid'),year:this.get('year')}).save().then(()=>{
         this.get('paperToaster').show("Semester erfolgreich gespeichert",{duration:4000});
       }).catch((errorMessage)=>{

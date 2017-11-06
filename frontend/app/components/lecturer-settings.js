@@ -9,7 +9,6 @@ export default Ember.Component.extend({
       let headers=[];
       this.get("session").authorize("authorizer:devise", (headerName, headerValue) => {
         headers.push({name:headerName,value:headerValue});
-        console.log(headers)
         if(headers.length==2)
         Ember.$.ajax("/lecturers/update_password", {
           method: "PATCH",
@@ -18,7 +17,7 @@ export default Ember.Component.extend({
             xhr.setRequestHeader(headers[0].name, headers[0].value);
             xhr.setRequestHeader(headers[1].name, headers[1].value);
           },
-          success:function(data,textStatus,jqXHR){
+          success:function(){
             resolve(true);
           },
 

@@ -4,5 +4,4 @@ class SemesterResource < BaseResource
   def self.default_sort
     [{field: 'year', direction: :desc}]
   end
-  paginator :offset
 end

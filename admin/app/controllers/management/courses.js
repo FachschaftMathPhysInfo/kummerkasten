@@ -1,4 +1,6 @@
 import Ember from 'ember';
+import { computed } from '@ember/object';
+import { A } from '@ember/array';
 
 export default Ember.Controller.extend({
   paperToaster:Ember.inject.service(),
@@ -6,22 +8,32 @@ export default Ember.Controller.extend({
   showEditCourseDialog:false,
   showDeleteCourseDialog:false,
   selected_lecturers: [],
-  limitOptions: Ember.A([5, 10, 15]),
-  limit: 5,
-  pages: Ember.computed('limit', 'results.[]', function() {
-    let e = Ember.A();
-    for (let i = 1; i < Math.ceil(this.get("results.length") / this.get("limit")); i++) {
+  limitOptions: A([10, 20, 30]),
+  limit: 10,
+  pages: computed('meta.page-count', function() {
+    let e = A();
+    for (let i = 1; i <= this.get("meta.page-count"); i++) {
       e.pushObject(i);
     }
     return e;
   }),
   page: 1,
-  searchLecturers: Ember.A(),
+  searchLecturers: A(),
   searchName:Ember.computed('searchtemp',function(){
     return this.get('searchtemp.name');
   }),
-  results:Ember.computed('searchLecturers.[]', 'searchLsfid', 'searchName', 'searchCoursetype', 'searchSemester', 'searchFaculty', function() {
-    this.set("loading", true);
+  pages: computed('meta.page-count', function() {
+    let e = A();
+    for (let i = 1; i <=this.get("meta.page-count"); i++) {
+      e.pushObject(i);
+    }
+    return e;
+  }),
+  resultsLength:computed('meta.record-count', function() {
+    console.log(this.get("meta.record-count"));
+    return this.get("meta.record-count");
+  }),
+  paginatedResults:Ember.computed('limit','page','searchLecturers.[]', 'searchLsfid', 'searchName', 'searchCoursetype', 'searchSemester', 'searchFaculty', function() {
     let lecturers = [];
     if (this.get("searchLecturers") != null) {
       this.get("searchLecturers").forEach((item) => {
@@ -36,16 +48,16 @@ export default Ember.Controller.extend({
         lecturers: lecturers,
         lsfId: this.get('searchLsfid'),
         nameilike: this.get('searchName')
+      },
+      page: {
+        size: this.get('limit'),
+        number: this.get('page'),
       }
     });
-    ergebnis.then(() => {
-      this.set("loading", false);
+    ergebnis.then((data) => {
+      this.set("meta",data.meta);
     });
     return ergebnis;
-  }),
-  paginatedResults: Ember.computed('results.[]', 'page', 'limit', function() {
-    let ind = (this.get('page') - 1) * this.get('limit');
-    return Ember.A(this.get("results").toArray().slice(ind, ind + this.get('limit')));
   }),
   actions:{
     searchName:function(data){
@@ -114,20 +126,5 @@ export default Ember.Controller.extend({
           this.set('currentCourse',null);
         }
       },
-      decrementPage() {
-      let page = this.get('page');
-      if (page > 0) {
-        this.set('page', page - 1);
-      }
-    },
-    incrementPage() {
-      let page = this.get('page');
-      let max = this.get('pages').reduce((prev, curr) => curr > prev
-        ? curr
-        : prev, 0);
-      if (page < max) {
-        this.set('page', page + 1);
-      }
-    },
     }
 });

@@ -6,7 +6,6 @@ export default Ember.Controller.extend({
    var consumer = this.get('cableService').createConsumer('wss://'+window.location.host+'/cable');
    this.subscription = consumer.subscriptions.create("StatisticsChannel" , {
      received: (data) => {
-       console.log(data);
        this.set("newcomplaints",data.newcomplaints);
        this.set("reviewedcomplaints",data.reviewedcomplaints);
        this.set("approvedcomplaints",data.approvedcomplaints);

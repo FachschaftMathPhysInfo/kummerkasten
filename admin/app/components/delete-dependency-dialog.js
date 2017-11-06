@@ -8,19 +8,14 @@ export default Ember.Component.extend({
     switch(this.get('objekt').get('constructor.modelName')){
       case 'coursetype' :
         return 'Veranstaltungstyp';
-        break;
       case 'faculty' :
         return 'Fakultät';
-        break;
       case 'semester' :
         return 'Semester';
-        break;
       case 'lecturer' :
         return 'Dozierendes';
-        break;
       case 'course' :
         return 'Lehrveranstaltung';
-        break;
     }
   }),
   dieseselements: Ember.computed('objekt',function() {
@@ -29,19 +24,14 @@ export default Ember.Component.extend({
     switch (this.get('objekt').get('constructor.modelName')){
       case 'coursetype' :
         return 'dieses Veranstaltungstyp';
-        break;
       case 'faculty' :
         return 'dieser Fakultät';
-        break;
       case 'semester' :
         return 'dieses Semesters';
-        break;
       case 'lecturer' :
         return 'dieses Dozierendes';
-        break;
       case 'course' :
         return 'dieser Lehrveranstaltung';
-        break;
     }
   }),
   actions: {

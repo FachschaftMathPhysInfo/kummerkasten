@@ -10,13 +10,13 @@
    {{/paper-toolbar-tools}}
  {{/paper-toolbar}}
  {{#paper-tabs selected=currentRouteName primary=true borderBottom=true as |tabs|}}
-   {{#tabs.tab value="review" href=(href-to "review.index")}}
+   {{#tabs.tab value="review" onClick=(transition-to "review.index")}}
      Unbearbeite
    {{/tabs.tab}}
-   {{#tabs.tab value="review.approved" href=(href-to "review.approved")}}
+   {{#tabs.tab value="review.approved" onClick=(transition-to "review.approved")}}
      Angenommene
    {{/tabs.tab}}
-   {{#tabs.tab value="review.disapproved" href=(href-to "review.disapproved")}}
+   {{#tabs.tab value="review.disapproved" onClick=(transition-to "review.disapproved")}}
      Abgelehnte
    {{/tabs.tab}}
  {{/paper-tabs}}

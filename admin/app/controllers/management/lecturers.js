@@ -1,4 +1,6 @@
 import Ember from 'ember';
+import { A } from '@ember/array';
+import { computed } from '@ember/object';
 
 export default Ember.Controller.extend({
   paperToaster: Ember.inject.service(),
@@ -6,6 +8,31 @@ export default Ember.Controller.extend({
   showEditLecturerDialog: false,
   showDeleteLecturerDialog: false,
   invite:true,
+  limitOptions:A([10,20,30]),
+  limit:10,
+  page:1,
+  pages: computed('meta.page-count', function() {
+    let e = A();
+    for (let i = 1; i <=this.get("meta.page-count"); i++) {
+      e.pushObject(i);
+    }
+    return e;
+  }),
+  resultsLength:computed('meta.record-count', function() {
+    return this.get("meta.record-count");
+  }),
+  paginatedLecturers: computed('page','limit', function() {
+    let ergebnis = this.get('store').query('lecturer', {
+      page: {
+        size: this.get("limit"),
+        number:this.get("page")
+      }
+    });
+    ergebnis.then((data) => {
+      this.set("meta",data.meta);
+    });
+    return ergebnis;
+  }),
   actions: {
     resendPasswordtoLecturer: function(lec) {
       if (confirm("Passwort auf zufälligen Wert setzten und per EMail Dozierenden mitteilen?")) {
@@ -33,7 +60,6 @@ export default Ember.Controller.extend({
         this.set('email', "");
         this.set('salutation', "");
       }).catch((errorMessage) => {
-        console.log(errorMessage);
         this.get('paperToaster').show("Dozierendes konnte nicht gespeichert werden! Grund: " + errorMessage, {duration: 4000});
       });
     },

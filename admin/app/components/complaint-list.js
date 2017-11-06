@@ -1,25 +1,43 @@
 import Ember from 'ember';
+import { A } from '@ember/array';
+import { computed } from '@ember/object';
 
 export default Ember.Component.extend({
-  limitOptions: Ember.A([5, 10, 15]),
-  limit: 5,
+  store: Ember.inject.service(),
+  page: 1,
+  limitOptions: A([10, 15, 20]),
+  limit:10,
+  resultsLength:computed('meta.record-count',function(){
+    return this.get("meta.record-count");
+  }),
+  pages: computed('meta.page-count', function() {
+    let e = A();
+    for (let i = 1; i <= this.get("meta.page-count"); i++) {
+      e.pushObject(i);
+    }
+    return e;
+  }),
+
   simpleMdeOptions:{
     toolbar: false,
     previewRender: true,
   },
   paperToaster:Ember.inject.service(),
-  pages: Ember.computed('limit', 'complaints.[]', function() {
-    let e = Ember.A();
-    for (let i = 1; i <= Math.ceil(this.get("complaints.length")/this.get("limit")); i++) {
-      e.pushObject(i);
-    }
-    return e;
+  paginatedResults: computed('page', 'limit', function() {
+    let filter=this.get("filter");
+    let result= this.get("store").query("complaint", {
+      filter,
+      page: {
+        number: this.get('page'),
+        size: this.get("limit")
+      }
+    });
+    result.then((data) => {
+      this.set("meta", data.get("meta"));
+    })
+    return result;
   }),
   page: 1,
-  paginatedResults: Ember.computed('complaints.[]', 'page', 'limit', function() {
-    let ind = (this.get('page') - 1) * this.get('limit');
-    return Ember.A(this.get("complaints").toArray().slice(ind, ind + this.get('limit')));
-  }),
   actions:{
     decrementPage() {
     let page = this.get('page');

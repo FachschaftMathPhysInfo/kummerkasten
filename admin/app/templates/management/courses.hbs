@@ -13,7 +13,7 @@
   {{#paper-card as |card|}}
     {{#card.title as |title|}}
       {{#title.text as |text|}}
-        {{#text.headline}} Neue Veranstaltung anlegen: {{/text.headline}}
+        {{#text.headline}}{{paper-icon "color lens"}} Neue Veranstaltung anlegen: {{/text.headline}}
       {{/title.text}}
     {{/card.title}}
     {{#paper-form onSubmit=(action "saveCourse") as |form|}}
@@ -61,7 +61,7 @@
     {{#card.title as |title|}}
       {{#title.text as |text|}}
         {{#text.headline}}
-          {{paper-icon "rate review"}} Kurse
+          {{paper-icon "rate review"}} Suche nach Veranstaltungen:
         {{/text.headline}}
       {{/title.text}}
     {{/card.title}}
@@ -120,15 +120,14 @@
     {{/card.content}}
     {{#card.actions}}
       {{paper-data-paginator
+        meta=meta
 limit=limit
 limitOptions=limitOptions
 page=page
 pages=pages
 multiName="Kurse"
 onChangePage=(action (mut page))
-onChangeLimit=(action (mut limit))
-onIncrementPage=(action 'incrementPage')
-onDecrementPage=(action 'decrementPage')}}
+onChangeLimit=(action (mut limit))}}
     {{/card.actions}}
     {{#if loading}}
       {{paper-progress-linear}}
@@ -148,13 +147,13 @@ onDecrementPage=(action 'decrementPage')}}
         {{/table.head}}
         {{#table.body as |body|}}
           {{#each (sort-by table.sortDesc paginatedResults) as |cs|}}
-            {{#body.row onClick=(transition-to "management.course" cs) edit=true as |row|}}
-              {{#row.cell}}{{paper-icon "rate review" }}{{/row.cell}}
-              {{#row.cell}}{{cs.semestername}}{{/row.cell}}
-              {{#row.cell}}{{cs.name}}{{/row.cell}}
-              {{#row.cell}}{{cs.facultyname}}{{/row.cell}}
-              {{#row.cell}}{{cs.lecturernames}}{{/row.cell}}
-              {{#row.cell}}{{cs.complaintCount}}{{/row.cell}}
+            {{#body.row edit=true as |row|}}
+              {{#row.cell onClick=(transition-to "management.course" cs) }}{{paper-icon "rate review" }}{{/row.cell}}
+              {{#row.cell onClick=(transition-to "management.course" cs) }}{{cs.semestername}}{{/row.cell}}
+              {{#row.cell onClick=(transition-to "management.course" cs) }}{{cs.name}}{{/row.cell}}
+              {{#row.cell onClick=(transition-to "management.course" cs) }}{{cs.facultyname}}{{/row.cell}}
+              {{#row.cell onClick=(transition-to "management.course" cs) }}{{cs.lecturernames}}{{/row.cell}}
+              {{#row.cell onClick=(transition-to "management.course" cs) }}{{cs.complaintCount}}{{/row.cell}}
               {{#row.cell edit=true as |cell|}}
                 {{#paper-button iconButton=true onClick=(action "editCourse" cs)}}{{paper-icon "edit"}}{{/paper-button}}
                 {{#paper-button iconButton=true onClick=(action "deleteCourse" cs)}}{{paper-icon "delete"}}{{/paper-button}}

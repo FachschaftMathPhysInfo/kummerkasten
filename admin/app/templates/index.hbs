@@ -39,19 +39,25 @@
   <div class="layout-row layout-wrap">
   {{#paper-card as |card|}}
     {{#card.content}}
-      <h1><center>{{newcomplaints}}</center></h1> neue Kommentare in den letzten 24 Stunden.
+      <h1><center>{{newcomplaints}}</center></h1> neueste Kommentare (24h)
     {{/card.content}}
   {{/paper-card}}
   {{#paper-card as |card|}}
     {{#card.content}}
-      <h1><center>{{approvedcomplaints}}/{{reviewedcomplaints}}</center></h1>
-      freigeschaltete Kommentare.
+      <h1><center>{{approvedcomplaints}}</center></h1>
+      freigeschaltete Kommentare
+    {{/card.content}}
+  {{/paper-card}}
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      <h1><center>{{reviewedcomplaints}}</center></h1>
+      überprüfte Kommentare
     {{/card.content}}
   {{/paper-card}}
   {{#paper-card as |card|}}
     {{#card.content}}
       <h1><center>{{coursesize}}</center></h1>
-        Kurse
+        Veranstaltungen
     {{/card.content}}
   {{/paper-card}}
   {{#paper-card as |card|}}

@@ -39,7 +39,7 @@
           {{form.input value=lsfid label="LSF-ID" type="number" required=true onChange=(action (mut lsfid))}}
         </div>
         {{#paper-checkbox value=invite onChange=(action (mut invite))}}
-        Einladung per EMail versenden.
+        Einladung per E-Mail versenden.
         {{/paper-checkbox}}
       </div>
     </div>
@@ -58,10 +58,24 @@
       {{/text.headline}}
     {{/title.text}}
   {{/card.title}}
+  {{#card.actions}}
+  {{paper-data-paginator
+meta=meta
+count=resultsLength
+limit=limit
+limitOptions=limitOptions
+page=page
+pages=pages
+onChangePage=(action (mut page))
+onChangeLimit=(action (mut limit))}}
+  {{/card.actions}}
+  {{#if loading}}
+    {{paper-progress-linear}}
+  {{/if}}
   {{#card.content}}
     {{#paper-data-table sortProp="name" sortDir="desc" selectable=true as |table|}}
       {{#table.head as |head|}}
-        {{head.column}}
+        {{#head.column}}{{/head.column}}
         {{#head.column sortProp="givenname" }}Vorname{{/head.column}}
         {{#head.column sortProp="surname" }}Nachname{{/head.column}}
         {{#head.column sortProp="email" }}E-Mail{{/head.column}}
@@ -70,7 +84,7 @@
         {{#head.column}}Optionen{{/head.column}}
       {{/table.head}}
       {{#table.body as |body|}}
-        {{#each (sort-by table.sortDesc model) as |lec|}}
+        {{#each (sort-by table.sortDesc paginatedLecturers) as |lec|}}
           {{#body.row edit=true as |row|}}
             {{#row.cell}}{{paper-icon "local library" }}{{/row.cell}}
             {{#row.cell}}{{lec.givenname}}{{/row.cell}}

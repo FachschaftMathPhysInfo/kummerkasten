@@ -1,14 +1,14 @@
 import Ember from 'ember';
 import config from './config/environment';
-
 const Router = Ember.Router.extend({
   location: config.locationType,
   rootURL: config.rootURL
 });
-
 Router.map(function() {
   this.route('management', function() {
-    this.route('course',{ path: '/course/:id'});
+    this.route('course', {
+      path: '/course/:id'
+    });
     this.route('general', function() {
       this.route('faculties');
       this.route('coursetypes');
@@ -22,5 +22,4 @@ Router.map(function() {
     this.route('disapproved');
   });
 });
-
 export default Router;

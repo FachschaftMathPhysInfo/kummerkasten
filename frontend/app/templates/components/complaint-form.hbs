@@ -12,16 +12,17 @@
     <div class="layout-column flex-gt-xs-80">
     {{#form.autocomplete
         allowClear=true
+        searchMessage="Zum Suchen tippen"
         required=true
         selected=selectedCourse
         searchField="name"
         labelPath="name"
-        label="Veranstaltung"
+        label="Veranstaltung suchen"
         search=(action "searchCourses")
         placeholder="Veranstaltung auswählen"
         loadingMessage="Durchsuche Veranstaltungen..."
         noMatchesMessage="Oops, eine solche Veranstaltung existiert nicht."
-        onSelectionChange=(pipe (action (mut selectedCourse))(action "focusMessage")) as |c autocomplete|}}
+        onSelectionChange=(action (mut selectedCourse)) as |c autocomplete|}}
       <strong>{{paper-autocomplete-highlight
             label=c.name
             searchText=autocomplete.searchText

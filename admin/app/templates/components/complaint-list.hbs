@@ -1,22 +1,22 @@
 {{#paper-card as |card|}}
   {{#card.actions}}
     {{paper-data-paginator
+      meta=meta
 limit=limit
 limitOptions=limitOptions
 page=page
 pages=pages
 multiName="Kummer"
+count=resultsLength
 onChangePage=(action (mut page))
-onChangeLimit=(action (mut limit))
-onIncrementPage=(action 'incrementPage')
-onDecrementPage=(action 'decrementPage')}}
+onChangeLimit=(action (mut limit))}}
   {{/card.actions}}
   {{#if loading}}
     {{paper-progress-linear}}
   {{/if}}
-{{/paper-card}}
+
 <div class="md-padding">
-{{#each complaints as |complaint|}}
+{{#each paginatedResults as |complaint|}}
   {{#paper-expansion-panel as |panel|}}
     {{#panel.collapsed}}
       <div class="md-panel-title">{{moment-format complaint.createdAt "DD.MM.YYYY HH:mm"}} Uhr</div>
@@ -70,3 +70,4 @@ onDecrementPage=(action 'decrementPage')}}
   {{/paper-expansion-panel}}
 {{/each}}
 </div>
+{{/paper-card}}

@@ -8,14 +8,14 @@
 flex-layout="column" flex=true }}
 {{#paper-toolbar tall=true as |toolbar|}}
   {{#paper-toolbar-tools}}
-  <center style="padding: 20px">
+  <div style="margin:auto; text-align:center; padding: 20px">
     <div style="width:140px; height:140px;position:relative">
-    <img style="z-index: 0" src="logobackground.png" height="100%" width="100%">
+    <img style="z-index: 0; height:100%; width:100%;" src="logobackground.png" alt="Hintergrundlogo">
     {{svg-jar "face" style="position:absolute; top:0px; left:0px;"}}
     {{svg-jar "tear2" style="position:absolute; top:0px; right:0px; width:28%; height:28%;" id="tear"}}
   </div>
     <br/>KUMMERKASTEN
-  </center>{{/paper-toolbar-tools}}
+  </div>{{/paper-toolbar-tools}}
 {{/paper-toolbar}}
   {{#paper-content padding=false}}
     {{#paper-list}}

@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export function hasRead(params/*, hash*/) {
-  return new Ember.RSVP.Promise((fullfill,reject)=>{
+  return new Ember.RSVP.Promise((fullfill,)=>{
   params[0].get('readers').then((list)=>{
     fullfill( list.includes(params[1]));
   });});

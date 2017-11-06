@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  filter:{reviewed:true, approved:true},
   paperToaster:Ember.inject.service(),
   actions: {
     onApprove(complaint){
