@@ -27,7 +27,7 @@ RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
 #Gemfile kopieren
-COPY Gemfile  ./
+COPY Gemfile Gemfile.lock ./
 #bundles installieren
 RUN gem install bundler
 RUN DEBUG_RESOLVER=1 bundler install --binstubs --verbose
