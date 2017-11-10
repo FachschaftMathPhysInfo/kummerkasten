@@ -5,6 +5,7 @@ export default DS.JSONAPISerializer.extend({
     let json =this._super(...arguments);
     delete json.data.attributes['unreadcomplaints-count'];
     delete json.data.attributes['name'];
+    delete json.data.attributes['password'];
     return json;
   }
 });

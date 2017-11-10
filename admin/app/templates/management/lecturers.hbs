@@ -90,7 +90,7 @@ onChangeLimit=(action (mut limit))}}
             {{#row.cell}}{{lec.givenname}}{{/row.cell}}
             {{#row.cell}}{{lec.surname}}{{/row.cell}}
             {{#row.cell}}{{lec.email}}{{/row.cell}}
-            {{#row.cell}}{{lec.lsfid}}{{/row.cell}}
+            {{#row.cell}}{{lec.lsfId}}{{/row.cell}}
             {{#row.cell}}{{lec.unreadcomplaintsCount}}{{/row.cell}}
             {{#row.cell edit=true as |cell|}}
               {{#paper-button iconButton=true onClick=(action "editLecturer" lec)}}{{paper-icon "edit"}}{{/paper-button}}
