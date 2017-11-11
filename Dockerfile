@@ -44,4 +44,5 @@ ADD postgres-env.conf /etc/nginx/main.d/postgres-env.conf
 RUN mkdir -p /etc/service/queue_classic
 ADD queue_classic.sh /etc/service/queue_classic/run
 RUN chmod 755 /etc/service/queue_classic/run
+RUN chown -R app /home/app
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
