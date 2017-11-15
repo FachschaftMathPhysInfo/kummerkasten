@@ -34,6 +34,7 @@ RUN DEBUG_RESOLVER=1 bundler install --binstubs --verbose
 #und den rest kopieren
 COPY . .
 ENV RAILS_ENV production
+ENV EMBER_ENV development
 RUN RAILS_ENV=production PRODUCTION_DATABASE_ADAPTER="postgresql" bundle exec rake assets:precompile
 RUN bash gem install whenever
 RUN rm -rf /kummerkasten/tmp/pids && bundle exec whenever --update-crontab
