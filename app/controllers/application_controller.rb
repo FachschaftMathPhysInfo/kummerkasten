@@ -15,6 +15,7 @@ class ApplicationController < ActionController::API
   public
   def context
     user = current_lecturer
+    puts "user:", request.headers["X-Forwarded-User"]
     if request.headers["X-Forwarded-User"]
       user=:admin
     end
