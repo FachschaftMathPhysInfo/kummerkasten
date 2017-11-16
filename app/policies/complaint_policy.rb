@@ -13,7 +13,7 @@ class ComplaintPolicy < ApplicationPolicy
     if isAdmin?
       return true
     end
-    return isAdmin? or record.lecturers.include?(user)
+    return record.lecturers.include?(user)
   end
   def update?
     isAdmin?
