@@ -22,7 +22,7 @@ class ComplaintPolicy < ApplicationPolicy
     def resolve
       p scope
       p user
-      if not user.nil?
+      if not user.nil? and ( user!=:admin)
         return user.complaints.where(approved:true,reviewed:true)
       end
       # TODO Admin überprüfung

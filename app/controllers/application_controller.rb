@@ -20,7 +20,7 @@ class ApplicationController < ActionController::API
     end
     logger.info "user:"
     logger.info request.headers["X-Forwarded-User"]
-    if request.headers["X-Forwarded-User"] != ""
+    if request.headers["X-Forwarded-User"] != "" and request.headers["X-Forwarded-User"] != nil
       user=:admin
     end
     {user: user, lecturer:current_lecturer}
