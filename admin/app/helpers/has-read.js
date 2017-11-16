@@ -1,9 +1,16 @@
 import Ember from 'ember';
 
 export function hasRead(params/*, hash*/) {
-  return new Ember.RSVP.Promise((fullfill,)=>{
+  return new Ember.RSVP.Promise((fullfill,reject)=>{
   params[0].get('readers').then((list)=>{
-    fullfill( list.includes(params[1]));
+    let read= false;
+    list.forEach((i)=>{
+      console.log(i.get("id"));
+      console.log(params[1].get("id"));
+      if(i.get("id")==params[1].get("id")) read=true;
+    });
+    console.log(read);
+    fullfill(read);
   });});
 }
 

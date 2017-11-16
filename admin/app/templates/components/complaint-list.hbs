@@ -52,7 +52,7 @@ onChangeLimit=(action (mut limit))}}
                 <ul list-style-type=circle>
                   {{#each complaint.lecturers as |lec|}}
                     <li>{{lec.givenname}} {{lec.surname}}:
-                      {{#if (has-read complaint lec)}}gelesen{{else}}ungelesen{{/if}}
+                      {{#if (await (has-read complaint lec))}}gelesen{{else}}ungelesen{{/if}}
                     </li><br>
                   {{/each}}
                 </ul>
