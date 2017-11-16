@@ -1,6 +1,6 @@
 class ComplaintPolicy < ApplicationPolicy
   def index?
-    isAdmin?
+    isAdmin? or not user.nil?
   end
   def create?
     true
