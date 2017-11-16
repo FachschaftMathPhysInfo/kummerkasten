@@ -10,7 +10,10 @@ class ComplaintPolicy < ApplicationPolicy
     true
   end
   def show?
-    isAdmin? or record.lecturers.contains(user)
+    if isAdmin?
+      return true
+    end
+    return record.lecturers.contains(user)
   end
   def update?
     isAdmin?
