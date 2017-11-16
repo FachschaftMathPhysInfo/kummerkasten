@@ -15,6 +15,9 @@ class ApplicationController < ActionController::API
   public
   def context
     user = current_lecturer
+    if not user.nil?
+      return {user: user, lecturer:current_lecturer}
+    end
     logger.info "user:"
     logger.info request.headers["X-Forwarded-User"]
     if request.headers["X-Forwarded-User"] != ""
