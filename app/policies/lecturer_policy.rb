@@ -1,6 +1,8 @@
 class LecturerPolicy < ApplicationPolicy
   def update?
-    user==record
+    p @user
+    p "@",@record
+    @user==@record or isAdmin?
   end
   def index?
     isAdmin?
@@ -9,9 +11,6 @@ class LecturerPolicy < ApplicationPolicy
    isAdmin?
   end
   def show?
-    isAdmin?
-  end
-  def update?
     isAdmin?
   end
   def destroy?

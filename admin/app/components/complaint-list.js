@@ -30,7 +30,8 @@ export default Ember.Component.extend({
       page: {
         number: this.get('page'),
         size: this.get("limit")
-      }
+      },
+      include:"courses"
     });
     result.then((data) => {
       this.set("meta", data.get("meta"));

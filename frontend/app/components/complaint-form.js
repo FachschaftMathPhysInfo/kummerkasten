@@ -11,15 +11,13 @@ export default Ember.Component.extend({
     searchCourses: function(data) {
       var store = this.get('store');
       var searchstringarray = data.split(" ");
-      return store.query('course', {
+      let result =this.get("store").query('course', {
         filter: {
           coursesearch: searchstringarray,
           semester: this.get('seletedSemester'),
-        },
-        page: {
-          limit: 10
         }
-      })
+      });
+      return result;
     },
     clearCourse: function() {
       this.set('selectedCourse', null);

@@ -14,16 +14,15 @@ class LecturerResource < BaseResource
       super - [:unreadcomplaints_count,:password]
     end
     def self.creatable_fields(context)
-      super - [:unreadcomplaints_count]
+      super - [:unreadcomplaints_count,:password]
     end
 
-  after_create :send_welcome
+  before_save :send_welcome
   def send_welcome
     if @model.invite
       passwort=SecureRandom.base64(12)
-      pr= @model
-      pr.update({password:passwort,password_confirmation:passwort})
-      LecturerInviteMailer.welcome(pr,passwort).deliver_now
+      @model.update({password:passwort,password_confirmation:passwort,invite:false})
+      LecturerInviteMailer.welcome(@model,passwort).deliver_now
     end
   end
 end
