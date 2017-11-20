@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  placeholder:"Hier könnte Ihre Nachricht stehen!",
+  placeholder:"Schreibe eine Nachricht an die Dozierenden",
   paperToaster:Ember.inject.service(),
   store: Ember.inject.service(),
   selectedSemester: Ember.computed('model.semesters.[]', function() {
