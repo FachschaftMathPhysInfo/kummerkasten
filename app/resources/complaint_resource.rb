@@ -14,10 +14,10 @@ class ComplaintResource < BaseResource
     return records.where.not(id:records.joins(:hasreads).where(hasreads:{lecturer:_options[:context][:user]}))
   }
   def self.updatable_fields(context)
-    super - [:created_at]
+    super - [:created_at, :lecturers]
   end
   def self.creatable_fields(context)
-    super - [:created_at]
+    super - [:created_at, :lecturers]
   end
   before_create do
     self.approved=false
