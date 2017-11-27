@@ -22,4 +22,7 @@ ENV.each { |k, v|
 every :day do
   runner "AllComplaintReminderJob.perform_now"
 end
+every :week do
+  runner "RemindComplaintJob.perform_now"
+end
 # Learn more: http://github.com/javan/whenever
