@@ -30,7 +30,7 @@ export default Ember.Component.extend({
         number: this.get('page'),
         size: this.get("limit")
       },
-      include:"lecturers"
+      include:"lecturers,readers"
     });
     result.then((data) => {
       this.set("meta", data.get("meta"));
@@ -54,7 +54,6 @@ export default Ember.Component.extend({
     }
   },
   approve:function(complaint){
-    //console.log(JSON.stringify(complaint.get('message')));
     complaint.set('reviewed',true);
     complaint.set('approved',true);
     complaint.save().then(()=>{

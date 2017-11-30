@@ -21,12 +21,17 @@ Semester.create!(name: 'SS17', year: Date.today)
 Semester.create!(name: 'WS16/17', year: 190.days.ago)
 Semester.create!(name: 'SS16', year: 365.days.ago)
 for i in 0..50
-  Course.create!(name: Faker::Company.catch_phrase, abbreviation: Faker::Address.state_abbr, semester: Semester.offset(rand(Semester.count)).first, coursetype: Coursetype.offset(rand(Coursetype.count)).first, faculty: Faculty.offset(rand(Faculty.count)).first)
+  a=Course.create!(name: Faker::Company.catch_phrase, abbreviation: Faker::Address.state_abbr, semester: Semester.offset(rand(Semester.count)).first, coursetype: Coursetype.offset(rand(Coursetype.count)).first, faculty: Faculty.offset(rand(Faculty.count)).first)
+  Lecture.create!(course: a, lecturer: Lecturer.offset(rand(Lecturer.count)).first)
 end
 for i in 0..30
   Lecture.create!(course: Course.offset(rand(Course.count)).first, lecturer: Lecturer.offset(rand(Lecturer.count)).first)
 end
 for i in 0..100
   Complaint.create!(message: Faker::Lorem.sentence, approved: false, course: Course.offset(rand(Course.count)).first)
-  Hasread.create!(lecturer: Lecturer.offset(rand(Lecturer.count)).first, complaint: Complaint.offset(rand(Complaint.count)).first)
+end
+for i in 0..30
+  c = Complaint.offset(rand(Complaint.count)).first
+  d=c.lecturers
+  Hasread.create!(lecturer: d.sample, complaint: c)
 end
