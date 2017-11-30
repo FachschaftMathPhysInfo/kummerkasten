@@ -10,13 +10,6 @@ export default Ember.Controller.extend({
   selected_lecturers: [],
   limitOptions: A([10, 20, 30]),
   limit: 10,
-  pages: computed('meta.page-count', function() {
-    let e = A();
-    for (let i = 1; i <= this.get("meta.page-count"); i++) {
-      e.pushObject(i);
-    }
-    return e;
-  }),
   page: 1,
   searchLecturers: A(),
   searchName:Ember.computed('searchtemp',function(){
@@ -30,7 +23,6 @@ export default Ember.Controller.extend({
     return e;
   }),
   resultsLength:computed('meta.record-count', function() {
-    console.log(this.get("meta.record-count"));
     return this.get("meta.record-count");
   }),
   paginatedResults:Ember.computed('limit','page','searchLecturers.[]', 'searchLsfid', 'searchName', 'searchCoursetype', 'searchSemester', 'searchFaculty', function() {

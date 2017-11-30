@@ -17,13 +17,12 @@ export default Ember.Component.extend({
     }
     return e;
   }),
-  actualize:false,
   simpleMdeOptions:{
     toolbar: false,
     previewRender: true,
   },
   paperToaster:Ember.inject.service(),
-  paginatedResults: computed('page', 'limit','actualize', function() {
+  paginatedResults: computed('page', 'limit', function() {
     let filter=this.get("filter");
     let result= this.get("store").query("complaint", {
       filter,
@@ -38,7 +37,6 @@ export default Ember.Component.extend({
     })
     return result;
   }),
-  page: 1,
   actions:{
     decrementPage() {
     let page = this.get('page');
@@ -59,14 +57,16 @@ export default Ember.Component.extend({
     //console.log(JSON.stringify(complaint.get('message')));
     complaint.set('reviewed',true);
     complaint.set('approved',true);
-    complaint.save();
-    this.set("actualize",!this.get("actualize"));
+    complaint.save().then(()=>{
+      complaint.unloadRecord();
+    });
   },
   reject:function(complaint){
     complaint.set('reviewed',true);
     complaint.set('approved',false);
-    complaint.save();
-    this.set("actualize",!this.get("actualize"));
+    complaint.save().then(()=>{
+      complaint.unloadRecord();
+    });
   }
   }
 });

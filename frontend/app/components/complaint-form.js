@@ -9,7 +9,6 @@ export default Ember.Component.extend({
   }),
   actions: {
     searchCourses: function(data) {
-      var store = this.get('store');
       var searchstringarray = data.split(" ");
       let result =this.get("store").query('course', {
         filter: {
