@@ -19,7 +19,7 @@ flex-layout="column" flex=true }}
   {{#paper-content padding=false}}
     {{#paper-list}}
       {{#menu-item active=(is-active "index" currentRouteName) onClick=(transition-to "index")}}{{paper-icon "home" class="site-nav-icon"}}Startseite{{/menu-item}}
-      {{#menu-item onClick=(transition-to "inbox") active=(is-active "inbox" currentRouteName)}}{{paper-icon "toc" class="site-nav-icon"}}Übersicht{{/menu-item}}
+      {{#if session.isAuthenticated}}{{#menu-item onClick=(transition-to "inbox") active=(is-active "inbox" currentRouteName)}}{{paper-icon "toc" class="site-nav-icon"}}Übersicht{{/menu-item}}{{/if}}
 
 
     {{/paper-list}}
