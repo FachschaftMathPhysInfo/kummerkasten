@@ -25,7 +25,7 @@
         {{/title.text}}
       {{/card.title}}
       {{#card.content}}
-      {{simple-mde-preview complaint.message}}
+      {{complaint.message}}
       {{/card.content}}
       {{#card.actions}}
       {{#paper-button onClick=(action "markasread" complaint)}}Als gelesen markieren{{/paper-button}}

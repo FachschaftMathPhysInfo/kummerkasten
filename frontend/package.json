@@ -43,7 +43,6 @@
     "ember-paper": "^1.0.0-beta.3",
     "ember-resolver": "^4.5.0",
     "ember-simple-auth": "^1.4.0",
-    "ember-simplemde": "^1.2.0",
     "ember-source": "~2.16.0",
     "ember-svg-jar": "^0.11.1",
     "ember-transition-helper": "0.0.6",
