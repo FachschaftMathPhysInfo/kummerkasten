@@ -46,7 +46,7 @@
         </div>
         <center>
           <div class="layout-gt-xs-row flex-gt-xs-90 layout-wrap">
-            {{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=selected_lecturers options=model.lecturers requireMatch=true as |item|}}
+            {{#paper-chips readOnly=false search=(action "searchinLecturers") removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=selectedlecturers options=model.lecturers searchField="name" noMatchesMessage="Kein Dozierendes gefunden" requireMatch=true as |item|}}
               <em>{{item.givenname}}</em> {{item.surname}}
             {{/paper-chips}}
           </div>
@@ -112,7 +112,7 @@
       </div>
       <center>
         <div class="layout-gt-xs-row flex-gt-xs-90 layout-wrap">
-          {{#paper-chips readOnly=false removeItem=(action "removeLecturerfromSearch") addItem=(action "addLecturertoSearch") placeholder="nach Dozierenden suchen" content=searchLecturers options=model.lecturers requireMatch=true as |item|}}
+          {{#paper-chips readOnly=false removeItem=(action "removeLecturerfromSearch") search=(action "searchinLecturers") addItem=(action "addLecturertoSearch") placeholder="nach Dozierenden suchen" content=searchLecturers options=model.lecturers searchField="name" requireMatch=true as |item|}}
             <em>{{item.givenname}}</em> {{item.surname}}
           {{/paper-chips}}
         </div>

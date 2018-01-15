@@ -10,6 +10,9 @@ module.exports = function(environment) {
     contentSecurityPolicy: {
       'connect-src': "*"
     },
+    'ember-paper':{
+      insertFontLinks: false
+    },
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build

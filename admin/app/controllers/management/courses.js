@@ -50,10 +50,10 @@ export default Ember.Controller.extend(pageManagament,{
         })
     },
     addLecturer: function(data) {
-      this.selected_lecturers.pushObject(data);
+      this.selectedlecturers.pushObject(data);
     },
     removeLecturer: function(data) {
-      this.selected_lecturers.removeObject(data);
+      this.selectedlecturers.removeObject(data);
     },
     addLecturertoSearch: function(data) {
       this.searchLecturers.pushObject(data);
@@ -62,14 +62,14 @@ export default Ember.Controller.extend(pageManagament,{
       this.searchLecturers.removeObject(data);
     },
     saveCourse:function(){
-      this.store.createRecord('course',{name:this.get('name'),coursetype:this.get('coursetype'),faculty:this.get('faculty'),semester:this.get('semester'),lecturers:this.get('selected_lecturers')}).save().then(()=>{
+      this.store.createRecord('course',{name:this.get('name'),coursetype:this.get('coursetype'),faculty:this.get('faculty'),semester:this.get('semester'),lecturers:this.get('selectedlecturers')}).save().then(()=>{
         this.get('paperToaster').show("Veranstaltung erfolgreich gespeichert",{duration:4000});
         this.set('name',"");
         this.set('lsfid',null);
         this.set('coursetype',null);
         this.set('faculty',null);
         this.set('semester',null);
-        this.set('selected_lecturers',null);
+        this.set('selectedlecturers',null);
       }).catch((errorMessage)=>{
         this.get('paperToaster').show("Veranstaltung konnte nicht gespeichert werden! Grund: "+errorMessage,{duration:4000});
       });
@@ -77,6 +77,9 @@ export default Ember.Controller.extend(pageManagament,{
     editCourse:function(course){
       this.set('currentCourse',course);
       this.set('showEditCourseDialog',true);
+    },
+    searchinLecturers:function(data){
+      return this.store.query('lecturer', { filter: {surname:data}});
     },
     deleteCourse:function(course){
       this.set('currentCourse',course);
