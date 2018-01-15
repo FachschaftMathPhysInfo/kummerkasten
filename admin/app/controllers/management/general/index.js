@@ -1,5 +1,6 @@
 import Ember from 'ember';
-export default Ember.Controller.extend({
+import dialogManagment from "admin/mixins/dialog-managment";
+export default Ember.Controller.extend(dialogManagment,{
   paperToaster:Ember.inject.service(),
   currentSemester:null,
   showEditSemesterDialog:false,
@@ -22,27 +23,10 @@ export default Ember.Controller.extend({
       this.set('showDeleteSemesterDialog',true);
     },
     closeEditDialog:function(option){
-      if(option=="ok"){
-        this.get('currentSemester').save().then(()=>{
-          this.get('paperToaster').show("Semester erfolgreich gespeichert",{duration:4000});
-        }).catch((errorMessage)=>{
-          this.get('paperToaster').show("Semester konnte nicht gespeichert werden! Grund: "+errorMessage,{duration:4000});
-        });
-        this.set('showEditSemesterDialog',false);
-      }
-      else{
-        this.get('currentSemester').rollback();
-        this.set('showEditSemesterDialog',false);
-      }
+      this.closeEditDialog("Semester","Semester",option);
     },
     closeDeleteSemesterDialog:function(option){
-        this.set("showDeleteSemesterDialog",false);
-        if(option=="ok"){
-          this.get('currentSemester').destroyRecord();
-        }
-        else {
-          this.set('currentSemester',null);
-        }
+        this.closeDeleteDialog("Semester",option);
       },
 
     }

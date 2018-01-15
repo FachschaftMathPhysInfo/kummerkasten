@@ -1,29 +1,16 @@
 import Ember from 'ember';
 import { computed } from '@ember/object';
 import { A } from '@ember/array';
-
-export default Ember.Controller.extend({
+import pageManagament from "admin/mixins/page-managment";
+export default Ember.Controller.extend(pageManagament,{
   paperToaster:Ember.inject.service(),
   currentCourse:null,
   showEditCourseDialog:false,
   showDeleteCourseDialog:false,
   selected_lecturers: [],
-  limitOptions: A([10, 20, 30]),
-  limit: 10,
-  page: 1,
   searchLecturers: A(),
   searchName:Ember.computed('searchtemp',function(){
     return this.get('searchtemp.name');
-  }),
-  pages: computed('meta.page-count', function() {
-    let e = A();
-    for (let i = 1; i <=this.get("meta.page-count"); i++) {
-      e.pushObject(i);
-    }
-    return e;
-  }),
-  resultsLength:computed('meta.record-count', function() {
-    return this.get("meta.record-count");
   }),
   paginatedResults:Ember.computed('limit','page','searchLecturers.[]', 'searchLsfid', 'searchName', 'searchCoursetype', 'searchSemester', 'searchFaculty', function() {
     let lecturers = [];

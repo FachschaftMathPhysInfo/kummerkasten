@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import dialogManagment from "admin/mixins/dialog-managment";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(dialogManagment,{
   paperToaster:Ember.inject.service(),
   currentFaculty:null,
   showEditFacultyDialog:false,
@@ -22,27 +23,10 @@ export default Ember.Controller.extend({
       this.set('showDeleteFacultyDialog',true);
     },
     closeEditDialog:function(option){
-      if(option=="ok"){
-        this.get('currentFaculty').save().then(()=>{
-          this.get('paperToaster').show("Fakultät erfolgreich gespeichert",{duration:4000});
-        }).catch((errorMessage)=>{
-          this.get('paperToaster').show("Fakultät konnte nicht gespeichert werden! Grund: "+errorMessage,{duration:4000});
-        });
-        this.set('showEditFacultyDialog',false);
-      }
-      else{
-        this.get('currentFaculty').rollback();
-        this.set('showEditFacultyDialog',false);
-      }
+      this.closeEditDialog("Faculty","Fakultät",option);
     },
     closeDeleteFacultyDialog:function(option){
-        this.set("showDeleteFacultyDialog",false);
-        if(option=="ok"){
-          this.get('currentFaculty').destroyRecord();
-        }
-        else {
-          this.set('currentFaculty',null);
-        }
+        this.closeDeleteDialog("Faculty",option);
       },
 
     }

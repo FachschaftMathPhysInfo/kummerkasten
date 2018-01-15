@@ -1,22 +1,10 @@
 import Ember from 'ember';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
+import pageManagment from "admin/mixins/page-managment";
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(pageManagment,{
   store: Ember.inject.service(),
-  page: 1,
-  limitOptions: A([10, 15, 20]),
-  limit:10,
-  resultsLength:computed('meta.record-count',function(){
-    return this.get("meta.record-count");
-  }),
-  pages: computed('meta.page-count', function() {
-    let e = A();
-    for (let i = 1; i <= this.get("meta.page-count"); i++) {
-      e.pushObject(i);
-    }
-    return e;
-  }),
   simpleMdeOptions:{
     toolbar: false,
     previewRender: true,
