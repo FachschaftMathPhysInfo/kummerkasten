@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
+import dialogManagment from "admin/mixins/dialog-managment";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(dialogManagment,{
   paperToaster: Ember.inject.service(),
   currentLecturer: null,
   showEditLecturerDialog: false,
@@ -72,25 +73,10 @@ export default Ember.Controller.extend({
       this.set('showDeleteLecturerDialog', true);
     },
     closeEditDialog: function(option) {
-      if (option == "ok") {
-        this.get('currentLecturer').save().then(() => {
-          this.get('paperToaster').show("Dozierendes erfolgreich gespeichert", {duration: 4000});
-        }).catch((errorMessage) => {
-          this.get('paperToaster').show("Dozierendes konnte nicht gespeichert werden! Grund: " + errorMessage, {duration: 4000});
-        });
-        this.set('showEditLecturerDialog', false);
-      } else {
-        this.get('currentLecturer').rollback();
-        this.set('showEditLecturerDialog', false);
-      }
+      this.closeEditDialog("Lecturer","Dozierendes",option);
     },
     closeDeleteLecturerDialog: function(option) {
-      this.set("showDeleteLecturerDialog", false);
-      if (option == "ok") {
-        this.get('currentLecturer').destroyRecord();
-      } else {
-        this.set('currentLecturer', null);
-      }
+      this.closeDeleteDialog("Lecturer",option);
     }
   }
 });
