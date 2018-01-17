@@ -7,7 +7,7 @@ export default Ember.Controller.extend(pageManagament,{
   currentCourse:null,
   showEditCourseDialog:false,
   showDeleteCourseDialog:false,
-  selected_lecturers: [],
+  selectedlecturers: [],
   searchLecturers: A(),
   searchName:Ember.computed('searchtemp',function(){
     return this.get('searchtemp.name');
@@ -50,16 +50,16 @@ export default Ember.Controller.extend(pageManagament,{
         })
     },
     addLecturer: function(data) {
-      this.get('selectedlecturers').pushObject(data);
+      this.selectedlecturers.pushObject(data);
     },
     removeLecturer: function(data) {
-      this.get('selectedlecturers').removeObject(data);
+      this.selectedlecturers.removeObject(data);
     },
     addLecturertoSearch: function(data) {
-      this.get('searchLecturers').pushObject(data);
+      this.searchLecturers.pushObject(data);
     },
     removeLecturerfromSearch: function(data) {
-      this.get('searchLecturers').removeObject(data);
+      this.searchLecturers.removeObject(data);
     },
     saveCourse:function(){
       this.store.createRecord('course',{name:this.get('name'),coursetype:this.get('coursetype'),faculty:this.get('faculty'),semester:this.get('semester'),lecturers:this.get('selectedlecturers')}).save().then(()=>{
