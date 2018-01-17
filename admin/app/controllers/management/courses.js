@@ -63,16 +63,16 @@ export default Ember.Controller.extend({
         })
     },
     addLecturer: function(data) {
-      this.selectedlecturers.pushObject(data);
+      this.get('selectedlecturers').pushObject(data);
     },
     removeLecturer: function(data) {
-      this.selectedlecturers.removeObject(data);
+      this.get('selectedlecturers').removeObject(data);
     },
     addLecturertoSearch: function(data) {
-      this.searchLecturers.pushObject(data);
+      this.get('searchLecturers').pushObject(data);
     },
     removeLecturerfromSearch: function(data) {
-      this.searchLecturers.removeObject(data);
+      this.get('searchLecturers').removeObject(data);
     },
     saveCourse:function(){
       this.store.createRecord('course',{name:this.get('name'),coursetype:this.get('coursetype'),faculty:this.get('faculty'),semester:this.get('semester'),lecturers:this.get('selectedlecturers')}).save().then(()=>{
