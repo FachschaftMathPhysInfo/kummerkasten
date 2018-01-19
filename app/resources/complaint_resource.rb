@@ -5,8 +5,7 @@ class ComplaintResource < BaseResource
   has_many :hasreads
   has_many :readers, class:"Lecturer"
   has_many :lecturers
-  filter :reviewed
-  filter :approved
+  filters :reviewed, :approved, :read, :unread, :course
   filter :read, apply: ->(records, value, _options) {
      return records.joins(:hasreads).where(hasreads: { lecturer: _options[:context][:user] })
   }

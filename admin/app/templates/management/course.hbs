@@ -5,7 +5,7 @@
       {{paper-icon icon="menu"}}
       {{/paper-button}}
     {{/paper-sidenav-toggle}}
-     <h2>Verwaltung {{paper-icon "chevron right"}} Kurs {{paper-icon "chevron right"}} {{model.id}}</h2>
+     <h2>Verwaltung {{paper-icon "chevron right"}} Kurs {{paper-icon "chevron right"}} {{model.name}}</h2>
      <span class="flex"></span>
    {{/paper-toolbar-tools}}
  {{/paper-toolbar}}
@@ -101,7 +101,7 @@
 {{/paper-form}}
 {{/unless}}
         {{/paper-card}}
-        {{complaint-list complaints=model.complaints}}
+        {{complaint-list course=model}}
 
 {{#if showDeleteCourseDialog}}{{delete-course-dialog closeDialog=(action "closeDeleteCourseDialog") course=model}}{{/if}}
 {{/paper-content}}

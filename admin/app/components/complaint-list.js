@@ -10,10 +10,10 @@ export default Ember.Component.extend(pageManagment,{
     previewRender: true,
   },
   paperToaster:Ember.inject.service(),
-  paginatedResults: computed('page', 'limit', function() {
-    let filter=this.get("filter");
+  paginatedResults: computed('page', 'limit','course', function() {
+    //let filter=this.get("filter");
     let result= this.get("store").query("complaint", {
-      filter,
+      filter: { course: this.get('course.id') },
       page: {
         number: this.get('page'),
         size: this.get("limit")
