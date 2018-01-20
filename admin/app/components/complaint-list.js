@@ -11,9 +11,12 @@ export default Ember.Component.extend(pageManagment,{
   },
   paperToaster:Ember.inject.service(),
   paginatedResults: computed('page', 'limit','course', function() {
-    //let filter=this.get("filter");
+    let filter=this.get("filter");
+    if(this.get('course')!=undefined){
+      filter={course:this.get('course.id')};
+    }
     let result= this.get("store").query("complaint", {
-      filter: { course: this.get('course.id') },
+      filter,
       page: {
         number: this.get('page'),
         size: this.get("limit")

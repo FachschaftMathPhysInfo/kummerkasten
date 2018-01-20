@@ -5,7 +5,7 @@
       {{paper-icon icon="menu"}}
       {{/paper-button}}
     {{/paper-sidenav-toggle}}
-     <h2>Verwaltung {{paper-icon "chevron right"}} Kurs {{paper-icon "chevron right"}} {{model.name}}</h2>
+     <h2>Verwaltung {{paper-icon "chevron right"}} Kurs {{paper-icon "chevron right"}} {{model.course.name}}</h2>
      <span class="flex"></span>
    {{/paper-toolbar-tools}}
  {{/paper-toolbar}}
@@ -14,7 +14,7 @@
 {{#card.title as |title|}}
   {{#title.text as |text|}}
     {{#text.headline}}
-      {{model.name}} - {{model.semester.name}} {{#paper-button iconButton=true onClick=(action "editButton")}}{{paper-icon "edit"}}{{/paper-button}}
+      {{model.course.name}} - {{model.course.semester.name}} {{#paper-button iconButton=true onClick=(action "editButton")}}{{paper-icon "edit"}}{{/paper-button}}
     {{/text.headline}}
   {{/title.text}}
 {{/card.title}}
@@ -25,10 +25,10 @@
 {{#paper-item class="md-2-line" }}
 <div class="md-list-item-text layout-gt-xs-row space-around layout-wrap">
   <div class="flex-gt-xs-70">
-        <strong>Name:</strong> {{model.name}}
+        <strong>Name:</strong> {{model.course.name}}
       </div>
       <div class="flex-gt-xs-30">
-      <strong>Kurstyp:</strong> {{model.coursetype.name}}
+      <strong>Kurstyp:</strong> {{model.course.coursetype.name}}
       </div>
   </div>
           {{/paper-item}}
@@ -36,20 +36,20 @@
         {{#paper-item class="md-2-line" }}
         <div class="md-list-item-text layout-gt-xs-row space-around layout-wrap">
           <div class="flex-gt-xs-45">
-        <strong>Fakultät:</strong> {{model.faculty.name}}
+        <strong>Fakultät:</strong> {{model.course.faculty.name}}
       </div>
       <div class="flex-gt-xs-35">
-      <strong>Semester:</strong> {{model.semester.name}}
+      <strong>Semester:</strong> {{model.course.semester.name}}
     </div>
       <div class="flex-gt-xs-20">
-        <strong>LSF-ID:</strong> {{model.lsfId}}
+        <strong>LSF-ID:</strong> {{model.course.lsfId}}
       </div>
     </div>
           {{/paper-item}}
         {{paper-divider}}
         {{#paper-item class="md-2-line" }}
         <div class="md-list-item-text layout-gt-xs-row layout-wrap">
-        <strong>Dozierende(s):</strong>&nbsp;{{#each model.lecturers as |lec index|}}{{if index ", "}}{{lec.givenname}} {{lec.surname}}{{/each}}
+        <strong>Dozierende(s):</strong>&nbsp;{{#each model.course.lecturers as |lec index|}}{{if index ", "}}{{lec.givenname}} {{lec.surname}}{{/each}}
       </div>
           {{/paper-item}}
         {{/paper-list}}
@@ -63,31 +63,31 @@
 {{#card.content}}
 <div class="layout-gt-xs-row space-around layout-wrap">
   <div class="flex-gt-xs-70">
-    {{form.input value=model.name label="Name" required=true onChange=(action (mut model.name))}}
+    {{form.input value=model.course.name label="Name" required=true onChange=(action (mut model.course.name))}}
   </div>
   <div class="flex-gt-xs-30">
-    {{form.input value=model.lsfId type="number" label="LSF-ID" required=true onChange=(action (mut model.lsfId))}}
+    {{form.input value=model.course.lsfId type="number" label="LSF-ID" required=true onChange=(action (mut model.course.lsfId))}}
   </div>
 </div>
 <div class="layout-gt-xs-row space-around layout-wrap">
 <div class="flex-gt-xs-35">
-  {{#form.select required=true label="Veranstaltungstyp" options=coursetypes selected=model.coursetype onChange=(action (mut model.coursetype)) as |ct|}}
+  {{#form.select required=true label="Veranstaltungstyp" options=model.coursetypes selected=model.course.coursetype onChange=(action (mut model.course.coursetype)) as |ct|}}
   {{ct.name}}
   {{/form.select}}
     </div>
 <div class="flex-gt-xs-35">
-      {{#form.select required=true label="Fakultät" options=faculties selected=model.faculty onChange=(action (mut model.faculty)) as |fac|}}
+      {{#form.select required=true label="Fakultät" options=model.faculties selected=model.course.faculty onChange=(action (mut model.course.faculty)) as |fac|}}
       {{fac.name}}
       {{/form.select}}
         </div>
 <div class="flex-gt-xs-30">
-      {{#form.select required=true label="Semester" options=semesters selected=model.semester onChange=(action (mut model.semester)) as |sem|}}
+      {{#form.select required=true label="Semester" options=model.semesters selected=model.course.semester onChange=(action (mut model.course.semester)) as |sem|}}
       {{sem.name}}
       {{/form.select}}
   </div>
     </div>
     <div class="layout-gt-xs-row space-around layout-wrap">
-{{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=model.lecturers options=lecturers requireMatch=true as |item|}}
+{{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=model.course.lecturers options=model.lecturers requireMatch=true as |item|}}
                 <em>{{item.givenname}}</em> {{item.surname}}
                 {{/paper-chips}}
               </div>
@@ -101,7 +101,7 @@
 {{/paper-form}}
 {{/unless}}
         {{/paper-card}}
-        {{complaint-list course=model}}
+        {{complaint-list course=model.course}}
 
 {{#if showDeleteCourseDialog}}{{delete-course-dialog closeDialog=(action "closeDeleteCourseDialog") course=model}}{{/if}}
 {{/paper-content}}
