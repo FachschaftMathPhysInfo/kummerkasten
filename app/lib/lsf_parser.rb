@@ -267,6 +267,7 @@ end
         c.save!
         course[:profs].each do |prof|
           pr= Lecturer.find_by(lsf_id:prof[:id])
+          pr = Lecturer.find_by(email:prof[:mail]) if pr.nil?
           anrede = "Sehr geehrte Dame oder Herr"
           case prof[:geschlecht]
           when "W" then
