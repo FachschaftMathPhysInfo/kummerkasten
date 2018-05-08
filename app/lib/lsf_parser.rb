@@ -280,8 +280,14 @@ end
               prof[:mail]="fachschaft+#{prof[:id]}@mathphys.stura.uni-heidelberg.de"
             end
             passwort=SecureRandom.base64(12)
-            pr =Lecturer.create(lsf_id:prof[:id],salutation: "#{anrede} #{prof[:title]}",surname: prof[:last],givenname:prof[:first],email:prof[:mail],password:passwort)
+            begin
+              pr =Lecturer.create(lsf_id:prof[:id],salutation: "#{anrede} #{prof[:title]}",surname: prof[:last],givenname:prof[:first],email:prof[:mail],password:passwort)
             pr.save!
+            rescue Exception
+              prof[:mail]="fachschaft+#{prof[:id]}@mathphys.stura.uni-heidelberg.de"
+              pr =Lecturer.create(lsf_id:prof[:id],salutation: "#{anrede} #{prof[:title]}",surname: prof[:last],givenname:prof[:first],email:prof[:mail],password:passwort)
+              pr.save!
+            end
             if invite
               LecturerInviteMailer.welcome(pr,passwort).deliver_later
               LSFParser.broadcast "Sende Email"
