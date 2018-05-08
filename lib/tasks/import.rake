@@ -6,7 +6,7 @@ namespace :import do
 
   desc "Lädt alle Physikveranstaltungen aus dem LSF, lädt Profs ein"
   task physics: :environment do
-    LSFparser.import(["Physik und Astronomie"],true)
+    LSFParser.import(["Physik und Astronomie"],true)
   end
 
   desc "Lädt alle Veranstaltungen aus dem LSF"
