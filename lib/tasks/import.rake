@@ -1,12 +1,12 @@
 namespace :import do
-  desc "Lädt alle Mathe und Informatikveranstaltungen aus dem LSF"
+  desc "Lädt alle Mathe und Informatikveranstaltungen aus dem LSF, lädt Profs ein"
   task math: :environment do
-    LSFParser.import(["Mathematik und Informatik"])
+    LSFParser.import(["Mathematik und Informatik"],true)
   end
 
-  desc "Lädt alle Physikveranstaltungen aus dem LSF"
+  desc "Lädt alle Physikveranstaltungen aus dem LSF, lädt Profs ein"
   task physics: :environment do
-    LSFparser.import(["Physik und Astronomie"])
+    LSFparser.import(["Physik und Astronomie"],true)
   end
 
   desc "Lädt alle Veranstaltungen aus dem LSF"

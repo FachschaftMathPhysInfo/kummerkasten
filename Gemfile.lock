@@ -194,7 +194,7 @@ DEPENDENCIES
   pundit
   queue_classic (~> 3.1.0)
   rack-cors
-  rails (~> 5.1.1)
+  rails (~> 5.1)
   rails-erd
   redis (~> 3)
   simple_token_authentication
