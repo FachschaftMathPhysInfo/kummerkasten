@@ -24,7 +24,7 @@
         {{sem.name}}
         {{/form.select}}
 
-  {{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" content=course.lecturers options=model.lecturers requireMatch=true as |item|}}
+  {{#paper-chips readOnly=false removeItem=(action "removeLecturer") addItem=(action "addLecturer") placeholder="Dozierendes hinzufügen" searchField="name" content=course.lecturers options=model.lecturers requireMatch=true as |item|}}
                   <em>{{item.givenname}}</em> {{item.surname}}
                   {{/paper-chips}}
 {{/paper-dialog-content}}
