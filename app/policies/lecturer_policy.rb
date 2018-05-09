@@ -11,7 +11,9 @@ class LecturerPolicy < ApplicationPolicy
    isAdmin?
   end
   def show?
-    isAdmin?
+    p @user
+    p "@",@record
+    @user==@record or isAdmin?
   end
   def destroy?
     isAdmin?
