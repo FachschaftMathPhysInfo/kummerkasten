@@ -21,6 +21,14 @@
 {{/paper-radio-group}}
 </div>
 <div class="flex-50">
+  <h2>Überprüfung durch die Fachschaft</h2>
+<p>Hier können Sie auswählen, ob Sie möchten, dass die Fachschaft an Sie gerichtete Nachrichten auf Beleidigungen, Spam, o.ä. prüft und gegebenenfalls zurückhält (standardmäßig: ja).</p>
+{{#paper-checkbox value=model.wantsreview onChange=(action (mut model.wantsreview))}}
+    Fachschaftsüberprüfung
+  {{/paper-checkbox}}
+</div>
+
+<div class="flex-50">
 
     <h2>Passwort</h2>
 <div class="flex-95 layout-column">
