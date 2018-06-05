@@ -8,38 +8,35 @@
     <h2>Kummerkasten</h2>
     <span class="flex"></span>
     {{#unless session.isAuthenticated}}
-    {{#paper-menu isOpen=dreipunktemenuisopen position="target-right target" as |menu|}}
-      {{#menu.trigger}}
-        {{#paper-button onClick=null iconButton=true}}
-          {{paper-icon "vpn_key" class="md-menu-origin"}}
+      {{#paper-menu isOpen=dreipunktemenuisopen position="target-right target" as |menu|}}
+        {{#menu.trigger}}
+          {{#paper-button onClick=null iconButton=true}}
+            {{paper-icon "vpn_key" class="md-menu-origin"}}
+          {{/paper-button}}
+        {{/menu.trigger}}
+        {{#menu.content as |content|}}
+          <center style="overflow-x: hidden; overflow-y: hidden;">
+
+            {{#paper-form onSubmit=(action "login") as |form|}}
+              <div class="layout-column flex-80">
+                <h2>Anmeldung</h2> {{form.input type="email" class="md-input-login-container" required=true label="E-Mail" value=email onChange=(action (mut email))}} {{paper-password class="md-input-login-container" required=true label="Passwort" value=password onChange=(action (mut password))}}
+                {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Einloggen{{/form.submit-button}}
+                {{#if errorMessage}}
+                  <p>
+                    <strong>Login fehlgeschlagen:</strong>
+                    <code>{{errorMessage}}</code>
+                  </p>
+                {{/if}}
+              </div>
+            {{/paper-form}}
+
+          </center>
+        {{/menu.content}}
+      {{/paper-menu}}
+      {{else}}
+        {{#paper-button onClick=(pipe (action "logout")(transition-to "logout")) iconButton=true}}
+          {{paper-icon "exit_to_app" class="md-menu-origin"}}
         {{/paper-button}}
-      {{/menu.trigger}}
-      {{#menu.content as |content|}}
-      <center style="overflow-x: hidden; overflow-y: hidden;">
-
-          {{#paper-form onSubmit=(action "login") as |form|}}
-          <div class="layout-column flex-80">
-          <h2>Anmeldung</h2>
-
-            {{form.input type="email" class="md-input-login-container" required=true label="E-Mail" value=email onChange=(action (mut email))}}
-            {{paper-password class="md-input-login-container" required=true label="Passwort" value=password onChange=(action (mut password))}}
-            {{#form.submit-button disabled=form.isInvalid raised=true primary=true}}Einloggen{{/form.submit-button}}
-            {{#if errorMessage}}
-            <p>
-              <strong>Login fehlgeschlagen:</strong>
-              <code>{{errorMessage}}</code>
-            </p>
-            {{/if}}
-          </div>
-          {{/paper-form}}
-
-        </center>
-      {{/menu.content}}
-    {{/paper-menu}}
-    {{else}}
-    {{#paper-button onClick=(pipe (action "logout")(transition-to "logout")) iconButton=true}}
-      {{paper-icon "exit_to_app" class="md-menu-origin"}}
-    {{/paper-button}}
     {{/unless}}
   {{/paper-toolbar-tools}}
 {{/paper-toolbar}}
@@ -57,6 +54,27 @@
       Hier hast du die Möglichkeit, deinen Dozierenden konstruktiv und anonym Kritik oder Lob zu schreiben. Wähle einfach im Formular unten die Veranstaltung aus und schreibe deine Nachricht. Sie wird von der Fachschaft überprüft und an die Dozierenden weitergeleitet.
     {{/card.content}}
   {{/paper-card}}
-{{complaint-form  model=model}}
+  {{complaint-form  model=model}}
+  {{#paper-card as |card|}}
+    {{#card.content}}
+      <p style="font-size:20px">Dir liegt etwas auf dem Herzen, was nicht Dozierende bzw. konkrete Lehrveranstaltungen betrifft, dann können wir dir die Nightline Heidelberg oder die Psychosoziale Beratungsstelle für Studierende des Studierendenwerkes empfehlen. Die Kontaktdaten
+        findest du hier:</p>
+      <div class="layout-row">
+        <div class="flex-gt-xs-50">
+          {{#paper-card as |card1|}}
+            {{#card1.content}}
+              <h3>Nightline Heidelberg</h3> Webseite: https://www.nightline-heidelberg.de/<br> Tel.: 06221 184708<br> Skype: nightline.heidelberg{{/card1.content}}
+          {{/paper-card}}
+        </div>
+        <div style="border-left-style: solid;" class="flex-gt-xs-50">
+          {{#paper-card as |card2|}}
+            {{#card2.content}}
+              <h3>Psychosoziale Beratungsstelle des STW HD</h3> Gartenstraße 2<br> 69115 Heidelberg<br> Webseite: https://www.studentenwerk.uni-heidelberg.de/de/PBS<br> E-Mail: pbs@stw.uni-heidelberg.de<br> Tel.: 06221 54-3750
+            {{/card2.content}}
+          {{/paper-card}}
+        </div>
+      </div>
+    {{/card.content}}
+  {{/paper-card}}
 {{/paper-content}}
 {{outlet}}
