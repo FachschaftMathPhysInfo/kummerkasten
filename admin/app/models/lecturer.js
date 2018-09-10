@@ -7,6 +7,7 @@ export default DS.Model.extend({
   givenname:attr('string'),
   email:attr('string'),
   invite:attr('boolean'),
+  wantsreview:attr('boolean'),
   notifications:attr('string'),
   unreadcomplaintsCount:attr('number'),
   password:attr('string'),

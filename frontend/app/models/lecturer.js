@@ -5,6 +5,7 @@ export default DS.Model.extend({
   surname:attr('string'),
   givenname:attr('string'),
   email:attr('string'),
+  wantsreview:attr('boolean'),
   notifications:attr('string'),
   //readcomplaints:hasMany('complaint'),
   //complaints:hasMany('complaint'),
