@@ -85,6 +85,10 @@ export default Ember.Controller.extend(pageManagament,{
       this.set('currentCourse',course);
       this.set('showDeleteCourseDialog',true);
     },
+    archiveCourse:function(course){
+      course.set('archived',!course.get('archived'));
+      course.save();
+    },
     closeEditDialog:function(option){
       if(option=="ok"){
         this.get('currentCourse').save().then(()=>{

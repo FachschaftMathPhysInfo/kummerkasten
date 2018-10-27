@@ -164,3 +164,9 @@ md-content{
    75%  {top: 79px}
    100% {top: 120px;}
  }
+
+ /** Style for archived courses */
+ .archived > td {
+   color: gray !important;
+   text-decoration: line-through !important;
+ }

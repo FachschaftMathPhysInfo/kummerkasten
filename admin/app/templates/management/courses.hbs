@@ -147,7 +147,7 @@ onChangeLimit=(action (mut limit))}}
         {{/table.head}}
         {{#table.body as |body|}}
           {{#each (sort-by table.sortDesc paginatedResults) as |cs|}}
-            {{#body.row edit=true as |row|}}
+            {{#body.row edit=true class=(if cs.archived "archived" "") as |row|}}
               {{#row.cell onClick=(transition-to "management.course" cs.id) }}{{paper-icon "rate review" }}{{/row.cell}}
               {{#row.cell onClick=(transition-to "management.course" cs.id) }}{{cs.semestername}}{{/row.cell}}
               {{#row.cell onClick=(transition-to "management.course" cs.id) }}{{cs.name}}{{/row.cell}}
@@ -157,6 +157,20 @@ onChangeLimit=(action (mut limit))}}
               {{#row.cell edit=true as |cell|}}
                 {{#paper-button iconButton=true onClick=(action "editCourse" cs)}}{{paper-icon "edit"}}{{/paper-button}}
                 {{#paper-button iconButton=true onClick=(action "deleteCourse" cs)}}{{paper-icon "delete"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "archiveCourse" cs)}}
+                {{#paper-tooltip position="top"}}
+                  {{#if cs.archived}}
+                  Dearchivieren?
+                  {{else}}
+                  Archivieren?
+                  {{/if}}
+                {{/paper-tooltip}}
+                {{#if cs.archived}}
+                  {{paper-icon "loop"}}
+                {{else}}
+                  {{paper-icon "highlight_off"}}
+                {{/if}}
+                {{/paper-button}}
               {{/row.cell}}
             {{/body.row}}
           {{/each}}

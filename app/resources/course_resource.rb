@@ -5,7 +5,7 @@ class CourseResource < BaseResource
   has_many :lectures
   has_many :lecturers,acts_as_set:true
   has_many :complaints
-  attributes :name, :semestername, :facultyname, :lecturernames, :lsf_id, :complaint_count
+  attributes :name, :semestername, :facultyname, :lecturernames, :lsf_id, :complaint_count, :archived
   def complaint_count
     @model.complaints.size
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_05_132924) do
+ActiveRecord::Schema.define(version: 2018_10_27_101849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2018_06_05_132924) do
     t.bigint "faculty_id"
     t.string "abbreviation"
     t.integer "lsf_id"
+    t.boolean "archived", default: false
     t.index ["coursetype_id"], name: "index_courses_on_coursetype_id"
     t.index ["faculty_id"], name: "index_courses_on_faculty_id"
     t.index ["semester_id"], name: "index_courses_on_semester_id"

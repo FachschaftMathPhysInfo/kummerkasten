@@ -1,6 +1,7 @@
 import DS from 'ember-data';
 const { attr,belongsTo, hasMany } = DS;
 export default DS.Model.extend({
+  archived: attr('boolean'),
   complaints:hasMany('complaint'),
   name:attr('string'),
   faculty:belongsTo('faculty'),
