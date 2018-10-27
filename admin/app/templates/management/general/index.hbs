@@ -55,6 +55,8 @@
                 {{#row.cell}}{{moment-format sem.year "MM.YYYY"}}{{/row.cell}}
                 {{#row.cell}}{{sem.lsfid}}{{/row.cell}}
                 {{#row.cell edit=true as |cell|}}
+                {{#paper-button iconButton=true onClick=(action "unarchiveSemester" sem)}}{{#paper-tooltip position="top"}}Unarchivieren?{{/paper-tooltip}}{{paper-icon "loop"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "archiveSemester" sem)}}{{#paper-tooltip position="top"}}Archivieren?{{/paper-tooltip}}{{paper-icon "history"}}{{/paper-button}}
                 {{#paper-button iconButton=true onClick=(action "editSemester" sem)}}{{paper-icon "edit"}}{{/paper-button}}
                 {{#paper-button iconButton=true onClick=(action "deleteSemester" sem)}}{{paper-icon "delete"}}{{/paper-button}}
                 {{/row.cell}}

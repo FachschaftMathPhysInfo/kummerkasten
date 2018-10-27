@@ -14,6 +14,22 @@ export default Ember.Controller.extend(dialogManagment,{
         this.get('paperToaster').show("Semester konnte nicht gespeichert werden! Grund: "+errorMessage,{duration:4000});
       });
     },
+    archiveSemester: function(semester){
+      semester.set("archived",true);
+      semester.save().then(()=>{
+        this.get('paperToaster').show("Semester erfolgreich archiviert",{duration:4000});
+      }).catch((errorMessage)=>{
+        this.get('paperToaster').show("Semester konnte nicht archiviert werden! Grund: "+errorMessage,{duration:4000});
+      });
+    },
+    unarchiveSemester: function(semester){
+      semester.set("archived",false);
+      semester.save().then(()=>{
+        this.get('paperToaster').show("Semester erfolgreich dearchiviert",{duration:4000});
+      }).catch((errorMessage)=>{
+        this.get('paperToaster').show("Semester konnte nicht dearchiviert werden! Grund: "+errorMessage,{duration:4000});
+      });
+    },
     editSemester:function(semester){
       this.set('currentSemester',semester);
       this.set('showEditSemesterDialog',true);
