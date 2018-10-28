@@ -27,12 +27,12 @@ RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
 #Gemfile kopieren
-COPY Gemfile Gemfile.lock ./
+COPY --chown=app Gemfile Gemfile.lock ./
 #bundles installieren
 RUN gem install bundler
 RUN DEBUG_RESOLVER=1 bundler install --binstubs --verbose
 #und den rest kopieren
-COPY . .
+COPY --chown=app . .
 ENV RAILS_ENV production
 ENV EMBER_ENV development
 RUN RAILS_ENV=production PRODUCTION_DATABASE_ADAPTER="postgresql" bundle exec rake assets:precompile
@@ -45,5 +45,4 @@ ADD postgres-env.conf /etc/nginx/main.d/postgres-env.conf
 RUN mkdir -p /etc/service/queue_classic
 ADD queue_classic.sh /etc/service/queue_classic/run
 RUN chmod 755 /etc/service/queue_classic/run
-RUN chown -R app /home/app
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
