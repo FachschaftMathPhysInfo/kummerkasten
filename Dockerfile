@@ -1,7 +1,7 @@
 
 FROM phusion/passenger-customizable
-LABEL vendor="Fachschaft MathPhys"
-MAINTAINER Henrik Reinstädtler <henrik@mathphys.fsk.uni-heidelberg.de>
+LABEL vendor="Fachschaft MathPhysInfo"
+MAINTAINER Henrik Reinstädtler <henrik@mathphys.stura.uni-heidelberg.de>
 RUN /pd_build/ruby-2.3.7.sh
 RUN /pd_build/redis.sh
 
