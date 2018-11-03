@@ -16,8 +16,8 @@ export default Ember.Controller.extend(dialogManagment,{
     },
     archiveSemester: function(semester){
       semester.set('archived',!semester.get('archived'));
+      let archiveStatusWord = "";
       semester.save().then(()=>{
-        let archiveStatusWord = "";
         if(semester.get('archived')) {
             archiveStatusWord = "dearchiviert";
         }
