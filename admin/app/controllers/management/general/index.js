@@ -9,25 +9,24 @@ export default Ember.Controller.extend(dialogManagment,{
   actions:{
     saveSemester:function(){
       this.store.createRecord('semester',{name:this.get('name'),lsfId:this.get('lsfid'),year:this.get('year')}).save().then(()=>{
-        this.get('paperToaster').show("Semester erfolgreich gespeichert",{duration:4000});
+        this.get('paperToaster').show("Semester erfolgreich gespeichert",{duration:3000});
       }).catch((errorMessage)=>{
-        this.get('paperToaster').show("Semester konnte nicht gespeichert werden! Grund: "+errorMessage,{duration:4000});
+        this.get('paperToaster').show("Semester konnte nicht gespeichert werden! Grund: "+errorMessage,{duration:3000});
       });
     },
     archiveSemester: function(semester){
-      semester.set("archived",true);
+      semester.set('archived',!semester.get('archived'));
       semester.save().then(()=>{
-        this.get('paperToaster').show("Semester erfolgreich archiviert",{duration:4000});
+        let archiveStatusWord = "";
+        if(semester.get('archived')) {
+            archiveStatusWord = "dearchiviert";
+        }
+        else {
+            archiveStatusWord = "archiviert";
+        }
+        this.get('paperToaster').show("Semester erfolgreich "+archiveStatusWord+"!",{duration:3000});
       }).catch((errorMessage)=>{
-        this.get('paperToaster').show("Semester konnte nicht archiviert werden! Grund: "+errorMessage,{duration:4000});
-      });
-    },
-    unarchiveSemester: function(semester){
-      semester.set("archived",false);
-      semester.save().then(()=>{
-        this.get('paperToaster').show("Semester erfolgreich dearchiviert",{duration:4000});
-      }).catch((errorMessage)=>{
-        this.get('paperToaster').show("Semester konnte nicht dearchiviert werden! Grund: "+errorMessage,{duration:4000});
+        this.get('paperToaster').show("Semester konnte nicht "+archiveStatusWord+" werden! Grund: "+errorMessage,{duration:3000});
       });
     },
     editSemester:function(semester){

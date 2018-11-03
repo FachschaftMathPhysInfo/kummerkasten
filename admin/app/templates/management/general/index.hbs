@@ -49,16 +49,28 @@
             {{/table.head}}
           {{#table.body as |body|}}
             {{#each (sort-by table.sortDesc model) as |sem|}}
-              {{#body.row edit=true as |row|}}
+              {{#body.row class=(if sem.archived "archived" "") edit=true as |row|}}
               {{#row.cell}}{{paper-icon "data usage" }}{{/row.cell}}
                 {{#row.cell}}{{sem.name}}{{/row.cell}}
                 {{#row.cell}}{{moment-format sem.year "MM.YYYY"}}{{/row.cell}}
                 {{#row.cell}}{{sem.lsfid}}{{/row.cell}}
                 {{#row.cell edit=true as |cell|}}
-                {{#paper-button iconButton=true onClick=(action "unarchiveSemester" sem)}}{{#paper-tooltip position="top"}}Unarchivieren?{{/paper-tooltip}}{{paper-icon "loop"}}{{/paper-button}}
-                {{#paper-button iconButton=true onClick=(action "archiveSemester" sem)}}{{#paper-tooltip position="top"}}Archivieren?{{/paper-tooltip}}{{paper-icon "history"}}{{/paper-button}}
-                {{#paper-button iconButton=true onClick=(action "editSemester" sem)}}{{paper-icon "edit"}}{{/paper-button}}
-                {{#paper-button iconButton=true onClick=(action "deleteSemester" sem)}}{{paper-icon "delete"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "archiveSemester" sem)}}
+                  {{#paper-tooltip position="top"}}
+                    {{#if sem.archived}}
+                      Derchivieren?
+                    {{else}}
+                      Archivieren?
+                    {{/if}}
+                  {{/paper-tooltip}}
+                    {{#if sem.archived}}
+                      {{paper-icon "loop"}}
+                    {{else}}
+                      {{paper-icon "history"}}
+                    {{/if}}
+                {{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "editSemester" sem)}}{{#paper-tooltip position="top"}}Bearbeiten{{/paper-tooltip}}{{paper-icon "edit"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "deleteSemester" sem)}}{{#paper-tooltip position="top"}}Löschen{{/paper-tooltip}}{{paper-icon "delete"}}{{/paper-button}}
                 {{/row.cell}}
               {{/body.row}}
             {{/each}}

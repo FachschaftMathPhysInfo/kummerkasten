@@ -165,8 +165,8 @@ md-content{
    100% {top: 120px;}
  }
 
- /** Style for archived courses */
+ /** Style for archived courses and semesters **/
  .archived > td {
    color: gray !important;
-   text-decoration: line-through !important;
+   font-style: italic !important;
  }

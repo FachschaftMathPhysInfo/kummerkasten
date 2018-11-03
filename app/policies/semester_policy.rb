@@ -16,7 +16,13 @@ class SemesterPolicy < ApplicationPolicy
   end
   class Scope < Scope
     def resolve
-      scope
+      if not user.nil? and (user!= :admin)
+        scope.where("archived=false OR lecturer_id=#{user.id}")
+      elsif user==:admin
+        Semester.all
+      else
+        scope.where(archived:false)
+      end
     end
   end
 end

@@ -23,7 +23,7 @@
 {{#card.title as |title|}}
   {{#title.text as |text|}}
     {{#text.headline}}
-      {{paper-icon "widgets"}} Veranstaltungstypen
+      {{paper-icon "featured_play_list"}} Veranstaltungstypen
     {{/text.headline}}
   {{/title.text}}
 {{/card.title}}
@@ -37,11 +37,11 @@
           {{#table.body as |body|}}
             {{#each (sort-by table.sortDesc model) as |ct|}}
               {{#body.row edit=true as |row|}}
-              {{#row.cell}}{{paper-icon "widgets" }}{{/row.cell}}
+              {{#row.cell}}{{paper-icon "featured_play_list" }}{{/row.cell}}
                 {{#row.cell}}{{ct.name}}{{/row.cell}}
                 {{#row.cell edit=true as |cell|}}
-                {{#paper-button iconButton=true onClick=(action "editCoursetype" ct)}}{{paper-icon "edit"}}{{/paper-button}}
-                {{#paper-button iconButton=true onClick=(action "deleteCoursetype" ct)}}{{paper-icon "delete"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "editCoursetype" ct)}}{{#paper-tooltip position="top"}}Bearbeiten{{/paper-tooltip}}{{paper-icon "edit"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "deleteCoursetype" ct)}}{{#paper-tooltip position="top"}}Löschen{{/paper-tooltip}}{{paper-icon "delete"}}{{/paper-button}}
                 {{/row.cell}}
               {{/body.row}}
             {{/each}}

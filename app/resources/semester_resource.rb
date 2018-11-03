@@ -4,10 +4,8 @@ class SemesterResource < BaseResource
   def self.default_sort
     [{field: 'year', direction: :desc}]
   end
-  def archived
-    false
-  end
   def archived=(value)
+    @model.archived=value
     @model.courses.each do |course|
       course.archived = value
       course.save

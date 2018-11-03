@@ -45,8 +45,8 @@
                 {{#row.cell}}{{fac.name}}{{/row.cell}}
                 {{#row.cell}}{{fac.lsfId}}{{/row.cell}}
                 {{#row.cell edit=true as |cell|}}
-                {{#paper-button iconButton=true onClick=(action "editFaculty" fac)}}{{paper-icon "edit"}}{{/paper-button}}
-                {{#paper-button iconButton=true onClick=(action "deleteFaculty" fac)}}{{paper-icon "delete"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "editFaculty" fac)}}{{#paper-tooltip position="top"}}Bearbeiten{{/paper-tooltip}}{{paper-icon "edit"}}{{/paper-button}}
+                {{#paper-button iconButton=true onClick=(action "deleteFaculty" fac)}}{{#paper-tooltip position="top"}}Löschen{{/paper-tooltip}}{{paper-icon "delete"}}{{/paper-button}}
                 {{/row.cell}}
               {{/body.row}}
             {{/each}}
