@@ -39,7 +39,7 @@
             </div>
               <div class="layout-column flex-100" style="justify-content: space-around">
                 {{!simple-mde value=message change=(action (mut message)) autoDownloadFontAwesome=true spellChecker=false  placeholder=placeholder}}
-             {{form.input required=true textarea=true block=true label="Nachricht" maxlength=1500 passThru=(hash rows=7 maxRows=7) value=message onChange=(action (mut message))}}
+             {{form.input required=true textarea=true block=true label="Nachricht" maxlength=6000 passThru=(hash rows=7 maxRows=7) value=message onChange=(action (mut message))}}
 </div>
 </div>
 <div class="layout-row">
