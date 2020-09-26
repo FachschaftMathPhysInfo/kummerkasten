@@ -28,17 +28,18 @@ WORKDIR $INSTALL_PATH
 
 #Gemfile kopieren
 COPY --chown=app Gemfile Gemfile.lock ./
+COPY --chown=app:app bin/ ./bin/
 #bundles installieren
-RUN gem install bundler -v 1.16.6
-RUN DEBUG_RESOLVER=1 bundler install --binstubs --verbose
+RUN rvm-exec 2.3.8 gem install bundler -v 1.16.1
+RUN DEBUG_RESOLVER=1 rvm-exec 2.3.8 bin/bundle install
 
 # und den rest kopieren
 COPY --chown=app . .
 ENV RAILS_ENV production
 ENV EMBER_ENV development
-RUN RAILS_ENV=production PRODUCTION_DATABASE_ADAPTER="postgresql" bundle exec rake assets:precompile && \ 
+RUN RAILS_ENV=production PRODUCTION_DATABASE_ADAPTER="postgresql" rvm-exec 2.3.8 bin/rake assets:precompile && \ 
     bash gem install whenever && \
-    rm -rf /kummerkasten/tmp/pids && bundle exec whenever --update-crontab && \
+    rm -rf /kummerkasten/tmp/pids && bin/bundle whenever --update-crontab && \
     rm -f /etc/service/nginx/down 
 
 ADD webapp.conf /etc/nginx/sites-enabled/webapp.conf
