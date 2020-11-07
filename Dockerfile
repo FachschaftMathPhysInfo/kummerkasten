@@ -1,9 +1,14 @@
 
-FROM phusion/passenger-customizable
+FROM phusion/passenger-customizable:0.9.34
 LABEL vendor="Fachschaft MathPhysInfo"
 MAINTAINER Henrik Reinstädtler <henrik@mathphys.stura.uni-heidelberg.de>
-RUN /pd_build/ruby-2.3.7.sh
-RUN /pd_build/redis.sh
+RUN apt-get update && \
+    apt-get install -y gnupg2 dirmngr && \
+    gpg2 --recv-keys 7D2BAF1CF37B13E2069D6956105BD0E739499BDB && \
+    curl -sSL https://rvm.io/mpapis.asc | gpg2 --import - && \
+    /pd_build/ruby-2.3.7.sh && \
+    /pd_build/redis.sh
+
 
 # Enable the Redis service.
 RUN rm -f /etc/service/redis/down
@@ -18,6 +23,7 @@ CMD ["/bin/bash","-c","/sbin/my_init | tee /home/app/kummerkasten/log/stdout.log
 RUN npm cache clean -f
 RUN npm install -g n
 RUN n 8
+RUN npm install -g npm
 RUN npm install -g bower
 RUN npm install -g ember-cli
 ENV INSTALL_PATH /home/app/kummerkasten
