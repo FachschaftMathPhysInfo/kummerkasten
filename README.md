@@ -1,14 +1,38 @@
 # Kummerkasten
 
-# Requirements
+This project enables students to give anonymous, moderated feedback to their lecturers.
 
-## Ruby version
+# Installation
+We strongly recommend using the Docker-based approach!
+
+## docker-compose
+
+1. Edit the `development.env` accordingly
+2. Build the docker-image `docker-compose build .`
+3. Start the container `docker-compose up -d`
+4. Create the database, if needed, `docker-compose exec kummerkasten bundle exec rake db:create`
+5. Migrate the database, if needed, `docker-compose exec kummerkasten bundle exec rake db:migrate qc:update`
+6. Done! Visit `localhost:3000`
+
+## Non-Docker (Development environment)
+
+1. Install all needed packages (see above)
+2. Install and start an redis instance: https://redis.io/topics/quickstart
+3. Clone this repository
+4. set the needed environment variables(use `source development.sh` for a quickstart)
+5. Create the needed database: `rake db:create db:migrate`
+6. Precompile the assets: `rake assets:precompile`
+7. Start the engines: `rails s`
+
+### Requirements
+
+#### Ruby version
 The recommended software versions are
   - rails `>=5.1`
   - ruby `>=2.3`
   - node `>=7`
 
-## System dependencies
+#### System dependencies
 You should have the following packages installed (see Dockerfile)
   - `build-essential`
   - `nodejs`
@@ -20,26 +44,3 @@ You should have the following packages installed (see Dockerfile)
 
 You should provide a redis instance and an SMTP server.
 
-We strongly recommend using the Docker--approach:
-
-# Installation
-## Non-Docker (Development environment)
-
-1. Install all needed packages (see above)
-2. Install and start an redis instance: https://redis.io/topics/quickstart
-3. Clone this repository
-4. set the needed environment variables(use `source development.sh` for a quickstart)
-5. Create the needed database: `rake db:create db:migrate`
-6. Precompile the assets: `rake assets:precompile`
-7. Start the engines: `rails s`
-
-## Docker
-
-1. Have an running instance of redis-server and postgresql
-2. Edit the `development.env` accordingly
-3. Build the docker-image `docker build .`
-4. Create the docker container: `docker create --env-file=development.env --name kummerkasten -p 3008:3000 <hash of the image>`
-5. Start the container `docker start kummerkasten`
-6. Create the database, if needed, `docker exec kummerkasten bundle exec rake db:create`
-7. Migrate the database, if needed, `docker exec kummerkasten bundle exec rake db:migrate qc:update`
-8. Done! Visit `localhost:3008`
