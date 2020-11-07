@@ -1,0 +1,21 @@
+---
+version: '3.2'
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=kummerkasten
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - type: volume
+        source: db-data
+        target: /var/lib/postgresql/data
+  kummerkasten:
+    image: kummerkasten:latest
+    build: .
+    env_file: development.env
+    ports:
+      - "127.0.0.1:3000:3000"
+volumes:
+  db-data:
+
