@@ -10,10 +10,12 @@ services:
       - type: volume
         source: db-data
         target: /var/lib/postgresql/data
-  web:
+  kummerkasten:
+    image: kummerkasten:latest
     build: .
     env_file: development.env
     ports:
       - "127.0.0.1:3000:3000"
 volumes:
   db-data:
+
