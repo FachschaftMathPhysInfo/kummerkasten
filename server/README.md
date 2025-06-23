@@ -3,6 +3,7 @@
 In the server folder:
 
 ```
+go mod tidy
 gqlgen generate
 make migrate-down
 make migrate-up
