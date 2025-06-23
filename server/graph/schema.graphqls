@@ -4,11 +4,17 @@
 
 scalar Time
 
+enum TicketState {
+  new,
+  open,
+  closed
+}
+
 type Ticket {
   id: Int!
   text: String!
   note: String
-  state: Int!
+  state: TicketState!
   createdAt: Time!
   lastModified: Time!
   labels: [Label!]
@@ -22,6 +28,7 @@ type Label {
 
 type User {
   id: Int!
+  sid: String!
   mail: String!
   firstname: String!
   lastname: String!
@@ -35,15 +42,23 @@ type Setting{
   value: String!
 }
 
-
 type Query {
-  ticket(id: ID!): Ticket
-  label(name: String!): Label
-  user(id: ID!): User
-  setting(key: String!): Setting
-  users: [User!]!
+  tickets(id: [ID!]!, state: [TicketState]): [Ticket]
+  labels(name: [String!]): [Label]
+  users(id: [ID!]): [User]
+  settings(key: [String!]!): [Setting]
 }
 
+input NewTicket {
+  text: String!
+  note: String
+  state: Int!
+}
+
+input NewLabel {
+  name: String!
+  color: String
+}
 
 input NewUser {
   mail: String!
@@ -52,6 +67,34 @@ input NewUser {
   role: String!
 }
 
+input NewSetting {
+  key: String!
+  value: String!
+}
+
+input NewLabelToTicketAssignment {
+  labelName: String!,
+  ticketId: String!
+}
+
 type Mutation {
-  addUser(user: NewUser!): User!
+  createTicket(ticket: NewTicket!): Ticket!
+  deleteTicket(id: [Int!]!): Int!
+  updateTicket(id: Int!, ticket: NewTicket!): Ticket!
+  updateTicketState(id: [Int!]!, state: TicketState!): Int!
+
+  createLabel(label: NewLabel!): Label!
+  deleteLabel(id: [Int!]!): Int!
+  updateLabel(label: NewLabel!): Label!
+
+  createUser(user: NewUser!): User!
+  deleteUser(id: Int!): User!
+  updateUser(id: Int!, user: NewUser!): User!
+
+  createSetting(setting: NewSetting!): Setting!
+  deleteSetting(key: [String!]!): Int!
+  updateSetting(setting: NewSetting!): Setting!
+
+  addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int!
+  removeLabelFromTicket(labelName: String!, ticketId: Int!): Int!
 }

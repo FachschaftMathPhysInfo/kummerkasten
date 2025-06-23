@@ -32,6 +32,7 @@ next-env.d.ts
 .env.local
 
 .vscode/
+.idea/
 
 server/graph/generated.go
 server/graph/model/models_gen.go
