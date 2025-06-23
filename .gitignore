@@ -31,7 +31,10 @@ yarn-error.log*
 next-env.d.ts
 .env.local
 
+# IDE Stuff
 .vscode/
+*.idea/
 
+# Generated Server Files
 server/graph/generated.go
 server/graph/model/models_gen.go
