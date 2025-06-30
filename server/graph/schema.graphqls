@@ -48,7 +48,7 @@ type Setting{
 }
 
 type Query {
-  tickets(id: [ID!], state: [TicketState]): [Ticket]
+  tickets(id: [ID!], state: [TicketState!]): [Ticket]
   labels(name: [String!]): [Label]
   users(id: [ID!], role: UserRole): [User]
   settings(key: [String!]): [Setting]
