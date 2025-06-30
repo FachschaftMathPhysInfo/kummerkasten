@@ -88,7 +88,7 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelName 
 }
 
 // Tickets is the resolver for the tickets field.
-func (r *queryResolver) Tickets(ctx context.Context, id []string, state []*model.TicketState) ([]*model.Ticket, error) {
+func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.TicketState) ([]*model.Ticket, error) {
 	panic(fmt.Errorf("not implemented: Tickets - tickets"))
 }
 
