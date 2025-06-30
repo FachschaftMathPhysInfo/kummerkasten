@@ -1,72 +1,37 @@
-# Generating Process from Zero
+# Backend
+
+## First Dev Setup
+### Create Database
+In postgres:
 ```
-go mod init github.com/Plebysnacc/kummerkasten
-go mod tidy
+CREATE DATABASE <db_name>;
+CREATE USER <username> WITH ENCRYPTED PASSWORD '<password>';
+GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <username>;
+```
+Afterwards copy the .env and fill in the flags
+`cp .env .env.local`
+
+Now go into the server folder
+
+```
 go get github.com/99designs/gqlgen@v0.17.24
-gqlgen init
+go mod tidy
 gqlgen generate
-go run github.com/99designs/gqlgen init
 go run ./server.go
 ```
 
-# Running the Server 
+## Running the Server
 In the server folder:
 
 ```
-go mod tidy
 gqlgen generate
 make migrate-down
 make migrate-up
 go run ./server.go
 ```
 
-# Current Backend implemented
-- Basic Database Structure included
-
-## Database
-```
-cp env env.local
-```
-Edit the `env.local` to custom Postgres Initials
-
-### Setup Local Postgres Instance
-```
-
-```
-
-
-## Queries
-### User
-Only possible query currently:
-
-```
-query {
-  user(id: "1") {
-    id
-    mail
-    firstname
-    lastname
-    role
-    createdAt
-    lastModified
-  }
-}
-```
-
-```
-query {
-  users {
-        firstname
-  }
-}
-```
-
-```
-query {
-  addUser(user: {firstname:"miau", lastname:"mreow", mail: "miau@mathphys.info", role:"user"}){
-    firstname
-  }
-}
-```
+## Currently Implemented
+- Graphql Schema
+- Userquery implemented as test
 
 With dummy User currently
