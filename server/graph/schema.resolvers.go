@@ -98,7 +98,7 @@ func (r *queryResolver) Labels(ctx context.Context, name []string) ([]*model.Lab
 }
 
 // Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context, id []string) ([]*model.User, error) {
+func (r *queryResolver) Users(ctx context.Context, id []string, role *model.UserRole) ([]*model.User, error) {
 	var users []*model.User
 
 	err := r.DB.NewSelect().Model(&users).Scan(ctx)

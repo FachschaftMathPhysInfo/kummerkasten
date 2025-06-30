@@ -10,6 +10,11 @@ enum TicketState {
   closed
 }
 
+enum UserRole {
+  admin,
+  user
+}
+
 type Ticket {
   id: Int!
   text: String!
@@ -32,7 +37,7 @@ type User {
   mail: String!
   firstname: String!
   lastname: String!
-  role: String!
+  role: UserRole!
   createdAt: Time!
   lastModified: Time!
 }
@@ -43,10 +48,10 @@ type Setting{
 }
 
 type Query {
-  tickets(id: [ID!]!, state: [TicketState]): [Ticket]
+  tickets(id: [ID!], state: [TicketState]): [Ticket]
   labels(name: [String!]): [Label]
-  users(id: [ID!]): [User]
-  settings(key: [String!]!): [Setting]
+  users(id: [ID!], role: UserRole): [User]
+  settings(key: [String!]): [Setting]
 }
 
 input NewTicket {
@@ -64,7 +69,7 @@ input NewUser {
   mail: String!
   firstname: String!
   lastname: String!
-  role: String!
+  role: UserRole!
 }
 
 input NewSetting {
