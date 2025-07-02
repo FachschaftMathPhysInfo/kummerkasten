@@ -6,5 +6,5 @@ type Label struct {
 	bun.BaseModel `bun:"table:labels"`
 
 	Name  string `bun:",pk"`
-	Color string `bun:"type:varchar(8),default:#151515"`
+	Color string `bun:"type:varchar(8),default:'#151515'"`
 }

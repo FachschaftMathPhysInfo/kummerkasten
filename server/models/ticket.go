@@ -10,10 +10,10 @@ type Ticket struct {
 	bun.BaseModel `bun:"table:tickets"`
 
 	ID        string            `bun:",pk,default:gen_random_UUID(),type:uuid,scanonly"`
-	Title     string            `bun:",not null"`
-	Text      string            `bun:",not null"`
+	Title     string            `bun:",notnull"`
+	Text      string            `bun:",notnull"`
 	Note      string            `bun:""`
-	State     model.TicketState `bun:",notnull,default:OPEN"`
+	State     model.TicketState `bun:",notnull,default:'OPEN'"`
 	CreatedAt time.Time         `bun:",notnull,default:current_timestamp,scanonly"`
 	UpdatedAt time.Time         `bun:",notnull,default:current_timestamp"`
 }

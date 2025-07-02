@@ -49,12 +49,7 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB, error) {
 	}
 
 	db = bun.NewDB(sqldb, pgdialect.New())
-
-	if os.Getenv("DEBUG") != "" {
-		db.AddQueryHook(bundebug.NewQueryHook(
-			bundebug.WithVerbose(true),
-		))
-	}
+	db.AddQueryHook(bundebug.NewQueryHook())
 
 	if err := createTables(ctx, tables); err != nil {
 		log.Panic("Failed to create basic tabels: ", err)
