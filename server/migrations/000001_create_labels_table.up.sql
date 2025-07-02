@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS labels (
-  name VARCHAR PRIMARY KEY,
-  color VARCHAR
-);

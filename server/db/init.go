@@ -1,0 +1,85 @@
+package db
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"github.com/Plebysnacc/kummerkasten/models"
+	"github.com/joho/godotenv"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
+	"github.com/uptrace/bun/extra/bundebug"
+	"log"
+	"os"
+)
+
+var (
+	db     *bun.DB
+	sqldb  *sql.DB
+	err    error
+	tables = []interface{}{
+		(*models.User)(nil),
+		(*models.Label)(nil),
+		(*models.Setting)(nil),
+		(*models.Ticket)(nil),
+	}
+
+	relations = []interface{}{
+		(*models.LabelsToTickets)(nil),
+	}
+)
+
+func Init(ctx context.Context) (*sql.DB, *bun.DB, error) {
+	if err = godotenv.Load("../.env.local"); err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"))
+
+	sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
+
+	if err = sqldb.Ping(); err != nil {
+		log.Fatal("Error connecting to database: ", err)
+	}
+
+	db = bun.NewDB(sqldb, pgdialect.New())
+
+	if os.Getenv("DEBUG") != "" {
+		db.AddQueryHook(bundebug.NewQueryHook(
+			bundebug.WithVerbose(true),
+		))
+	}
+
+	if err := createTables(ctx, tables); err != nil {
+		log.Panic("Failed to create basic tabels: ", err)
+	}
+
+	log.Println("Basic Database Tables successfully initialized")
+
+	if err := createTables(ctx, relations); err != nil {
+		log.Panic("Failed to create basic relations: ", err)
+	}
+
+	log.Println("Basic Database Relations successfully initialized")
+
+	return sqldb, db, nil
+}
+
+func createTables(ctx context.Context, tables []interface{}) error {
+	for _, table := range tables {
+		if _, err := db.NewCreateTable().
+			Model(table).
+			IfNotExists().
+			Exec(ctx); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
