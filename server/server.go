@@ -27,7 +27,7 @@ func main() {
 		port = defaultPort
 	}
 
-	_, DB, _ := db.Init(ctx)
+	_, DB := db.Init(ctx)
 
 	resolver := &graph.Resolver{
 		DB: DB,

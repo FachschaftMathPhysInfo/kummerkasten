@@ -30,7 +30,7 @@ var (
 	}
 )
 
-func Init(ctx context.Context) (*sql.DB, *bun.DB, error) {
+func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 	if err = godotenv.Load("../.env.local"); err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
@@ -63,7 +63,7 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB, error) {
 
 	log.Println("Basic Database Relations successfully initialized")
 
-	return sqldb, db, nil
+	return sqldb, db
 }
 
 func createTables(ctx context.Context, tables []interface{}) error {
