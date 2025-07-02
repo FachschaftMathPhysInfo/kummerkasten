@@ -7,16 +7,23 @@ In postgres:
 CREATE DATABASE <db_name>;
 CREATE USER <username> WITH ENCRYPTED PASSWORD '<password>';
 GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <username>;
+\c <db_name>
+GRANT USAGE, CREATE
+  ON SCHEMA public
+  TO <user>;
 ```
 Afterwards copy the .env and fill in the flags
 `cp .env .env.local`
+
+Set `DEBUG=true` for development
+
 
 Now go into the server folder
 
 ```
 go get github.com/99designs/gqlgen@v0.17.24
 go mod tidy
-gqlgen generate
+go generate ./..
 go run ./server.go
 ```
 
@@ -24,9 +31,7 @@ go run ./server.go
 In the server folder:
 
 ```
-gqlgen generate
-make migrate-down
-make migrate-up
+go generate ./...
 go run ./server.go
 ```
 
