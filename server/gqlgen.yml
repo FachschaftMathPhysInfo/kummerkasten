@@ -157,19 +157,3 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
-
-  NewTicket:
-    model:
-      - github.com/Plebysnacc/kummerkasten/server/models.Ticket
-
-  NewUser:
-    model:
-      - github.com/Plebysnacc/kummerkasten/server/models.User
-
-  NewLabel:
-    model:
-      - github.com/Plebysnacc/kummerkasten/server/models.Label
-
-  NewSetting:
-    model:
-      - github.com/Plebysnacc/kummerkasten/server/models.Setting

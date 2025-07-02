@@ -9,7 +9,7 @@ type User struct {
 	bun.BaseModel `bun:"table:users"`
 
 	ID        string    `bun:",pk,default:gen_random_uuid(),scanonly"`
-	sid       string    `bun:",varchar(11)"`
+	Sid       string    `bun:",varchar(11)"`
 	Email     string    `bun:",unique,notnull"`
 	Firstname string    `bun:",notnull"`
 	Lastname  string    `bun:",notnull"`
