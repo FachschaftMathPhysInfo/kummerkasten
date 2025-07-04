@@ -7,10 +7,10 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/uptrace/bun"
 	"log"
 
 	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/uptrace/bun"
 )
 
 // CreateTicket is the resolver for the createTicket field.

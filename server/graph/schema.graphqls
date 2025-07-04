@@ -51,7 +51,7 @@ type Query {
   tickets(id: [ID!], state: [TicketState!]): [Ticket]
   labels(name: [String!]): [Label]
   users(id: [ID!], role: UserRole): [User]
-  settings(key: [String!]): [Setting]
+  settings(keys: [String!]): [Setting]
 }
 
 input NewTicket {
@@ -97,7 +97,7 @@ type Mutation {
   updateUser(id: Int!, user: NewUser!): User!
 
   createSetting(setting: NewSetting!): Setting!
-  deleteSetting(key: [String!]!): Int!
+  deleteSetting(keys: [String!]!): Int!
   updateSetting(setting: NewSetting!): Setting!
 
   addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int!
