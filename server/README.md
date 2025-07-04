@@ -2,21 +2,13 @@
 
 ## First Dev Setup
 ### Create Database
-In postgres:
-```
-CREATE DATABASE <db_name>;
-CREATE USER <username> WITH ENCRYPTED PASSWORD '<password>';
-GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <username>;
-\c <db_name>
-GRANT USAGE, CREATE
-  ON SCHEMA public
-  TO <user>;
-```
-Afterwards copy the .env and fill in the flags
+Copy the config:
 `cp .env .env.local`
 
-Set `DEBUG=true` for development
+Start the docker
+`docker compose up -d`
 
+Set `DEBUG=true` for development
 
 Now go into the server folder
 
@@ -34,6 +26,8 @@ In the server folder:
 go generate ./...
 go run ./server.go
 ```
+
+Note that the docker or a local postgres instance is needed
 
 ## Currently Implemented
 - Graphql Schema
