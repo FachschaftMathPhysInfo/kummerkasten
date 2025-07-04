@@ -8,34 +8,61 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
 // CreateTicket is the resolver for the createTicket field.
 func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTicket) (*model.Ticket, error) {
-	panic(fmt.Errorf("not implemented: CreateTicket - createTicket"))
+	insertedTicket := &model.Ticket{
+		ID:           uuid.New().String(),
+		Text:         ticket.Text,
+		Title:        ticket.Title,
+		State:        model.TicketState(ticket.State),
+		CreatedAt:    time.Now(),
+		LastModified: time.Now(),
+	}
+
+	if _, err := r.DB.NewInsert().Model(insertedTicket).Exec(ctx); err != nil {
+		log.Printf("Failed to create Ticket: %v", err)
+		return nil, err
+	}
+
+	return insertedTicket, nil
 }
 
 // DeleteTicket is the resolver for the deleteTicket field.
-func (r *mutationResolver) DeleteTicket(ctx context.Context, id []int32) (int32, error) {
+func (r *mutationResolver) DeleteTicket(ctx context.Context, id []string) (string, error) {
 	panic(fmt.Errorf("not implemented: DeleteTicket - deleteTicket"))
 }
 
 // UpdateTicket is the resolver for the updateTicket field.
-func (r *mutationResolver) UpdateTicket(ctx context.Context, id int32, ticket model.NewTicket) (*model.Ticket, error) {
+func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket model.NewTicket) (*model.Ticket, error) {
 	panic(fmt.Errorf("not implemented: UpdateTicket - updateTicket"))
 }
 
 // UpdateTicketState is the resolver for the updateTicketState field.
-func (r *mutationResolver) UpdateTicketState(ctx context.Context, id []int32, state model.TicketState) (int32, error) {
+func (r *mutationResolver) UpdateTicketState(ctx context.Context, id []string, state model.TicketState) (string, error) {
 	panic(fmt.Errorf("not implemented: UpdateTicketState - updateTicketState"))
 }
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
-	panic(fmt.Errorf("not implemented: CreateLabel - createLabel"))
+	insertedLabel := &model.Label{
+		Name:    label.Name,
+		Color:   label.Color,
+		Tickets: make([]*model.Ticket, 0),
+	}
+
+	if _, err := r.DB.NewInsert().Model(insertedLabel).Exec(ctx); err != nil {
+		log.Printf("Failed to create label: %v", err)
+		return nil, err
+	}
+
+	return insertedLabel, nil
 }
 
 // DeleteLabel is the resolver for the deleteLabel field.

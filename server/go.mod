@@ -4,6 +4,7 @@ go 1.24.3
 
 require (
 	github.com/99designs/gqlgen v0.17.76
+	github.com/google/uuid v1.6.0
 	github.com/vektah/gqlparser/v2 v2.5.30
 )
 
@@ -11,7 +12,6 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

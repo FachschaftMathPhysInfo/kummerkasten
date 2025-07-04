@@ -5,9 +5,9 @@
 scalar Time
 
 enum TicketState {
-  new,
-  open,
-  closed
+  NEW,
+  OPEN,
+  CLOSED
 }
 
 enum UserRole {
@@ -16,7 +16,8 @@ enum UserRole {
 }
 
 type Ticket {
-  id: Int!
+  id: String!
+  title: String!
   text: String!
   note: String
   state: TicketState!
@@ -55,9 +56,10 @@ type Query {
 }
 
 input NewTicket {
+  title: String!
   text: String!
   note: String
-  state: Int!
+  state: TicketState!
 }
 
 input NewLabel {
@@ -84,9 +86,9 @@ input NewLabelToTicketAssignment {
 
 type Mutation {
   createTicket(ticket: NewTicket!): Ticket!
-  deleteTicket(id: [Int!]!): Int!
-  updateTicket(id: Int!, ticket: NewTicket!): Ticket!
-  updateTicketState(id: [Int!]!, state: TicketState!): Int!
+  deleteTicket(id: [String!]!): String!
+  updateTicket(id: String!, ticket: NewTicket!): Ticket!
+  updateTicketState(id: [String!]!, state: TicketState!): String!
 
   createLabel(label: NewLabel!): Label!
   deleteLabel(id: [Int!]!): Int!

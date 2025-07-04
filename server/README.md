@@ -15,7 +15,7 @@ Now go into the server folder
 ```
 go get github.com/99designs/gqlgen@v0.17.24
 go mod tidy
-go generate ./..
+go generate ./...
 go run ./server.go
 ```
 

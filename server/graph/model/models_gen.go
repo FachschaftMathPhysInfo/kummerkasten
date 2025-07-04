@@ -3,6 +3,10 @@
 package model
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
 
@@ -15,11 +19,33 @@ type Label struct {
 type Mutation struct {
 }
 
+type NewLabel struct {
+	Name  string  `json:"name"`
+	Color *string `json:"color,omitempty"`
+}
+
+type NewLabelToTicketAssignment struct {
+	LabelName string `json:"labelName"`
+	TicketID  string `json:"ticketId"`
+}
+
+type NewSetting struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type NewTicket struct {
+	Title string      `json:"title"`
+	Text  string      `json:"text"`
+	Note  *string     `json:"note,omitempty"`
+	State TicketState `json:"state"`
+}
+
 type NewUser struct {
-	Mail      string `json:"mail"`
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
-	Role      string `json:"role"`
+	Mail      string   `json:"mail"`
+	Firstname string   `json:"firstname"`
+	Lastname  string   `json:"lastname"`
+	Role      UserRole `json:"role"`
 }
 
 type Query struct {
@@ -31,21 +57,135 @@ type Setting struct {
 }
 
 type Ticket struct {
-	ID           int32     `json:"id"`
-	Text         string    `json:"text"`
-	Note         *string   `json:"note,omitempty"`
-	State        int32     `json:"state"`
-	CreatedAt    time.Time `json:"createdAt"`
-	LastModified time.Time `json:"lastModified"`
-	Labels       []*Label  `json:"labels,omitempty"`
+	ID           string      `json:"id"`
+	Title        string      `json:"title"`
+	Text         string      `json:"text"`
+	Note         *string     `json:"note,omitempty"`
+	State        TicketState `json:"state"`
+	CreatedAt    time.Time   `json:"createdAt"`
+	LastModified time.Time   `json:"lastModified"`
+	Labels       []*Label    `json:"labels,omitempty"`
 }
 
 type User struct {
 	ID           int32     `json:"id"`
+	Sid          string    `json:"sid"`
 	Mail         string    `json:"mail"`
 	Firstname    string    `json:"firstname"`
 	Lastname     string    `json:"lastname"`
-	Role         string    `json:"role"`
+	Role         UserRole  `json:"role"`
 	CreatedAt    time.Time `json:"createdAt"`
 	LastModified time.Time `json:"lastModified"`
+}
+
+type TicketState string
+
+const (
+	TicketStateNew    TicketState = "NEW"
+	TicketStateOpen   TicketState = "OPEN"
+	TicketStateClosed TicketState = "CLOSED"
+)
+
+var AllTicketState = []TicketState{
+	TicketStateNew,
+	TicketStateOpen,
+	TicketStateClosed,
+}
+
+func (e TicketState) IsValid() bool {
+	switch e {
+	case TicketStateNew, TicketStateOpen, TicketStateClosed:
+		return true
+	}
+	return false
+}
+
+func (e TicketState) String() string {
+	return string(e)
+}
+
+func (e *TicketState) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TicketState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TicketState", str)
+	}
+	return nil
+}
+
+func (e TicketState) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TicketState) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TicketState) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type UserRole string
+
+const (
+	UserRoleAdmin UserRole = "admin"
+	UserRoleUser  UserRole = "user"
+)
+
+var AllUserRole = []UserRole{
+	UserRoleAdmin,
+	UserRoleUser,
+}
+
+func (e UserRole) IsValid() bool {
+	switch e {
+	case UserRoleAdmin, UserRoleUser:
+		return true
+	}
+	return false
+}
+
+func (e UserRole) String() string {
+	return string(e)
+}
+
+func (e *UserRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = UserRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid UserRole", str)
+	}
+	return nil
+}
+
+func (e UserRole) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *UserRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e UserRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }
