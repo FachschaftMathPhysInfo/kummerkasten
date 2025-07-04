@@ -80,22 +80,19 @@ func (r *mutationResolver) CreateSetting(ctx context.Context, setting model.NewS
 
 // DeleteSetting is the resolver for the deleteSetting field.
 func (r *mutationResolver) DeleteSetting(ctx context.Context, keys []string) (int32, error) {
-	amountDeleted := int32(0)
-
-	for _, k := range keys {
-		_, err := r.DB.NewDelete().
-			Model((*model.Setting)(nil)).
-			Where("key = ?", k).
-			Exec(ctx)
-
-		if err != nil {
-			log.Printf("Failed to delete setting %s: %v", k, err)
-			return amountDeleted, err
-		}
-		amountDeleted++
+	result, err := r.DB.NewDelete().Model((*model.Setting)(nil)).Where("key IN (?)", bun.In(keys)).Exec(ctx)
+	if err != nil {
+		log.Printf("Failed to delete settings : %v", err)
+		return 0, err
 	}
 
-	return amountDeleted, nil
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return 0, err
+	}
+
+	return int32(rowsAffected), nil
 }
 
 // UpdateSetting is the resolver for the updateSetting field.
