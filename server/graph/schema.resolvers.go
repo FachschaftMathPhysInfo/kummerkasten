@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"github.com/uptrace/bun"
 	"log"
 
 	"github.com/Plebysnacc/kummerkasten/graph/model"
@@ -146,8 +147,21 @@ func (r *queryResolver) Users(ctx context.Context, id []string, role *model.User
 }
 
 // Settings is the resolver for the settings field.
-func (r *queryResolver) Settings(ctx context.Context, key []string) ([]*model.Setting, error) {
-	panic(fmt.Errorf("not implemented: Settings - settings"))
+func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.Setting, error) {
+	var settings []*model.Setting
+
+	query := r.DB.NewSelect().Model(&settings)
+
+	if len(keys) > 0 {
+		query = query.Where("key IN (?)", bun.In(keys))
+	}
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to get settings: %v", err)
+		return nil, err
+	}
+
+	return settings, nil
 }
 
 // Mutation returns MutationResolver implementation.
