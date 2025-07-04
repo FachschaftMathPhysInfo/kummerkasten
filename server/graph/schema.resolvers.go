@@ -64,17 +64,52 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int32, user model.
 
 // CreateSetting is the resolver for the createSetting field.
 func (r *mutationResolver) CreateSetting(ctx context.Context, setting model.NewSetting) (*model.Setting, error) {
-	panic(fmt.Errorf("not implemented: CreateSetting - createSetting"))
+	insertedSetting := &model.Setting{
+		Value: setting.Value,
+		Key:   setting.Key,
+	}
+
+	if _, err := r.DB.NewInsert().Model(insertedSetting).Exec(ctx); err != nil {
+		log.Printf("Failed to create setting: %v", err)
+		return nil, err
+	}
+
+	return insertedSetting, nil
 }
 
 // DeleteSetting is the resolver for the deleteSetting field.
-func (r *mutationResolver) DeleteSetting(ctx context.Context, key []string) (int32, error) {
-	panic(fmt.Errorf("not implemented: DeleteSetting - deleteSetting"))
+func (r *mutationResolver) DeleteSetting(ctx context.Context, keys []string) (int32, error) {
+	amountDeleted := int32(0)
+
+	for _, k := range keys {
+		_, err := r.DB.NewDelete().
+			Model((*model.Setting)(nil)).
+			Where("key = ?", k).
+			Exec(ctx)
+
+		if err != nil {
+			log.Printf("Failed to delete setting %s: %v", k, err)
+			return amountDeleted, err
+		}
+		amountDeleted++
+	}
+
+	return amountDeleted, nil
 }
 
 // UpdateSetting is the resolver for the updateSetting field.
 func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewSetting) (*model.Setting, error) {
-	panic(fmt.Errorf("not implemented: UpdateSetting - updateSetting"))
+	updateSetting := &model.Setting{
+		Key:   setting.Key,
+		Value: setting.Value,
+	}
+
+	if _, err := r.DB.NewUpdate().Model(updateSetting).Where("key = ?", setting.Key).Exec(ctx); err != nil {
+		log.Printf("Failed to update setting %s: %v", setting.Key, err)
+		return nil, err
+	}
+
+	return updateSetting, nil
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
