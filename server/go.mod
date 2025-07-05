@@ -3,8 +3,8 @@ module github.com/Plebysnacc/kummerkasten
 go 1.24.3
 
 require (
-	github.com/99designs/gqlgen v0.17.75
-	github.com/vektah/gqlparser/v2 v2.5.28
+	github.com/99designs/gqlgen v0.17.76
+	github.com/vektah/gqlparser/v2 v2.5.30
 )
 
 require (
@@ -18,7 +18,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sosodev/duration v1.3.1 // indirect
 	github.com/urfave/cli/v2 v2.27.7 // indirect
-	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
+	github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342 // indirect
 	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
@@ -28,18 +28,18 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.2.1 // indirect
-	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
-	github.com/uptrace/bun v1.0.16
-	github.com/uptrace/bun/dialect/pgdialect v1.0.16
-	github.com/uptrace/bun/driver/pgdriver v1.0.16
-	github.com/uptrace/bun/extra/bundebug v1.0.16
+	github.com/uptrace/bun v1.0.25
+	github.com/uptrace/bun/dialect/pgdialect v1.0.25
+	github.com/uptrace/bun/driver/pgdriver v1.0.25
+	github.com/uptrace/bun/extra/bundebug v1.0.25
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/crypto v0.36.0 // indirect
+	golang.org/x/crypto v0.36.0
 	golang.org/x/sys v0.33.0 // indirect
 	mellium.im/sasl v0.3.2 // indirect
 )
