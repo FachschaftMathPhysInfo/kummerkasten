@@ -1,38 +1,34 @@
 package auth
 
 import (
-	"crypto/rand"
+	"crypto/hmac"
+	"crypto/sha256"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
 )
 
-func HashPassword(password string) (string, string, error) {
-	salt := string(generateSalt())
-	toHash := salt + password + os.Getenv("PEPPER")
-	hash, err := bcrypt.GenerateFromPassword([]byte(toHash), bcrypt.DefaultCost)
+func HashPassword(password string) (string, error) {
+	toHash := []byte(password + os.Getenv("PEPPER"))
+	secretHmac := hmac.New(sha256.New, toHash)
+	secretHmac.Write(toHash)
+	hash, err := bcrypt.GenerateFromPassword(toHash, bcrypt.DefaultCost)
 	if err != nil {
 		log.Printf("Failed hashing password")
-		return "", "", err
+		return "", err
 	}
 
-	return string(hash), salt, nil
+	return string(hash), nil
 }
 
-func VerifyPassword(storedHash, providedPassword string, salt string) error {
-	spicedPassword := salt + providedPassword + os.Getenv("PEPPER")
-	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(spicedPassword)); err != nil {
+func VerifyPassword(storedHash, providedPassword string) error {
+	toHash := []byte(providedPassword + os.Getenv("PEPPER"))
+	secretHmac := hmac.New(sha256.New, toHash)
+	secretHmac.Write(toHash)
+
+	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), toHash); err != nil {
 		return fmt.Errorf("invalid password: %s", err)
 	}
 	return nil
-}
-
-func generateSalt() []byte {
-	b := make([]byte, 16)
-	if _, err := rand.Read(b); err != nil {
-		log.Fatalf("Failed generating salt: %v", err)
-		return nil
-	}
-	return b
 }
