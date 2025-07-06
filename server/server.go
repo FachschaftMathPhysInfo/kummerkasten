@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/99designs/gqlgen/graphql/handler/extension"
-	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/Plebysnacc/kummerkasten/db"
 	"github.com/gorilla/websocket"
 	"log"
@@ -12,6 +10,8 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Plebysnacc/kummerkasten/graph"
 	_ "github.com/lib/pq"
