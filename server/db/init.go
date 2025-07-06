@@ -39,7 +39,7 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("PORT"),
+		os.Getenv("POSTGRES_PORT"),
 		os.Getenv("POSTGRES_DB"))
 
 	sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
