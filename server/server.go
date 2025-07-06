@@ -3,9 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -40,7 +44,20 @@ func main() {
 	}
 
 	es := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
-	srv := handler.NewDefaultServer(es)
+	srv := handler.New(es)
+
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+
+	srv.AddTransport(transport.Websocket{
+		Upgrader: websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin:     func(r *http.Request) bool { return true },
+		},
+		KeepAlivePingInterval: 10 * time.Second,
+	})
+	srv.Use(extension.Introspection{})
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
