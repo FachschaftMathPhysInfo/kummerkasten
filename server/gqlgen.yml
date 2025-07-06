@@ -100,7 +100,7 @@ resolver:
 #
 # This enables argument directives to not just mutate
 # argument values but to set them even if they're null.
-# call_argument_directives_with_null: true
+call_argument_directives_with_null: true
 
 # This enables gql server to use function syntax for execution context
 # instead of generating receiver methods of the execution context.

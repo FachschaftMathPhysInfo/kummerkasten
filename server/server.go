@@ -22,10 +22,7 @@ const defaultPort = "8080"
 func main() {
 	ctx := context.Background()
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
+	port := defaultPort
 
 	_, DB := db.Init(ctx)
 
