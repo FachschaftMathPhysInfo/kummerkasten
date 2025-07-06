@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/Plebysnacc/kummerkasten/db"
+	"github.com/Plebysnacc/kummerkasten/server/db"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/Plebysnacc/kummerkasten/graph"
+	"github.com/Plebysnacc/kummerkasten/server/graph"
 	_ "github.com/lib/pq"
 )
 
@@ -32,6 +32,13 @@ func main() {
 
 	es := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
 	srv := handler.New(es)
+
+	log.Printf("Start Seeding!")
+	err := db.SeedData(ctx, DB)
+	if err != nil {
+		log.Fatal("seed failed: ", err)
+	}
+	log.Printf("End Seeding!")
 
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})

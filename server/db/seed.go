@@ -1,0 +1,89 @@
+package db
+
+import (
+	"context"
+	"fmt"
+	"github.com/Plebysnacc/kummerkasten/server/graph/model"
+	"github.com/Plebysnacc/kummerkasten/server/models"
+	log "github.com/sirupsen/logrus"
+	"github.com/uptrace/bun"
+	"time"
+)
+
+func SeedData(ctx context.Context, db *bun.DB) error {
+	// defaultdata user
+
+	// defaultdata tickets
+	tickets := []*models.Ticket{
+		{
+			Title:        "Lineare Algebra",
+			Text:         "Ich komme mit der Mathe nicht klar :(",
+			Note:         "",
+			State:        model.TicketStateNew,
+			Labels:       []string{},
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Title:        "Praktikumsplatz",
+			Text:         "Hilfe! Ich finde keine Dozent*innen die mir einen Pratkikumsplatz anbieten.",
+			Note:         "Vorschlag: Weiterführende Vorlesungen hören, beim DKFZ und ZITI nachfragen.",
+			State:        model.TicketStateOpen,
+			Labels:       []string{},
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Title:        "alles doof",
+			Text:         "ich will nciht mehr studieren wo exmatrikulationsantrag",
+			Note:         "Kann geschlossen werden.",
+			State:        model.TicketStateOpen,
+			Labels:       []string{},
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Title:        "miau",
+			Text:         "woof",
+			Note:         "Spam",
+			State:        model.TicketStateClosed,
+			Labels:       []string{},
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		}}
+	if err := insertData(ctx, db, (*models.Ticket)(nil), tickets, "Tickets"); err != nil {
+		return err
+	}
+
+	settings := []*models.Setting{
+		{Key: "logo-url", Value: "http://localhost:8080/fs-logo.png"},
+		{Key: "homepage-url", Value: "https://mathphys.info"},
+		{Key: "copyright-notice", Value: "Copyright © 2024, Fachschaft MathPhysInfo. All rights reserved."},
+		{Key: "email-greeting", Value: "Hey"},
+		{Key: "email-signature", Value: "Dein"},
+		{Key: "email-name", Value: "Kummerkasten"},
+		{Key: "auth-standard-enabled", Value: "1"},
+		{Key: "auth-sso-oidc-enabled", Value: "1"},
+		{Key: "auth-sso-oidc-name", Value: "Fachschaftslogin"},
+	}
+
+	if err := insertData(ctx, db, (*models.Setting)(nil), settings, "Settings"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func insertData[T any](ctx context.Context, db *bun.DB, model T, data []T, description string) error {
+	count, err := db.NewSelect().Model(model).Count(ctx)
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		if _, err := db.NewInsert().Model(&data).Exec(ctx); err != nil {
+			return fmt.Errorf("%s: %s", description, err)
+		}
+		log.Infof("%s seeded successfully\n", description)
+	}
+	return nil
+}

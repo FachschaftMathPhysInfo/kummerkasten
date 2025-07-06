@@ -10,7 +10,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/Plebysnacc/kummerkasten/server/graph/model"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -149,7 +149,24 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelName 
 
 // Tickets is the resolver for the tickets field.
 func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.TicketState) ([]*model.Ticket, error) {
-	panic(fmt.Errorf("not implemented: Tickets - tickets"))
+	var tickets []*model.Ticket
+
+	query := r.DB.NewSelect().Model(&tickets)
+
+	if len(id) > 0 {
+		query = query.Where("id IN (?)", bun.In(id))
+	}
+
+	if len(state) > 0 {
+		query = query.Where("state IN (?)", bun.In(state))
+	}
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to get tickets: %v", err)
+		return nil, err
+	}
+
+	return tickets, nil
 }
 
 // Labels is the resolver for the labels field.
