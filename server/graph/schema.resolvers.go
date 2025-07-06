@@ -124,61 +124,51 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, ids []string) (int32,
 }
 
 // UpdateUser is the resolver for the updateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model.NewUser) (*model.User, error) {
-	updateUser := &model.User{
-		Mail:      user.Mail,
-		Firstname: user.Firstname,
-		Lastname:  user.Lastname,
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model.UpdateUser) (string, error) {
+	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
+
+	if err != nil || len(users) == 0 {
+		return "", fmt.Errorf("user with id %v not found", id)
 	}
 
-	if _, err := r.DB.NewUpdate().Model(updateUser).Where("id", id).Exec(ctx); err != nil {
-		log.Printf("Failed to update user: %v", err)
-		return nil, err
+	updatedUser := users[0]
+
+	if user.Mail != nil {
+		updatedUser.Mail = *user.Mail
+	}
+	if user.Firstname != nil {
+		updatedUser.Firstname = *user.Firstname
+	}
+	if user.Lastname != nil {
+		updatedUser.Lastname = *user.Lastname
+	}
+	if user.Password != nil {
+		hashedPassword, err := auth.HashPassword(*user.Password)
+
+		if err != nil {
+			log.Printf("Failed to create user: %v", err)
+			return "", err
+		}
+
+		updatedUser.Password = hashedPassword
+	}
+	if user.Role != nil {
+		updatedUser.Role = *user.Role
+	}
+	if user.Sid != nil {
+		updatedUser.Sid = *user.Sid
 	}
 
-	return updateUser, nil
-}
+	updatedUser.LastModified = time.Now()
 
-// ChangePassword is the resolver for the changePassword field.
-func (r *mutationResolver) ChangePassword(ctx context.Context, id string, password string) (bool, error) {
-	hashedPassword, err := auth.HashPassword(password)
-
-	if err != nil {
-		log.Printf("Failed to change password")
-		return false, err
-	}
-
-	if _, err := r.DB.NewUpdate().Model((*model.User)(nil)).
+	if _, err := r.DB.NewUpdate().Model(updatedUser).
 		Where("id = ?", id).
-		Set("password = ?", hashedPassword).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to change password: %v", err)
-		return false, err
+		log.Printf("Failed to update user: %v", err)
+		return "", err
 	}
 
-	return true, nil
-}
-
-// UpdateUserRole is the resolver for the updateUserRole field.
-func (r *mutationResolver) UpdateUserRole(ctx context.Context, id []string, role model.UserRole) (int32, error) {
-	result, err := r.DB.NewUpdate().Model((*model.User)(nil)).
-		Where("id IN (?)", bun.In(id)).
-		Set("role = ?", role).
-		Exec(ctx)
-
-	if err != nil {
-		log.Printf("Failed to update role: %v", err)
-		return 0, err
-	}
-
-	affectedRows, err := result.RowsAffected()
-
-	if err != nil {
-		log.Printf("Failed to read affected rows: %v", err)
-		return int32(affectedRows), err
-	}
-
-	return int32(affectedRows), nil
+	return updatedUser.Sid, nil
 }
 
 // CreateSetting is the resolver for the createSetting field.

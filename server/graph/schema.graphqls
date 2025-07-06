@@ -75,6 +75,15 @@ input NewUser {
   password: String!
 }
 
+input UpdateUser {
+  mail: String
+  firstname: String
+  lastname: String
+  password: String
+  role: UserRole
+  sid: String
+}
+
 input NewSetting {
   key: String!
   value: String!
@@ -97,9 +106,7 @@ type Mutation {
 
   createUser(user: NewUser!): User!
   deleteUser(ids: [String!]!): Int!
-  updateUser(id: String!, user: NewUser!): User!
-  changePassword(id: String!, password: String!): Boolean!
-  updateUserRole(id: [String!]!, role: UserRole!): Int!
+  updateUser(id: String!, user: UpdateUser!): String!
 
   createSetting(setting: NewSetting!): Setting!
   deleteSetting(keys: [String!]!): Int!
