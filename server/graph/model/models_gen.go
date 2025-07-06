@@ -42,10 +42,10 @@ type NewTicket struct {
 }
 
 type NewUser struct {
-	Mail      string   `json:"mail"`
-	Firstname string   `json:"firstname"`
-	Lastname  string   `json:"lastname"`
-	Role      UserRole `json:"role"`
+	Mail      string `json:"mail"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Password  string `json:"password"`
 }
 
 type Query struct {
@@ -68,11 +68,12 @@ type Ticket struct {
 }
 
 type User struct {
-	ID           int32     `json:"id"`
+	ID           string    `json:"id"`
 	Sid          string    `json:"sid"`
 	Mail         string    `json:"mail"`
 	Firstname    string    `json:"firstname"`
 	Lastname     string    `json:"lastname"`
+	Password     string    `json:"password"`
 	Role         UserRole  `json:"role"`
 	CreatedAt    time.Time `json:"createdAt"`
 	LastModified time.Time `json:"lastModified"`
@@ -138,8 +139,8 @@ func (e TicketState) MarshalJSON() ([]byte, error) {
 type UserRole string
 
 const (
-	UserRoleAdmin UserRole = "admin"
-	UserRoleUser  UserRole = "user"
+	UserRoleAdmin UserRole = "ADMIN"
+	UserRoleUser  UserRole = "USER"
 )
 
 var AllUserRole = []UserRole{

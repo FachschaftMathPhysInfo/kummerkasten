@@ -10,6 +10,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
@@ -77,17 +78,107 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, label model.NewLabel
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	sid, _ := auth.GenerateSID()
+
+	hashedPassword, err := auth.HashPassword(user.Password)
+
+	if err != nil {
+		log.Printf("Failed to create user")
+	}
+
+	newUser := &model.User{
+		ID:           uuid.New().String(),
+		Sid:          sid,
+		Mail:         user.Mail,
+		Firstname:    user.Firstname,
+		Lastname:     user.Lastname,
+		Password:     hashedPassword,
+		Role:         model.UserRoleUser,
+		CreatedAt:    time.Now(),
+		LastModified: time.Now(),
+	}
+
+	if _, err := r.DB.NewInsert().Model(newUser).Exec(ctx); err != nil {
+		log.Printf("Failed to create user: %v", err)
+		return nil, err
+	}
+
+	return newUser, nil
 }
 
 // DeleteUser is the resolver for the deleteUser field.
-func (r *mutationResolver) DeleteUser(ctx context.Context, id int32) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: DeleteUser - deleteUser"))
+func (r *mutationResolver) DeleteUser(ctx context.Context, ids []string) (int32, error) {
+	if len(ids) == 0 {
+		return 0, nil
+	}
+
+	result, err := r.DB.NewDelete().Model((*model.User)(nil)).Where("ID IN (?)", bun.In(ids)).Exec(ctx)
+
+	if err != nil {
+		log.Printf("Failed to delete user: %v", err)
+		return 0, err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	return int32(rowsAffected), nil
 }
 
 // UpdateUser is the resolver for the updateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, id int32, user model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: UpdateUser - updateUser"))
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model.NewUser) (*model.User, error) {
+	updateUser := &model.User{
+		Mail:      user.Mail,
+		Firstname: user.Firstname,
+		Lastname:  user.Lastname,
+	}
+
+	if _, err := r.DB.NewUpdate().Model(updateUser).Where("id", id).Exec(ctx); err != nil {
+		log.Printf("Failed to update user: %v", err)
+		return nil, err
+	}
+
+	return updateUser, nil
+}
+
+// ChangePassword is the resolver for the changePassword field.
+func (r *mutationResolver) ChangePassword(ctx context.Context, id string, password string) (bool, error) {
+	hashedPassword, err := auth.HashPassword(password)
+
+	if err != nil {
+		log.Printf("Failed to change password")
+		return false, err
+	}
+
+	if _, err := r.DB.NewUpdate().Model((*model.User)(nil)).
+		Where("id = ?", id).
+		Set("password = ?", hashedPassword).
+		Exec(ctx); err != nil {
+		log.Printf("Failed to change password: %v", err)
+		return false, err
+	}
+
+	return true, nil
+}
+
+// UpdateUserRole is the resolver for the updateUserRole field.
+func (r *mutationResolver) UpdateUserRole(ctx context.Context, id []string, role model.UserRole) (int32, error) {
+	result, err := r.DB.NewUpdate().Model((*model.User)(nil)).
+		Where("id IN (?)", bun.In(id)).
+		Set("role = ?", role).
+		Exec(ctx)
+
+	if err != nil {
+		log.Printf("Failed to update role: %v", err)
+		return 0, err
+	}
+
+	affectedRows, err := result.RowsAffected()
+
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return int32(affectedRows), err
+	}
+
+	return int32(affectedRows), nil
 }
 
 // CreateSetting is the resolver for the createSetting field.
@@ -158,12 +249,23 @@ func (r *queryResolver) Labels(ctx context.Context, name []string) ([]*model.Lab
 }
 
 // Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context, id []string, role *model.UserRole) ([]*model.User, error) {
+func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, role *model.UserRole) ([]*model.User, error) {
 	var users []*model.User
 
-	err := r.DB.NewSelect().Model(&users).Scan(ctx)
-	if err != nil {
-		log.Printf("failed to fetch Users: %v", err)
+	query := r.DB.NewSelect().Model(&users)
+
+	if len(id) > 0 {
+		query = query.Where("id IN (?)", bun.In(id))
+	}
+	if len(mail) > 0 {
+		query = query.Where("mail IN (?)", bun.In(mail))
+	}
+	if role != nil {
+		query = query.Where("role = ?", *role)
+	}
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to fetch users: %v", err)
 		return nil, err
 	}
 
