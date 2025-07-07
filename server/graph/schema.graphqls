@@ -54,6 +54,7 @@ type Query {
   labels(name: [String!]): [Label]
   users(id: [ID!], mail: [String!], role: UserRole): [User]
   settings(keys: [String!]): [Setting]
+  login(mail: String!, password: String!): String!
 }
 
 input NewTicket {

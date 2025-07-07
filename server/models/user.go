@@ -10,7 +10,7 @@ type User struct {
 	bun.BaseModel `bun:"table:users"`
 
 	ID           string         `bun:",pk"`
-	Sid          string         `bun:",type:varchar(12)"`
+	Sid          *string        `bun:",type:varchar(12)"`
 	Mail         string         `bun:",unique,notnull,type:varchar(255)"`
 	Firstname    string         `bun:",notnull,type:varchar(255)"`
 	Lastname     string         `bun:",notnull,type:varchar(255)"`

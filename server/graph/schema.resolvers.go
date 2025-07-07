@@ -280,6 +280,36 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 	return settings, nil
 }
 
+// Login is the resolver for the login field.
+func (r *queryResolver) Login(ctx context.Context, mail string, password string) (string, error) {
+	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
+	if err != nil || len(users) == 0 {
+		log.Printf("Failed to fetch user for login: %v", err)
+	}
+
+	user := users[0]
+	hashedPassword := user.Password
+
+	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
+		log.Printf("Password is incorrect")
+		return "", err
+	}
+
+	if user.Sid == "" {
+		user.Sid, err = auth.GenerateSID()
+		if err != nil {
+			log.Printf("Failed to generate SID: %v", err)
+			return "", err
+		}
+		if _, err := r.DB.NewUpdate().Model(user).Where("mail = (?)", mail).Exec(ctx); err != nil {
+			log.Printf("Failed to update sid: %v", err)
+			return "", err
+		}
+	}
+
+	return user.Sid, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
