@@ -301,10 +301,14 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 			log.Printf("Failed to generate SID: %v", err)
 			return "", err
 		}
-		if _, err := r.DB.NewUpdate().Model(user).Where("mail = (?)", mail).Exec(ctx); err != nil {
-			log.Printf("Failed to update sid: %v", err)
-			return "", err
-		}
+	}
+
+	now := time.Now()
+	user.LastLogin = &now
+
+	if _, err := r.DB.NewUpdate().Model(user).Where("mail = (?)", mail).Exec(ctx); err != nil {
+		log.Printf("Failed to update sid: %v", err)
+		return "", err
 	}
 
 	return user.Sid, nil

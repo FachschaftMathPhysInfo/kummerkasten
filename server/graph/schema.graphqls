@@ -42,6 +42,7 @@ type User {
   role: UserRole!
   createdAt: Time!
   lastModified: Time!
+  lastLogin: Time
 }
 
 type Setting{

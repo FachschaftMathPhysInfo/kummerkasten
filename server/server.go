@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"github.com/Plebysnacc/kummerkasten/db"
+	"github.com/Plebysnacc/kummerkasten/maintenance"
 	"github.com/gorilla/websocket"
+	"github.com/robfig/cron"
 	"log"
 	"net/http"
 	"os"
@@ -29,6 +31,18 @@ func main() {
 	resolver := &graph.Resolver{
 		DB: DB,
 	}
+
+	c := cron.New()
+	if err := c.AddFunc("@hourly", func() {
+		if err := maintenance.ClearSessionsIDs(ctx, resolver); err != nil {
+			log.Printf("failed cronjob: %v", err)
+		}
+	}); err != nil {
+		log.Printf("failed setting up cronjob: %v", err)
+	}
+
+	c.Start()
+	defer c.Stop()
 
 	es := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
 	srv := handler.New(es)

@@ -18,4 +18,5 @@ type User struct {
 	Password     string         `bun:",notnull"`
 	CreatedAt    time.Time      `bun:",notnull"`
 	LastModified time.Time      `bun:",notnull"`
+	LastLogin    time.Time
 }
