@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/Plebysnacc/kummerkasten/server/auth"
 	"github.com/Plebysnacc/kummerkasten/server/graph/model"
 	"github.com/Plebysnacc/kummerkasten/server/models"
 	log "github.com/sirupsen/logrus"
@@ -12,50 +13,59 @@ import (
 
 func SeedData(ctx context.Context, db *bun.DB) error {
 	// defaultdata user
-	users := []models.User{
+	users := []*models.User{
 		{
 			Mail:      "admin@kummerkasten.local",
 			Firstname: "Admin",
 			Lastname:  "Kummerkasten",
 			Password:  "admin",
-			Role:      UserRoleUser.ADMIN,
+			Role:      model.UserRoleAdmin,
 		},
 		{
 			Mail:      "cheffe@kummerkasten.local",
 			Firstname: "Chef",
 			Lastname:  "Fe",
 			Password:  "cheffe",
-			Role:      UserRoleUser.ADMIN,
+			Role:      model.UserRoleAdmin,
 		},
 		{
 			Mail:      "root@kummerkasten.local",
 			Firstname: "Root",
 			Lastname:  "Ruth",
 			Password:  "root",
-			Role:      UserRoleUser.ADMIN,
+			Role:      model.UserRoleAdmin,
 		},
 		{
 			Mail:      "fsles1@kummerkasten.local",
 			Firstname: "Fachschaft",
 			Lastname:  "Eins",
 			Password:  "fachschaft",
-			Role:      UserRoleUser.User,
+			Role:      model.UserRoleUser,
 		},
 		{
 			Mail:      "fsles2@kummerkasten.local",
 			Firstname: "Fachschaft",
 			Lastname:  "Zwei",
 			Password:  "fachschaft",
-			Role:      UserRoleUser.User,
+			Role:      model.UserRoleUser,
 		},
 		{
 			Mail:      "fsles3@kummerkasten.local",
 			Firstname: "Fachschaft",
 			Lastname:  "Drei",
 			Password:  "fachschaft",
-			Role:      UserRoleUser.User,
+			Role:      model.UserRoleUser,
 		},
 	}
+
+	for _, user := range users {
+		sid, err := auth.GenerateSID()
+		if err != nil {
+			return fmt.Errorf("failed to generate SID for user %s: %w", user.Mail, err)
+		}
+		user.Sid = sid
+	}
+
 	if err := insertData(ctx, db, (*models.User)(nil), users, "User"); err != nil {
 		return err
 	}

@@ -10,8 +10,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/Plebysnacc/kummerkasten/server/graph/model"
 	"github.com/Plebysnacc/kummerkasten/server/auth"
+	"github.com/Plebysnacc/kummerkasten/server/graph/model"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
