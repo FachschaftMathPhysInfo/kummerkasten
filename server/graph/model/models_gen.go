@@ -67,6 +67,13 @@ type Ticket struct {
 	Labels       []*Label    `json:"labels,omitempty"`
 }
 
+type UpdateTicket struct {
+	Title *string      `json:"title,omitempty"`
+	Text  *string      `json:"text,omitempty"`
+	Note  *string      `json:"note,omitempty"`
+	State *TicketState `json:"state,omitempty"`
+}
+
 type User struct {
 	ID           int32     `json:"id"`
 	Sid          string    `json:"sid"`

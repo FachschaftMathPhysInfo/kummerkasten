@@ -12,6 +12,53 @@ import (
 
 func SeedData(ctx context.Context, db *bun.DB) error {
 	// defaultdata user
+	users := []models.User{
+		{
+			Mail:      "admin@kummerkasten.local",
+			Firstname: "Admin",
+			Lastname:  "Kummerkasten",
+			Password:  "admin",
+			Role:      UserRoleUser.ADMIN,
+		},
+		{
+			Mail:      "cheffe@kummerkasten.local",
+			Firstname: "Chef",
+			Lastname:  "Fe",
+			Password:  "cheffe",
+			Role:      UserRoleUser.ADMIN,
+		},
+		{
+			Mail:      "root@kummerkasten.local",
+			Firstname: "Root",
+			Lastname:  "Ruth",
+			Password:  "root",
+			Role:      UserRoleUser.ADMIN,
+		},
+		{
+			Mail:      "fsles1@kummerkasten.local",
+			Firstname: "Fachschaft",
+			Lastname:  "Eins",
+			Password:  "fachschaft",
+			Role:      UserRoleUser.User,
+		},
+		{
+			Mail:      "fsles2@kummerkasten.local",
+			Firstname: "Fachschaft",
+			Lastname:  "Zwei",
+			Password:  "fachschaft",
+			Role:      UserRoleUser.User,
+		},
+		{
+			Mail:      "fsles3@kummerkasten.local",
+			Firstname: "Fachschaft",
+			Lastname:  "Drei",
+			Password:  "fachschaft",
+			Role:      UserRoleUser.User,
+		},
+	}
+	if err := insertData(ctx, db, (*models.User)(nil), users, "User"); err != nil {
+		return err
+	}
 
 	// defaultdata tickets
 	tickets := []*models.Ticket{
