@@ -109,7 +109,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 // DeleteUser is the resolver for the deleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context, ids []string) (int32, error) {
 	if len(ids) == 0 {
-		return 0, nil
+		return 0, fmt.Errorf("no ids provided to DeleteUser()")
 	}
 
 	result, err := r.DB.NewDelete().Model((*model.User)(nil)).Where("ID IN (?)", bun.In(ids)).Exec(ctx)
