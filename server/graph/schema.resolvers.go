@@ -141,8 +141,8 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 }
 
 // DeleteLabel is the resolver for the deleteLabel field.
-func (r *mutationResolver) DeleteLabel(ctx context.Context, id []int32) (int32, error) {
-	result, err := r.DB.NewDelete().Model((*model.Label)(nil)).Where("id IN (?)", bun.In(ids)).Exec(ctx)
+func (r *mutationResolver) DeleteLabel(ctx context.Context, name []string) (int32, error) {
+	result, err := r.DB.NewDelete().Model((*model.Label)(nil)).Where("Name IN (?)", bun.In(name)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete label: %v", err)
 		return 0, err
@@ -158,8 +158,31 @@ func (r *mutationResolver) DeleteLabel(ctx context.Context, id []int32) (int32, 
 }
 
 // UpdateLabel is the resolver for the updateLabel field.
-func (r *mutationResolver) UpdateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
-	panic(fmt.Errorf("not implemented: UpdateLabel - updateLabel"))
+func (r *mutationResolver) UpdateLabel(ctx context.Context, name string, label model.UpdateLabel) (string, error) {
+	labels, err := r.Query().Tickets(ctx, []string{name}, nil)
+
+	if err != nil || len(labels) == 0 {
+		return "", fmt.Errorf("label with label %v not found", name)
+	}
+
+	updatedLabel := labels[0]
+
+	if label.Name != nil {
+		updatedLabel.Name = *label.Name
+	}
+	if label.Color != nil {
+		updatedLabel.Color = *label.Color
+	}
+
+	updatedLabel.LastModified = time.Now()
+
+	if _, err := r.DB.NewUpdate().Model(updatedLabel).Where("name = ?", name).Exec(ctx); err != nil {
+		log.Printf("Failed to update labels %s: %v", name, err)
+		return "", err
+	}
+
+	return updatedLabel.Name, nil
+
 }
 
 // CreateUser is the resolver for the createUser field.
