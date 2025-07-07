@@ -173,6 +173,9 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, name string, label m
 	if label.Color != nil {
 		updatedLabel.Color = *label.Color
 	}
+	if label.Tickets != nil {
+		updatedLabel.Tickets = *label.Tickets
+	}
 
 	updatedLabel.LastModified = time.Now()
 
