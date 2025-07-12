@@ -59,7 +59,7 @@ type Setting{
 
 type Query {
   tickets(id: [ID!], state: [TicketState!]): [Ticket]
-  labels(id: [ID!]): [Label]
+  labels(ids: [ID!]): [Label]
   users(id: [ID!], mail: [String!], role: UserRole): [User]
   settings(keys: [String!]): [Setting]
 }
