@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/Plebysnacc/kummerkasten/auth"
@@ -129,7 +130,7 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
 	insertedLabel := &model.Label{
 		ID:      uuid.New().String(),
-		Name:    label.Name,
+		Name:    strings.ToLower(label.Name),
 		Color:   label.Color,
 		Tickets: make([]*model.Ticket, 0),
 	}
