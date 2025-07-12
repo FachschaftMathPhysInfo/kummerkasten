@@ -1,9 +1,10 @@
 package models
 
 import (
+	"time"
+
 	"github.com/Plebysnacc/kummerkasten/graph/model"
 	"github.com/uptrace/bun"
-	"time"
 )
 
 type User struct {
