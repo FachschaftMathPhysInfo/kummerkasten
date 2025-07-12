@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func ClearSessionsIDs(ctx context.Context, r *graph.Resolver) error{
+func ClearSessionsIDs(ctx context.Context, r *graph.Resolver) error {
 	timeTreshold := time.Now().Add(time.Hour * -12)
 	if _, err := r.DB.NewUpdate().Model((*model.User)(nil)).
 		Where("last_login < (?)", timeTreshold).
@@ -20,4 +20,3 @@ func ClearSessionsIDs(ctx context.Context, r *graph.Resolver) error{
 
 	return nil
 }
-
