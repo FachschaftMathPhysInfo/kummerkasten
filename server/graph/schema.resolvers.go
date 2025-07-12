@@ -10,6 +10,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
@@ -185,17 +186,97 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	sid, _ := auth.GenerateSID()
+
+	hashedPassword, err := auth.HashPassword(user.Password)
+
+	if err != nil {
+		log.Printf("Failed to create user")
+	}
+
+	newUser := &model.User{
+		ID:           uuid.New().String(),
+		Sid:          sid,
+		Mail:         user.Mail,
+		Firstname:    user.Firstname,
+		Lastname:     user.Lastname,
+		Password:     hashedPassword,
+		Role:         model.UserRoleUser,
+		CreatedAt:    time.Now(),
+		LastModified: time.Now(),
+	}
+
+	if _, err := r.DB.NewInsert().Model(newUser).Exec(ctx); err != nil {
+		log.Printf("Failed to create user: %v", err)
+		return nil, err
+	}
+
+	return newUser, nil
 }
 
 // DeleteUser is the resolver for the deleteUser field.
-func (r *mutationResolver) DeleteUser(ctx context.Context, id int32) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: DeleteUser - deleteUser"))
+func (r *mutationResolver) DeleteUser(ctx context.Context, ids []string) (int32, error) {
+	if len(ids) == 0 {
+		return 0, fmt.Errorf("no ids provided to DeleteUser()")
+	}
+
+	result, err := r.DB.NewDelete().Model((*model.User)(nil)).Where("ID IN (?)", bun.In(ids)).Exec(ctx)
+
+	if err != nil {
+		log.Printf("Failed to delete user: %v", err)
+		return 0, err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	return int32(rowsAffected), nil
 }
 
 // UpdateUser is the resolver for the updateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, id int32, user model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: UpdateUser - updateUser"))
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model.UpdateUser) (string, error) {
+	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
+
+	if err != nil || len(users) == 0 {
+		return "", fmt.Errorf("user with id %v not found", id)
+	}
+
+	updatedUser := users[0]
+
+	if user.Mail != nil {
+		updatedUser.Mail = *user.Mail
+	}
+	if user.Firstname != nil {
+		updatedUser.Firstname = *user.Firstname
+	}
+	if user.Lastname != nil {
+		updatedUser.Lastname = *user.Lastname
+	}
+	if user.Password != nil {
+		hashedPassword, err := auth.HashPassword(*user.Password)
+
+		if err != nil {
+			log.Printf("Failed to create user: %v", err)
+			return "", err
+		}
+
+		updatedUser.Password = hashedPassword
+	}
+	if user.Role != nil {
+		updatedUser.Role = *user.Role
+	}
+	if user.Sid != nil {
+		updatedUser.Sid = *user.Sid
+	}
+
+	updatedUser.LastModified = time.Now()
+
+	if _, err := r.DB.NewUpdate().Model(updatedUser).
+		Where("id = ?", id).
+		Exec(ctx); err != nil {
+		log.Printf("Failed to update user: %v", err)
+		return "", err
+	}
+
+	return updatedUser.Sid, nil
 }
 
 // CreateSetting is the resolver for the createSetting field.
@@ -296,12 +377,23 @@ func (r *queryResolver) Labels(ctx context.Context, id []string) ([]*model.Label
 }
 
 // Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context, id []string, role *model.UserRole) ([]*model.User, error) {
+func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, role *model.UserRole) ([]*model.User, error) {
 	var users []*model.User
 
-	err := r.DB.NewSelect().Model(&users).Scan(ctx)
-	if err != nil {
-		log.Printf("failed to fetch Users: %v", err)
+	query := r.DB.NewSelect().Model(&users)
+
+	if len(id) > 0 {
+		query = query.Where("id IN (?)", bun.In(id))
+	}
+	if len(mail) > 0 {
+		query = query.Where("mail IN (?)", bun.In(mail))
+	}
+	if role != nil {
+		query = query.Where("role = ?", *role)
+	}
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to fetch users: %v", err)
 		return nil, err
 	}
 
