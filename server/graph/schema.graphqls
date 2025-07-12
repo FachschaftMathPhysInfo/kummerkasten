@@ -122,6 +122,7 @@ type Mutation {
   createUser(user: NewUser!): User!
   deleteUser(ids: [String!]!): Int!
   updateUser(id: String!, user: UpdateUser!): String!
+  logout(sid: String!): String!
 
   createSetting(setting: NewSetting!): Setting!
   deleteSetting(keys: [String!]!): Int!

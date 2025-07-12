@@ -246,6 +246,29 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 	return updatedUser.Sid, nil
 }
 
+// Logout is the resolver for the logout field.
+func (r *mutationResolver) Logout(ctx context.Context, sid string) (string, error) {
+	var users []model.User
+
+	err := r.DB.NewSelect().Model(&users).Where("sid = ?", sid).Scan(ctx)
+	if err != nil || len(users) == 0 {
+		log.Printf("Failed to fetch users for logout: %v", err)
+		return err.Error(), err
+	}
+
+	user := users[0]
+
+	if _, err = r.DB.NewUpdate().Model(&user).
+		Where("id = ?", user.ID).
+		Set("sid = ?", "").
+		Exec(ctx); err != nil {
+		log.Printf("Failed to logout user: %v", err)
+		return err.Error(), err
+	}
+
+	return "", nil
+}
+
 // CreateSetting is the resolver for the createSetting field.
 func (r *mutationResolver) CreateSetting(ctx context.Context, setting model.NewSetting) (*model.Setting, error) {
 	insertedSetting := &model.Setting{
