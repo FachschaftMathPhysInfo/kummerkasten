@@ -171,7 +171,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	updatedLabel := labels[0]
 
 	if label.Name != nil {
-		updatedLabel.Name = *label.Name
+		updatedLabel.Name = strings.ToLower(*label.Name)
 	}
 	if label.Color != nil {
 		updatedLabel.Color = label.Color
