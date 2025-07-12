@@ -36,7 +36,7 @@ type Ticket {
 type Label {
   id: String!
   name: String!
-  color: String
+  color: String!
   tickets: [Ticket!]
 }
 
@@ -72,7 +72,7 @@ input NewTicket {
 
 input NewLabel {
   name: String!
-  color: String
+  color: String!
 }
 
 input NewUser {
