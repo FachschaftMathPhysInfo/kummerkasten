@@ -165,7 +165,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	labels, err := r.Query().Labels(ctx, []string{id})
 
 	if err != nil || len(labels) == 0 {
-		return "", fmt.Errorf("label with label %v not found", id)
+		return "", fmt.Errorf("label with id %v not found", id)
 	}
 
 	updatedLabel := labels[0]
