@@ -1,16 +1,27 @@
 // Docs: https://dbml.dbdiagram.io/docs
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum TicketState {
+  NEW
+  OPEN
+  CLOSED
+}
+
 Table tickets {
-  id integer [primary key]
+  id varchar [primary key]
   text varchar [not null]
   note varchar [note: "Used by admin note field"]
-  state integer [not null, note: "le ampelsystem"] 
+  state TicketState [not null, note: "le ampelsystem"]
   created_at timestamp [not null]
   last_modified timestamp [not null]
 }
 
 Table labels_to_ticket {
-  ticket integer [ref: > tickets.id, not null]
+  ticket varchar [ref: > tickets.id, not null]
   label varchar [ref: > labels.name, not null]
 }
 
@@ -19,14 +30,14 @@ Table labels {
   color varchar
 }
 
-
 Table users {
-  id integer [primary key]
+  id varchar [primary key]
   sid varchar
   mail varchar [not null, unique]
   firstname varchar [not null]
   lastname varchar [not null]
-  role varchar [not null]
+  password varchar [not null]
+  role UserRole [not null]
   created_at timestamp [not null]
   last_modified timestamp [not null]
 }
