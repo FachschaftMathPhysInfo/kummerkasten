@@ -15,6 +15,13 @@ enum UserRole {
   USER
 }
 
+enum FormLabels {
+   DOZENTIN,
+   VERANSTALTUNG,
+   FACHSCHAFT,
+   SONSTIGES
+}
+
 type Ticket {
   id: String!
   title: String!
@@ -61,8 +68,7 @@ type Query {
 input NewTicket {
   title: String!
   text: String!
-  note: String
-  state: TicketState!
+  labels: [FormLabels!]
 }
 
 input NewLabel {
@@ -86,6 +92,13 @@ input UpdateUser {
   sid: String
 }
 
+input UpdateTicket {
+   title: String
+   text: String
+   note: String
+   state: TicketState
+}
+
 input NewSetting {
   key: String!
   value: String!
@@ -98,9 +111,9 @@ input NewLabelToTicketAssignment {
 
 type Mutation {
   createTicket(ticket: NewTicket!): Ticket!
-  deleteTicket(id: [String!]!): String!
-  updateTicket(id: String!, ticket: NewTicket!): Ticket!
-  updateTicketState(id: [String!]!, state: TicketState!): String!
+  deleteTicket(ids: [String!]!): Int!
+  updateTicket(id: String!, ticket: UpdateTicket!): String!
+  updateTicketState(ids: [String!]!, state: TicketState!): Int!
 
   createLabel(label: NewLabel!): Label!
   deleteLabel(id: [Int!]!): Int!
