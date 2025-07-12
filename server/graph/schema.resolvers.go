@@ -359,13 +359,13 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 }
 
 // Labels is the resolver for the labels field.
-func (r *queryResolver) Labels(ctx context.Context, id []string) ([]*model.Label, error) {
+func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Label, error) {
 	var labels []*model.Label
 
 	query := r.DB.NewSelect().Model(&labels)
 
-	if len(id) > 0 {
-		query = query.Where("id IN (?)", bun.In(id))
+	if len(ids) > 0 {
+		query = query.Where("id IN (?)", bun.In(ids))
 	}
 
 	if err := query.Scan(ctx); err != nil {
