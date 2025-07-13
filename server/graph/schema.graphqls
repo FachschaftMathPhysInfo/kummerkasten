@@ -110,7 +110,7 @@ input NewSetting {
 
 input NewLabelToTicketAssignment {
   labelID: String!
-  ticketId: String!
+  ticketID: String!
 }
 
 type Mutation {
@@ -131,6 +131,6 @@ type Mutation {
   deleteSetting(keys: [String!]!): Int!
   updateSetting(setting: NewSetting!): Setting!
 
-  addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int!
-  removeLabelFromTicket(labelID: String!, ticketId: Int!): Int!
+  addLabelToTicket(assignments: [NewLabelToTicketAssignment!]!): Int!
+  removeLabelFromTicket(labelID: String!, ticketID: String!): Int!
 }

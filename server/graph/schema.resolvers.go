@@ -14,6 +14,7 @@ import (
 
 	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -192,7 +193,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	}
 
 	if _, err := r.DB.NewUpdate().Model(updatedLabel).Where("id = ?", id).Exec(ctx); err != nil {
-		log.Printf("Failed to update label %s: %v", id, err)
+		log.Printf("Failed to update labels %s: %v", id, err)
 		return "", err
 	}
 
@@ -342,13 +343,79 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
-func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignment []*model.NewLabelToTicketAssignment) (int32, error) {
-	panic(fmt.Errorf("not implemented: AddLabelToTicket - addLabelToTicket"))
+func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.NewLabelToTicketAssignment) (int32, error) {
+	var labelsToTicketsEntries []*models.LabelsToTickets
+	updatedTickets := make(map[string]struct{}) //map the updated tickets to later set last modified up
+
+	// collect all ticket-label assignments from the input
+	for _, assignment := range assignments {
+		if assignment.TicketID == "" || assignment.LabelID == "" {
+			return 0, fmt.Errorf("ticketId and labelId cannot be empty")
+		}
+
+		labelsToTicketsEntries = append(labelsToTicketsEntries, &models.LabelsToTickets{
+			TicketID: assignment.TicketID,
+			LabelID:  assignment.LabelID,
+		})
+
+		updatedTickets[assignment.TicketID] = struct{}{} //
+	} //this hasn't been looked into well enough and is mostly 2am brainfart
+
+	for ticketID := range updatedTickets {
+		_, err := r.UpdateTicket(ctx, ticketID, model.UpdateTicket{})
+		if err != nil {
+			log.Printf("Failed to update LastModified: %v", err)
+		}
+	}
+
+	result, err := r.DB.NewInsert().Model(&labelsToTicketsEntries).Exec(ctx)
+	if err != nil {
+		log.Printf("Failed to add labels to tickets: %v", err)
+		return 0, err
+	} //this should work fine, comment can be deleted tomorrow
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return 0, err
+	} //this should work fine, comment can be deleted tomorrow
+
+	// theory: just call UpdateTicket on the TicketID with no arguments, this should update the LastModified date
+	//labelsToTicketsEntries.LastModified = time.Now()
+	// this will be looked into tomorrow
+
+	return int32(rowsAffected), nil
 }
 
 // RemoveLabelFromTicket is the resolver for the removeLabelFromTicket field.
-func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelID string, ticketID int32) (int32, error) {
-	panic(fmt.Errorf("not implemented: RemoveLabelFromTicket - removeLabelFromTicket"))
+func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelID string, ticketID string) (int32, error) {
+	if ticketID == "" || labelID == "" {
+		return 0, fmt.Errorf("ticketID and labelID cannot be empty")
+	}
+
+	result, err := r.DB.NewDelete().Model((*models.LabelsToTickets)(nil)).Where("ticket_id = ?", ticketID).Where("label_id = ?", labelID).Exec(ctx)
+
+	if err != nil {
+		log.Printf("Failed to remove label '%s' from ticket '%s': %v", labelID, ticketID, err)
+		return 0, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return 0, err
+	}
+
+	//used to update LastModified on ticket as done in AddLabelToTicket function
+	// way less complicated since we get the ticketID on function call
+	if rowsAffected > 0 {
+		_, err := r.UpdateTicket(ctx, ticketID, model.UpdateTicket{})
+		if err != nil {
+			log.Printf("Failed to update LastModified for ticket %s", err)
+		}
+	}
+
+	return int32(rowsAffected), nil
 }
 
 // Tickets is the resolver for the tickets field.
