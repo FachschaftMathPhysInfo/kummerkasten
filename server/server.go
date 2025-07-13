@@ -15,8 +15,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 
 	"github.com/Plebysnacc/kummerkasten/db"
-	"github.com/Plebysnacc/kummerkasten/maintenance"
 	"github.com/Plebysnacc/kummerkasten/graph"
+	"github.com/Plebysnacc/kummerkasten/maintenance"
 
 	_ "github.com/lib/pq"
 )
