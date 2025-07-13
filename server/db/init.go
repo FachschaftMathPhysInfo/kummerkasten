@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-
 	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"

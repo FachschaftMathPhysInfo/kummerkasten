@@ -129,5 +129,5 @@ type Mutation {
   updateSetting(setting: NewSetting!): Setting!
 
   addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int!
-  removeLabelFromTicket(labelID: String!, ticketId: Int!): Int!
+  removeLabelFromTicket(labelName: String!, ticketId: Int!): Int!
 }

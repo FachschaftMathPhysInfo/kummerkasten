@@ -322,7 +322,7 @@ func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignment []*m
 }
 
 // RemoveLabelFromTicket is the resolver for the removeLabelFromTicket field.
-func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelID string, ticketID int32) (int32, error) {
+func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelName string, ticketID int32) (int32, error) {
 	panic(fmt.Errorf("not implemented: RemoveLabelFromTicket - removeLabelFromTicket"))
 }
 
