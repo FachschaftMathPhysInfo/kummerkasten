@@ -13,11 +13,11 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-  
-  "github.com/Plebysnacc/kummerkasten/db"
+
+	"github.com/Plebysnacc/kummerkasten/db"
 	"github.com/Plebysnacc/kummerkasten/maintenance"
 	"github.com/Plebysnacc/kummerkasten/graph"
-  
+
 	_ "github.com/lib/pq"
 )
 
@@ -36,7 +36,7 @@ func main() {
 
 	c := cron.New()
 	if err := c.AddFunc("@hourly", func() {
-		if err := maintenance.ClearSessionsIDs(ctx, resolver); err != nil {
+		if err := maintenance.ClearSessionIDs(ctx, resolver); err != nil {
 			log.Printf("failed cronjob: %v", err)
 		}
 	}); err != nil {
