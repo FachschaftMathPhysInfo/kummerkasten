@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/joho/godotenv"
@@ -13,6 +11,8 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 	"github.com/uptrace/bun/extra/bundebug"
+	"log"
+	"os"
 )
 
 var (

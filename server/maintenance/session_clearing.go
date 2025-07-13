@@ -9,12 +9,12 @@ import (
 )
 
 func ClearSessionsIDs(ctx context.Context, r *graph.Resolver) error {
-	timeTreshold := time.Now().Add(time.Hour * -12)
+	timeThreshold := time.Now().Add(time.Hour * -12)
 	if _, err := r.DB.NewUpdate().Model((*model.User)(nil)).
-		Where("last_login < (?)", timeTreshold).
+		Where("last_login < (?)", timeThreshold).
 		Set("sid = (?)", "").
 		Exec(ctx); err != nil {
-		log.Println("Error clearing sessions IDs: couldnt fetch uesrs")
+		log.Println("Error clearing session IDs: couldn't fetch users")
 		return err
 	}
 
