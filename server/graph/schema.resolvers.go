@@ -16,6 +16,7 @@ import (
 
 	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
+
 	"github.com/Plebysnacc/kummerkasten/middleware"
 	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/google/uuid"
@@ -412,6 +413,7 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
+
 func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
 	var labelsToTicketsEntries []*models.LabelsToTickets
 	updatedTickets := make(map[string]struct{})
@@ -440,6 +442,7 @@ func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*
 	if err != nil {
 		log.Printf("Failed to add labels to tickets: %v", err)
 		return 0, err
+
 	}
 
 	rowsAffected, err := result.RowsAffected()
