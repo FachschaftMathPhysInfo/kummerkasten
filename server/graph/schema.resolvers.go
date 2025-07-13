@@ -129,7 +129,6 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
-	//checks if the given label.Color string is
 	colorValue := label.Color
 	match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
 	if !match {
@@ -193,7 +192,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	}
 
 	if _, err := r.DB.NewUpdate().Model(updatedLabel).Where("id = ?", id).Exec(ctx); err != nil {
-		log.Printf("Failed to update labels %s: %v", id, err)
+		log.Printf("Failed to update label %s: %v", id, err)
 		return "", err
 	}
 
