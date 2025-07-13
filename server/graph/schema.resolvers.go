@@ -14,6 +14,7 @@ import (
 
 	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -343,8 +344,38 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
-func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignment []*model.NewLabelToTicketAssignment) (int32, error) {
-	panic(fmt.Errorf("not implemented: AddLabelToTicket - addLabelToTicket"))
+func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.NewLabelToTicketAssignment) (int32, error) {
+
+	var labelsToTicketsEntries []*models.LabelsToTickets
+
+	//collect all ticket-label assignments from the input
+	for _, assignment := range assignments {
+		if assignment.TicketID == "" || assignment.LabelID == "" {
+			return 0, fmt.Errorf("ticketId and labelId cannot be empty")
+		}
+
+		labelsToTicketsEntries = append(labelsToTicketsEntries, &models.LabelsToTickets{
+			TicketID: assignment.TicketID,
+			LabelID:  assignment.LabelID,
+		})
+	} //this hasn't been looked into well enough and is mostly 2am brainfart
+
+	result, err := r.DB.NewInsert().Model(&labelsToTicketsEntries).Exec(ctx)
+	if err != nil {
+		log.Printf("Failed to add labels to tickets: %v", err)
+		return 0, err
+	} //this should work fine, comment can be deleted tomorrow
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return 0, err
+	} //this should work fine, comment can be deleted tomorrow
+
+	//labelsToTicketsEntries.LastModified = time.Now()
+	// this will be looked into tomorrow
+
+	return int32(rowsAffected), nil
 }
 
 // RemoveLabelFromTicket is the resolver for the removeLabelFromTicket field.
