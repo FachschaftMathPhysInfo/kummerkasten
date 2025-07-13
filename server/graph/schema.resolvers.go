@@ -416,6 +416,7 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
 	var labelsToTicketsEntries []*models.LabelsToTickets
 	updatedTickets := make(map[string]struct{})
+
 	for _, assignment := range assignments {
 		if assignment.TicketID == "" || assignment.LabelID == "" {
 			return 0, fmt.Errorf("ticketId and labelId cannot be empty")
@@ -440,7 +441,6 @@ func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*
 	if err != nil {
 		log.Printf("Failed to add labels to tickets: %v", err)
 		return 0, err
-
 	}
 
 	rowsAffected, err := result.RowsAffected()
@@ -479,6 +479,7 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 		rowsAffected = removalRowsAffected + rowsAffected
 
 		updatedTickets[assignment.TicketID] = struct{}{}
+
 	}
 
 	for ticketID := range updatedTickets {
