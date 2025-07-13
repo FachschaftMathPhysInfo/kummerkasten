@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/Plebysnacc/kummerkasten/db"
-	"github.com/Plebysnacc/kummerkasten/maintenance"
 	"github.com/gorilla/websocket"
 	"github.com/robfig/cron"
 	"log"
@@ -15,7 +13,11 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+  
+  "github.com/Plebysnacc/kummerkasten/db"
+	"github.com/Plebysnacc/kummerkasten/maintenance"
 	"github.com/Plebysnacc/kummerkasten/graph"
+  
 	_ "github.com/lib/pq"
 )
 
