@@ -120,7 +120,7 @@ type Mutation {
   updateTicketState(ids: [String!]!, state: TicketState!): Int!
 
   createLabel(label: NewLabel!): Label!
-  deleteLabel(id: [Int!]!): Int!
+  deleteLabel(ids: [Int!]!): Int!
   updateLabel(id: String!, label: UpdateLabel!): String!
 
   createUser(user: NewUser!): User!
