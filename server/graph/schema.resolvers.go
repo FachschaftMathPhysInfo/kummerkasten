@@ -130,10 +130,13 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
-	colorValue := label.Color
-	match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
-	if !match {
-		return nil, fmt.Errorf("color was not provided in valid hex format")
+	colorValue := *label.Color
+
+	if label.Color != nil {
+		match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
+		if !match {
+			return nil, fmt.Errorf("color was not provided in valid hex format")
+		}
 	}
 
 	insertedLabel := &model.Label{
@@ -189,7 +192,8 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 			return "", fmt.Errorf("color was not provided in valid hex format")
 		}
 
-		updatedLabel.Color = colorValue
+		updatedColor := label.Color
+		updatedLabel.Color = updatedColor
 	}
 
 	if _, err := r.DB.NewUpdate().Model(updatedLabel).Where("id = ?", id).Exec(ctx); err != nil {
