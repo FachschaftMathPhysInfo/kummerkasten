@@ -109,7 +109,7 @@ input NewSetting {
 }
 
 input NewLabelToTicketAssignment {
-  labelName: String!,
+  labelID: String!
   ticketId: String!
 }
 

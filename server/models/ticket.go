@@ -23,6 +23,6 @@ type Ticket struct {
 type LabelsToTickets struct {
 	bun.BaseModel `bun:"table:labels_tickets"`
 
-	TicketID  string `bun:",pk"`
-	LabelName string `bun:",pk"`
+	TicketID string `bun:",pk"`
+	LabelID  string `bun:",pk"`
 }
