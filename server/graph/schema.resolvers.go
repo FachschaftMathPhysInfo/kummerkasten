@@ -413,11 +413,9 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
-
 func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
 	var labelsToTicketsEntries []*models.LabelsToTickets
 	updatedTickets := make(map[string]struct{})
-
 	for _, assignment := range assignments {
 		if assignment.TicketID == "" || assignment.LabelID == "" {
 			return 0, fmt.Errorf("ticketId and labelId cannot be empty")
