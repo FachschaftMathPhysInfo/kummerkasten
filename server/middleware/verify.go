@@ -8,6 +8,7 @@ import (
 	"github.com/Plebysnacc/kummerkasten/graph/model"
 )
 
+//nolint:deadcode,unused // Implemented for future use
 func verifySID(r graph.Resolver, ctx context.Context, sid string) (*model.User, error) {
 	var users []*model.User
 
