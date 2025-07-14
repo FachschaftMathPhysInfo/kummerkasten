@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/gorilla/websocket"
 	"github.com/robfig/cron"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/gorilla/websocket"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"

@@ -34,8 +34,9 @@ type Ticket {
 }
 
 type Label {
+  id: String!
   name: String!
-  color: String
+  color: String!
   tickets: [Ticket!]
 }
 
@@ -59,7 +60,7 @@ type Setting{
 
 type Query {
   tickets(id: [ID!], state: [TicketState!]): [Ticket]
-  labels(name: [String!]): [Label]
+  labels(ids: [ID!]): [Label]
   users(id: [ID!], mail: [String!], role: UserRole): [User]
   settings(keys: [String!]): [Setting]
   login(mail: String!, password: String!): String!
@@ -73,7 +74,7 @@ input NewTicket {
 
 input NewLabel {
   name: String!
-  color: String
+  color: String!
 }
 
 input NewUser {
@@ -99,13 +100,18 @@ input UpdateTicket {
    state: TicketState
 }
 
+input UpdateLabel {
+   name: String
+   color: String
+}
+
 input NewSetting {
   key: String!
   value: String!
 }
 
 input NewLabelToTicketAssignment {
-  labelName: String!,
+  labelID: String!
   ticketId: String!
 }
 
@@ -116,8 +122,8 @@ type Mutation {
   updateTicketState(ids: [String!]!, state: TicketState!): Int!
 
   createLabel(label: NewLabel!): Label!
-  deleteLabel(id: [Int!]!): Int!
-  updateLabel(label: NewLabel!): Label!
+  deleteLabel(ids: [Int!]!): Int!
+  updateLabel(id: String!, label: UpdateLabel!): String!
 
   createUser(user: NewUser!): User!
   deleteUser(ids: [String!]!): Int!
@@ -129,5 +135,5 @@ type Mutation {
   updateSetting(setting: NewSetting!): Setting!
 
   addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int!
-  removeLabelFromTicket(labelName: String!, ticketId: Int!): Int!
+  removeLabelFromTicket(labelID: String!, ticketId: Int!): Int!
 }
