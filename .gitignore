@@ -37,3 +37,4 @@
 # Generated Server Files
 server/graph/generated.go
 server/graph/model/models_gen.go
+frontend/lib/graph/generated

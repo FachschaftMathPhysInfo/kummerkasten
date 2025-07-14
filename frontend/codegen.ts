@@ -6,7 +6,7 @@ const config: CodegenConfig = {
   schema: "../server/graph/schema.graphqls",
   documents: "lib/**/*.graphql",
   generates: {
-    "lib/graph/generated": {
+    "lib/graph/generated/": {
       preset: "client",
       plugins: []
     },
