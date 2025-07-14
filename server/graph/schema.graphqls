@@ -15,6 +15,13 @@ enum UserRole {
   USER
 }
 
+enum FormLabels {
+   DOZENTIN,
+   VERANSTALTUNG,
+   FACHSCHAFT,
+   SONSTIGES
+}
+
 type Ticket {
   id: String!
   title: String!
@@ -27,8 +34,9 @@ type Ticket {
 }
 
 type Label {
+  id: String!
   name: String!
-  color: String
+  color: String!
   tickets: [Ticket!]
 }
 
@@ -51,7 +59,7 @@ type Setting{
 
 type Query {
   tickets(id: [ID!], state: [TicketState!]): [Ticket]
-  labels(name: [String!]): [Label]
+  labels(ids: [ID!]): [Label]
   users(id: [ID!], mail: [String!], role: UserRole): [User]
   settings(keys: [String!]): [Setting]
 }
@@ -59,13 +67,12 @@ type Query {
 input NewTicket {
   title: String!
   text: String!
-  note: String
-  state: TicketState!
+  labels: [FormLabels!]
 }
 
 input NewLabel {
   name: String!
-  color: String
+  color: String!
 }
 
 input NewUser {
@@ -84,25 +91,37 @@ input UpdateUser {
   sid: String
 }
 
+input UpdateTicket {
+   title: String
+   text: String
+   note: String
+   state: TicketState
+}
+
+input UpdateLabel {
+   name: String
+   color: String
+}
+
 input NewSetting {
   key: String!
   value: String!
 }
 
 input NewLabelToTicketAssignment {
-  labelName: String!,
+  labelID: String!
   ticketId: String!
 }
 
 type Mutation {
   createTicket(ticket: NewTicket!): Ticket!
-  deleteTicket(id: [String!]!): String!
-  updateTicket(id: String!, ticket: NewTicket!): Ticket!
-  updateTicketState(id: [String!]!, state: TicketState!): String!
+  deleteTicket(ids: [String!]!): Int!
+  updateTicket(id: String!, ticket: UpdateTicket!): String!
+  updateTicketState(ids: [String!]!, state: TicketState!): Int!
 
   createLabel(label: NewLabel!): Label!
-  deleteLabel(id: [Int!]!): Int!
-  updateLabel(label: NewLabel!): Label!
+  deleteLabel(ids: [Int!]!): Int!
+  updateLabel(id: String!, label: UpdateLabel!): String!
 
   createUser(user: NewUser!): User!
   deleteUser(ids: [String!]!): Int!
@@ -113,5 +132,5 @@ type Mutation {
   updateSetting(setting: NewSetting!): Setting!
 
   addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int!
-  removeLabelFromTicket(labelName: String!, ticketId: Int!): Int!
+  removeLabelFromTicket(labelID: String!, ticketId: Int!): Int!
 }
