@@ -65,7 +65,7 @@ type Query {
   labels(ids: [ID!]): [Label] @hasRole(role: USER)
   users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
   settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
-  login(mail: String!, password: String!): String!
+  login(mail: String!, password: String!): Boolean!
 }
 
 input NewTicket {

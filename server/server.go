@@ -6,6 +6,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/Plebysnacc/kummerkasten/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/robfig/cron"
 	"github.com/uptrace/bun"
@@ -57,7 +58,8 @@ func main() {
 	log.Print("starting server")
 	router := chi.NewRouter()
 	router.Use(c.Handler)
-	router.Handle("/api", srv)
+
+	router.Mount("/api", getAPIRouter())
 
 	if env == "DEV" {
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/api"))
@@ -92,7 +94,7 @@ func initCors() {
 	var allowedOrigins = []string{os.Getenv("PUBLIC_DOMAIN")}
 
 	if env == "DEV" {
-		allowedOrigins = append(allowedOrigins, "http://localhost:3000")
+		allowedOrigins = append(allowedOrigins, "localhost:3000", "localhost:8080")
 	}
 
 	c = cors.New(cors.Options{
@@ -112,4 +114,13 @@ func initCron() {
 	}); err != nil {
 		log.Printf("failed setting up cronjob: %v", err)
 	}
+}
+
+func getAPIRouter() *chi.Mux {
+	api := chi.NewRouter()
+	api.Use(middleware.InjectWriter)
+	api.Use(middleware.Auth(DB))
+	api.Handle("/", srv)
+	api.Handle("/*", srv)
+	return api
 }

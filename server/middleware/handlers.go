@@ -27,3 +27,11 @@ func Auth(db *bun.DB) func(http.Handler) http.Handler {
 		})
 	}
 }
+
+// InjectWriter Injects an http ResponseWrite to use by the login query
+func InjectWriter(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), "writer", w)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}

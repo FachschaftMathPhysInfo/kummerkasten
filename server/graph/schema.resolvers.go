@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -457,7 +459,7 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 }
 
 // Login is the resolver for the login field.
-func (r *queryResolver) Login(ctx context.Context, mail string, password string) (string, error) {
+func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
 	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
 	if err != nil || len(users) == 0 {
 		log.Printf("Failed to fetch user for login: %v", err)
@@ -468,14 +470,14 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
 		log.Printf("Password is incorrect")
-		return "", err
+		return false, err
 	}
 
 	if user.Sid == "" {
 		user.Sid, err = auth.GenerateSID()
 		if err != nil {
 			log.Printf("Failed to generate SID: %v", err)
-			return "", err
+			return false, err
 		}
 	}
 
@@ -484,10 +486,22 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	if _, err := r.DB.NewUpdate().Model(user).Where("mail = ?", mail).Exec(ctx); err != nil {
 		log.Printf("Failed to update sid: %v", err)
-		return "", err
+		return false, err
 	}
 
-	return user.Sid, nil
+	httpResponseWriter := ctx.Value("writer").(http.ResponseWriter)
+
+	http.SetCookie(httpResponseWriter, &http.Cookie{
+		Name:     "sid",
+		Value:    user.Sid,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   os.Getenv("ENV") != "DEV",
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(7 * 24 * time.Hour), // one week expiry
+	})
+
+	return true, nil
 }
 
 // Mutation returns MutationResolver implementation.
