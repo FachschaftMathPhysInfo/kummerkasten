@@ -4,6 +4,8 @@
 
 scalar Time
 
+directive @hasRole(role: UserRole) on FIELD_DEFINITION
+
 enum TicketState {
   NEW,
   OPEN,
@@ -59,10 +61,10 @@ type Setting{
 }
 
 type Query {
-  tickets(id: [ID!], state: [TicketState!]): [Ticket]
-  labels(ids: [ID!]): [Label]
-  users(id: [ID!], mail: [String!], role: UserRole): [User]
-  settings(keys: [String!]): [Setting]
+  tickets(id: [ID!], state: [TicketState!]): [Ticket] @hasRole(role: USER)
+  labels(ids: [ID!]): [Label] @hasRole(role: USER)
+  users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
+  settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
   login(mail: String!, password: String!): String!
 }
 
@@ -117,23 +119,23 @@ input NewLabelToTicketAssignment {
 
 type Mutation {
   createTicket(ticket: NewTicket!): Ticket!
-  deleteTicket(ids: [String!]!): Int!
-  updateTicket(id: String!, ticket: UpdateTicket!): String!
-  updateTicketState(ids: [String!]!, state: TicketState!): Int!
+  deleteTicket(ids: [String!]!): Int! @hasRole(role: USER)
+  updateTicket(id: String!, ticket: UpdateTicket!): String! @hasRole(role: USER)
+  updateTicketState(ids: [String!]!, state: TicketState!): Int! @hasRole(role: USER)
 
-  createLabel(label: NewLabel!): Label!
-  deleteLabel(ids: [Int!]!): Int!
-  updateLabel(id: String!, label: UpdateLabel!): String!
+  createLabel(label: NewLabel!): Label! @hasRole(role: USER)
+  deleteLabel(ids: [Int!]!): Int! @hasRole(role: ADMIN)
+  updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
 
-  createUser(user: NewUser!): User!
-  deleteUser(ids: [String!]!): Int!
-  updateUser(id: String!, user: UpdateUser!): String!
-  logout(sid: String!): String!
+  createUser(user: NewUser!): User! @hasRole(role: ADMIN)
+  deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
+  updateUser(id: String!, user: UpdateUser!): String! @hasRole(role: USER)
+  logout(sid: String!): String! @hasRole(role: USER)
 
-  createSetting(setting: NewSetting!): Setting!
-  deleteSetting(keys: [String!]!): Int!
-  updateSetting(setting: NewSetting!): Setting!
+  createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
+  deleteSetting(keys: [String!]!): Int! @hasRole(role: ADMIN)
+  updateSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
 
-  addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int!
-  removeLabelFromTicket(labelID: String!, ticketId: Int!): Int!
+  addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int! @hasRole(role: USER)
+  removeLabelFromTicket(labelID: String!, ticketId: Int!): Int! @hasRole(role: USER)
 }

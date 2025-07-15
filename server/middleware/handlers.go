@@ -1,0 +1,29 @@
+package middleware
+
+import (
+	"context"
+	"github.com/uptrace/bun"
+	"net/http"
+)
+
+//nolint:unused,deadcode // Used when wiring the server
+func Auth(db *bun.DB) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			sid, err := r.Cookie("sid")
+			if err != nil || sid.Value == "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			user, err := VerifySID(r.Context(), sid.Value, db)
+			if err != nil || user == nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), "user", user)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
