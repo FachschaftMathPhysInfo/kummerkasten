@@ -6,7 +6,6 @@ import (
 	"net/http"
 )
 
-//nolint:unused,deadcode // Used when wiring the server
 func Auth(db *bun.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +21,7 @@ func Auth(db *bun.DB) func(http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "user", user)
+			ctx := context.WithValue(r.Context(), UserKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -31,7 +30,7 @@ func Auth(db *bun.DB) func(http.Handler) http.Handler {
 // InjectWriter Injects an http ResponseWrite to use by the login query
 func InjectWriter(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), "writer", w)
+		ctx := context.WithValue(r.Context(), WriterKey, w)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
