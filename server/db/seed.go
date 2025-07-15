@@ -12,7 +12,6 @@ import (
 )
 
 func SeedData(ctx context.Context, db *bun.DB) error {
-	// defaultdata user
 	users := []*models.User{
 		{
 			Mail:         "admin@kummerkasten.local",
@@ -82,7 +81,45 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
-	// defaultdata tickets
+	labels := []*models.Label{
+		{
+			Name:  "Dozent*in",
+			Color: "#474770",
+		},
+		{
+			Name:  "Prof. Mathe",
+			Color: "#476870",
+		},
+		{
+			Name:  "Veranstaltung",
+			Color: "#47704e",
+		},
+		{
+			Name:  "Lineare Algebra",
+			Color: "#487047",
+		},
+		{
+			Name:  "Fachschaft",
+			Color: "#477068",
+		},
+		{
+			Name:  "Gremienwahlen",
+			Color: "#706047",
+		},
+		{
+			Name:  "Sonstiges",
+			Color: "#70476f",
+		},
+		{
+			Name:  "Soziales",
+			Color: "#6a4770",
+		},
+	}
+
+	if err := insertData(ctx, db, (*models.Label)(nil), labels, "Labels"); err != nil {
+		return err
+	}
+
 	tickets := []*models.Ticket{
 		{
 			Title:        "Lineare Algebra",
