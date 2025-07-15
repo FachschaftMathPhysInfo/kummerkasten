@@ -17,7 +17,7 @@ type Ticket struct {
 	State        model.TicketState `bun:",notnull,default:'NEW'"`
 	CreatedAt    time.Time         `bun:",notnull,default:current_timestamp"`
 	LastModified time.Time         `bun:",notnull,default:current_timestamp"`
-	Labels       []string          `bun:",notnull"`
+	Labels       []Ticket          `bun:",notnull"`
 }
 
 type LabelsToTickets struct {
