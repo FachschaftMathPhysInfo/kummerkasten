@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"github.com/Plebysnacc/kummerkasten/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -489,7 +490,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		return false, err
 	}
 
-	httpResponseWriter := ctx.Value("writer").(http.ResponseWriter)
+	httpResponseWriter := ctx.Value(middleware.WriterKey).(http.ResponseWriter)
 
 	http.SetCookie(httpResponseWriter, &http.Cookie{
 		Name:     "sid",
