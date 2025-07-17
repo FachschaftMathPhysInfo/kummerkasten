@@ -1,4 +1,12 @@
+"use client"
+
+import {useUser} from "@/components/providers/user-provider";
+
 export function Footer() {
+  const { user } = useUser();
+
+  if (user) return null
+
   return (
     <footer className="flex justify-evenly w-full py-5 px-10 text-sm text-muted-foreground border-t mt-5">
       <span>

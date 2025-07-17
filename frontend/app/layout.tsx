@@ -1,10 +1,12 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import React from "react";
-import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
-import AppSidebar from "@/components/app-sidebar";
+import {SidebarProvider} from "@/components/ui/sidebar";
+import {UserSidebar, UserSidebarTrigger} from "@/components/user-sidebar";
 import {Toaster} from "@/components/ui/sonner";
+import {UserProvider} from "@/components/providers/user-provider";
+import {Footer} from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,14 +34,17 @@ export default function UserLayout({
     <body
       className={`${geistSans.variable} ${geistMono.variable} antialiased min-w-screen min-h-screen`}
     >
-    <SidebarProvider>
-      <AppSidebar/>
-      <main className={'w-full h-full'}>
-        <SidebarTrigger/>
-        {children}
-      </main>
-      <Toaster richColors/>
-    </SidebarProvider>
+    <UserProvider>
+      <SidebarProvider>
+          <UserSidebar/>
+          <main className={'w-full h-full'}>
+            <UserSidebarTrigger/>
+            {children}
+            <Footer />
+          </main>
+          <Toaster richColors/>
+      </SidebarProvider>
+    </UserProvider>
     </body>
     </html>
   );

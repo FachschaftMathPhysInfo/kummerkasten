@@ -8,17 +8,20 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarTrigger
 } from "@/components/ui/sidebar";
 import {usePathname} from "next/navigation";
 import {LogOut, Settings, Tags, Tickets, Users} from "lucide-react";
 import {router} from "next/client";
-import {toast} from "sonner";
+import {useUser} from "@/components/providers/user-provider";
+import {UserRole} from "@/lib/graph/generated/graphql";
 
 
-export default function AppSidebar() {
+export function UserSidebar() {
   const pathname = usePathname()
   const basePath = "/" + pathname.split("/")[1];
+  const {user, logout} = useUser()
 
   const userItems = [
     {
@@ -41,8 +44,10 @@ export default function AppSidebar() {
     }
   ]
 
+  if (!user) return null
+
   return (
-    <Sidebar>
+    <Sidebar className={'relative'} collapsible={"icon"}>
       <SidebarContent className={'pr-10'}>
         <SidebarGroup className={'h-full justify-center'}>
           <SidebarGroupContent>
@@ -57,7 +62,7 @@ export default function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              {adminItems.map((item) => (
+              {user?.role === UserRole.Admin && adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
@@ -72,7 +77,7 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter >
+      <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -83,9 +88,8 @@ export default function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            {/*TODO: add logout*/}
             <SidebarMenuButton
-              onClick={() => toast.info("Not yet implemented")}
+              onClick={() => logout()}
               className={'flex items-center text-destructive'}
             >
               <LogOut className={'stroke-destructive'}/> Logout
@@ -96,4 +100,10 @@ export default function AppSidebar() {
     </Sidebar>
   );
 
+}
+
+export function UserSidebarTrigger() {
+  const {user} = useUser();
+  if (!user) return null;
+  return <SidebarTrigger/>
 }

@@ -1,12 +1,11 @@
 import {User, UserRole} from "@/lib/graph/generated/graphql";
-import {randomUUID} from "node:crypto";
 
 const now = new Date()
 
 export const defaultUser: User = {
   firstname: 'Maxi',
   lastname: 'Musterperson',
-  id: randomUUID(),
+  id: "invalid ID",
   lastLogin: now,
   lastModified: now,
   createdAt: now,
