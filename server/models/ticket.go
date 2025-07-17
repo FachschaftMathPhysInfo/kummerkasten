@@ -17,12 +17,12 @@ type Ticket struct {
 	State        model.TicketState `bun:",notnull,default:'NEW'"`
 	CreatedAt    time.Time         `bun:",notnull,default:current_timestamp"`
 	LastModified time.Time         `bun:",notnull,default:current_timestamp"`
-	Labels       []string          `bun:",notnull"`
+	Labels       []*Label          `bun:"m2m:labels_to_tickets,join:Ticket=Label"`
 }
 
 type LabelsToTickets struct {
-	bun.BaseModel `bun:"table:labels_tickets"`
-
-	TicketID string `bun:",pk"`
-	LabelID  string `bun:",pk"`
+	TicketID string  `bun:",pk"`
+	LabelID  string  `bun:",pk"`
+	Ticket   *Ticket `bun:"rel:belongs-to,join:ticket_id=id"`
+	Label    *Label  `bun:"rel:belongs-to,join:label_id=id"`
 }

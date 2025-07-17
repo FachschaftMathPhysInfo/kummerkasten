@@ -51,6 +51,7 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 
 	db = bun.NewDB(sqldb, pgdialect.New())
 	db.AddQueryHook(bundebug.NewQueryHook())
+	db.RegisterModel((*models.LabelsToTickets)(nil))
 
 	if err := createTables(ctx, tables); err != nil {
 		log.Panic("Failed to create basic tabels: ", err)
