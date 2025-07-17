@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/Plebysnacc/kummerkasten/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +16,7 @@ import (
 
 	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/Plebysnacc/kummerkasten/middleware"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -499,7 +499,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		HttpOnly: true,
 		Secure:   os.Getenv("ENV") != "DEV",
 		SameSite: http.SameSiteLaxMode,
-		Expires:  time.Now().Add(7 * 24 * time.Hour), // one week expiry
+		Expires:  time.Now().Add(2 * 24 * time.Hour),
 	})
 
 	return true, nil
