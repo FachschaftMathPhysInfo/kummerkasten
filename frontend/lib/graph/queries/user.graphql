@@ -2,11 +2,11 @@ query login ($mail: String!, $password: String!) {
     login(mail: $mail, password: $password)
 }
 
-query singleUser ($mail: String!) {
-    users(mail: [$mail]) {
-        firstname,
-        lastname,
-        mail,
+query loginCheck($sid: String!) {
+    loginCheck(sid: $sid) {
+        mail
+        firstname
+        lastname
         role
     }
 }
