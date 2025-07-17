@@ -26,8 +26,8 @@ Table labels_to_ticket {
 }
 
 Table labels {
-  id uuid
-  name varchar [primary key]
+  id uuid [primary key]
+  name varchar [not null, unique]
   color varchar
 }
 
