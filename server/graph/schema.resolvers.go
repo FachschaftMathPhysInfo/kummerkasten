@@ -278,9 +278,6 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 
 		updatedUser.Password = hashedPassword
 	}
-	if user.Role != nil {
-		updatedUser.Role = *user.Role
-	}
 	if user.Sid != nil {
 		updatedUser.Sid = *user.Sid
 	}
@@ -295,6 +292,29 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 	}
 
 	return updatedUser.Sid, nil
+}
+
+// ChangeRole is the resolver for the changeRole field.
+func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model.UserRole) (string, error) {
+	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
+
+	if err != nil || len(users) == 0 {
+		return "", fmt.Errorf("user with id %v not found", id)
+	}
+
+	updatedUser := users[0]
+
+	updatedUser.Role = role
+	updatedUser.LastModified = time.Now()
+
+	if _, err := r.DB.NewUpdate().Model(updatedUser).
+		Where("id = ?", id).
+		Exec(ctx); err != nil {
+		log.Printf("Failed to update user: %v", err)
+		return "", err
+	}
+
+	return updatedUser.ID, nil
 }
 
 // Logout is the resolver for the logout field.
