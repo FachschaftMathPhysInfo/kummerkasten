@@ -167,6 +167,24 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
+	var labelLinks []*models.LabelsToTickets
+
+	for _, ticket := range tickets {
+		for _, label := range ticket.Labels {
+			labelLinks = append(labelLinks, &models.LabelsToTickets{
+				TicketID: ticket.ID,
+				LabelID:  label.ID,
+			})
+		}
+	}
+
+	if len(labelLinks) > 0 {
+		if _, err := db.NewInsert().Model(&labelLinks).Exec(ctx); err != nil {
+			return fmt.Errorf("LabelsToTickets: %w", err)
+		}
+		fmt.Println("LabelsToTickets seeded successfully")
+	}
+
 	settings := []*models.Setting{
 		{Key: "logo-url", Value: "http://localhost:8080/fs-logo.png"},
 		{Key: "homepage-url", Value: "https://mathphys.info"},

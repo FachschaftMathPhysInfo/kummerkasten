@@ -30,7 +30,7 @@ type Ticket {
   state: TicketState!
   createdAt: Time!
   lastModified: Time!
-  labels: [Label!]
+  labels: [Label!] 
 }
 
 type Label {

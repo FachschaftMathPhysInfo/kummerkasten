@@ -23,8 +23,8 @@ type Ticket struct {
 type LabelsToTickets struct {
 	bun.BaseModel `bun:"table:labels_to_tickets,alias:ltt"`
 
-	TicketID string  `bun:"ticket_id,pk"`
-	LabelID  string  `bun:"label_id,pk"`
+	TicketID string  `bun:"ticket_id,pk,type:uuid,notnull"`
+	LabelID  string  `bun:"label_id,pk,type:uuid,notnull"`
 	Ticket   *Ticket `bun:"rel:belongs-to,join:ticket_id=id"`
 	Label    *Label  `bun:"rel:belongs-to,join:label_id=id"`
 }
