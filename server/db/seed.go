@@ -6,7 +6,7 @@ import (
 	"github.com/Plebysnacc/kummerkasten/server/auth"
 	"github.com/Plebysnacc/kummerkasten/server/graph/model"
 	"github.com/Plebysnacc/kummerkasten/server/models"
-	utils "github.com/Plebysnacc/kummerkasten/server/utils"
+	"github.com/Plebysnacc/kummerkasten/server/utils"
 	"github.com/uptrace/bun"
 	"os"
 	"time"
