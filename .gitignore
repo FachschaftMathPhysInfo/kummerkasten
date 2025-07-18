@@ -1,35 +1,34 @@
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+/frontend/node_modules
+/frontend/.pnp
+/frontend/.pnp.js
 
 # testing
 /coverage
 
 # next.js
-/.next/
-/out/
+/frontend/.next/
+/frontend/out/
 
 # production
-/build
+/frontend/build
 
 # misc
 .DS_Store
 *.pem
 
 # debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/.pnpm-debug.log*
 
 # local env files
 .env*.local
 
 # typescript
-*.tsbuildinfo
-next-env.d.ts
-.env.local
+/frontend/*.tsbuildinfo
+/frontend/next-env.d.ts
 
 # IDE Stuff
 .vscode/
@@ -38,3 +37,4 @@ next-env.d.ts
 # Generated Server Files
 server/graph/generated.go
 server/graph/model/models_gen.go
+frontend/lib/graph/generated

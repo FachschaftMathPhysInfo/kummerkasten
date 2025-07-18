@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/Plebysnacc/kummerkasten/server/db"
 	"github.com/gorilla/websocket"
+	"github.com/robfig/cron"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +15,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Plebysnacc/kummerkasten/server/graph"
+
+	"github.com/Plebysnacc/kummerkasten/server/maintenance"
+
 	_ "github.com/lib/pq"
 )
 
@@ -29,6 +33,18 @@ func main() {
 	resolver := &graph.Resolver{
 		DB: DB,
 	}
+
+	c := cron.New()
+	if err := c.AddFunc("@hourly", func() {
+		if err := maintenance.ClearSessionIDs(ctx, resolver); err != nil {
+			log.Printf("failed cronjob: %v", err)
+		}
+	}); err != nil {
+		log.Printf("failed setting up cronjob: %v", err)
+	}
+
+	c.Start()
+	defer c.Stop()
 
 	es := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
 	srv := handler.New(es)

@@ -121,13 +121,18 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
+	labelMap := map[string]*models.Label{}
+	for _, label := range labels {
+		labelMap[label.Name] = label
+	}
+
 	tickets := []*models.Ticket{
 		{
 			Title:        "Lineare Algebra",
 			Text:         "Ich komme mit der Mathe nicht klar :(",
 			Note:         "",
 			State:        model.TicketStateNew,
-			Labels:       []string{},
+			Labels:       []*models.Label{labelMap["Lineare Algebra"], labelMap["Prof. Mathe"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		},
@@ -136,16 +141,16 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Text:         "Hilfe! Ich finde keine Dozent*innen die mir einen Pratkikumsplatz anbieten.",
 			Note:         "Vorschlag: Weiterführende Vorlesungen hören, beim DKFZ und ZITI nachfragen.",
 			State:        model.TicketStateOpen,
-			Labels:       []string{},
+			Labels:       []*models.Label{labelMap["Sonstiges"], labelMap["Veranstaltung"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		},
 		{
 			Title:        "alles doof",
-			Text:         "ich will nciht mehr studieren wo exmatrikulationsantrag",
+			Text:         "ich will nicht mehr studieren wo exmatrikulationsantrag",
 			Note:         "Kann geschlossen werden.",
 			State:        model.TicketStateOpen,
-			Labels:       []string{},
+			Labels:       []*models.Label{labelMap["Sonstiges"], labelMap["Soziales"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		},
@@ -154,7 +159,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Text:         "woof",
 			Note:         "Spam",
 			State:        model.TicketStateClosed,
-			Labels:       []string{},
+			Labels:       []*models.Label{labelMap["Soziales"], labelMap["Fachschaft"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		}}
@@ -186,6 +191,18 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 	mail := os.Getenv("ADMIN_MAIL")
 	if mail == "" {
 		mail = "admin@kummer.kasten"
+	}
+
+	exists, err := db.NewSelect().
+		Model((*models.User)(nil)).
+		Where("mail = ?", mail).
+		Exists(ctx)
+	if err != nil {
+		return err
+	}
+	if exists {
+		fmt.Printf("Admin user with email %s already exists, skipping creation\n", mail)
+		return nil
 	}
 
 	password := "admin"

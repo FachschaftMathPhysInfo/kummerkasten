@@ -50,6 +50,7 @@ type User {
   role: UserRole!
   createdAt: Time!
   lastModified: Time!
+  lastLogin: Time
 }
 
 type Setting{
@@ -62,6 +63,7 @@ type Query {
   labels(ids: [ID!]): [Label]
   users(id: [ID!], mail: [String!], role: UserRole): [User]
   settings(keys: [String!]): [Setting]
+  login(mail: String!, password: String!): String!
 }
 
 input NewTicket {
@@ -126,6 +128,7 @@ type Mutation {
   createUser(user: NewUser!): User!
   deleteUser(ids: [String!]!): Int!
   updateUser(id: String!, user: UpdateUser!): String!
+  logout(sid: String!): String!
 
   createSetting(setting: NewSetting!): Setting!
   deleteSetting(keys: [String!]!): Int!
