@@ -119,7 +119,7 @@ input NewLabelToTicketAssignment {
 
 type Mutation {
   createTicket(ticket: NewTicket!): Ticket!
-  deleteTicket(ids: [String!]!): Int! @hasRole(role: USER)
+  deleteTicket(ids: [String!]!): Int! @hasRole(role: ADMIN)
   updateTicket(id: String!, ticket: UpdateTicket!): String! @hasRole(role: USER)
   updateTicketState(ids: [String!]!, state: TicketState!): Int! @hasRole(role: USER)
 
