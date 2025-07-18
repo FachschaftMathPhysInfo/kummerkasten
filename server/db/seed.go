@@ -8,6 +8,7 @@ import (
 	"github.com/Plebysnacc/kummerkasten/server/models"
 	"github.com/Plebysnacc/kummerkasten/server/utils"
 	"github.com/uptrace/bun"
+	"log"
 	"os"
 	"time"
 )
@@ -182,7 +183,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		if _, err := db.NewInsert().Model(&labelLinks).Exec(ctx); err != nil {
 			return fmt.Errorf("LabelsToTickets: %w", err)
 		}
-		fmt.Println("LabelsToTickets seeded successfully")
+		log.Print("LabelsToTickets seeded successfully")
 	}
 
 	settings := []*models.Setting{
@@ -219,7 +220,7 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 	if exists {
-		fmt.Printf("Admin user with email %s already exists, skipping creation\n", mail)
+		log.Printf("Admin user with email %s already exists, skipping creation\n", mail)
 		return nil
 	}
 
@@ -253,8 +254,8 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		return fmt.Errorf("failed to create admin user: %w", err)
 	}
 
-	fmt.Printf("Admin user created with email: %s", mail)
-	fmt.Printf("Admin user created with password: %s", password)
+	log.Printf("Admin user created with email: %s", mail)
+	log.Printf("Admin user created with password: %s", password)
 	return nil
 }
 
@@ -268,7 +269,7 @@ func insertData[T any](ctx context.Context, db *bun.DB, model T, data []T, descr
 		if _, err := db.NewInsert().Model(&data).Exec(ctx); err != nil {
 			return fmt.Errorf("%s: %s", description, err)
 		}
-		fmt.Printf("%s seeded successfully\n", description)
+		log.Printf("%s seeded successfully\n", description)
 	}
 	return nil
 }
