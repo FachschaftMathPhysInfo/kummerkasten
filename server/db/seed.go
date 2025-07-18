@@ -6,22 +6,23 @@ import (
 	"github.com/Plebysnacc/kummerkasten/server/auth"
 	"github.com/Plebysnacc/kummerkasten/server/graph/model"
 	"github.com/Plebysnacc/kummerkasten/server/models"
-	log "github.com/sirupsen/logrus"
+	utils "github.com/Plebysnacc/kummerkasten/utils"
 	"github.com/uptrace/bun"
+	"os"
 	"time"
 )
 
 func SeedData(ctx context.Context, db *bun.DB) error {
+	if err := createAdminUser(ctx, db); err != nil {
+		return err
+	}
+
+	if os.Getenv("ENV") != "DEV" {
+		fmt.Printf("Skipping test data seeding (ENV != DEV)")
+		return nil
+	}
+
 	users := []*models.User{
-		{
-			Mail:         "admin@kummerkasten.local",
-			Firstname:    "Admin",
-			Lastname:     "Kummerkasten",
-			Password:     "admin",
-			Role:         model.UserRoleAdmin,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
 		{
 			Mail:         "cheffe@kummerkasten.local",
 			Firstname:    "Chef",
@@ -179,6 +180,49 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 	return nil
 }
 
+func createAdminUser(ctx context.Context, db *bun.DB) error {
+	var err error
+
+	mail := os.Getenv("ADMIN_MAIL")
+	if mail == "" {
+		mail = "admin@kummer.kasten"
+	}
+
+	password := "admin"
+	if os.Getenv("ENV") == "PROD" {
+		if os.Getenv("ADMIN_PASSWORD") != "" {
+			password = os.Getenv("ADMIN_PASSWORD")
+		} else {
+			password, err = utils.RandString(32)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	hash, err := auth.HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	admin := &models.User{
+		Mail:         mail,
+		Firstname:    "Admin",
+		Lastname:     "Kummerkasten",
+		Password:     hash,
+		Role:         model.UserRoleAdmin,
+		CreatedAt:    time.Now(),
+		LastModified: time.Now(),
+	}
+
+	if _, err := db.NewInsert().Model(admin).Exec(ctx); err != nil {
+		return fmt.Errorf("failed to create admin user: %w", err)
+	}
+
+	fmt.Printf("Admin user created with email: %s", mail)
+	fmt.Printf("Admin user created with password: %s", password)
+	return nil
+}
+
 func insertData[T any](ctx context.Context, db *bun.DB, model T, data []T, description string) error {
 	count, err := db.NewSelect().Model(model).Count(ctx)
 	if err != nil {
@@ -189,7 +233,7 @@ func insertData[T any](ctx context.Context, db *bun.DB, model T, data []T, descr
 		if _, err := db.NewInsert().Model(&data).Exec(ctx); err != nil {
 			return fmt.Errorf("%s: %s", description, err)
 		}
-		log.Infof("%s seeded successfully\n", description)
+		fmt.Printf("%s seeded successfully\n", description)
 	}
 	return nil
 }
