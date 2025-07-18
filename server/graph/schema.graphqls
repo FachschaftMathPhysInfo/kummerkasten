@@ -5,6 +5,7 @@
 scalar Time
 
 directive @hasRole(role: UserRole) on FIELD_DEFINITION
+directive @onlySelf on FIELD_DEFINITION
 
 enum TicketState {
   NEW,
@@ -129,7 +130,7 @@ type Mutation {
 
   createUser(user: NewUser!): User! @hasRole(role: ADMIN)
   deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
-  updateUser(id: String!, user: UpdateUser!): String! @hasRole(role: USER)
+  updateUser(id: String!, user: UpdateUser!): String! @hasRole(role: USER) @onlySelf
   logout(sid: String!): String! @hasRole(role: USER)
 
   createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
