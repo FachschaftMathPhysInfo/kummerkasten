@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/Plebysnacc/kummerkasten/server/graph/model"
+	"github.com/Plebysnacc/kummerkasten/graph/model"
 	"github.com/uptrace/bun"
 )
 

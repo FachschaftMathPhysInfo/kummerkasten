@@ -8,13 +8,16 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/Plebysnacc/kummerkasten/server/auth"
-	"github.com/Plebysnacc/kummerkasten/server/graph/model"
-	"github.com/Plebysnacc/kummerkasten/server/models"
+	"github.com/Plebysnacc/kummerkasten/auth"
+	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/Plebysnacc/kummerkasten/middleware"
+	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -276,9 +279,6 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 
 		updatedUser.Password = hashedPassword
 	}
-	if user.Role != nil {
-		updatedUser.Role = *user.Role
-	}
 	if user.Sid != nil {
 		updatedUser.Sid = *user.Sid
 	}
@@ -293,6 +293,29 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 	}
 
 	return updatedUser.Sid, nil
+}
+
+// ChangeRole is the resolver for the changeRole field.
+func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model.UserRole) (string, error) {
+	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
+
+	if err != nil || len(users) == 0 {
+		return "", fmt.Errorf("user with id %v not found", id)
+	}
+
+	updatedUser := users[0]
+
+	updatedUser.Role = role
+	updatedUser.LastModified = time.Now()
+
+	if _, err := r.DB.NewUpdate().Model(updatedUser).
+		Where("id = ?", id).
+		Exec(ctx); err != nil {
+		log.Printf("Failed to update user role: %v", err)
+		return "", err
+	}
+
+	return updatedUser.ID, nil
 }
 
 // Logout is the resolver for the logout field.
@@ -394,7 +417,6 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 		return nil, err
 	}
 
-	// ✅ Convert DB models to GraphQL models
 	var gqlTickets []*model.Ticket
 	for _, t := range dbTickets {
 		var gqlLabels []*model.Label
@@ -505,7 +527,7 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 }
 
 // Login is the resolver for the login field.
-func (r *queryResolver) Login(ctx context.Context, mail string, password string) (string, error) {
+func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
 	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
 	if err != nil || len(users) == 0 {
 		log.Printf("Failed to fetch user for login: %v", err)
@@ -516,14 +538,14 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
 		log.Printf("Password is incorrect")
-		return "", err
+		return false, err
 	}
 
 	if user.Sid == "" {
 		user.Sid, err = auth.GenerateSID()
 		if err != nil {
 			log.Printf("Failed to generate SID: %v", err)
-			return "", err
+			return false, err
 		}
 	}
 
@@ -532,10 +554,22 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	if _, err := r.DB.NewUpdate().Model(user).Where("mail = ?", mail).Exec(ctx); err != nil {
 		log.Printf("Failed to update sid: %v", err)
-		return "", err
+		return false, err
 	}
 
-	return user.Sid, nil
+	httpResponseWriter := ctx.Value(middleware.WriterKey).(http.ResponseWriter)
+
+	http.SetCookie(httpResponseWriter, &http.Cookie{
+		Name:     "sid",
+		Value:    user.Sid,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   os.Getenv("ENV") != "DEV",
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(2 * 24 * time.Hour),
+	})
+
+	return true, nil
 }
 
 // Mutation returns MutationResolver implementation.

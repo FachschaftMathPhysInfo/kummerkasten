@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Plebysnacc/kummerkasten/server/models"
+	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
