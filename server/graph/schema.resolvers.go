@@ -17,6 +17,7 @@ import (
 	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
 	"github.com/Plebysnacc/kummerkasten/middleware"
+	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -399,16 +400,16 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelID st
 
 // Tickets is the resolver for the tickets field.
 func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.TicketState) ([]*model.Ticket, error) {
-	var tickets []*model.Ticket
+	var dbTickets []*models.Ticket
 
-	query := r.DB.NewSelect().Model(&tickets)
+	query := r.DB.NewSelect().Model(&dbTickets).Relation("Labels")
 
 	if len(id) > 0 {
-		query = query.Where("id IN (?)", bun.In(id))
+		query = query.Where("ticket.id IN (?)", bun.In(id))
 	}
 
 	if len(state) > 0 {
-		query = query.Where("state IN (?)", bun.In(state))
+		query = query.Where("ticket.state IN (?)", bun.In(state))
 	}
 
 	if err := query.Scan(ctx); err != nil {
@@ -416,17 +417,40 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 		return nil, err
 	}
 
-	return tickets, nil
+	var gqlTickets []*model.Ticket
+	for _, t := range dbTickets {
+		var gqlLabels []*model.Label
+		for _, l := range t.Labels {
+			gqlLabels = append(gqlLabels, &model.Label{
+				ID:    l.ID,
+				Name:  l.Name,
+				Color: l.Color,
+			})
+		}
+
+		gqlTickets = append(gqlTickets, &model.Ticket{
+			ID:           t.ID,
+			Title:        t.Title,
+			Text:         t.Text,
+			Note:         &t.Note,
+			State:        t.State,
+			CreatedAt:    t.CreatedAt,
+			LastModified: t.LastModified,
+			Labels:       gqlLabels,
+		})
+	}
+
+	return gqlTickets, nil
 }
 
 // Labels is the resolver for the labels field.
 func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Label, error) {
-	var labels []*model.Label
+	var dbLabels []*models.Label
 
-	query := r.DB.NewSelect().Model(&labels)
+	query := r.DB.NewSelect().Model(&dbLabels).Relation("Tickets")
 
 	if len(ids) > 0 {
-		query = query.Where("id IN (?)", bun.In(ids))
+		query = query.Where("label.id IN (?)", bun.In(ids))
 	}
 
 	if err := query.Scan(ctx); err != nil {
@@ -434,7 +458,30 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 		return nil, err
 	}
 
-	return labels, nil
+	var gqlLabels []*model.Label
+	for _, l := range dbLabels {
+		var gqlTickets []*model.Ticket
+		for _, t := range l.Tickets {
+			gqlTickets = append(gqlTickets, &model.Ticket{
+				ID:           t.ID,
+				Title:        t.Title,
+				Text:         t.Text,
+				Note:         &t.Note,
+				State:        t.State,
+				CreatedAt:    t.CreatedAt,
+				LastModified: t.LastModified,
+			})
+		}
+
+		gqlLabels = append(gqlLabels, &model.Label{
+			ID:      l.ID,
+			Name:    l.Name,
+			Color:   l.Color,
+			Tickets: gqlTickets,
+		})
+	}
+
+	return gqlLabels, nil
 }
 
 // Users is the resolver for the users field.
