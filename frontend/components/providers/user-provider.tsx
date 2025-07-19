@@ -74,7 +74,7 @@ export function UserProvider({children}: { children: ReactNode }) {
     await client.request<LogoutMutation>(LogoutDocument, {sid: sid})
     setUser(null)
     await deleteSID()
-    router.push("/")
+    router.push("/login")
   }
 
   return (
