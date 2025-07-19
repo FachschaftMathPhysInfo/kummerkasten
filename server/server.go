@@ -2,26 +2,29 @@ package main
 
 import (
 	"context"
+	"github.com/gorilla/websocket"
+	"github.com/robfig/cron"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/Plebysnacc/kummerkasten/middleware"
+
 	"github.com/go-chi/chi/v5"
-	"github.com/robfig/cron"
+	"github.com/rs/cors"
 	"github.com/uptrace/bun"
-	"log"
-	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
-
-	"github.com/rs/cors"
 
 	"github.com/Plebysnacc/kummerkasten/db"
 	"github.com/Plebysnacc/kummerkasten/graph"
 	"github.com/Plebysnacc/kummerkasten/graph/directives"
 	"github.com/Plebysnacc/kummerkasten/maintenance"
+	"github.com/Plebysnacc/kummerkasten/middleware"
 	_ "github.com/lib/pq"
 )
 
@@ -115,8 +118,40 @@ func initCron() {
 	}); err != nil {
 		log.Printf("failed setting up cronjob: %v", err)
 	}
-}
 
+	cronjob.Start()
+	defer cronjob.Stop()
+
+	es := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
+	srv := handler.New(es)
+
+	log.Printf("Start Seeding!")
+	err := db.SeedData(ctx, DB)
+	if err != nil {
+		log.Fatal("seed failed: ", err)
+	}
+	log.Printf("End Seeding!")
+
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+
+	srv.AddTransport(transport.Websocket{
+		Upgrader: websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin:     func(r *http.Request) bool { return true },
+		},
+		KeepAlivePingInterval: 10 * time.Second,
+	})
+	srv.Use(extension.Introspection{})
+
+	if os.Getenv("DEBUG") != "" {
+		http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
+		http.Handle("/query", srv)
+
+		log.Printf("Connect to http://localhost:%s/playground for GraphQL playground", port)
+	}
+}
 func getAPIRouter() *chi.Mux {
 	api := chi.NewRouter()
 	api.Use(middleware.InjectWriter)
