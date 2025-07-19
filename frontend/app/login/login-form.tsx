@@ -16,7 +16,7 @@ import {cn} from "@/lib/utils";
 
 const loginFormSchema = z.object({
   mail: z.email("Bitte gib eine gültige E-Mail an."),
-  password: z.string("Bitte gib ein Passwort an"),
+  password: z.string("Bitte gib ein Passwort an."),
 });
 
 interface LoginFormProps {
