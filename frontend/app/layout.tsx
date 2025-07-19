@@ -32,12 +32,12 @@ export default function UserLayout({
   return (
     <html lang="en">
     <body
-      className={`${geistSans.variable} ${geistMono.variable} antialiased min-w-screen min-h-screen`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
     <UserProvider>
       <SidebarProvider>
           <UserSidebar/>
-          <main className={'w-full h-full'}>
+          <main className={'w-full h-full flex flex-col justify-between min-w-screen min-h-screen'}>
             <UserSidebarTrigger/>
             {children}
             <Footer />
