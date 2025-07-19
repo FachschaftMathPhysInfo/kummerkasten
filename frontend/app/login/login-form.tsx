@@ -7,20 +7,21 @@ import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import React, {useState} from "react";
-import {Save} from "lucide-react";
+import {LogIn} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
+import {cn} from "@/lib/utils";
 
 
 const loginFormSchema = z.object({
-  mail: z.email("Bitte gib eine E-Mail an."),
+  mail: z.email("Bitte gib eine gültige E-Mail an."),
   password: z.string("Bitte gib ein Passwort an"),
 });
 
 export default function AccountForm() {
   const router = useRouter();
-  const {user, login} = useUser()
+  const {login} = useUser()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
   const [correctCredentials, setCorrectCredentials] = useState(false);
 
@@ -32,12 +33,18 @@ export default function AccountForm() {
     },
   });
 
+  const handleInputChange = (field: any, value: string) => {
+    field.onChange(value);
+    if (!correctCredentials) {
+      setCorrectCredentials(true);
+    }
+  };
 
   async function onValidSubmit(userData: z.infer<typeof loginFormSchema>) {
     let ok: boolean
 
-    try{
-      ok = await login(userData.mail, userData.password )
+    try {
+      ok = await login(userData.mail, userData.password)
     } catch (error) {
       toast.error("Fehler beim Anmelden")
       console.error("Failed logging in user: ", error)
@@ -54,55 +61,65 @@ export default function AccountForm() {
   }
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
-              className="space-y-4 w-full">
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
+        className="space-y-4 w-full mt-6"
+      >
 
-          <FormField
-            control={form.control}
-            name="mail"
-            render={({field}) => (
-              <FormItem className={'flex-grow'}>
-                <FormLabel>E-Mail</FormLabel>
-                <FormControl>
-                  <Input placeholder={user?.mail} {...field}/>
-                </FormControl>
-                <FormMessage className={'text-destructive'}>
-                  {hasTriedToSubmit && !correctCredentials && (
-                    "Email oder Passwort falsch."
-                  )}
-                </FormMessage>
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="mail"
+          render={({field}) => (
+            <FormItem className={'flex-grow'}>
+              <FormLabel hidden>E-Mail</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={'E-Mail'}
+                  className={cn(!correctCredentials && "border-destructive")}
+                  {...field}
+                  onChange={(e) => handleInputChange(field, e.target.value)}
+                />
+              </FormControl>
+              <FormMessage/>
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({field}) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input {...field} type={"password"}/>
-                </FormControl>
-                <FormMessage/>
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({field}) => (
+            <FormItem>
+              <FormLabel hidden>Password</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={'Passwort'}
+                  type={"password"}
+                  className={cn(!correctCredentials && "border-destructive")}
+                  {...field}
+                  onChange={(e) => handleInputChange(field, e.target.value)}
+                />
+              </FormControl>
+              <FormMessage className={'text-destructive'}>
+                {!correctCredentials && hasTriedToSubmit && "Anmeldedaten inkorrekt"}
+              </FormMessage>
+            </FormItem>
+          )}
+        />
 
-          <div className={'w-full flex justify-end items-center gap-x-12 mt-8'}>
+        <div className={'w-full'}>
 
-            <Button
-              disabled={!form.formState.isValid && hasTriedToSubmit}
-              type="submit"
-            >
-              <Save/>
-              Anmelden
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </>
+          <Button
+            disabled={!form.formState.isValid && hasTriedToSubmit}
+            type="submit"
+            className={'w-full'}
+          >
+            <LogIn/>
+            Anmelden
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

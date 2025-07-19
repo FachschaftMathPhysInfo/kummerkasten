@@ -46,12 +46,12 @@ export function UserProvider({children}: { children: ReactNode }) {
   // fetch sid
   useEffect(() => {
     void fetchSID()
-  }, []);
+  }, [fetchSID]);
 
   // fetch user
   useEffect(() => {
     void fetchUser();
-  }, [sid]);
+  }, [sid, fetchUser]);
 
   const login = async (mail: string, password: string): Promise<boolean> => {
     const client = getClient();
