@@ -23,7 +23,7 @@ export default function AccountForm() {
   const router = useRouter();
   const {login} = useUser()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
-  const [correctCredentials, setCorrectCredentials] = useState(false);
+  const [correctCredentials, setCorrectCredentials] = useState(true);
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
