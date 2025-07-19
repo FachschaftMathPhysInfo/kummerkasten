@@ -4,9 +4,9 @@ import {createContext} from "react";
 import {ReactNode, useContext, useEffect, useState} from "react";
 import {LoginCheckDocument, LoginCheckQuery, LogoutDocument, LogoutMutation, User} from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
-import {router} from "next/client";
 import {defaultUser} from "@/lib/graph/defaultTypes";
 import {deleteSID, getSID} from "@/lib/cookies";
+import {useRouter} from "next/navigation"
 
 interface UserContextType {
   user: User | null;
@@ -18,6 +18,7 @@ const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider({ children } : {children: ReactNode}) {
   const [user, setUser] = useState<User | null>(null);
   const [sid, setSid] = useState<string | undefined>();
+  const router = useRouter();
 
   // fetch sid
   useEffect(() => {
@@ -48,7 +49,7 @@ export function UserProvider({ children } : {children: ReactNode}) {
     await client.request<LogoutMutation>(LogoutDocument, {sid: sid})
     setUser(null)
     await deleteSID()
-    await router.push("/")
+    router.push("/")
   }
 
   return (
