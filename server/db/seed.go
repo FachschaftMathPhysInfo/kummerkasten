@@ -23,63 +23,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		return nil
 	}
 
-	users := []*models.User{
-		{
-			Mail:         "cheffe@kummerkasten.local",
-			Firstname:    "Chef",
-			Lastname:     "Fe",
-			Password:     "cheffe",
-			Role:         model.UserRoleAdmin,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "root@kummerkasten.local",
-			Firstname:    "Root",
-			Lastname:     "Ruth",
-			Password:     "root",
-			Role:         model.UserRoleAdmin,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "fsles1@kummerkasten.local",
-			Firstname:    "Fachschaft",
-			Lastname:     "Eins",
-			Password:     "fachschaft",
-			Role:         model.UserRoleUser,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "fsles2@kummerkasten.local",
-			Firstname:    "Fachschaft",
-			Lastname:     "Zwei",
-			Password:     "fachschaft",
-			Role:         model.UserRoleUser,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "fsles3@kummerkasten.local",
-			Firstname:    "Fachschaft",
-			Lastname:     "Drei",
-			Password:     "fachschaft",
-			Role:         model.UserRoleUser,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-	}
-
-	for _, user := range users {
-		sid, err := auth.GenerateSID()
-		if err != nil {
-			return fmt.Errorf("failed to generate SID for user %s: %w", user.Mail, err)
-		}
-		user.Sid = sid
-	}
-
-	if err := insertData(ctx, db, (*models.User)(nil), users, "User"); err != nil {
+	if err := seedTestUsers(ctx, db); err != nil {
 		return err
 	}
 
@@ -256,6 +200,93 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 
 	log.Printf("Admin user created with email: %s", mail)
 	log.Printf("Admin user created with password: %s", password)
+	return nil
+}
+
+func seedTestUsers(ctx context.Context, db *bun.DB) error {
+	testEmails := []string{
+		"cheffe@kummerkasten.local",
+		"root@kummerkasten.local",
+		"fsles1@kummerkasten.local",
+		"fsles2@kummerkasten.local",
+		"fsles3@kummerkasten.local",
+	}
+
+	for _, email := range testEmails {
+		exists, err := db.NewSelect().
+			Model((*models.User)(nil)).
+			Where("mail = ?", email).
+			Exists(ctx)
+		if err != nil {
+			return err
+		}
+		if exists {
+			log.Printf("Test users already exist, skipping test user seeding")
+			return nil
+		}
+	}
+
+	users := []*models.User{
+		{
+			Mail:         "cheffe@kummerkasten.local",
+			Firstname:    "Chef",
+			Lastname:     "Fe",
+			Password:     "cheffe",
+			Role:         model.UserRoleAdmin,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "root@kummerkasten.local",
+			Firstname:    "Root",
+			Lastname:     "Ruth",
+			Password:     "root",
+			Role:         model.UserRoleAdmin,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "fsles1@kummerkasten.local",
+			Firstname:    "Fachschaft",
+			Lastname:     "Eins",
+			Password:     "fachschaft",
+			Role:         model.UserRoleUser,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "fsles2@kummerkasten.local",
+			Firstname:    "Fachschaft",
+			Lastname:     "Zwei",
+			Password:     "fachschaft",
+			Role:         model.UserRoleUser,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "fsles3@kummerkasten.local",
+			Firstname:    "Fachschaft",
+			Lastname:     "Drei",
+			Password:     "fachschaft",
+			Role:         model.UserRoleUser,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+	}
+
+	for _, user := range users {
+		hash, err := auth.HashPassword(user.Password)
+		if err != nil {
+			return fmt.Errorf("failed to hash password for user %s: %w", user.Mail, err)
+		}
+		user.Password = hash
+	}
+
+	if _, err := db.NewInsert().Model(&users).Exec(ctx); err != nil {
+		return fmt.Errorf("failed to insert test users: %w", err)
+	}
+
+	log.Print("Test users seeded successfully")
 	return nil
 }
 
