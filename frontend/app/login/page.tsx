@@ -4,12 +4,23 @@ import {useUser} from "@/components/providers/user-provider";
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
 import LoginForm from "@/app/login/login-form";
 import {useRouter} from "next/navigation";
+import {useEffect} from "react";
 
 export default function LoginPage() {
   const {user} = useUser()
   const router = useRouter()
 
-  if (user) router.push("/login")
+  useEffect(() => {
+    if (user) router.push("/tickets")
+  }, [user, router])
+
+  if (user) {
+    return (
+      <div className={'flex justify-center items-center grow'}>
+        <p className={'text-2xl font-bold'}>User ist schon angemeldet, leite weiter...</p>
+      </div>
+    )
+  }
 
   return (
     <div className={'flex justify-center items-center grow'}>
