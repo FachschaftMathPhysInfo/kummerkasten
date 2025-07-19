@@ -79,7 +79,8 @@ func initGraphQL() {
 	config := graph.Config{
 		Resolvers: resolver,
 		Directives: graph.DirectiveRoot{
-			HasRole: directives.HasRole,
+			HasRole:  directives.HasRole,
+			OnlySelf: directives.OnlySelf,
 		},
 	}
 
