@@ -79,7 +79,7 @@ export function UserSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => router.push("/profile")}
+              onClick={() => router.push("/account")}
               className={'flex items-center'}
             >
               <Settings/> Einstellungen
