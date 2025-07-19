@@ -9,7 +9,6 @@ import (
 )
 
 func HasRole(ctx context.Context, obj interface{}, next graphql.Resolver, role *model.UserRole) (res interface{}, err error) {
-	return next(ctx)
 	user, ok := ctx.Value(middleware.UserKey).(*model.User)
 
 	if user == nil || !ok {
