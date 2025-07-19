@@ -11,27 +11,25 @@ import {
   SidebarMenuItem,
   SidebarTrigger
 } from "@/components/ui/sidebar";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {LogOut, Settings, Tags, Tickets, Users} from "lucide-react";
-import {router} from "next/client";
 import {useUser} from "@/components/providers/user-provider";
 import {UserRole} from "@/lib/graph/generated/graphql";
 
 
 export function UserSidebar() {
-  const pathname = usePathname()
-  const basePath = "/" + pathname.split("/")[1];
   const {user, logout} = useUser()
+  const router = useRouter()
 
   const userItems = [
     {
       title: "Tickets",
-      url: basePath + "/tickets",
+      url: "/tickets",
       icon: Tickets,
     },
     {
       title: "Labels",
-      url: basePath + "/labels",
+      url: "/labels",
       icon: Tags,
     },
   ]
@@ -39,7 +37,7 @@ export function UserSidebar() {
   const adminItems = [
     {
       title: "Users",
-      url: basePath + "/users",
+      url: "/users",
       icon: Users,
     }
   ]
@@ -81,7 +79,7 @@ export function UserSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => router.push(basePath + "/profile")}
+              onClick={() => router.push("/profile")}
               className={'flex items-center'}
             >
               <Settings/> Einstellungen
