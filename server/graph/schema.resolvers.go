@@ -508,7 +508,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 // LoginCheck is the resolver for the loginCheck field.
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
 	user := new(model.User)
-	if err := r.DB.NewSelect().Model(&user).Where("sid = ?", sid).Scan(ctx); err != nil {
+	if err := r.DB.NewSelect().Model(user).Where("sid = ?", sid).Scan(ctx); err != nil {
 		return nil, err
 	}
 

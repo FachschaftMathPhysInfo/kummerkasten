@@ -35,7 +35,7 @@ export function UserProvider({ children } : {children: ReactNode}) {
 
     const fetchUser = async () => {
       const client =  getClient();
-      const data = await client.request<LoginCheckQuery>(LoginCheckDocument, {SID: sid})
+      const data = await client.request<LoginCheckQuery>(LoginCheckDocument, {sid: sid})
       setUser({...defaultUser, ...data.loginCheck})
     }
 
