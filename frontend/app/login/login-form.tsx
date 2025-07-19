@@ -33,11 +33,12 @@ export default function AccountForm() {
     },
   });
 
-  const handleInputChange = (field: ControllerRenderProps, value: string) => {
+  const handleInputChange = <T extends keyof z.infer<typeof loginFormSchema>>(
+    field: ControllerRenderProps<z.infer<typeof loginFormSchema>, T>,
+    value: string
+  ) => {
     field.onChange(value);
-    if (!correctCredentials) {
-      setCorrectCredentials(true);
-    }
+    if (!correctCredentials) setCorrectCredentials(true)
   };
 
   async function onValidSubmit(userData: z.infer<typeof loginFormSchema>) {
