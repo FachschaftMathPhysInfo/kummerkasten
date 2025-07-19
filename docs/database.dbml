@@ -51,6 +51,6 @@ Table settings {
 
 Table question_answer_pair {
   id uuid [primary key]
-  question varchar [not null]
+  question varchar [not null, unique]
   answer varchar [not null]
 }

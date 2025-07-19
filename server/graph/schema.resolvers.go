@@ -435,7 +435,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	questionAnswerPairs, err := r.Query().QuestionAnswerPairs(ctx, []string{id})
 
 	if err != nil || len(questionAnswerPairs) == 0 {
-		return "", fmt.Errorf("user with id %v not found", id)
+		return "", fmt.Errorf("question_answer_pair with id %v not found", id)
 	}
 
 	qAP := questionAnswerPairs[0]

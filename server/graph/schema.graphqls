@@ -74,7 +74,7 @@ type Query {
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     login(mail: String!, password: String!): Boolean!
     loginCheck(sid: String): User
-    questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair] @hasRole(role: ADMIN)
+    questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]
 }
 
 input NewTicket {
