@@ -397,6 +397,66 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelID st
 	panic(fmt.Errorf("not implemented: RemoveLabelFromTicket - removeLabelFromTicket"))
 }
 
+// CreateQuestionAnswerPair is the resolver for the createQuestionAnswerPair field.
+func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
+	createdQuestionAnswerPair := &model.QuestionAnswerPair{
+		ID:       uuid.New().String(),
+		Question: questionAnswerPair.Question,
+		Answer:   questionAnswerPair.Answer,
+	}
+
+	if _, err := r.DB.NewInsert().Model(createdQuestionAnswerPair).Exec(ctx); err != nil {
+		log.Printf("Failed to create QuestionAnswerPair: %v", err)
+		return nil, err
+	}
+
+	return createdQuestionAnswerPair, nil
+}
+
+// DeleteQuestionAnswerPair is the resolver for the deleteQuestionAnswerPair field.
+func (r *mutationResolver) DeleteQuestionAnswerPair(ctx context.Context, ids []string) (int32, error) {
+	result, err := r.DB.NewDelete().Model((*model.QuestionAnswerPair)(nil)).Where("id IN (?)", bun.In(ids)).Exec(ctx)
+	if err != nil {
+		log.Printf("Failed to delete QuestionAnswerPair : %v", err)
+		return 0, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return 0, err
+	}
+
+	return int32(rowsAffected), nil
+}
+
+// UpdateQuestionAnswerPair is the resolver for the updateQuestionAnswerPair field.
+func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id string, questionAnswerPair model.UpdateQuestionAnswerPair) (string, error) {
+	questionAnswerPairs, err := r.Query().QuestionAnswerPairs(ctx, []string{id})
+
+	if err != nil || len(questionAnswerPairs) == 0 {
+		return "", fmt.Errorf("user with id %v not found", id)
+	}
+
+	qAP := questionAnswerPairs[0]
+
+	if questionAnswerPair.Question != nil {
+		qAP.Question = *questionAnswerPair.Question
+	}
+	if questionAnswerPair.Answer != nil {
+		qAP.Answer = *questionAnswerPair.Answer
+	}
+
+	if _, err := r.DB.NewUpdate().Model(qAP).
+		Where("id = ?", id).
+		Exec(ctx); err != nil {
+		log.Printf("Failed to update QuestionAnswerPair: %v", err)
+		return "", err
+	}
+
+	return qAP.ID, nil
+}
+
 // Tickets is the resolver for the tickets field.
 func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.TicketState) ([]*model.Ticket, error) {
 	var tickets []*model.Ticket
@@ -539,6 +599,24 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	}
 
 	return users[0], nil
+}
+
+// QuestionAnswerPairs is the resolver for the questionAnswerPairs field.
+func (r *queryResolver) QuestionAnswerPairs(ctx context.Context, ids []string) ([]*model.QuestionAnswerPair, error) {
+	var questionAnswerPairs []*model.QuestionAnswerPair
+
+	query := r.DB.NewSelect().Model(&questionAnswerPairs)
+
+	if len(ids) > 0 {
+		query = query.Where("id IN (?)", bun.In(ids))
+	}
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to get QuestionAnswerPairs: %v", err)
+		return nil, err
+	}
+
+	return questionAnswerPairs, nil
 }
 
 // Mutation returns MutationResolver implementation.
