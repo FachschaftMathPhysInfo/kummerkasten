@@ -310,7 +310,7 @@ func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model
 	if _, err := r.DB.NewUpdate().Model(updatedUser).
 		Where("id = ?", id).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to update user: %v", err)
+		log.Printf("Failed to update user role: %v", err)
 		return "", err
 	}
 
