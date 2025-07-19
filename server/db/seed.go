@@ -123,11 +123,8 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		}
 	}
 
-	if len(labelLinks) > 0 {
-		if _, err := db.NewInsert().Model(&labelLinks).Exec(ctx); err != nil {
-			return fmt.Errorf("LabelsToTickets: %w", err)
-		}
-		log.Print("LabelsToTickets seeded successfully")
+	if err := insertData(ctx, db, (*models.LabelsToTickets)(nil), labelLinks, "Label To Tickets"); err != nil {
+		return err
 	}
 
 	settings := []*models.Setting{
