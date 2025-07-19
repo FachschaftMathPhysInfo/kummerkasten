@@ -6,7 +6,6 @@ require (
 	github.com/99designs/gqlgen v0.17.76
 	github.com/google/uuid v1.6.0
 	github.com/robfig/cron v1.2.0
-	github.com/sirupsen/logrus v1.9.3
 	github.com/vektah/gqlparser/v2 v2.5.30
 )
 
