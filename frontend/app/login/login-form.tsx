@@ -1,7 +1,7 @@
 "use client"
 
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
+import {ControllerRenderProps, useForm} from "react-hook-form";
 import {z} from "zod";
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -33,7 +33,7 @@ export default function AccountForm() {
     },
   });
 
-  const handleInputChange = (field: any, value: string) => {
+  const handleInputChange = (field: ControllerRenderProps, value: string) => {
     field.onChange(value);
     if (!correctCredentials) {
       setCorrectCredentials(true);
