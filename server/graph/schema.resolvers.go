@@ -507,16 +507,17 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 // LoginCheck is the resolver for the loginCheck field.
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
-	user := new(model.User)
-	if err := r.DB.NewSelect().Model(user).Where("sid = ?", sid).Scan(ctx); err != nil {
+	var users []*model.User
+
+	if err := r.DB.NewSelect().Model(&users).Where("sid = ?", sid).Scan(ctx); err != nil {
 		return nil, err
 	}
 
-	if user == nil {
+	if users == nil || len(users) > 1 {
 		return nil, nil
 	}
 
-	return user, nil
+	return users[0], nil
 }
 
 // Mutation returns MutationResolver implementation.
