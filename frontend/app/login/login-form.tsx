@@ -19,7 +19,11 @@ const loginFormSchema = z.object({
   password: z.string("Bitte gib ein Passwort an"),
 });
 
-export default function AccountForm() {
+interface LoginFormProps {
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function LoginForm(props: LoginFormProps) {
   const router = useRouter();
   const {login} = useUser()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
@@ -46,6 +50,7 @@ export default function AccountForm() {
 
     try {
       ok = await login(userData.mail, userData.password)
+      props.setLoading(true)
     } catch (error) {
       toast.error("Fehler beim Anmelden")
       console.error("Failed logging in user: ", error)
