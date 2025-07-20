@@ -51,6 +51,11 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
     },
     {
       accessorKey: "firstname",
+      sortingFn: (rowA, rowB) => {
+        const a = (rowA.original.firstname).toLowerCase();
+        const b = (rowB.original.firstname).toLowerCase();
+        return a.localeCompare(b);
+      },
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="Vorname"/>
       ),
@@ -58,6 +63,11 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
     },
     {
       accessorKey: "mail",
+      sortingFn: (rowA, rowB) => {
+        const a = (rowA.original.mail).toLowerCase();
+        const b = (rowB.original.mail).toLowerCase();
+        return a.localeCompare(b);
+      },
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="E-Mail"/>
       ),
