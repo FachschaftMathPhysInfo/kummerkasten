@@ -214,7 +214,7 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname}zum Admin machen`}
+        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} zum Admin machen`}
         onConfirm={handlePromote}
         isOpen={dialogState.mode === "promote"}
         closeDialog={resetDiallogState}
@@ -230,7 +230,7 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} unwiederruflich löschen`}
+        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} unwiderruflich löschen`}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDiallogState}

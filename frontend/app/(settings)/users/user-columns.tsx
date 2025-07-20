@@ -40,8 +40,8 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
       accessorKey: "lastname",
       // Alternatives: force save names with first letter capitalized
       sortingFn: (rowA, rowB) => {
-        const a = (rowA.original.lastname).toLowerCase() ?? "";
-        const b = (rowB.original.lastname).toLowerCase() ?? "";
+        const a = (rowA.original.lastname).toLowerCase();
+        const b = (rowB.original.lastname).toLowerCase();
         return a.localeCompare(b);
       },
       header: ({column}) => (
