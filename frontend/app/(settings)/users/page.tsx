@@ -36,7 +36,7 @@ export default function UserManagementPage() {
   useEffect(() => void fetchUsers(), [fetchUsers])
 
   return (
-    <div className={'w-full h-full flex flex-col gap-6 px-10'}>
+    <div className={'w-full h-full flex flex-col gap-6 px-10 grow'}>
       {/*TODO: replace this with component when available*/}
       <div className={'flex flex-col'}>
         <span className={'flex gap-2 items-center'}>
