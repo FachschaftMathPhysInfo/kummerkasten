@@ -1,3 +1,21 @@
 mutation logout($sid: String!) {
     logout(sid: $sid)
 }
+
+mutation promote($id: String!){
+    changeRole(id: $id, role: ADMIN)
+}
+
+mutation demote($id: String!){
+    changeRole(id: $id, role: USER)
+}
+
+mutation createUser($user: NewUser!) {
+    createUser(user: $user){
+        id
+    }
+}
+
+mutation deleteUsers($ids: [String!]!) {
+    deleteUser(ids: $ids)
+}
