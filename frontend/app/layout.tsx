@@ -37,7 +37,7 @@ export default function UserLayout({
     <UserProvider>
       <SidebarProvider>
           <UserSidebar/>
-          <main className={'w-full h-full flex flex-col justify-between'}>
+          <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
             <UserSidebarTrigger/>
             {children}
             <Footer />
