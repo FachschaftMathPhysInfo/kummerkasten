@@ -2,7 +2,8 @@ import {
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel, getPaginationRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   VisibilityState,
@@ -20,7 +21,7 @@ import {
   DemoteMutation,
   PromoteDocument,
   PromoteMutation,
-  User
+  UserRole
 } from "@/lib/graph/generated/graphql";
 import {UserColumns} from "@/app/(settings)/users/user-columns";
 import {Button} from "@/components/ui/button";
@@ -28,20 +29,29 @@ import {PlusCircle} from "lucide-react";
 import UserDialog from "@/app/(settings)/users/user-dialog";
 
 interface DataTableProps {
-  data: User[];
+  data: TableUser[];
   refreshData: () => void;
+}
+
+export type TableUser = {
+  id: string;
+  firstname: string;
+  lastname: string;
+  mail: string;
+  role: UserRole;
 }
 
 export type UserTableDialogState = {
   mode: "promote" | "demote" | "delete" | "add" | null;
-  currentUserID?: string;
+  currentUser: TableUser | null
 }
 
 export function UserTable(props: DataTableProps) {
-  const [dialogState, setDialogState] = useState<UserTableDialogState>({mode: null});
+  const [dialogState, setDialogState] = useState<UserTableDialogState>({mode: null, currentUser: null});
   const columns = UserColumns({setDialogState});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [sorting, setSorting] = React.useState([{id: "lastname", desc: false}]);
   const data = props.data;
   const table = useReactTable({
     data,
@@ -49,22 +59,35 @@ export function UserTable(props: DataTableProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       columnFilters,
       columnVisibility,
+      sorting,
     },
   });
-  const client = getClient();
   const searchKey = "lastname"
 
+  const client = getClient();
+
+  const resetDiallogState = () => {
+    setDialogState({mode: null, currentUser: null});
+  }
+
   async function handlePromote() {
+    if (!dialogState.currentUser) {
+      toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
+      console.error("failed to promote user: user not provided")
+      return
+    }
+
     try {
-      await client.request<PromoteMutation>(PromoteDocument, {id: dialogState.currentUserID})
+      await client.request<PromoteMutation>(PromoteDocument, {id: dialogState.currentUser.id})
       toast.success("User wurde erfolgreich zum Admin gemacht")
-      setDialogState({mode: null})
+      resetDiallogState()
       props.refreshData()
     } catch (error) {
       toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
@@ -73,10 +96,16 @@ export function UserTable(props: DataTableProps) {
   }
 
   async function handleDemote() {
+    if (!dialogState.currentUser) {
+      toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
+      console.error("failed to demote user: user not provided")
+      return
+    }
+
     try {
-      await client.request<DemoteMutation>(DemoteDocument, {id: dialogState.currentUserID})
+      await client.request<DemoteMutation>(DemoteDocument, {id: dialogState.currentUser.id})
       toast.success("User wurde erfolgreich zu User gemacht")
-      setDialogState({mode: null})
+      setDialogState({mode: null, currentUser: null})
       props.refreshData()
     } catch (error) {
       toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
@@ -85,19 +114,21 @@ export function UserTable(props: DataTableProps) {
   }
 
   async function handleDelete() {
+    if (!dialogState.currentUser) {
+      toast.error("Ein Fehler beim Löschen des Users ist aufgetreten")
+      console.error("failed to delete user: user not provided")
+      return
+    }
+
     try {
-      await client.request<DeleteUsersMutation>(DeleteUsersDocument, {ids: [dialogState.currentUserID]})
+      await client.request<DeleteUsersMutation>(DeleteUsersDocument, {ids: [dialogState.currentUser.id]})
       toast.success("User wurde erfolgreich gelöscht")
-      setDialogState({mode: null})
+      resetDiallogState()
       props.refreshData()
     } catch (error) {
       toast.error("Ein Fehler beim Löschen des Users ist aufgetreten")
       console.error(error)
     }
-  }
-
-  function closeDialog() {
-    setDialogState({ mode: null });
   }
 
   return (
@@ -106,10 +137,10 @@ export function UserTable(props: DataTableProps) {
         <Button
           variant={"default"}
           onClick={() => {
-            setDialogState({mode: "add"})
+            setDialogState({mode: "add", currentUser: null});
           }}
         >
-          <PlusCircle />
+          <PlusCircle/>
           User erstellen
         </Button>
 
@@ -177,32 +208,32 @@ export function UserTable(props: DataTableProps) {
 
       <UserDialog
         open={dialogState.mode === "add"}
-        closeDialog={closeDialog}
+        closeDialog={resetDiallogState}
         refreshData={props.refreshData}
       />
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird den ausgewählten User zum Admin machen`}
+        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname}zum Admin machen`}
         onConfirm={handlePromote}
         isOpen={dialogState.mode === "promote"}
-        closeDialog={closeDialog}
+        closeDialog={resetDiallogState}
       />
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird den ausgewählten Admin zum normalen User machen`}
+        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} zum normalen User machen`}
         onConfirm={handleDemote}
         isOpen={dialogState.mode === "demote"}
-        closeDialog={closeDialog}
+        closeDialog={resetDiallogState}
       />
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird den ausgewählten User unwiederruflich löschen`}
+        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} unwiederruflich löschen`}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
-        closeDialog={closeDialog}
+        closeDialog={resetDiallogState}
       />
     </div>
   );

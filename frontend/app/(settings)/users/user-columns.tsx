@@ -1,19 +1,19 @@
 import {Button} from "@/components/ui/button";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
-import {User, UserRole} from "@/lib/graph/generated/graphql"
+import {UserRole} from "@/lib/graph/generated/graphql"
 import {ColumnDef} from "@tanstack/react-table";
 import {MoreHorizontal, Shield, Trash,} from "lucide-react";
 import React from "react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {useUser} from "@/components/providers/user-provider";
 import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-header";
-import {UserTableDialogState} from "@/app/(settings)/users/user-table";
+import {TableUser, UserTableDialogState} from "@/app/(settings)/users/user-table";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<UserTableDialogState>>;
 }
 
-export function UserColumns(props: UserColumnProps): ColumnDef<User>[] {
+export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
   const {user} = useUser();
 
   return [
@@ -38,6 +38,12 @@ export function UserColumns(props: UserColumnProps): ColumnDef<User>[] {
     },
     {
       accessorKey: "lastname",
+      // Alternatives: force save names with first letter capitalized
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = (rowA.getValue(columnId) as string)?.toLowerCase() ?? "";
+        const b = (rowB.getValue(columnId) as string)?.toLowerCase() ?? "";
+        return a.localeCompare(b);
+      },
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="Nachname"/>
       ),
@@ -77,7 +83,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<User>[] {
                     <DropdownMenuItem
                       onClick={() => props.setDialogState({
                         mode: "demote",
-                        currentUserID: row.original.id
+                        currentUser: row.original
                       })}
                     >
                       Admin entfernen
@@ -87,7 +93,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<User>[] {
                       <DropdownMenuItem
                         onClick={() => props.setDialogState({
                           mode: "promote",
-                          currentUserID: row.original.id
+                          currentUser: row.original
                         })}
                       >
                         Admin machen
@@ -96,7 +102,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<User>[] {
                       <DropdownMenuItem
                         onClick={() => props.setDialogState({
                           mode: "delete",
-                          currentUserID: row.original.id
+                          currentUser: row.original
                         })}
                         className={'text-destructive'}
                       >
