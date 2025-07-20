@@ -6,8 +6,8 @@ import {MoreHorizontal, Shield, Trash,} from "lucide-react";
 import React from "react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {useUser} from "@/components/providers/user-provider";
-import {DataTableColumnHeader} from "@/components/tables/data-table-column-header";
-import {UserTableDialogState} from "@/app/(settings)/admin/users/user-table";
+import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-header";
+import {UserTableDialogState} from "@/app/(settings)/users/user-table";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<UserTableDialogState>>;
@@ -37,14 +37,14 @@ export function UserColumns(props: UserColumnProps): ColumnDef<User>[] {
       ),
     },
     {
-      accessorKey: "sn",
+      accessorKey: "lastname",
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="Nachname"/>
       ),
       cell: ({row}) => row.original.lastname,
     },
     {
-      accessorKey: "fn",
+      accessorKey: "firstname",
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="Vorname"/>
       ),

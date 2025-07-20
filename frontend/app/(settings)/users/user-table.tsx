@@ -22,7 +22,7 @@ import {
   PromoteMutation,
   User
 } from "@/lib/graph/generated/graphql";
-import {UserColumns} from "@/app/(settings)/admin/users/user-columns";
+import {UserColumns} from "@/app/(settings)/users/user-columns";
 
 interface DataTableProps {
   data: User[];
@@ -55,6 +55,7 @@ export function UserTable(props: DataTableProps) {
     },
   });
   const client = getClient();
+  const searchKey = "lastname"
 
   async function handlePromote() {
     try {
@@ -101,9 +102,9 @@ export function UserTable(props: DataTableProps) {
       <div className="flex items-center">
         <Input
           placeholder="Nachnamen filtern..."
-          value={(table.getColumn("sn")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("sn")?.setFilterValue(event.target.value)
+            table.getColumn(searchKey)?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
