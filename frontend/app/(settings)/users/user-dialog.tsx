@@ -1,5 +1,6 @@
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
 import UserForm from "@/app/(settings)/users/user-form";
+import {UserPlus} from "lucide-react";
 
 interface UserDialogProps {
   open: boolean;
@@ -12,12 +13,10 @@ export default function UserDialog(props: UserDialogProps) {
     <Dialog open={props.open}>
       {/*hides the x in top right corner*/}
       <DialogContent className="[&>button]:hidden">
-        <DialogTitle>
+        <DialogTitle className={'flex items-center gap-2'}>
+          <UserPlus/>
           User erstellen
         </DialogTitle>
-        <DialogDescription>
-          Erstelle hier einen neuen User
-        </DialogDescription>
         <UserForm
           refreshData={props.refreshData}
           closeDialog={props.closeDialog}

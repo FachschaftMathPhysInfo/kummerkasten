@@ -5,7 +5,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
 import {getClient} from "@/lib/graph/client";
-import {CreateUserDocument, CreateUserMutation} from "@/lib/graph/generated/graphql";
+import {CreateUserDocument, CreateUserMutation, NewUser} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {PlusCircle} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -22,8 +22,13 @@ export default function UserForm(props: UserFormProps) {
     firstname: z.string().min(2),
     lastname: z.string().min(2),
     mail: z.email(),
-    password: z.string().min(6)
-  })
+    password: z.string().min(6),
+    confirmPassword: z.string(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwörter stimmen nicht überein.",
+  });
+
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -31,6 +36,7 @@ export default function UserForm(props: UserFormProps) {
       lastname: "",
       mail: "",
       password: "",
+      confirmPassword: "",
     }
   })
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
@@ -38,8 +44,15 @@ export default function UserForm(props: UserFormProps) {
   async function onValidSubmit(data: z.infer<typeof userFormSchema>) {
     const client = getClient();
 
+    const newUser: NewUser = {
+      firstname: data.firstname,
+      lastname: data.lastname,
+      mail: data.mail,
+      password: data.password,
+    }
+
     try {
-      await client.request<CreateUserMutation>(CreateUserDocument, {user: data})
+      await client.request<CreateUserMutation>(CreateUserDocument, {user: newUser})
       toast.success("User wurde erfolgreich erstellt")
       setHasTriedToSubmit(false)
       props.refreshData()
@@ -50,6 +63,7 @@ export default function UserForm(props: UserFormProps) {
     }
   }
 
+
   return (
     <FormProvider {...form}>
       <form
@@ -58,6 +72,7 @@ export default function UserForm(props: UserFormProps) {
         )}
         className="space-y-4 w-full"
       >
+
         <FormField
           control={form.control}
           name="firstname"
@@ -116,7 +131,7 @@ export default function UserForm(props: UserFormProps) {
 
         <FormField
           control={form.control}
-          name="password"
+          name="confirmPassword"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <FormControl>
@@ -126,7 +141,6 @@ export default function UserForm(props: UserFormProps) {
             </FormItem>
           )}
         />
-
 
         <div className={"flex justify-between items-center gap-x-12 mt-8"}>
           <Button
