@@ -7,7 +7,7 @@ import {useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {CreateUserDocument, CreateUserMutation, NewUser} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
-import {PlusCircle} from "lucide-react";
+import {LoaderCircle, PlusCircle} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
@@ -55,8 +55,10 @@ export default function UserForm(props: UserFormProps) {
     }
   })
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   async function onValidSubmit(data: z.infer<typeof userFormSchema>) {
+    setLoading(true)
     const client = getClient();
 
     const newUser: NewUser = {
@@ -76,6 +78,7 @@ export default function UserForm(props: UserFormProps) {
       toast.error("Beim Erstellen des Users ist ein Fehler aufgetreten");
       console.error(error)
     }
+    setLoading(false)
   }
 
 
@@ -168,11 +171,15 @@ export default function UserForm(props: UserFormProps) {
           </Button>
 
           <Button
-            disabled={!form.formState.isValid && hasTriedToSubmit}
+            disabled={(!form.formState.isValid && hasTriedToSubmit) || loading}
             type="submit"
             className={"flex-grow"}
           >
-            <PlusCircle/>
+            {loading ? (
+              <LoaderCircle />
+              ) : (
+              <PlusCircle/>
+            )}
             Erstellen
           </Button>
         </div>
