@@ -17,5 +17,6 @@ query allUsers {
         firstname
         lastname
         mail
+        role
     }
 }
