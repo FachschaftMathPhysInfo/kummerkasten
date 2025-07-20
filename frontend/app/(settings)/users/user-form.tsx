@@ -17,18 +17,33 @@ interface UserFormProps {
   refreshData: () => void
 }
 
-export default function UserForm(props: UserFormProps) {
-  const userFormSchema = z.object({
-    firstname: z.string().min(2),
-    lastname: z.string().min(2),
-    mail: z.email(),
-    password: z.string().min(6),
-    confirmPassword: z.string(),
-  }).refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwörter stimmen nicht überein.",
+const passwordSchema = z.string()
+  .min(12, "Passwort muss mindestens 12 Zeichen lang sein.")
+  .refine((val) => /[a-z]/.test(val), {
+    message: "Passwort muss mindestens einen Kleinbuchstaben enthalten.",
+  })
+  .refine((val) => /[A-Z]/.test(val), {
+    message: "Passwort muss mindestens einen Großbuchstaben enthalten.",
+  })
+  .refine((val) => /[0-9]/.test(val), {
+    message: "Passwort muss mindestens eine Zahl enthalten.",
+  })
+  .refine((val) => /[^A-Za-z0-9]/.test(val), {
+    message: "Passwort muss mindestens ein Sonderzeichen enthalten.",
   });
 
+const userFormSchema = z.object({
+  firstname: z.string().min(2),
+  lastname: z.string().min(2),
+  mail: z.email(),
+  password: passwordSchema,
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Passwörter stimmen nicht überein.",
+});
+
+export default function UserForm(props: UserFormProps) {
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -122,7 +137,7 @@ export default function UserForm(props: UserFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Passwort</FormLabel>
               <FormControl>
-                <Input placeholder={"Passwort"} {...field} />
+                <Input placeholder={"Passwort"} type={"password"} {...field} />
               </FormControl>
               <FormMessage/>
             </FormItem>
@@ -135,7 +150,7 @@ export default function UserForm(props: UserFormProps) {
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <FormControl>
-                <Input placeholder={"Passwort bestätigen"} {...field} />
+                <Input placeholder={"Passwort bestätigen"} type={"password"} {...field} />
               </FormControl>
               <FormMessage/>
             </FormItem>
