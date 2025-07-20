@@ -23,6 +23,9 @@ import {
   User
 } from "@/lib/graph/generated/graphql";
 import {UserColumns} from "@/app/(settings)/users/user-columns";
+import {Button} from "@/components/ui/button";
+import {PlusCircle} from "lucide-react";
+import UserDialog from "@/app/(settings)/users/user-dialog";
 
 interface DataTableProps {
   data: User[];
@@ -30,7 +33,7 @@ interface DataTableProps {
 }
 
 export type UserTableDialogState = {
-  mode: "promote" | "demote" | "delete" | null;
+  mode: "promote" | "demote" | "delete" | "add" | null;
   currentUserID?: string;
 }
 
@@ -99,7 +102,7 @@ export function UserTable(props: DataTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center">
+      <div className="flex items-center justify-between">
         <Input
           placeholder="Nachnamen filtern..."
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -108,6 +111,16 @@ export function UserTable(props: DataTableProps) {
           }
           className="max-w-sm"
         />
+
+        <Button
+          variant={"default"}
+          onClick={() => {
+            setDialogState({mode: "add"})
+          }}
+        >
+          <PlusCircle />
+          User erstellen
+        </Button>
       </div>
       <div className="rounded-md border overflow-hidden">
         <Table>
@@ -138,7 +151,6 @@ export function UserTable(props: DataTableProps) {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
-                      className={"[&:not(:first-child)]:ml-8"}
                       key={cell.id}
                     >
                       {flexRender(
@@ -162,6 +174,12 @@ export function UserTable(props: DataTableProps) {
           </TableBody>
         </Table>
       </div>
+
+      <UserDialog
+        open={dialogState.mode === "add"}
+        closeDialog={closeDialog}
+        refreshData={props.refreshData}
+      />
 
       <ConfirmationDialog
         mode="confirmation"

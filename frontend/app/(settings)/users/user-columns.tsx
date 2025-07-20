@@ -24,7 +24,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<User>[] {
           {row.original.role === UserRole.Admin && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger className={'p-0 m-0'}>
+                <TooltipTrigger>
                   <Shield/>
                 </TooltipTrigger>
                 <TooltipContent>
