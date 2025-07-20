@@ -124,7 +124,7 @@ export default function UserForm(props: UserFormProps) {
           name="mail"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>Vorname</FormLabel>
+              <FormLabel>E-Mail</FormLabel>
               <FormControl>
                 <Input placeholder={"maxi.musterperson@mail.de"} type={"email"} {...field} />
               </FormControl>
