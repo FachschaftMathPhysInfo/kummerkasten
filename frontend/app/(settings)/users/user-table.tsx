@@ -102,16 +102,7 @@ export function UserTable(props: DataTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Input
-          placeholder="Nachnamen filtern..."
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <Button
           variant={"default"}
           onClick={() => {
@@ -121,6 +112,15 @@ export function UserTable(props: DataTableProps) {
           <PlusCircle />
           User erstellen
         </Button>
+
+        <Input
+          placeholder="Nachnamen filtern..."
+          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn(searchKey)?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
       </div>
       <div className="rounded-md border overflow-hidden">
         <Table>
