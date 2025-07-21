@@ -1,0 +1,175 @@
+import {
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import React, {useState} from "react";
+import {Input} from "@/components/ui/input";
+import {getClient} from "@/lib/graph/client";
+import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
+import {toast} from "sonner";
+import {DeleteLabelsDocument, DeleteLabelsMutation, Label} from "@/lib/graph/generated/graphql";
+import {Button} from "@/components/ui/button";
+import {PlusCircle} from "lucide-react";
+import {LabelColumns} from "@/app/(settings)/labels/label-columns";
+import LabelDialog from "@/app/(settings)/labels/label-dialog";
+
+interface DataTableProps {
+  data: Label[];
+  refreshData: () => void;
+}
+
+export type LabelTableDialogState = {
+  mode: "update" | "delete" | "add" | null;
+  currentLabel: Label | null
+}
+
+export function LabelTable(props: DataTableProps) {
+  const [dialogState, setDialogState] = useState<LabelTableDialogState>({mode: null, currentLabel: null});
+  const columns = LabelColumns({setDialogState});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [sorting, setSorting] = React.useState([{id: "name", desc: false}]);
+  const data = props.data;
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    state: {
+      columnFilters,
+      columnVisibility,
+      sorting,
+    },
+  });
+  const searchKey = "name"
+
+  const client = getClient();
+
+  const resetDiallogState = () => {
+    setDialogState({mode: null, currentLabel: null});
+  }
+
+  async function handleDelete() {
+    if (!dialogState.currentLabel) {
+      toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
+      console.error("failed to delete label: label not provided")
+      return
+    }
+
+    try {
+      await client.request<DeleteLabelsMutation>(DeleteLabelsDocument, {ids: [dialogState.currentLabel.id]})
+      toast.success("Label wurde erfolgreich gelöscht")
+      resetDiallogState()
+      props.refreshData()
+    } catch (error) {
+      toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
+      console.error(error)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <Button
+          variant={"default"}
+          onClick={() => {
+            setDialogState({mode: "add", currentLabel: null});
+          }}
+        >
+          <PlusCircle/>
+          Label erstellen
+        </Button>
+
+        <Input
+          placeholder="Namen filtern..."
+          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn(searchKey)?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
+      <div className="rounded-md border overflow-hidden">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead className={"text-left"} key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={'px-5 last:text-right'}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Keine Ergebnisse.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <LabelDialog
+        open={dialogState.mode === "update" || dialogState.mode === "add"}
+        createMode={dialogState.mode === "add"}
+        label={dialogState.currentLabel}
+        closeDialog={resetDiallogState}
+        refreshData={props.refreshData}
+      />
+
+      <ConfirmationDialog
+        mode="confirmation"
+        description={`Dies wird das Label ${dialogState.currentLabel?.name} unwiderruflich löschen`}
+        onConfirm={handleDelete}
+        isOpen={dialogState.mode === "delete"}
+        closeDialog={resetDiallogState}
+      />
+    </div>
+  );
+}
