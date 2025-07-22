@@ -1,0 +1,8 @@
+{
+  "admin": {
+    "firstname": "Admin",
+    "lastname": "Kummerkasten",
+    "mail": "admin@kummer.kasten",
+    "password": "admin"
+  }
+}
