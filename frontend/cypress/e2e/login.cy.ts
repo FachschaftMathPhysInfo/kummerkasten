@@ -20,7 +20,12 @@ describe('Login Tests', () => {
     loginPage.getMailMessage().should('contain.text', "Bitte gib eine gültige E-Mail an.")
   })
 
-  it('should log admin in',() => {
+  it('should show wrong credentials message', () => {
+    loginPage.login("test@mail.de", "invalid password")
+    loginPage.getPasswortMessage().should('contain.text', "Anmeldedaten inkorrekt")
+  })
+
+  it('should log user in',() => {
     const ticketUrl = Cypress.config().baseUrl + '/tickets'
     loginPage.login(users.admin.mail, users.admin.password)
     cy.url().should('eq', ticketUrl)
