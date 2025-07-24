@@ -1,26 +1,26 @@
 /// <reference types="cypress" />
 import * as sidebar from "../pages/sidebar.po"
-import {getFooter} from "@/cypress/pages/footer.po";
+import {getFooter} from "../pages/footer.po";
 import users from "../fixtures/users.json"
 
 describe('Footer Tests', () => {
 
-  it('should not be visible on root page', () => {
-    cy.visit('/')
-    sidebar.getSidebar().should('not.exist')
-  });
+  context("logged out", () => {
+    it('should not be visible on root page', () => {
+      cy.visit('/')
+      sidebar.getSidebar().should('not.exist')
+    });
 
-  it('should not be visible on login page', () => {
-    cy.visit('/login')
-    sidebar.getSidebar().should('not.exist')
-  });
+    it('should not be visible on login page', () => {
+      cy.visit('/login')
+      sidebar.getSidebar().should('not.exist')
+    });
+  })
 
   context('logged in as admin', () => {
-    before(() => {
-      cy.login(users.admin.mail, users.admin.password)
-    })
 
     beforeEach(() => {
+      cy.login(users.admin.mail, users.admin.password)
       cy.visit('/tickets')
     })
 
@@ -56,5 +56,26 @@ describe('Footer Tests', () => {
     });
   })
 
-  // TOOD: add base user tests
+  context('logged in as user', () => {
+    beforeEach(() => {
+      cy.login(users.fsles1.mail, users.fsles1.password)
+      cy.visit('/tickets')
+    })
+
+    it('should exist when logged in', () => {
+      sidebar.getSidebar().should('be.visible')
+    });
+
+    it('should have tickets link', () => {
+      sidebar.getTicketsButton().should("be.visible");
+    });
+
+    it('should have labels link', () => {
+      sidebar.getLabelsButton().should("be.visible");
+    });
+
+    it('should not have users link', () => {
+      sidebar.getUsersButton().should("not.exist");
+    });
+  })
 })
