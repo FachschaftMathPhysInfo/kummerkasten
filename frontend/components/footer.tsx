@@ -8,19 +8,29 @@ export function Footer() {
   if (user) return null
 
   return (
-    <footer className="flex justify-evenly w-full h-fit py-5 px-10 text-sm text-muted-foreground border-t mt-5">
+    <footer
+      data-cy={'footer'}
+      className="flex justify-evenly w-full h-fit py-5 px-10 text-sm text-muted-foreground border-t mt-5"
+    >
       <span>
-        <a className="cursor-pointer underline" href="https://mathphys.stura.uni-heidelberg.de/kontakt/">
+        <a
+          data-cy={'footer-contact'}
+          className="cursor-pointer underline" href="https://mathphys.stura.uni-heidelberg.de/kontakt/"
+        >
           Kontakt
         </a>
       </span>
       <span>
-        <a className={"cursor-pointer underline"} href="https://mathphys.stura.uni-heidelberg.de/">
+        <a
+          data-cy={'footer-legal'}
+          className={"cursor-pointer underline"} href="https://mathphys.stura.uni-heidelberg.de/"
+        >
           Impressum
         </a>
       </span>
       <span>
         <a
+          data-cy={'footer-github'}
           className="cursor-pointer underline"
           href="https://github.com/plebysnacc/kummerkasten"
         >

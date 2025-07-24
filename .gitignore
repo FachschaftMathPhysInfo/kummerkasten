@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/frontend/cypress/screenshots/*
 
 # next.js
 /frontend/.next/
