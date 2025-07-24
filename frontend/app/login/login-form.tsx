@@ -84,9 +84,10 @@ export default function LoginForm() {
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}
                   onChange={(e) => handleInputChange(field, e.target.value)}
+                  data-cy={'mail-input'}
                 />
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'mail-message'}/>
             </FormItem>
           )}
         />
@@ -104,9 +105,10 @@ export default function LoginForm() {
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}
                   onChange={(e) => handleInputChange(field, e.target.value)}
+                  data-cy={'password-input'}
                 />
               </FormControl>
-              <FormMessage className={'text-destructive'}>
+              <FormMessage className={'text-destructive'} data-cy={'password-message'}>
                 {!correctCredentials && hasTriedToSubmit && "Anmeldedaten inkorrekt"}
               </FormMessage>
             </FormItem>
@@ -119,6 +121,7 @@ export default function LoginForm() {
             disabled={!form.formState.isValid && hasTriedToSubmit}
             type="submit"
             className={'w-full'}
+            data-cy={'submit'}
           >
             {isLoading ? (
               <LoaderCircle />
