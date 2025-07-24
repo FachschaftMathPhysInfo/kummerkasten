@@ -7,7 +7,7 @@ import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import React, {useState} from "react";
-import {LogIn} from "lucide-react";
+import {LoaderCircle, LogIn} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
@@ -19,15 +19,13 @@ const loginFormSchema = z.object({
   password: z.string("Bitte gib ein Passwort an."),
 });
 
-interface LoginFormProps {
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
 
-export default function LoginForm(props: LoginFormProps) {
+export default function LoginForm() {
   const router = useRouter();
   const {login} = useUser()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
   const [correctCredentials, setCorrectCredentials] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -47,16 +45,17 @@ export default function LoginForm(props: LoginFormProps) {
 
   async function onValidSubmit(userData: z.infer<typeof loginFormSchema>) {
     let ok: boolean
+    setIsLoading(true);
 
     try {
       ok = await login(userData.mail, userData.password)
-      props.setLoading(true)
     } catch (error) {
       toast.error("Fehler beim Anmelden")
       console.error("Failed logging in user: ", error)
       return
     }
 
+    setIsLoading(false);
     if (ok) {
       setHasTriedToSubmit(false)
       router.push("/tickets")
@@ -124,7 +123,12 @@ export default function LoginForm(props: LoginFormProps) {
             className={'w-full'}
             data-cy={'submit'}
           >
-            <LogIn/>
+            {isLoading ? (
+              <LoaderCircle />
+            ) : (
+              <LogIn/>
+            )}
+
             Anmelden
           </Button>
         </div>
