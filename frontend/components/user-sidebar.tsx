@@ -11,10 +11,12 @@ import {
   SidebarMenuItem,
   SidebarTrigger
 } from "@/components/ui/sidebar";
-import {LogOut, Settings, Tags, Tickets, Users} from "lucide-react";
+import {LogOut, Moon, Settings, Sun, Tags, Tickets, Users} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
 import {UserRole} from "@/lib/graph/generated/graphql";
 import {useRouter} from "next/navigation";
+import {useTheme} from "next-themes";
+import {useEffect, useState} from "react";
 
 
 export function UserSidebar() {
@@ -78,6 +80,9 @@ export function UserSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
+            <ThemeSwitch />
+          </SidebarMenuItem>
+          <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => router.push("/profile")}
               className={'flex items-center'}
@@ -104,4 +109,30 @@ export function UserSidebarTrigger() {
   const {user} = useUser();
   if (!user) return null;
   return <SidebarTrigger/>
+}
+
+function ThemeSwitch() {
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme, theme, setTheme } = useTheme()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
+  return (
+    <SidebarMenuButton
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      className={'flex items-center'}
+    >
+      {theme === "light" ? (
+        <><Sun/>Hell</>
+      ) : (
+        <><Moon/>Dunkel</>
+      )}
+    </SidebarMenuButton>
+  )
 }
