@@ -596,8 +596,8 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 	hashedPassword := user.Password
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
-		log.Printf("Password is incorrect")
-		return false, err
+		log.Printf("Password is incorrect for %v is incorrect", user.Mail)
+		return false, nil
 	}
 
 	if user.Sid == "" {
