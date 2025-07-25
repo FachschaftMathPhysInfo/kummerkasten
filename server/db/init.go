@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -67,10 +66,6 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 
 	log.Println("Basic Database Relations successfully initialized")
 
-	if err := insertQAPs(ctx); err != nil {
-		log.Panic("Failed to insert QAPs: ", err)
-	}
-
 	return sqldb, db
 }
 
@@ -82,38 +77,6 @@ func createTables(ctx context.Context, tables []interface{}) error {
 			Exec(ctx); err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-func insertQAPs(ctx context.Context) error {
-	raw := os.Getenv("QUESTION_ANSWER_PAIRS")
-	if raw == "" {
-		log.Println("No QUESTION_ANSWER_PAIRS provided in .env")
-		return nil
-	}
-
-	var qaps []models.QuestionAnswerPair
-	if err := json.Unmarshal([]byte(raw), &qaps); err != nil {
-		return err
-	}
-
-	for _, qap := range qaps {
-		exists, err := db.NewSelect().
-			Model((*models.QuestionAnswerPair)(nil)).
-			Where("question = ?", qap.Question).
-			Exists(ctx)
-		if err != nil {
-			return err
-		}
-		if exists {
-			log.Printf("QAP already exists, skipping qap")
-			return nil
-		}
-		if _, err := db.NewInsert().Model(&qaps).Exec(ctx); err != nil {
-			return fmt.Errorf("failed to insert qap: %w", err)
-		}
-		log.Printf("Inserted QAPs: %+v\n", qap)
 	}
 	return nil
 }
