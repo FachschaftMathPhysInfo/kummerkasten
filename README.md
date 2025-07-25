@@ -28,8 +28,3 @@ now the frontend and api are available at port `8080`
 ## Deployment
 To be added
 
-## Format .env variables
-For Question Answer Pairs use following format:
-```
-[{"Question": "What is this Project?", "Answer": "A programming project for an anonymous feedback page."}, {"Question": "What is the year?", "Answer": "2025"}]
-```
