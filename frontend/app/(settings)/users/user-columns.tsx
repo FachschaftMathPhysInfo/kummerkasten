@@ -25,7 +25,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Shield/>
+                  <Shield data-cy={'admin-icon'}/>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Admin</p>
@@ -83,7 +83,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
             {!(row.original.mail === user?.mail) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
+                  <Button data-cy={'action-dropdown'} variant="ghost" className="h-8 w-8 p-0">
                     <span className="sr-only">Menü öffnen</span>
                     <MoreHorizontal className="h-4 w-4"/>
                   </Button>
@@ -109,18 +109,18 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         Admin machen
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem
-                        onClick={() => props.setDialogState({
-                          mode: "delete",
-                          currentUser: row.original
-                        })}
-                        className={'text-destructive'}
-                      >
-                        <Trash className={'stroke-destructive inline mr-2'}/>
-                        Löschen
-                      </DropdownMenuItem>
-                    </>
-                  )}
+                        <DropdownMenuItem
+                          onClick={() => props.setDialogState({
+                            mode: "delete",
+                            currentUser: row.original
+                          })}
+                          className={'text-destructive'}
+                        >
+                          <Trash className={'stroke-destructive inline mr-2'}/>
+                          Löschen
+                        </DropdownMenuItem>
+                      </>
+                    )}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

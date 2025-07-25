@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 import * as footer from "../pages/footer.po"
 import users from "../fixtures/users.json"
 
