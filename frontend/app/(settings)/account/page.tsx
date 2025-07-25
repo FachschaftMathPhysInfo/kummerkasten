@@ -122,7 +122,7 @@ export default function Page() {
     return (
         <div className="space-y-6 grow">
             <ManagementPageHeader
-                iconNode={<SettingsIcon/>}
+                icon={<SettingsIcon/>}
                 title="Mein Account"
                 description="Bearbeite deine persönlichen Einstellungen"
             />
