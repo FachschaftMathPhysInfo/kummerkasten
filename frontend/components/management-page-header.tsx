@@ -1,4 +1,5 @@
-import React from "react";
+import React, { isValidElement, cloneElement } from "react";
+import {SeperatorVertical} from "@/components/seperator-vertical";
 
 
 interface ManagementPageProps {
@@ -9,19 +10,25 @@ interface ManagementPageProps {
 }
 
 export function ManagementPageHeader({title, description, iconNode, actionButton}: ManagementPageProps) {
+    const sizedIcon =
+        iconNode && isValidElement(iconNode)
+            ? cloneElement(iconNode as React.ReactElement<any>, {
+                className: `w-10 h-10 ${(iconNode.props as any).className ?? ""}`.trim(),
+            })
+            : iconNode;
+
     return (
-        <div className="space-y-6 p-5">
-            <div>
-                <div className={'flex items-center flex-wrap gap-y-3 mb-4'}>
-                    <div className={'flex items-center mr-4'}>
-                        {iconNode && <div className="mr-2">{iconNode}</div>}
-                        <h1 className="text-3xl font-bold">{title}</h1>
+        <div className="p-5 space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-y-2">
+                <div className="flex items-center">
+                    {sizedIcon && <div className="mr-1">{sizedIcon}</div>}
+                    <SeperatorVertical/>
+                    <div className="ml-2">
+                        <h1 className="text-2xl font-bold">{title}</h1>
+                        <p className="text-sm text-muted-foreground mt-1">{description}</p>
                     </div>
-                    {actionButton}
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">
-                    {description}
-                </p>
+                {actionButton && <div className="ml-auto">{actionButton}</div>}
             </div>
         </div>
     )
