@@ -6,13 +6,12 @@ type SettingsBlockProps = {
     icon: React.ReactNode,
     title: string,
     children: React.ReactNode,
-    onSave?: () => void;
     hasTriedToSubmit?: boolean;
     isValid?: boolean;
     dataCy?: string;
 }
 
-export function SettingsBlock({icon, title, children, onSave, hasTriedToSubmit, isValid, dataCy}: SettingsBlockProps) {
+export function SettingsBlock({icon, title, children, hasTriedToSubmit, isValid, dataCy}: SettingsBlockProps) {
     const sizedIcon =
         icon && isValidElement(icon)
             ? cloneElement(icon as React.ReactElement<{ className?: string }>, {
@@ -31,7 +30,7 @@ export function SettingsBlock({icon, title, children, onSave, hasTriedToSubmit, 
                 {children}
             </CardContent>
             <CardFooter className="justify-end px-6">
-                <Button type={"submit"} disabled={!isValid &&hasTriedToSubmit} data-cy={dataCy}>Speichern</Button>
+                <Button type={"submit"} disabled={!isValid && hasTriedToSubmit} data-cy={dataCy}>Speichern</Button>
             </CardFooter>
 
         </Card>
