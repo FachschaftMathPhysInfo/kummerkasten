@@ -10,6 +10,8 @@ import {LockKeyhole, SettingsIcon, User} from "lucide-react";
 import {SettingsField} from "@/components/settings-field";
 import {SettingsBlock} from "@/components/settings-block";
 import {
+    LoginDocument,
+    UpdateUserDocument,
     UpdateUserSettingsDocument,
     UpdateUserSettingsMutation,
     UpdateUserSettingsMutationVariables,
@@ -31,6 +33,27 @@ const profileSettingsSchema = z.object({
 });
 
 type ProfileSettingsFormData = z.infer<typeof profileSettingsSchema>;
+
+const passwordFormSchema = z
+    .object({
+        oldPassword: z.string().nonempty("Bitte gib dein aktuelles Passwort ein."),
+        newPassword: z
+            .string()
+            .min(8, {message: "Mindestens 8 Zeichen."})
+            .regex(/[A-Z]/, {message: "Mindestens ein Großbuchstabe."})
+            .regex(/\d/, {message: "Mindestens eine Zahl."})
+            .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+                message: "Mindestens ein Sonderzeichen.",
+            }),
+        confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwörter stimmen nicht überein.",
+        path: ["confirmPassword"],
+    });
+
+type PasswordFormData = z.infer<typeof passwordFormSchema>;
+
 
 export default function Page() {
     const {user} = useUser();
@@ -81,7 +104,7 @@ export default function Page() {
     }, [fetchProfileData]);
 
     useEffect(() => {
-        const subscription = form.watch((value, { type }) => {
+        const subscription = form.watch((value, {type}) => {
             if (hasTriedToSubmit && type === "change") {
                 setHasTriedToSubmit(false);
             }
@@ -89,7 +112,6 @@ export default function Page() {
 
         return () => subscription.unsubscribe();
     }, [form, hasTriedToSubmit]);
-
 
 
     async function onValidSubmit(userData: ProfileSettingsFormData) {
@@ -119,6 +141,63 @@ export default function Page() {
         }
     }
 
+    const passwordForm = useForm<PasswordFormData>({
+        resolver: zodResolver(passwordFormSchema),
+        defaultValues: {
+            oldPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        },
+    });
+
+    const [hasTriedPasswordSubmit, setHasTriedPasswordSubmit] = useState(false);
+
+    async function onPasswordSubmit(data: PasswordFormData) {
+        if (!user) {
+            toast.error("Fehler beim Laden des Benutzers.");
+            return;
+        }
+
+        const client = getClient();
+
+        let loginResponse;
+        try {
+            loginResponse = await client.request(LoginDocument, {
+                mail: user.mail,
+                password: data.oldPassword,
+            });
+        } catch {
+            toast.error("Fehler beim Überprüfen des Passworts.");
+            return;
+        }
+
+        if (!loginResponse.login) {
+            passwordForm.setError("oldPassword", {
+                message: "Falsches aktuelles Passwort.",
+            });
+            toast.error("Falsches aktuelles Passwort.");
+            return;
+        }
+
+        try {
+            await client.request(UpdateUserDocument, {
+                id: user.id,
+                user: {
+                    mail: user.mail,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    password: data.newPassword,
+                },
+            });
+            toast.success("Passwort aktualisiert.");
+            passwordForm.reset();
+            setHasTriedPasswordSubmit(false);
+        } catch {
+            toast.error("Fehler beim Speichern.");
+        }
+    }
+
+
     return (
         <div className="space-y-6 grow">
             <ManagementPageHeader
@@ -134,24 +213,26 @@ export default function Page() {
                         <FormField
                             control={form.control}
                             name="firstname"
-                            render={({field}) => (
+                            render={({field, fieldState}) => (
                                 <SettingsField
                                     title="Vorname"
                                     placeholder="Vorname"
                                     visibilityToggle={false}
                                     field={field}
+                                    error={fieldState.error?.message}
                                 />
                             )}
                         />
                         <FormField
                             control={form.control}
                             name="lastname"
-                            render={({field}) => (
+                            render={({field, fieldState}) => (
                                 <SettingsField
                                     title="Nachname"
                                     placeholder="Nachname"
                                     visibilityToggle={false}
                                     field={field}
+                                    error={fieldState.error?.message}
                                 />
                             )}
                         />
@@ -169,41 +250,51 @@ export default function Page() {
                             )}
                         />
                     </SettingsBlock>
-
-                    <SettingsBlock icon={<LockKeyhole/>} title="Passwort">
+                </form>
+            </Form>
+            <Form {...passwordForm}>
+                <form
+                    onSubmit={passwordForm.handleSubmit(
+                        onPasswordSubmit,
+                        () => setHasTriedPasswordSubmit(true)
+                    )}
+                >
+                    <SettingsBlock icon={<LockKeyhole/>} title="Passwort" hasTriedToSubmit={hasTriedPasswordSubmit}>
                         <FormField
-                            control={form.control}
+                            control={passwordForm.control}
                             name="oldPassword"
-                            render={({field}) => (
+                            render={({field, fieldState}) => (
                                 <SettingsField
-                                    title="Altes Passwort"
-                                    placeholder="Altes Passwort"
-                                    visibilityToggle={true}
+                                    title="Aktuelles Passwort"
+                                    placeholder="Aktuelles Passwort"
+                                    visibilityToggle
                                     field={field}
+                                    error={fieldState.error?.message}
                                 />
                             )}
                         />
                         <FormField
-                            control={form.control}
+                            control={passwordForm.control}
                             name="newPassword"
-                            render={({field}) => (
+                            render={({field, fieldState}) => (
                                 <SettingsField
                                     title="Neues Passwort"
                                     placeholder="Neues Passwort"
-                                    visibilityToggle={true}
+                                    visibilityToggle
                                     field={field}
+                                    error={fieldState.error?.message}
                                 />
                             )}
                         />
                         <FormField
-                            control={form.control}
+                            control={passwordForm.control}
                             name="confirmPassword"
-                            render={({field}) => (
+                            render={({field, fieldState}) => (
                                 <SettingsField
-                                    title="Neues Passwort bestätigen"
-                                    placeholder="Neues Passwort bestätigen"
-                                    visibilityToggle={true}
+                                    placeholder="Passwort bestätigen"
+                                    visibilityToggle
                                     field={field}
+                                    error={fieldState.error?.message}
                                 />
                             )}
                         />

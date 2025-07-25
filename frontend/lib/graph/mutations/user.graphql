@@ -24,3 +24,6 @@ mutation updateUserSettings($id: String!, $user: UpdateUser!) {
     updateUser(id: $id, user: $user)
 }
 
+mutation updateUser($id: String!, $user: UpdateUser!){
+    updateUser(id: $id, user: $user)
+}
