@@ -8,6 +8,7 @@ query loginCheck($sid: String!) {
         firstname
         lastname
         role
+        id
     }
 }
 
@@ -20,3 +21,12 @@ query allUsers {
         role
     }
 }
+
+query userSettings ($id:  [ID!]!){
+    users(id: $id){
+        firstname
+        lastname
+        mail
+    }
+}
+

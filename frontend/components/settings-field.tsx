@@ -1,23 +1,30 @@
-"use client"
+"use client";
 
-import {useState} from "react";
+import React, {useState} from "react";
 import {Eye, EyeOff} from "lucide-react";
 
 type SettingsFieldProps = {
-    title?: string,
-    visibilityToggle: boolean,
-    placeholder: string,
-}
+    field: {
+        name: string;
+        value: any;
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+        onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+    };
+    placeholder?: string;
+    title?: string;
+    visibilityToggle: boolean;
+};
 
-export function SettingsField
-({title, visibilityToggle, placeholder}: SettingsFieldProps) {
+export function SettingsField({title, visibilityToggle, placeholder, field}: SettingsFieldProps) {
     const [visible, setVisible] = useState(false);
+
     return (
-        <div className="flex flex-col mb-4 ">
-            <label className="ml-1 mb-1">{title}</label>
+        <div className="flex flex-col mb-4">
+            {title && <label className="ml-1 mb-1">{title}</label>}
             <div className="relative text-sm">
                 <input
-                    type={visibilityToggle ? "password" : "text"}
+                    {...field}
+                    type={visibilityToggle ? (visible ? "text" : "password") : "text"}
                     placeholder={placeholder}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:accent-gray-500"
                 />
@@ -33,5 +40,4 @@ export function SettingsField
             </div>
         </div>
     );
-
 }
