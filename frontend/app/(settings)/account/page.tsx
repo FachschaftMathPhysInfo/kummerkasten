@@ -126,7 +126,7 @@ export default function Page() {
 
         if (userData.mail !== user.mail) {
             try {
-                const existing = await client.request(CheckForMailDocument, { mail: userData.mail });
+                const existing = await client.request(CheckForMailDocument, {mail: userData.mail});
                 const emailUsedByOtherUser = existing.users?.some((u) => u?.id !== user.id);
 
                 if (emailUsedByOtherUser) {
@@ -230,7 +230,7 @@ export default function Page() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
                       className="space-y-6">
-                    <SettingsBlock icon={<User/>} title="Account" hasTriedToSubmit={hasTriedToSubmit}>
+                    <SettingsBlock icon={<User/>} title="Account" hasTriedToSubmit={hasTriedToSubmit} dataCy="input-profile-save" >
                         <FormField
                             control={form.control}
                             name="firstname"
@@ -241,6 +241,7 @@ export default function Page() {
                                     visibilityToggle={false}
                                     field={field}
                                     error={fieldState.error?.message}
+                                    dataCy="account-firstname-input"
                                 />
                             )}
                         />
@@ -254,6 +255,7 @@ export default function Page() {
                                     visibilityToggle={false}
                                     field={field}
                                     error={fieldState.error?.message}
+                                    dataCy="account-lastname-input"
                                 />
                             )}
                         />
@@ -267,6 +269,7 @@ export default function Page() {
                                     visibilityToggle={false}
                                     field={field}
                                     error={fieldState.error?.message}
+                                    dataCy="account-mail-input"
                                 />
                             )}
                         />
@@ -280,7 +283,7 @@ export default function Page() {
                         () => setHasTriedPasswordSubmit(true)
                     )}
                 >
-                    <SettingsBlock icon={<LockKeyhole/>} title="Passwort" hasTriedToSubmit={hasTriedPasswordSubmit}>
+                    <SettingsBlock icon={<LockKeyhole/>} title="Passwort" hasTriedToSubmit={hasTriedPasswordSubmit} dataCy="input-settings-save">
                         <FormField
                             control={passwordForm.control}
                             name="oldPassword"
@@ -291,6 +294,7 @@ export default function Page() {
                                     visibilityToggle
                                     field={field}
                                     error={fieldState.error?.message}
+                                    dataCy="account-current-password-input"
                                 />
                             )}
                         />
@@ -304,6 +308,7 @@ export default function Page() {
                                     visibilityToggle
                                     field={field}
                                     error={fieldState.error?.message}
+                                    dataCy="account-new-password-input"
                                 />
                             )}
                         />
@@ -316,6 +321,7 @@ export default function Page() {
                                     visibilityToggle
                                     field={field}
                                     error={fieldState.error?.message}
+                                    dataCy="account-repeated-password-input"
                                 />
                             )}
                         />
