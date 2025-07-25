@@ -6,7 +6,7 @@ import {Eye, EyeOff} from "lucide-react";
 type SettingsFieldProps = {
     field: {
         name: string;
-        value: any;
+        value: string;
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
         onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
     };

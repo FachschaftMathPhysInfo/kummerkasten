@@ -11,11 +11,11 @@ interface ManagementPageProps {
 
 export function ManagementPageHeader({title, description, iconNode, actionButton}: ManagementPageProps) {
     const sizedIcon =
-        iconNode && isValidElement(iconNode)
-            ? cloneElement(iconNode as React.ReactElement<any>, {
-                className: `w-10 h-10 ${(iconNode.props as any).className ?? ""}`.trim(),
+        icon && isValidElement(icon)
+            ? cloneElement(icon as React.ReactElement<{ className?: string }>, {
+                className: `w-7 h-7 ${(icon.props as { className?: string })?.className ?? ""}`.trim(),
             })
-            : iconNode;
+            : icon;
 
     return (
         <div className="p-5 space-y-4">
