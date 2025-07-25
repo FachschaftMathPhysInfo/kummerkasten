@@ -10,6 +10,7 @@ import {LockKeyhole, SettingsIcon, User} from "lucide-react";
 import {SettingsField} from "@/components/settings-field";
 import {SettingsBlock} from "@/components/settings-block";
 import {
+    CheckForMailDocument,
     LoginDocument,
     UpdateUserDocument,
     UpdateUserSettingsDocument,
@@ -123,6 +124,25 @@ export default function Page() {
             return;
         }
 
+        if (userData.mail !== user.mail) {
+            try {
+                const existing = await client.request(CheckForMailDocument, { mail: userData.mail });
+                const emailUsedByOtherUser = existing.users?.some((u) => u?.id !== user.id);
+
+                if (emailUsedByOtherUser) {
+                    form.setError("mail", {
+                        message: "Diese E-Mail-Adresse wird bereits verwendet.",
+                    });
+                    toast.error("Diese E-Mail-Adresse wird bereits verwendet.");
+                    return;
+                }
+            } catch (error) {
+                toast.error("Fehler beim Überprüfen der E-Mail-Adresse.");
+                console.error(error);
+                return;
+            }
+        }
+
         const updateData: UpdateUserSettingsMutationVariables = {
             id: user.id,
             user: {
@@ -136,6 +156,7 @@ export default function Page() {
             await client.request<UpdateUserSettingsMutation>(UpdateUserSettingsDocument, updateData);
             toast.success("Dein Account wurde erfolgreich aktualisiert");
         } catch (error) {
+
             toast.error("Ein Fehler ist aufgetreten");
             console.error(error);
         }

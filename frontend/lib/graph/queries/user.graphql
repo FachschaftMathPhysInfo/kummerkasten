@@ -30,3 +30,9 @@ query userSettings ($id:  [ID!]!){
     }
 }
 
+query checkForMail ($mail: [String!]!){
+    users(mail: $mail){
+        id
+        mail
+    }
+}
