@@ -13,9 +13,10 @@ type SettingsFieldProps = {
     placeholder?: string;
     title?: string;
     visibilityToggle: boolean;
+    error?: string;
 };
 
-export function SettingsField({title, visibilityToggle, placeholder, field}: SettingsFieldProps) {
+export function SettingsField({title, visibilityToggle, placeholder, field, error}: SettingsFieldProps) {
     const [visible, setVisible] = useState(false);
 
     return (
@@ -28,6 +29,9 @@ export function SettingsField({title, visibilityToggle, placeholder, field}: Set
                     placeholder={placeholder}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:accent-gray-500"
                 />
+                {error && (
+                    <p className="text-sm text-red-500 mt-1 ml-1">{error}</p>
+                )}
                 {visibilityToggle && (
                     <button
                         type="button"

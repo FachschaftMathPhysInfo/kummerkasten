@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback, useEffect} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,7 +34,6 @@ type ProfileSettingsFormData = z.infer<typeof profileSettingsSchema>;
 
 export default function Page() {
     const {user} = useUser();
-    console.log("Active user from context:", user);
 
 
     const form = useForm<ProfileSettingsFormData>({
@@ -49,6 +48,7 @@ export default function Page() {
         },
     });
 
+    const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
     const fetchProfileData = useCallback(async () => {
         if (!user?.id) return;
         const client = getClient();
@@ -79,6 +79,18 @@ export default function Page() {
     useEffect(() => {
         fetchProfileData();
     }, [fetchProfileData]);
+
+    useEffect(() => {
+        const subscription = form.watch((value, { name, type }) => {
+            if (hasTriedToSubmit && type === "change") {
+                setHasTriedToSubmit(false);
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [form, hasTriedToSubmit]);
+
+
 
     async function onValidSubmit(userData: ProfileSettingsFormData) {
         const client = getClient();
@@ -116,8 +128,9 @@ export default function Page() {
             />
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onValidSubmit)} className="space-y-6">
-                    <SettingsBlock icon={<User/>} title="Account">
+                <form onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
+                      className="space-y-6">
+                    <SettingsBlock icon={<User/>} title="Account" hasTriedToSubmit={hasTriedToSubmit}>
                         <FormField
                             control={form.control}
                             name="firstname"
@@ -145,12 +158,13 @@ export default function Page() {
                         <FormField
                             control={form.control}
                             name="mail"
-                            render={({field}) => (
+                            render={({field, fieldState}) => (
                                 <SettingsField
                                     title="E-Mail"
                                     placeholder="E-Mail"
                                     visibilityToggle={false}
                                     field={field}
+                                    error={fieldState.error?.message}
                                 />
                             )}
                         />
