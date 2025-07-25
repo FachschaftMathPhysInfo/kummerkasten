@@ -39,4 +39,40 @@ describe('Profile Settings Page', () => {
             .scrollIntoView()
             .should('contain', 'Nachname ist erforderlich');
     });
+
+    it('shows validation errors for incorrect field mail', () => {
+        cy.get('[data-cy="account-mail-input"]')
+            .invoke('val', '')
+            .trigger('input');
+
+        cy.get('[data-cy="input-profile-save"]').click();
+        accountPage.getMailMessage()
+            .scrollIntoView()
+            .should('contain', 'Ungültige E-Mail-Adresse');
+    });
+
+    it("updates profile successfully", () => {
+        const timestamp = Date.now();
+
+        cy.get('[data-cy="account-firstname-input"]')
+            .invoke('val', '')
+            .trigger('input')
+            .type('UpdatedAdmin')
+        cy.get('[data-cy="account-lastname-input"]')
+            .invoke('val', '')
+            .trigger('input')
+            .type('Kasten')
+        cy.get('[data-cy="account-mail-input"]')
+            .invoke('val', '')
+            .trigger('input')
+            .type('kummer@kasten.local')
+
+        cy.get('[data-cy="input-profile-save"]').click();
+
+        cy.contains("Dein Account wurde erfolgreich aktualisiert").should("be.visible");
+    });
+
+
+
+
 });
