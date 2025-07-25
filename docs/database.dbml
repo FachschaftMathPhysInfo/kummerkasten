@@ -48,3 +48,9 @@ Table settings {
   key varchar [primary key]
   value varchar [not null]
 }
+
+Table question_answer_pair {
+  id uuid [primary key]
+  question varchar [not null, unique]
+  answer varchar [not null]
+}

@@ -9,9 +9,21 @@ npm i
 npm run generate
 npm run dev
 ```
-the frontend will be hosted on the first available
-port starting at 3000. Note that the backend is not wired
-in yet and thus does not serve an actual API to the next app
+### Backend
+After installing general golang and dependencies run
+```
+cp .env .env.local
+```
+and fill out the configurations as desired. Afterwards run
+
+```
+cd server
+export $(cat ../.env.local)
+docker compose up -d
+go run generate ./...
+go run server.go
+```
+now the frontend and api are available at port `8080`
 
 ## Deployment
 To be added

@@ -8,7 +8,7 @@ export function Footer() {
   if (user) return null
 
   return (
-    <footer className="flex justify-evenly w-full py-5 px-10 text-sm text-muted-foreground border-t mt-5">
+    <footer className="flex justify-evenly w-full h-fit py-5 px-10 text-sm text-muted-foreground border-t mt-5">
       <span>
         <a className="cursor-pointer underline" href="https://mathphys.stura.uni-heidelberg.de/kontakt/">
           Kontakt

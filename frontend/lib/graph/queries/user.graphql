@@ -10,3 +10,13 @@ query loginCheck($sid: String!) {
         role
     }
 }
+
+query allUsers {
+    users{
+        id
+        firstname
+        lastname
+        mail
+        role
+    }
+}

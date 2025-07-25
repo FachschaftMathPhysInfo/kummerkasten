@@ -8,136 +8,157 @@ directive @hasRole(role: UserRole) on FIELD_DEFINITION
 directive @onlySelf on FIELD_DEFINITION
 
 enum TicketState {
-  NEW,
-  OPEN,
-  CLOSED
+    NEW,
+    OPEN,
+    CLOSED
 }
 
 enum UserRole {
-  ADMIN,
-  USER
+    ADMIN,
+    USER
 }
 
 enum FormLabels {
-   DOZENTIN,
-   VERANSTALTUNG,
-   FACHSCHAFT,
-   SONSTIGES
+    DOZENTIN,
+    VERANSTALTUNG,
+    FACHSCHAFT,
+    SONSTIGES
 }
 
 type Ticket {
-  id: String!
-  title: String!
-  text: String!
-  note: String
-  state: TicketState!
-  createdAt: Time!
-  lastModified: Time!
-  labels: [Label!]
+    id: String!
+    title: String!
+    text: String!
+    note: String
+    state: TicketState!
+    createdAt: Time!
+    lastModified: Time!
+    labels: [Label!]
 }
 
 type Label {
-  id: String!
-  name: String!
-  color: String!
-  tickets: [Ticket!]
+    id: String!
+    name: String!
+    color: String!
+    tickets: [Ticket!]
 }
 
 type User {
-  id: String!
-  sid: String!
-  mail: String!
-  firstname: String!
-  lastname: String!
-  password: String!
-  role: UserRole!
-  createdAt: Time!
-  lastModified: Time!
-  lastLogin: Time
+    id: String!
+    sid: String!
+    mail: String!
+    firstname: String!
+    lastname: String!
+    password: String!
+    role: UserRole!
+    createdAt: Time!
+    lastModified: Time!
+    lastLogin: Time
 }
 
-type Setting{
-  key: String!
-  value: String!
+type Setting {
+    key: String!
+    value: String!
+}
+
+type QuestionAnswerPair {
+    id: String!
+    question: String!
+    answer: String!
 }
 
 type Query {
-  tickets(id: [ID!], state: [TicketState!]): [Ticket] @hasRole(role: USER)
-  labels(ids: [ID!]): [Label] @hasRole(role: USER)
-  users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
-  settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
-  login(mail: String!, password: String!): Boolean!
-  loginCheck(sid: String): User
+    tickets(id: [ID!], state: [TicketState!]): [Ticket] @hasRole(role: USER)
+    labels(ids: [ID!]): [Label] @hasRole(role: USER)
+    users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
+    settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
+    login(mail: String!, password: String!): Boolean!
+    loginCheck(sid: String): User
+    questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]
 }
 
 input NewTicket {
-  title: String!
-  text: String!
-  labels: [FormLabels!]
+    title: String!
+    text: String!
+    labels: [FormLabels!]
 }
 
 input NewLabel {
-  name: String!
-  color: String!
+    name: String!
+    color: String!
 }
 
 input NewUser {
-  mail: String!
-  firstname: String!
-  lastname: String!
-  password: String!
+    mail: String!
+    firstname: String!
+    lastname: String!
+    password: String!
 }
 
 input UpdateUser {
-  mail: String
-  firstname: String
-  lastname: String
-  password: String
-  sid: String
+    mail: String
+    firstname: String
+    lastname: String
+    password: String
+    sid: String
 }
 
 input UpdateTicket {
-   title: String
-   text: String
-   note: String
-   state: TicketState
+    title: String
+    text: String
+    note: String
+    state: TicketState
 }
 
 input UpdateLabel {
-   name: String
-   color: String
+    name: String
+    color: String
+}
+
+input UpdateQuestionAnswerPair{
+    question: String
+    answer: String
 }
 
 input NewSetting {
-  key: String!
-  value: String!
+    key: String!
+    value: String!
 }
 
 input NewLabelToTicketAssignment {
-  labelID: String!
-  ticketId: String!
+    labelID: String!
+    ticketId: String!
+}
+
+input NewQuestionAnswerPair{
+    question: String!
+    answer: String!
 }
 
 type Mutation {
-  createTicket(ticket: NewTicket!): Ticket!
-  deleteTicket(ids: [String!]!): Int! @hasRole(role: ADMIN)
-  updateTicket(id: String!, ticket: UpdateTicket!): String! @hasRole(role: USER)
-  updateTicketState(ids: [String!]!, state: TicketState!): Int! @hasRole(role: USER)
+    createTicket(ticket: NewTicket!): Ticket!
+    deleteTicket(ids: [String!]!): Int! @hasRole(role: ADMIN)
+    updateTicket(id: String!, ticket: UpdateTicket!): String! @hasRole(role: USER)
+    updateTicketState(ids: [String!]!, state: TicketState!): Int! @hasRole(role: USER)
 
-  createLabel(label: NewLabel!): Label! @hasRole(role: USER)
-  deleteLabel(ids: [Int!]!): Int! @hasRole(role: ADMIN)
-  updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
+    createLabel(label: NewLabel!): Label! @hasRole(role: USER)
+    deleteLabel(ids: [Int!]!): Int! @hasRole(role: ADMIN)
+    updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
 
-  createUser(user: NewUser!): User! @hasRole(role: ADMIN)
-  deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
-  updateUser(id: String!, user: UpdateUser!): String! @hasRole(role: USER) @onlySelf
-  changeRole(id: String!, role: UserRole!): String! @hasRole(role: ADMIN)
-  logout(sid: String!): String! @hasRole(role: USER)
+    createUser(user: NewUser!): User! @hasRole(role: ADMIN)
+    deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
+    updateUser(id: String!, user: UpdateUser!): String! @hasRole(role: USER) @onlySelf
+    changeRole(id: String!, role: UserRole!): String! @hasRole(role: ADMIN)
+    logout(sid: String!): String! @hasRole(role: USER)
 
-  createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
-  deleteSetting(keys: [String!]!): Int! @hasRole(role: ADMIN)
-  updateSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
+    createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
+    deleteSetting(keys: [String!]!): Int! @hasRole(role: ADMIN)
+    updateSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
 
-  addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int! @hasRole(role: USER)
-  removeLabelFromTicket(labelID: String!, ticketId: Int!): Int! @hasRole(role: USER)
+    addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int! @hasRole(role: USER)
+    removeLabelFromTicket(labelID: String!, ticketId: Int!): Int! @hasRole(role: USER)
+
+    createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
+    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
+    updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: ADMIN)
 }

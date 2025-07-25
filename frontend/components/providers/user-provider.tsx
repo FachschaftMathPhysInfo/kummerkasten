@@ -1,8 +1,15 @@
 "use client"
 
-import {createContext} from "react";
-import {ReactNode, useContext, useEffect, useState} from "react";
-import {LoginCheckDocument, LoginCheckQuery, LogoutDocument, LogoutMutation, User} from "@/lib/graph/generated/graphql";
+import {createContext, ReactNode, useCallback, useContext, useEffect, useState} from "react";
+import {
+  LoginCheckDocument,
+  LoginCheckQuery,
+  LoginDocument,
+  LoginQuery,
+  LogoutDocument,
+  LogoutMutation,
+  User
+} from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
 import {defaultUser} from "@/lib/graph/defaultTypes";
 import {deleteSID, getSID} from "@/lib/cookies";
@@ -10,38 +17,56 @@ import {useRouter} from "next/navigation"
 
 interface UserContextType {
   user: User | null;
+  login: (mail: string, password: string) => Promise<boolean>
   logout: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
 
-export function UserProvider({ children } : {children: ReactNode}) {
+export function UserProvider({children}: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [sid, setSid] = useState<string | undefined>();
   const router = useRouter();
 
+
+  const fetchSID = useCallback(async () => {
+    const sid = await getSID();
+    setSid(sid);
+  }, [])
+
+  const fetchUser = useCallback(async () => {
+    if(!sid) return
+
+    const client = getClient();
+    const data = await client.request<LoginCheckQuery>(LoginCheckDocument, {sid: sid})
+    if (!data.loginCheck) setUser(null)
+    else setUser({...defaultUser, ...data.loginCheck})
+  }, [sid])
+
   // fetch sid
   useEffect(() => {
-    const fetchSID = async () => {
-      const sid = await getSID();
-      setSid(sid);
-    }
-
     void fetchSID()
-  }, []);
+  }, [fetchSID]);
 
   // fetch user
   useEffect(() => {
-    if (!sid) return
-
-    const fetchUser = async () => {
-      const client =  getClient();
-      const data = await client.request<LoginCheckQuery>(LoginCheckDocument, {sid: sid})
-      setUser({...defaultUser, ...data.loginCheck})
-    }
-
     void fetchUser();
-  }, [sid]);
+  }, [sid, fetchUser]);
+
+  const login = async (mail: string, password: string): Promise<boolean> => {
+    const client = getClient();
+    const response = await client.request<LoginQuery>(
+      LoginDocument,
+      {mail: mail, password: password}
+    )
+
+    if (response.login) {
+      await fetchSID()
+      return true
+    } else {
+      return false
+    }
+  }
 
   const logout = async () => {
     if (!sid) return
@@ -49,11 +74,11 @@ export function UserProvider({ children } : {children: ReactNode}) {
     await client.request<LogoutMutation>(LogoutDocument, {sid: sid})
     setUser(null)
     await deleteSID()
-    router.push("/")
+    router.push("/login")
   }
 
   return (
-    <UserContext.Provider value={{user, logout}}>
+    <UserContext.Provider value={{user, login, logout}}>
       {children}
     </UserContext.Provider>
   );
