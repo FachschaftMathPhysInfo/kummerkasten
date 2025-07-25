@@ -17,7 +17,7 @@ export function SettingsField
             <label className="ml-1 mb-1">{title}</label>
             <div className="relative text-sm">
                 <input
-                    type={visible ? "text" : "password"}
+                    type={visibilityToggle ? "password" : "text"}
                     placeholder={placeholder}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:accent-gray-500"
                 />
