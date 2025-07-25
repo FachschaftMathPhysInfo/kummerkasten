@@ -81,7 +81,7 @@ export default function Page() {
     }, [fetchProfileData]);
 
     useEffect(() => {
-        const subscription = form.watch((value, { name, type }) => {
+        const subscription = form.watch((value, { type }) => {
             if (hasTriedToSubmit && type === "change") {
                 setHasTriedToSubmit(false);
             }

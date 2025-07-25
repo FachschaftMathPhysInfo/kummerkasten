@@ -14,8 +14,8 @@ type SettingsBlockProps = {
 export function SettingsBlock({icon, title, children, onSave, hasTriedToSubmit, isValid}: SettingsBlockProps) {
     const sizedIcon =
         icon && isValidElement(icon)
-            ? cloneElement(icon as React.ReactElement<any>, {
-                className: `w-7 h-7 ${(icon.props as any).className ?? ""}`.trim(),
+            ? cloneElement(icon as React.ReactElement<{ className?: string }>, {
+                className: `w-7 h-7 ${(icon.props as { className?: string })?.className ?? ""}`.trim(),
             })
             : icon;
 
