@@ -5,11 +5,11 @@ import {SeperatorVertical} from "@/components/seperator-vertical";
 interface ManagementPageProps {
     title: string,
     description: string,
-    iconNode?: React.ReactNode
+    icon?: React.ReactNode
     actionButton?: React.ReactNode
 }
 
-export function ManagementPageHeader({title, description, iconNode, actionButton}: ManagementPageProps) {
+export function ManagementPageHeader({title, description, icon, actionButton}: ManagementPageProps) {
     const sizedIcon =
         icon && isValidElement(icon)
             ? cloneElement(icon as React.ReactElement<{ className?: string }>, {
