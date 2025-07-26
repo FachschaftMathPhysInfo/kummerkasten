@@ -113,7 +113,7 @@ export function UserSidebar() {
 export function UserSidebarTrigger() {
   const {user} = useUser();
   if (!user) return null;
-  return <SidebarTrigger/>
+  return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
 
 function ThemeSwitch() {

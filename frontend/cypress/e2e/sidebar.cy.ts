@@ -27,6 +27,14 @@ describe('Footer Tests', () => {
       sidebar.getSidebar().should('be.visible')
     });
 
+    it('should be toggleable', () => {
+      sidebar.getSidebarTrigger().should('be.visible')
+      sidebar.getSidebarTrigger().click()
+      sidebar.getSidebar().parent().should('have.attr', 'data-state', 'collapsed')
+      sidebar.getSidebarTrigger().click()
+      sidebar.getSidebar().parent().should('have.attr', 'data-state', 'expanded')
+    });
+
     it('should have tickets link', () => {
       sidebar.getTicketsButton().should("be.visible");
     });
