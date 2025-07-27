@@ -47,7 +47,7 @@ describe('User Management Page Tests', () => {
     });
   })
 
-  context.only('User Table Sorting', () => {
+  context('User Table Sorting', () => {
     it('should sort lastnames ascending by default', () => {
       let names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
