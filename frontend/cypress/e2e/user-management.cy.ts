@@ -46,4 +46,79 @@ describe('User Management Page Tests', () => {
       page.getActionsOfUsers(users.admin.mail).should('not.exist')
     });
   })
+
+  context.only('User Table Sorting', () => {
+    it('should sort lastnames ascending by default', () => {
+      let names: string[] = []
+      page.getUserRows().should("have.length.at.least", 2)
+      page.getLastnameCells()
+        .each(($el) => names.push($el.text()))
+        .then(() => {
+          const sorted = [...names].sort()
+          expect(names).to.deep.eq(sorted)
+        })
+    })
+
+    it('should sort lastnames descending', () => {
+      let names: string[] = []
+      page.getUserRows().should("have.length.at.least", 2)
+      page.getLastnameHeader().click()
+      page.getLastnameCells()
+        .each(($el) => names.push($el.text()))
+        .then(() => {
+          const sorted = [...names].sort().reverse()
+          expect(names).to.deep.eq(sorted)
+        })
+    })
+
+    it('should sort firstnames ascending', () => {
+      let names: string[] = []
+      page.getUserRows().should("have.length.at.least", 2)
+      page.getFirstnameHeader().click()
+      page.getFirstnameCells()
+        .each(($el) => names.push($el.text()))
+        .then(() => {
+          const sorted = [...names].sort()
+          expect(names).to.deep.eq(sorted)
+        })
+    })
+
+    it('should sort firstnames descending', () => {
+      let names: string[] = []
+      page.getUserRows().should("have.length.at.least", 2)
+      page.getFirstnameHeader().click()
+      page.getFirstnameHeader().click()
+      page.getFirstnameCells()
+        .each(($el) => names.push($el.text()))
+        .then(() => {
+          const sorted = [...names].sort().reverse()
+          expect(names).to.deep.eq(sorted)
+        })
+    })
+
+    it('should sort mails ascending', () => {
+      let names: string[] = []
+      page.getUserRows().should("have.length.at.least", 2)
+      page.getMailHeader().click()
+      page.getMailCells()
+        .each(($el) => names.push($el.text()))
+        .then(() => {
+          const sorted = [...names].sort()
+          expect(names).to.deep.eq(sorted)
+        })
+    })
+
+    it('should sort mails descending', () => {
+      let names: string[] = []
+      page.getUserRows().should("have.length.at.least", 2)
+      page.getMailHeader().click()
+      page.getMailHeader().click()
+      page.getMailCells()
+        .each(($el) => names.push($el.text()))
+        .then(() => {
+          const sorted = [...names].sort().reverse()
+          expect(names).to.deep.eq(sorted)
+        })
+    })
+  })
 })
