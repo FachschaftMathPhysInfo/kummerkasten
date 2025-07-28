@@ -1,0 +1,54 @@
+import type {Metadata} from "next";
+import {Geist, Geist_Mono} from "next/font/google";
+import "./globals.css";
+import React from "react";
+import {SidebarProvider} from "@/components/ui/sidebar";
+import {UserSidebar, UserSidebarTrigger} from "@/components/user-sidebar";
+import {Toaster} from "@/components/ui/sonner";
+import {UserProvider} from "@/components/providers/user-provider";
+import {Footer} from "@/components/footer";
+import {ThemeProvider} from "@/components/providers/theme-provider";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Kummerkasten",
+  description: "Kummerkasten der Fachschaft",
+  keywords: ["kummerkasten", "fachschaft", "mathphysinfo", "uni heidelberg"]
+};
+
+export default function UserLayout({
+                                     children,
+                                   }: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="de" suppressHydrationWarning>
+    <body
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+    >
+    <ThemeProvider attribute={'class'} defaultTheme={"system"}>
+      <UserProvider>
+        <SidebarProvider>
+          <UserSidebar/>
+          <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
+            <UserSidebarTrigger/>
+            {children}
+            <Footer/>
+          </main>
+          <Toaster richColors/>
+        </SidebarProvider>
+      </UserProvider>
+    </ThemeProvider>
+    </body>
+    </html>
+  );
+}

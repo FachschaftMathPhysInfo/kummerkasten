@@ -10,7 +10,7 @@ import (
 type User struct {
 	bun.BaseModel `bun:"table:users"`
 
-	ID           string         `bun:",pk"`
+	ID           string         `bun:",pk,default:gen_random_UUID(),type:uuid"`
 	Sid          string         `bun:",type:varchar(12)"`
 	Mail         string         `bun:",unique,notnull,type:varchar(255)"`
 	Firstname    string         `bun:",notnull,type:varchar(255)"`
@@ -19,4 +19,5 @@ type User struct {
 	Password     string         `bun:",notnull"`
 	CreatedAt    time.Time      `bun:",notnull"`
 	LastModified time.Time      `bun:",notnull"`
+	LastLogin    time.Time
 }

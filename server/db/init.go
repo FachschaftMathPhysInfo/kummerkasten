@@ -24,6 +24,7 @@ var (
 		(*models.Label)(nil),
 		(*models.Setting)(nil),
 		(*models.Ticket)(nil),
+		(*models.QuestionAnswerPair)(nil),
 	}
 
 	relations = []interface{}{
@@ -51,6 +52,7 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 
 	db = bun.NewDB(sqldb, pgdialect.New())
 	db.AddQueryHook(bundebug.NewQueryHook())
+	db.RegisterModel((*models.LabelsToTickets)(nil))
 
 	if err := createTables(ctx, tables); err != nil {
 		log.Panic("Failed to create basic tabels: ", err)
@@ -76,6 +78,5 @@ func createTables(ctx context.Context, tables []interface{}) error {
 			return err
 		}
 	}
-
 	return nil
 }

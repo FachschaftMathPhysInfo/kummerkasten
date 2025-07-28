@@ -1,0 +1,49 @@
+name: Frontend
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      node-version:
+        description: |
+          Manually run the workflow. The node.js version to use can be specified.
+          If not specified, the default is 24.x
+        default: '24.x'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [24.x]
+
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate Queries and Mutations
+        run: npm run generate
+
+      - name: Build project
+        run: npm run build
+
+      - name: Lint Code
+        run: npm run lint

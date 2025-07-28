@@ -1,0 +1,22 @@
+query login ($mail: String!, $password: String!) {
+    login(mail: $mail, password: $password)
+}
+
+query loginCheck($sid: String!) {
+    loginCheck(sid: $sid) {
+        mail
+        firstname
+        lastname
+        role
+    }
+}
+
+query allUsers {
+    users{
+        id
+        firstname
+        lastname
+        mail
+        role
+    }
+}
