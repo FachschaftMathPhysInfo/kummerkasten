@@ -3,12 +3,14 @@
 import React, {useState} from "react";
 import {Eye, EyeOff} from "lucide-react";
 
+
 type SettingsFieldProps = {
     field: {
         name: string;
-        value: string | undefined;
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-        onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+        value: string;
+        onChange: React.ChangeEventHandler<HTMLInputElement>;
+        onBlur: React.FocusEventHandler<HTMLInputElement>;
+        ref: React.LegacyRef<HTMLInputElement>;
     };
     placeholder?: string;
     title?: string;
@@ -25,7 +27,11 @@ export function SettingsField({title, visibilityToggle, placeholder, field, erro
             {title && <label className="ml-1 mb-1">{title}</label>}
             <div className="relative text-sm">
                 <input
-                    {...field}
+                    name={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     type={visibilityToggle ? (visible ? "text" : "password") : "text"}
                     placeholder={placeholder}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:accent-gray-500"
@@ -41,9 +47,9 @@ export function SettingsField({title, visibilityToggle, placeholder, field, erro
                     </button>
                 )}
                 {error && (
-                    <p className="text-sm text-red-500 mt-1 ml-1" data-cy={dataCy?.replace("-input", "-message")}>
+                    <div className="text-sm text-red-500 mt-1 ml-1" data-cy={dataCy?.replace("-input", "-message")}>
                         {error}
-                    </p>
+                    </div>
                 )}
             </div>
         </div>

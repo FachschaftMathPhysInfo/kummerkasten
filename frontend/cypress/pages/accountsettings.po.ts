@@ -46,6 +46,13 @@ export function getRepeatedPasswordMessage() {
     return cy.get('[data-cy="account-repeated-password-message"]')
 }
 
+export function getProfileSaveButton() {
+    return cy.get('[data-cy="input-profile-save"]');
+}
+
+export function getSettingsSaveButton() {
+    return cy.get('[data-cy="input-settings-save"]');
+}
 
 
 

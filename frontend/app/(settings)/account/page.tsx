@@ -27,7 +27,7 @@ import {Form, FormField} from "@/components/ui/form";
 const profileSettingsSchema = z.object({
     firstname: z.string().min(1, "Vorname ist erforderlich"),
     lastname: z.string().min(1, "Nachname ist erforderlich"),
-    mail: z.string().email("Ungültige E-Mail-Adresse"),
+    mail: z.email("Ungültige E-Mail-Adresse"),
     oldPassword: z.string().optional(),
     newPassword: z.string().optional(),
     confirmPassword: z.string().optional(),
@@ -51,6 +51,10 @@ const passwordFormSchema = z
     .refine((data) => data.newPassword === data.confirmPassword, {
         message: "Passwörter stimmen nicht überein.",
         path: ["confirmPassword"],
+    })
+    .refine((data) => data.newPassword !== data.oldPassword, {
+        message: "Neues Passwort darf nicht dem alten entsprechen.",
+        path: ["newPassword"],
     });
 
 type PasswordFormData = z.infer<typeof passwordFormSchema>;
@@ -118,7 +122,6 @@ export default function Page() {
     async function onValidSubmit(userData: ProfileSettingsFormData) {
         const client = getClient();
 
-
         if (!user?.id) {
             toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
             return;
@@ -146,9 +149,9 @@ export default function Page() {
         const updateData: UpdateUserSettingsMutationVariables = {
             id: user.id,
             user: {
-                mail: userData.mail,
-                firstname: userData.firstname,
-                lastname: userData.lastname,
+                mail: userData.mail.trimStart().trimEnd(),
+                firstname: userData.firstname.trimStart().trimEnd(),
+                lastname: userData.lastname.trimStart().trimEnd(),
             },
         };
 
@@ -156,7 +159,6 @@ export default function Page() {
             await client.request<UpdateUserSettingsMutation>(UpdateUserSettingsDocument, updateData);
             toast.success("Dein Account wurde erfolgreich aktualisiert");
         } catch (error) {
-
             toast.error("Ein Fehler ist aufgetreten");
             console.error(error);
         }
@@ -169,6 +171,8 @@ export default function Page() {
             newPassword: "",
             confirmPassword: "",
         },
+        mode: "onChange",
+        reValidateMode: "onChange",
     });
 
     const [hasTriedPasswordSubmit, setHasTriedPasswordSubmit] = useState(false);
@@ -193,6 +197,11 @@ export default function Page() {
         }
 
         if (!loginResponse.login) {
+            passwordForm.reset({
+                oldPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
             passwordForm.setError("oldPassword", {
                 message: "Falsches aktuelles Passwort.",
             });
@@ -211,12 +220,25 @@ export default function Page() {
                 },
             });
             toast.success("Passwort aktualisiert.");
+            console.log("before reset:", passwordForm.getValues());
             passwordForm.reset();
+            console.log("after reset:", passwordForm.getValues());
+
+            passwordForm.clearErrors();
             setHasTriedPasswordSubmit(false);
         } catch {
             toast.error("Fehler beim Speichern.");
         }
     }
+
+    useEffect(() => {
+        const subscription = passwordForm.watch((_, { type }) => {
+            if (hasTriedPasswordSubmit && type === "change") {
+                setHasTriedPasswordSubmit(false);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [passwordForm, hasTriedPasswordSubmit]);
 
 
     return (
@@ -230,7 +252,8 @@ export default function Page() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
                       className="space-y-6">
-                    <SettingsBlock icon={<User/>} title="Account" hasTriedToSubmit={hasTriedToSubmit} dataCy="input-profile-save" >
+                    <SettingsBlock icon={<User/>} title="Account" hasTriedToSubmit={hasTriedToSubmit}
+                                   dataCy="input-profile-save">
                         <FormField
                             control={form.control}
                             name="firstname"
@@ -283,7 +306,8 @@ export default function Page() {
                         () => setHasTriedPasswordSubmit(true)
                     )}
                 >
-                    <SettingsBlock icon={<LockKeyhole/>} title="Passwort" hasTriedToSubmit={hasTriedPasswordSubmit} dataCy="input-settings-save">
+                    <SettingsBlock icon={<LockKeyhole/>} title="Passwort" hasTriedToSubmit={hasTriedPasswordSubmit}
+                                   dataCy="input-settings-save">
                         <FormField
                             control={passwordForm.control}
                             name="oldPassword"
