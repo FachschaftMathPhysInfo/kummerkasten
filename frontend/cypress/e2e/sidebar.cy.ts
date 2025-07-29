@@ -16,7 +16,7 @@ describe('Footer Tests', () => {
     });
   })
 
-  context('logged in as admin', () => {
+  context.only('logged in as admin', () => {
 
     beforeEach(() => {
       cy.login(users.admin.mail, users.admin.password)
@@ -45,6 +45,28 @@ describe('Footer Tests', () => {
 
     it('should have users link', () => {
       sidebar.getUsersButton().should("be.visible");
+    });
+
+    it('should have theme toggle', () => {
+      sidebar.getThemeToggle().should('be.visible');
+    });
+
+    it('should change theme', () => {
+      const lightModeRgb = 'oklch(1 0 0)'
+      const darkModeRgb = 'oklch(0.145 0 0)'
+
+      cy.get('body')
+        .invoke('css', 'background-color')
+        .then((initialBg) => {
+          sidebar.getThemeToggle().click()
+
+          cy.get('body')
+            .invoke('css', 'background-color')
+            .should((newBg) => {
+              if (initialBg.toString() === lightModeRgb) expect(newBg).to.equal(darkModeRgb);
+              else expect(newBg).to.equal(lightModeRgb);
+            });
+        });
     });
 
     it('should have settings link', () => {

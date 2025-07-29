@@ -132,6 +132,7 @@ function ThemeSwitch() {
     <SidebarMenuButton
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       className={'flex items-center'}
+      data-cy={'sidebar-theme-toggle'}
     >
       {theme === "light" ? (
         <><Sun/>Hell</>

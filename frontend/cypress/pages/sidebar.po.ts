@@ -14,6 +14,11 @@ export function getUsersButton() {
   return cy.get('[data-cy="sidebar-users"]')
 }
 
+export function getThemeToggle() {
+  return cy.get('[data-cy="sidebar-theme-toggle"]'
+  )
+}
+
 export function getSettingsButton() {
   return cy.get('[data-cy="sidebar-settings"]')
 }
