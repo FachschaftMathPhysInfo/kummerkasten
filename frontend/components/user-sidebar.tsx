@@ -1,15 +1,15 @@
 "use client"
 
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarTrigger
 } from "@/components/ui/sidebar";
 import {LogOut, Moon, Settings, Sun, Tags, Tickets, Users} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
@@ -20,121 +20,121 @@ import {useEffect, useState} from "react";
 
 
 export function UserSidebar() {
-  const {user, logout} = useUser()
-  const router = useRouter()
+    const {user, logout} = useUser()
+    const router = useRouter()
 
-  const userItems = [
-    {
-      title: "Tickets",
-      url: "/tickets",
-      icon: Tickets,
-    },
-    {
-      title: "Labels",
-      url: "/labels",
-      icon: Tags,
-    },
-  ]
+    const userItems = [
+        {
+            title: "Tickets",
+            url: "/tickets",
+            icon: Tickets,
+        },
+        {
+            title: "Labels",
+            url: "/labels",
+            icon: Tags,
+        },
+    ]
 
-  const adminItems = [
-    {
-      title: "Users",
-      url: "/users",
-      icon: Users,
-    }
-  ]
+    const adminItems = [
+        {
+            title: "Users",
+            url: "/users",
+            icon: Users,
+        }
+    ]
 
-  if (!user) return null
+    if (!user) return null
 
-  return (
-    <Sidebar className={'relative'} collapsible={"icon"}>
-      <SidebarContent className={'pr-10'}>
-        <SidebarGroup className={'h-full justify-center'}>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {userItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon/>
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-              {user?.role === UserRole.Admin && adminItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon/>
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+    return (
+        <Sidebar className={'relative'} collapsible={"icon"}>
+            <SidebarContent className={'pr-10'}>
+                <SidebarGroup className={'h-full justify-center'}>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {userItems.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton asChild>
+                                        <a href={item.url}>
+                                            <item.icon/>
+                                            <span>{item.title}</span>
+                                        </a>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                            {user?.role === UserRole.Admin && adminItems.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton asChild>
+                                        <a href={item.url}>
+                                            <item.icon/>
+                                            <span>{item.title}</span>
+                                        </a>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+            </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <ThemeSwitch />
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-                data-cy={'sidebar-settings'}
-              onClick={() => router.push("/account")}
-              className={'flex items-center'}
-            >
-              <Settings/> Einstellungen
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-                data-cy={'sidebar-logout'}
-              onClick={() => logout()}
-              className={'flex items-center text-destructive'}
-            >
-              <LogOut className={'stroke-destructive'}/> Logout
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
-  );
+            <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <ThemeSwitch/>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            data-cy={'sidebar-settings'}
+                            onClick={() => router.push("/account")}
+                            className={'flex items-center'}
+                        >
+                            <Settings/> Einstellungen
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            data-cy={'sidebar-logout'}
+                            onClick={() => logout()}
+                            className={'flex items-center text-destructive'}
+                        >
+                            <LogOut className={'stroke-destructive'}/> Logout
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
+        </Sidebar>
+    );
 
 }
 
 export function UserSidebarTrigger() {
-  const {user} = useUser();
-  if (!user) return null;
-  return <SidebarTrigger/>
+    const {user} = useUser();
+    if (!user) return null;
+    return <SidebarTrigger/>
 }
 
 function ThemeSwitch() {
-  const [mounted, setMounted] = useState(false)
-  const { resolvedTheme, theme, setTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+    const {resolvedTheme, theme, setTheme} = useTheme()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
-  if (!mounted) {
-    return null
-  }
+    if (!mounted) {
+        return null
+    }
 
-  return (
-    <SidebarMenuButton
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className={'flex items-center'}
-    >
-      {theme === "light" ? (
-        <><Sun/>Hell</>
-      ) : (
-        <><Moon/>Dunkel</>
-      )}
-    </SidebarMenuButton>
-  )
+    return (
+        <SidebarMenuButton
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className={'flex items-center'}
+        >
+            {theme === "light" ? (
+                <><Sun/>Hell</>
+            ) : (
+                <><Moon/>Dunkel</>
+            )}
+        </SidebarMenuButton>
+    )
 }

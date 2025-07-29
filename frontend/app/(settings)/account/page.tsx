@@ -10,14 +10,14 @@ import {LockKeyhole, SettingsIcon, User} from "lucide-react";
 import {SettingsField} from "@/components/settings-field";
 import {SettingsBlock} from "@/components/settings-block";
 import {
-    CheckForMailDocument,
+    CheckIfMailExistsDocument,
     LoginDocument,
     UpdateUserDocument,
     UpdateUserSettingsDocument,
     UpdateUserSettingsMutation,
     UpdateUserSettingsMutationVariables,
-    UserSettingsDocument,
-    UserSettingsQuery
+    UserAccountDataQuery,
+    UserAccountDataDocument
 } from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
@@ -85,7 +85,7 @@ export default function Page() {
         const client = getClient();
 
         try {
-            const data = await client.request<UserSettingsQuery>(UserSettingsDocument, {id: user.id});
+            const data = await client.request<UserAccountDataQuery>(UserAccountDataDocument, {id: user.id});
             const userData = data?.users?.[0];
             if (!userData) {
                 toast.error("Keine Benutzerdaten gefunden");
@@ -132,7 +132,7 @@ export default function Page() {
 
         if (userData.mail !== user.mail) {
             try {
-                const existing = await client.request(CheckForMailDocument, {mail: userData.mail});
+                const existing = await client.request(CheckIfMailExistsDocument, {mail: userData.mail});
                 const emailUsedByOtherUser = existing.users?.some((u) => u?.id !== user.id);
 
                 if (emailUsedByOtherUser) {

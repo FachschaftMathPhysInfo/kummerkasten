@@ -22,7 +22,7 @@ query allUsers {
     }
 }
 
-query userSettings ($id:  [ID!]!){
+query userAccountData ($id:  [ID!]!){
     users(id: $id){
         firstname
         lastname
@@ -30,7 +30,7 @@ query userSettings ($id:  [ID!]!){
     }
 }
 
-query checkForMail ($mail: [String!]!){
+query checkIfMailExists ($mail: [String!]!){
     users(mail: $mail){
         id
         mail
