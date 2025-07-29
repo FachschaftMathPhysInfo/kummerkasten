@@ -50,7 +50,7 @@ export function getProfileSaveButton() {
     return cy.get('[data-cy="input-profile-save"]');
 }
 
-export function getSettingsSaveButton() {
+export function getPasswordSaveButton() {
     return cy.get('[data-cy="input-settings-save"]');
 }
 

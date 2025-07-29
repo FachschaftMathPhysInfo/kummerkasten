@@ -23,10 +23,11 @@ import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {useUser} from "@/components/providers/user-provider";
 import {Form, FormField} from "@/components/ui/form";
+import {PageLoader} from "@/components/page-loader";
 
 const profileSettingsSchema = z.object({
-    firstname: z.string().min(1, "Vorname ist erforderlich"),
-    lastname: z.string().min(1, "Nachname ist erforderlich"),
+    firstname: z.string().min(1, "Vorname ist erforderlich").max(50, "Maximale Länge beträgt 50 Charaktere"),
+    lastname: z.string().min(1, "Nachname ist erforderlich").max(50, "Maximale Länge beträgt 50 Charaktere"),
     mail: z.email("Ungültige E-Mail-Adresse"),
     oldPassword: z.string().optional(),
     newPassword: z.string().optional(),
@@ -61,8 +62,10 @@ type PasswordFormData = z.infer<typeof passwordFormSchema>;
 
 
 export default function Page() {
-    const {user} = useUser();
-
+    const {user, logout} = useUser();
+    const [loading, setLoading] = useState(true);
+    const [isSavingAccount, setIsSavingAccount] = useState(false);
+    const [isSavingPassword, setIsSavingPassword] = useState(false);
 
     const form = useForm<ProfileSettingsFormData>({
         resolver: zodResolver(profileSettingsSchema),
@@ -81,7 +84,6 @@ export default function Page() {
         if (!user?.id) return;
         const client = getClient();
 
-
         try {
             const data = await client.request<UserSettingsQuery>(UserSettingsDocument, {id: user.id});
             const userData = data?.users?.[0];
@@ -98,6 +100,7 @@ export default function Page() {
                 newPassword: "",
                 confirmPassword: "",
             });
+            setLoading(false);
         } catch (error) {
             toast.error("Fehler beim Laden der User Daten");
             console.error(error);
@@ -114,12 +117,12 @@ export default function Page() {
                 setHasTriedToSubmit(false);
             }
         });
-
         return () => subscription.unsubscribe();
     }, [form, hasTriedToSubmit]);
 
 
     async function onValidSubmit(userData: ProfileSettingsFormData) {
+        setIsSavingAccount(true);
         const client = getClient();
 
         if (!user?.id) {
@@ -143,6 +146,8 @@ export default function Page() {
                 toast.error("Fehler beim Überprüfen der E-Mail-Adresse.");
                 console.error(error);
                 return;
+            } finally {
+                setIsSavingAccount(false)
             }
         }
 
@@ -157,10 +162,21 @@ export default function Page() {
 
         try {
             await client.request<UpdateUserSettingsMutation>(UpdateUserSettingsDocument, updateData);
-            toast.success("Dein Account wurde erfolgreich aktualisiert");
+            form.reset({
+                firstname: userData.firstname,
+                lastname: userData.lastname,
+                mail: userData.mail,
+            });
+            toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt.");
+            if (userData.mail !== user.mail) {
+                await logout();
+                return;
+            }
         } catch (error) {
             toast.error("Ein Fehler ist aufgetreten");
             console.error(error);
+        } finally {
+            setIsSavingAccount(false);
         }
     }
 
@@ -178,6 +194,8 @@ export default function Page() {
     const [hasTriedPasswordSubmit, setHasTriedPasswordSubmit] = useState(false);
 
     async function onPasswordSubmit(data: PasswordFormData) {
+        console.log("[DEBUG] onPasswordSubmit called with:", data);
+        setIsSavingPassword(true);
         if (!user) {
             toast.error("Fehler beim Laden des Benutzers.");
             return;
@@ -191,55 +209,50 @@ export default function Page() {
                 mail: user.mail,
                 password: data.oldPassword,
             });
-        } catch {
-            toast.error("Fehler beim Überprüfen des Passworts.");
-            return;
-        }
+            if (!loginResponse.login) {
+                passwordForm.reset({
+                    oldPassword: "",
+                    newPassword: "",
+                    confirmPassword: "",
+                });
+                passwordForm.setError("oldPassword", {
+                    message: "Falsches aktuelles Passwort.",
+                });
+                toast.error("Falsches aktuelles Passwort.");
+                return;
+            }
 
-        if (!loginResponse.login) {
-            passwordForm.reset({
-                oldPassword: "",
-                newPassword: "",
-                confirmPassword: "",
-            });
-            passwordForm.setError("oldPassword", {
-                message: "Falsches aktuelles Passwort.",
-            });
-            toast.error("Falsches aktuelles Passwort.");
-            return;
-        }
-
-        try {
             await client.request(UpdateUserDocument, {
                 id: user.id,
                 user: {
-                    mail: user.mail,
-                    firstname: user.firstname,
-                    lastname: user.lastname,
                     password: data.newPassword,
                 },
             });
-            toast.success("Passwort aktualisiert.");
-            console.log("before reset:", passwordForm.getValues());
+            toast.success("Passwort aktualisiert. Du wirst jetzt ausgeloggt.");
             passwordForm.reset();
-            console.log("after reset:", passwordForm.getValues());
-
-            passwordForm.clearErrors();
             setHasTriedPasswordSubmit(false);
-        } catch {
+            await logout();
+
+        } catch (err) {
+            console.error(err);
             toast.error("Fehler beim Speichern.");
+            return;
+        } finally {
+            setIsSavingPassword(false);
         }
     }
 
     useEffect(() => {
-        const subscription = passwordForm.watch((_, { type }) => {
+        const subscription = passwordForm.watch((_, {type}) => {
             if (hasTriedPasswordSubmit && type === "change") {
                 setHasTriedPasswordSubmit(false);
+                passwordForm.clearErrors();
             }
         });
         return () => subscription.unsubscribe();
     }, [passwordForm, hasTriedPasswordSubmit]);
 
+    if (loading) return <PageLoader message="Benutzerdaten werden geladen..."/>;
 
     return (
         <div className="space-y-6 grow">
@@ -253,6 +266,8 @@ export default function Page() {
                 <form onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
                       className="space-y-6">
                     <SettingsBlock icon={<User/>} title="Account" hasTriedToSubmit={hasTriedToSubmit}
+                                   isDirty={form.formState.isDirty}
+                                   isSaving={isSavingAccount}
                                    dataCy="input-profile-save">
                         <FormField
                             control={form.control}
@@ -307,6 +322,8 @@ export default function Page() {
                     )}
                 >
                     <SettingsBlock icon={<LockKeyhole/>} title="Passwort" hasTriedToSubmit={hasTriedPasswordSubmit}
+                                   isDirty={passwordForm.formState.isDirty}
+                                   isSaving={isSavingPassword}
                                    dataCy="input-settings-save">
                         <FormField
                             control={passwordForm.control}

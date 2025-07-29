@@ -84,6 +84,7 @@ export function UserSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+                data-cy={'sidebar-settings'}
               onClick={() => router.push("/account")}
               className={'flex items-center'}
             >
@@ -92,6 +93,7 @@ export function UserSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+                data-cy={'sidebar-logout'}
               onClick={() => logout()}
               className={'flex items-center text-destructive'}
             >

@@ -1,17 +1,29 @@
 import React, {cloneElement, isValidElement} from "react";
 import {Card, CardContent, CardFooter, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
+import {PageLoader} from "@/components/page-loader";
 
 type SettingsBlockProps = {
     icon: React.ReactNode,
     title: string,
     children: React.ReactNode,
     hasTriedToSubmit?: boolean;
+    isSaving?: boolean;
     isValid?: boolean;
+    isDirty?: boolean;
     dataCy?: string;
 }
 
-export function SettingsBlock({icon, title, children, hasTriedToSubmit, isValid, dataCy}: SettingsBlockProps) {
+export function SettingsBlock({
+                                  icon,
+                                  title,
+                                  children,
+                                  hasTriedToSubmit,
+                                  isSaving,
+                                  isValid,
+                                  isDirty,
+                                  dataCy
+                              }: SettingsBlockProps) {
     const sizedIcon =
         icon && isValidElement(icon)
             ? cloneElement(icon as React.ReactElement<{ className?: string }>, {
@@ -27,10 +39,17 @@ export function SettingsBlock({icon, title, children, hasTriedToSubmit, isValid,
                 <h2 className="text-lg font-semibold">{title}</h2>
             </CardTitle>
             <CardContent>
-                {children}
+                {isSaving ? (
+                    <div className="py-8 flex justify-center">
+                        <PageLoader compact={true} message="Speichern..." />
+                    </div>
+                ) : (
+                    children
+                )}
             </CardContent>
             <CardFooter className="justify-end px-6">
-                <Button type={"submit"} disabled={!isValid && hasTriedToSubmit} data-cy={dataCy}>Speichern</Button>
+                <Button type={"submit"} disabled={!isDirty || !isValid && hasTriedToSubmit}
+                        data-cy={dataCy}>Speichern</Button>
             </CardFooter>
 
         </Card>

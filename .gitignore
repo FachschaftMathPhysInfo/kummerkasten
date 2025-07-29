@@ -38,3 +38,6 @@
 server/graph/generated.go
 server/graph/model/models_gen.go
 frontend/lib/graph/generated
+
+# cypress screenshots
+frontend/cypress/screenshots
