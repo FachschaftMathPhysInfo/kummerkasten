@@ -194,7 +194,6 @@ export default function Page() {
     const [hasTriedPasswordSubmit, setHasTriedPasswordSubmit] = useState(false);
 
     async function onPasswordSubmit(data: PasswordFormData) {
-        console.log("[DEBUG] onPasswordSubmit called with:", data);
         setIsSavingPassword(true);
         if (!user) {
             toast.error("Fehler beim Laden des Benutzers.");

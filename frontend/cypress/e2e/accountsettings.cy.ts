@@ -80,6 +80,16 @@ describe('Profile Settings Page', () => {
             accountPage.getProfileSaveButton().click();
             accountPage.getMailMessage().should('contain', 'Ungültige E-Mail-Adresse');
         });
+        it('shows error for too long firstname', () => {
+            accountPage.getFirstnameInput().clear().type('This is more than 50 Characters, because we need to test this out.');
+            accountPage.getProfileSaveButton().click();
+            accountPage.getFirstnameMessage().should('contain', 'Maximale Länge beträgt 50 Charaktere');
+        });
+        it('shows error for too long lastname', () => {
+            accountPage.getLastnameInput().clear().type('This is more than 50 Characters, because we need to test this out.');
+            accountPage.getProfileSaveButton().click();
+            accountPage.getLastnameMessage().should('contain', 'Maximale Länge beträgt 50 Charaktere');
+        });
     })
 
     describe('Account Data - Leading Whitespaces', () => {
@@ -265,7 +275,6 @@ describe('Profile Settings Page', () => {
     })
 
 
-
     describe('Password visibility toggle', () => {
 
         it('toggle current password', () => {
@@ -340,7 +349,7 @@ describe('Profile Settings Page', () => {
         accountPage.getRepeatedPasswordInput().type(users.cypress.password);
         accountPage.getPasswordSaveButton().click();
         cy.contains("Passwort aktualisiert", {timeout: 10000}).should('exist');
-        currentCorrectPassword=users.cypress.password;
+        currentCorrectPassword = users.cypress.password;
         loginPage.login(users.cypress.mail, users.cypress.password)
         sidebar.getSettingsButton().click();
         accountPage.getFirstnameInput().should('have.value', users.cypress.firstname);
