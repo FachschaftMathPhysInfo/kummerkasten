@@ -13,21 +13,21 @@ describe('Profile Settings Page', () => {
         cy.visit("/account")
     })
 
-    describe('User Data and Form Format', () => {
+    context('User Data and Form Format', () => {
         it('should load existing user data into the form fields', () => {
-            cy.get('[data-cy="account-firstname-input"]').should('have.value', users.cypress.firstname);
-            cy.get('[data-cy="account-lastname-input"]').should('have.value', users.cypress.lastname);
-            cy.get('[data-cy="account-mail-input"]').should('have.value', users.cypress.mail);
+            accountPage.getFirstnameInput().should('have.value', users.cypress.firstname);
+            accountPage.getLastnameInput().should('have.value', users.cypress.lastname);
+            accountPage.getMailInput().should('have.value', users.cypress.mail);
         });
         it('should load settings page with all fields', () => {
             accountPage.getFirstnameInput().should('exist');
             accountPage.getLastnameInput().should('exist')
             accountPage.getMailInput().should('exist')
-            cy.get('[data-cy="input-profile-save"]').should('be.visible');
+            accountPage.getProfileSaveButton().should('be.visible');
             accountPage.getCurrentPasswordInput().should('exist')
             accountPage.getNewPasswordInput().should('exist')
             accountPage.getRepeatedPasswordInput().should('exist')
-            accountPage.getProfileSaveButton().should('be.visible');
+            accountPage.getPasswordSaveButton().should('be.visible');
         });
         it('profile form - disables save button when form is untouched', () => {
             accountPage.getProfileSaveButton().should('be.disabled');
@@ -38,39 +38,39 @@ describe('Profile Settings Page', () => {
 
     });
 
-    describe('Validation Errors - Empty Fields', () => {
+    context('Validation Errors - Empty Fields', () => {
         it('shows validation errors for empty field firstname', () => {
-            cy.get('[data-cy="account-firstname-input"]').should('have.value', users.cypress.firstname);
+            accountPage.getFirstnameInput().should('have.value', users.cypress.firstname);
             accountPage.getFirstnameInput().clear()
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             accountPage.getFirstnameMessage()
                 .scrollIntoView()
                 .should('contain', 'Vorname ist erforderlich');
         });
         it('shows validation errors for empty field lastname', () => {
-            cy.get('[data-cy="account-lastname-input"]').should('have.value', users.cypress.lastname);
+            accountPage.getLastnameInput().should('have.value', users.cypress.lastname);
             accountPage.getLastnameInput().clear()
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             accountPage.getLastnameMessage()
                 .scrollIntoView()
                 .should('contain', 'Nachname ist erforderlich');
         });
         it('shows validation errors for empty field email', () => {
-            cy.get('[data-cy="account-mail-input"]').should('have.value', users.cypress.mail);
+            accountPage.getMailInput().should('have.value', users.cypress.mail);
             accountPage.getMailInput().clear()
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             accountPage.getMailMessage()
                 .scrollIntoView()
                 .should('contain', 'Ungültige E-Mail-Adresse');
         });
     })
 
-    describe('Validation Errors - Wrong Inputs', () => {
+    context('Validation Errors - Wrong Inputs', () => {
         it('shows validation errors for field email upon non-unique mail', () => {
-            cy.get('[data-cy="account-mail-input"]').should('have.value', users.cypress.mail);
+            accountPage.getMailInput().should('have.value', users.cypress.mail);
             accountPage.getMailInput().clear()
             accountPage.getMailInput().type(users.fsles1.mail)
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             accountPage.getMailMessage()
                 .scrollIntoView()
                 .should('contain', 'Diese E-Mail-Adresse wird bereits verwendet');
@@ -92,12 +92,12 @@ describe('Profile Settings Page', () => {
         });
     })
 
-    describe('Account Data - Leading Whitespaces', () => {
+    context('Account Data - Leading Whitespaces', () => {
         it('removes leading whitespaces - firstname', () => {
             accountPage.getFirstnameInput().should('have.value', users.cypress.firstname);
             accountPage.getFirstnameInput().clear()
             accountPage.getFirstnameInput().type(' ' + users.cypress.firstname)
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             cy.reload();
             accountPage.getFirstnameInput().should('have.value', "Admin");
         });
@@ -106,7 +106,7 @@ describe('Profile Settings Page', () => {
             accountPage.getLastnameInput().should('have.value', users.cypress.lastname);
             accountPage.getLastnameInput().clear()
             accountPage.getLastnameInput().type(' ' + users.cypress.lastname)
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             cy.reload();
             accountPage.getLastnameInput().should('have.value', "Cypress");
         });
@@ -114,12 +114,12 @@ describe('Profile Settings Page', () => {
         //leading whitespaces on mail do not need to be tested because it counts as invalid mail format
     })
 
-    describe('Account Data - Trailing Whitespaces', () => {
+    context('Account Data - Trailing Whitespaces', () => {
         it('removes trailing whitespaces - firstname', () => {
             accountPage.getFirstnameInput().should('have.value', users.cypress.firstname);
             accountPage.getFirstnameInput().clear()
             accountPage.getFirstnameInput().type(users.cypress.firstname + ' ')
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             cy.reload();
             accountPage.getFirstnameInput().should('have.value', "Admin");
         });
@@ -128,14 +128,14 @@ describe('Profile Settings Page', () => {
             accountPage.getLastnameInput().should('have.value', users.cypress.lastname);
             accountPage.getLastnameInput().clear()
             accountPage.getLastnameInput().type(users.cypress.lastname + ' ')
-            cy.get('[data-cy="input-profile-save"]').click();
+            accountPage.getProfileSaveButton().click();
             cy.reload();
             accountPage.getLastnameInput().should('have.value', "Cypress");
         });
         //trailing whitespaces on mail do not need to be tested because it counts as invalid mail format
     })
 
-    describe('Breaking Things - Account Data', () => {
+    context('Breaking Things - Account Data', () => {
         it('disables save button during form submission', () => {
             accountPage.getFirstnameInput().clear().type('Test');
             accountPage.getProfileSaveButton().click();
@@ -143,7 +143,7 @@ describe('Profile Settings Page', () => {
         });
     })
 
-    describe('Password Form - Input Errors', () => {
+    context('Password Form - Input Errors', () => {
         it('shows error if old password is empty', () => {
             accountPage.getNewPasswordInput().type('StrongPass1!');
             accountPage.getRepeatedPasswordInput().type('StrongPass1!');
@@ -216,7 +216,7 @@ describe('Profile Settings Page', () => {
     });
 
 
-    describe('Password Form - Wrong Passwords', () => {
+    context('Password Form - Wrong Passwords', () => {
         it('shows an error when the current password is incorrect', () => {
             const invalidPassword = 'WrongPassword123!';
             accountPage.getCurrentPasswordInput().type(invalidPassword);
@@ -235,7 +235,7 @@ describe('Profile Settings Page', () => {
         });
     })
 
-    describe('Password Form - Correct Input', () => {
+    context('Password Form - Correct Input', () => {
         it('accepts valid password and enables save button', () => {
             accountPage.getCurrentPasswordInput().type('StrongPass1!');
             accountPage.getNewPasswordInput().type('StrongPass123!');
@@ -244,7 +244,7 @@ describe('Profile Settings Page', () => {
         });
     })
 
-    describe('Account Data Form - Correct Input', () => {
+    context('Account Data Form - Correct Input', () => {
         it('accepts new firstname and enables save button', () => {
             accountPage.getFirstnameInput().clear();
             accountPage.getFirstnameInput().type('Alfred');
@@ -275,7 +275,7 @@ describe('Profile Settings Page', () => {
     })
 
 
-    describe('Password visibility toggle', () => {
+    context('Password visibility toggle', () => {
 
         it('toggle current password', () => {
             accountPage.getCurrentPasswordInput().type("Something")
@@ -328,6 +328,17 @@ describe('Profile Settings Page', () => {
             accountPage.getRepeatedPasswordInput()
                 .should('have.attr', 'type', 'password');
         });
+        it('change email without logging out', () => {
+            accountPage.getMailInput().clear();
+            accountPage.getMailInput().type("test@test.de");
+            accountPage.getProfileSaveButton().click();
+            cy.reload();
+            accountPage.getMailInput().clear();
+            accountPage.getMailInput().type("real@test.de");
+            accountPage.getProfileSaveButton().click();
+            cy.reload();
+            currentCorrectMail = "real@test.de";
+        })
     });
 
 

@@ -105,14 +105,14 @@ export default function Page() {
             toast.error("Fehler beim Laden der User Daten");
             console.error(error);
         }
-    }, [user, form]);
+    }, [user?.id, form]);
 
     useEffect(() => {
-        fetchProfileData();
+        void fetchProfileData();
     }, [fetchProfileData]);
 
     useEffect(() => {
-        const subscription = form.watch((value, {type}) => {
+        const subscription = form.watch((_value, {type}) => {
             if (hasTriedToSubmit && type === "change") {
                 setHasTriedToSubmit(false);
             }
