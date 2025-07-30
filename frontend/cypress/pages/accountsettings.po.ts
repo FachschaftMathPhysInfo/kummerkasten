@@ -3,7 +3,7 @@ export function getFirstnameInput() {
 }
 
 export function getFirstnameMessage() {
-    return cy.get('[data-cy="account-firstname-message"]')
+    return cy.get('[data-cy="account-firstname-input-message"]')
 }
 
 export function getLastnameInput() {
@@ -11,7 +11,7 @@ export function getLastnameInput() {
 }
 
 export function getLastnameMessage() {
-    return cy.get('[data-cy="account-lastname-message"]')
+    return cy.get('[data-cy="account-lastname-input-message"]')
 }
 
 export function getMailInput() {
@@ -19,7 +19,7 @@ export function getMailInput() {
 }
 
 export function getMailMessage() {
-    return cy.get('[data-cy="account-mail-message"]')
+    return cy.get('[data-cy="account-mail-input-message"]')
 }
 
 export function getCurrentPasswordInput() {
@@ -27,7 +27,7 @@ export function getCurrentPasswordInput() {
 }
 
 export function getCurrentPasswordMessage() {
-    return cy.get('[data-cy="account-current-password-message"]')
+    return cy.get('[data-cy="account-current-password-input-message"]')
 }
 
 export function getNewPasswordInput() {
@@ -35,7 +35,7 @@ export function getNewPasswordInput() {
 }
 
 export function getNewPasswordMessage() {
-    return cy.get('[data-cy="account-new-password-message"]')
+    return cy.get('[data-cy="account-new-password-input-message"]')
 }
 
 export function getRepeatedPasswordInput() {
@@ -43,7 +43,7 @@ export function getRepeatedPasswordInput() {
 }
 
 export function getRepeatedPasswordMessage() {
-    return cy.get('[data-cy="account-repeated-password-message"]')
+    return cy.get('[data-cy="account-repeated-password-input-message"]')
 }
 
 export function getProfileSaveButton() {

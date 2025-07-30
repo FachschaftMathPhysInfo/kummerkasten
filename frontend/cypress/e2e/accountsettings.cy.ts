@@ -4,10 +4,8 @@ import * as loginPage from "../pages/login.po"
 import * as sidebar from "../pages/sidebar.po"
 
 describe('Profile Settings Page', () => {
-    let currentCorrectPassword: string;
-    currentCorrectPassword = users.cypress.password;
-    let currentCorrectMail: string;
-    currentCorrectMail = users.cypress.mail;
+    let currentCorrectPassword = users.cypress.password;
+    let currentCorrectMail = users.cypress.mail;
     beforeEach(() => {
         cy.login(currentCorrectMail, currentCorrectPassword)
         cy.visit("/account")

@@ -10,7 +10,7 @@ type SettingsFieldProps = {
         value: string;
         onChange: React.ChangeEventHandler<HTMLInputElement>;
         onBlur: React.FocusEventHandler<HTMLInputElement>;
-        ref: React.LegacyRef<HTMLInputElement>;
+        ref: React.Ref<HTMLInputElement>;
     };
     placeholder?: string;
     title?: string;
@@ -47,7 +47,7 @@ export function SettingsField({title, visibilityToggle, placeholder, field, erro
                     </button>
                 )}
                 {error && (
-                    <div className="text-sm text-red-500 mt-1 ml-1" data-cy={dataCy?.replace("-input", "-message")}>
+                    <div className="text-sm text-destructive mt-1 ml-1" data-cy={dataCy?.concat("-message")}>
                         {error}
                     </div>
                 )}

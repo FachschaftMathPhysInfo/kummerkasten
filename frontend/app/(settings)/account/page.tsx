@@ -332,6 +332,7 @@ export default function Page() {
                                     title="Aktuelles Passwort"
                                     placeholder="Aktuelles Passwort"
                                     visibilityToggle
+                                    type = "password"
                                     field={field}
                                     error={fieldState.error?.message}
                                     dataCy="account-current-password-input"
