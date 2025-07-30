@@ -24,13 +24,13 @@ import (
 
 // CreateTicket is the resolver for the createTicket field.
 func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTicket) (*model.Ticket, error) {
-	var labels []*model.Label
+	var labels []*models.Label
 
 	for _, formLabel := range ticket.Labels {
-		label := &model.Label{}
+		label := &models.Label{}
 		err := r.DB.NewSelect().
 			Model(label).
-			Where("name = ?", formLabel.String()).
+			Where("LOWER(name) = ?", strings.ToLower(formLabel.String())).
 			Limit(1).
 			Scan(ctx)
 		if err != nil {
@@ -40,7 +40,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		labels = append(labels, label)
 	}
 
-	insertedTicket := &model.Ticket{
+	dbTicket := &models.Ticket{
 		ID:           uuid.New().String(),
 		Text:         ticket.Text,
 		Title:        ticket.Title,
@@ -50,12 +50,31 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		LastModified: time.Now(),
 	}
 
-	if _, err := r.DB.NewInsert().Model(insertedTicket).Exec(ctx); err != nil {
+	if _, err := r.DB.NewInsert().Model(dbTicket).Exec(ctx); err != nil {
 		log.Printf("Failed to create Ticket: %v", err)
 		return nil, err
 	}
 
-	return insertedTicket, nil
+	var gqlLabels []*model.Label
+	for _, l := range dbTicket.Labels {
+		gqlLabels = append(gqlLabels, &model.Label{
+			ID:    l.ID,
+			Name:  l.Name,
+			Color: l.Color,
+		})
+	}
+
+	gqlTicket := &model.Ticket{
+		ID:           dbTicket.ID,
+		Title:        dbTicket.Title,
+		Text:         dbTicket.Text,
+		State:        dbTicket.State,
+		CreatedAt:    dbTicket.CreatedAt,
+		LastModified: dbTicket.LastModified,
+		Labels:       gqlLabels,
+	}
+
+	return gqlTicket, nil
 }
 
 // DeleteTicket is the resolver for the deleteTicket field.
@@ -77,41 +96,47 @@ func (r *mutationResolver) DeleteTicket(ctx context.Context, ids []string) (int3
 
 // UpdateTicket is the resolver for the updateTicket field.
 func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket model.UpdateTicket) (string, error) {
-	tickets, err := r.Query().Tickets(ctx, []string{id}, nil)
+	dbTicket := &models.Ticket{}
+	err := r.DB.NewSelect().
+		Model(dbTicket).
+		Where("id = ?", id).
+		Limit(1).
+		Scan(ctx)
 
-	if err != nil || len(tickets) == 0 {
+	if err != nil {
 		return "", fmt.Errorf("ticket with id %v not found", id)
 	}
 
-	updatedTicket := tickets[0]
-
 	if ticket.Title != nil {
-		updatedTicket.Title = *ticket.Title
+		dbTicket.Title = *ticket.Title
 	}
 	if ticket.Text != nil {
-		updatedTicket.Text = *ticket.Text
+		dbTicket.Text = *ticket.Text
 	}
 	if ticket.Note != nil {
-		updatedTicket.Note = ticket.Note
+		dbTicket.Note = *ticket.Note
 	}
 	if ticket.State != nil {
-		updatedTicket.State = *ticket.State
+		dbTicket.State = *ticket.State
 	}
 
-	updatedTicket.LastModified = time.Now()
+	dbTicket.LastModified = time.Now()
 
-	if _, err := r.DB.NewUpdate().Model(updatedTicket).Where("id = ?", id).Exec(ctx); err != nil {
+	if _, err := r.DB.NewUpdate().
+		Model(dbTicket).
+		WherePK().
+		Exec(ctx); err != nil {
 		log.Printf("Failed to update ticket %s: %v", id, err)
 		return "", err
 	}
 
-	return updatedTicket.ID, nil
+	return dbTicket.ID, nil
 }
 
 // UpdateTicketState is the resolver for the updateTicketState field.
 func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, state model.TicketState) (int32, error) {
 	result, err := r.DB.NewUpdate().
-		Model((*model.Ticket)(nil)).
+		Model((*models.Ticket)(nil)).
 		Where("id IN (?)", bun.In(ids)).
 		Set("state = ?", state).
 		Set("last_modified = ?", time.Now()).
