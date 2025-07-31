@@ -135,7 +135,9 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 
 // UpdateTicketState is the resolver for the updateTicketState field.
 func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, state model.TicketState) (int32, error) {
-	result, err := r.DB.NewUpdate().Model((*models.Ticket)(nil)).Where("id IN (?)", bun.In(ids)).Set("state = ?", state).Set("last_modified = ?", time.Now()).Exec(ctx)
+	result, err := r.DB.NewUpdate().Model((*models.Ticket)(nil)).
+		Where("id IN (?)", bun.In(ids)).Set("state = ?", state).
+		Set("last_modified = ?", time.Now()).Exec(ctx)
 
 	if err != nil {
 		log.Printf("Failed to update setting state: %v", err)
