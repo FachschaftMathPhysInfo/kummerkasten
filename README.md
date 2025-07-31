@@ -20,7 +20,7 @@ and fill out the configurations as desired. Afterwards run
 cd server
 export $(cat ../.env.local)
 docker compose up -d
-go run generate ./...
+go generate ./...
 go run server.go
 ```
 now the frontend and api are available at port `8080`
