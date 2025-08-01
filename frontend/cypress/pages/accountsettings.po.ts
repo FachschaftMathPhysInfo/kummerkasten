@@ -38,12 +38,12 @@ export function getNewPasswordMessage() {
     return cy.get('[data-cy="account-new-password-input-message"]')
 }
 
-export function getRepeatedPasswordInput() {
-    return cy.get('[data-cy="account-repeated-password-input"]')
+export function getConfirmPasswordInput() {
+    return cy.get('[data-cy="account-confirm-password-input"]')
 }
 
-export function getRepeatedPasswordMessage() {
-    return cy.get('[data-cy="account-repeated-password-input-message"]')
+export function getConfirmPasswordMessage() {
+    return cy.get('[data-cy="account-confirm-password-input-message"]')
 }
 
 export function getProfileSaveButton() {

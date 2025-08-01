@@ -41,10 +41,12 @@ export function SettingsBlock({
             <CardContent>
                 {isSaving ? (
                     <div className="py-8 flex justify-center">
-                        <PageLoader compact={true} message="Speichern..." />
+                        <PageLoader compact={true} message="Speichern..."/>
                     </div>
                 ) : (
-                    children
+                    <div className="space-y-6">
+                        {children}
+                    </div>
                 )}
             </CardContent>
             <CardFooter className="justify-end px-6">

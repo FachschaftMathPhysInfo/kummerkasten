@@ -24,7 +24,7 @@ describe('Profile Settings Page', () => {
             accountPage.getProfileSaveButton().should('be.visible');
             accountPage.getCurrentPasswordInput().should('exist')
             accountPage.getNewPasswordInput().should('exist')
-            accountPage.getRepeatedPasswordInput().should('exist')
+            accountPage.getConfirmPasswordInput().should('exist')
             accountPage.getPasswordSaveButton().should('be.visible');
         });
         it('profile form - disables save button when form is untouched', () => {
@@ -144,7 +144,7 @@ describe('Profile Settings Page', () => {
     context('Password Form - Input Errors', () => {
         it('shows error if old password is empty', () => {
             accountPage.getNewPasswordInput().type('StrongPass1!');
-            accountPage.getRepeatedPasswordInput().type('StrongPass1!');
+            accountPage.getConfirmPasswordInput().type('StrongPass1!');
             accountPage.getPasswordSaveButton().click();
 
             accountPage.getCurrentPasswordMessage().should('contain', 'Bitte gib dein aktuelles Passwort ein.');
@@ -153,7 +153,7 @@ describe('Profile Settings Page', () => {
         it('shows error if new password is less than 8 characters', () => {
             accountPage.getCurrentPasswordInput().type(users.cypress.password);
             accountPage.getNewPasswordInput().type('Ab1!');
-            accountPage.getRepeatedPasswordInput().type('Ab1!');
+            accountPage.getConfirmPasswordInput().type('Ab1!');
             accountPage.getPasswordSaveButton().click();
 
             accountPage.getNewPasswordMessage().should('contain', 'Mindestens 8 Zeichen.');
@@ -162,7 +162,7 @@ describe('Profile Settings Page', () => {
         it('shows error if new password has no uppercase letter', () => {
             accountPage.getCurrentPasswordInput().type(users.cypress.password);
             accountPage.getNewPasswordInput().type('strongpass1!');
-            accountPage.getRepeatedPasswordInput().type('strongpass1!');
+            accountPage.getConfirmPasswordInput().type('strongpass1!');
             accountPage.getPasswordSaveButton().click();
 
             accountPage.getNewPasswordMessage().should('contain', 'Mindestens ein Großbuchstabe.');
@@ -171,7 +171,7 @@ describe('Profile Settings Page', () => {
         it('shows error if new password has no number', () => {
             accountPage.getCurrentPasswordInput().type(users.cypress.password);
             accountPage.getNewPasswordInput().type('StrongPass!');
-            accountPage.getRepeatedPasswordInput().type('StrongPass!');
+            accountPage.getConfirmPasswordInput().type('StrongPass!');
             accountPage.getPasswordSaveButton().click();
 
             accountPage.getNewPasswordMessage().should('contain', 'Mindestens eine Zahl.');
@@ -180,7 +180,7 @@ describe('Profile Settings Page', () => {
         it('shows error if new password has no special character', () => {
             accountPage.getCurrentPasswordInput().type(users.cypress.password);
             accountPage.getNewPasswordInput().type('StrongPass1');
-            accountPage.getRepeatedPasswordInput().type('StrongPass1');
+            accountPage.getConfirmPasswordInput().type('StrongPass1');
             accountPage.getPasswordSaveButton().click();
 
             accountPage.getNewPasswordMessage().should('contain', 'Mindestens ein Sonderzeichen.');
@@ -189,9 +189,9 @@ describe('Profile Settings Page', () => {
         it('shows error if confirm password does not match', () => {
             accountPage.getCurrentPasswordInput().type(users.cypress.password);
             accountPage.getNewPasswordInput().type('StrongPass1!');
-            accountPage.getRepeatedPasswordInput().type('WrongPass1!');
+            accountPage.getConfirmPasswordInput().type('WrongPass1!');
             accountPage.getPasswordSaveButton().click();
-            accountPage.getRepeatedPasswordMessage().should('contain', 'Passwörter stimmen nicht überein.');
+            accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein.');
         });
 
         it('shows error when new password is same as old password', () => {
@@ -199,14 +199,14 @@ describe('Profile Settings Page', () => {
             const newPassword = 'StrongPass1!';
             accountPage.getCurrentPasswordInput().type(originalPassword);
             accountPage.getNewPasswordInput().type(newPassword);
-            accountPage.getRepeatedPasswordInput().type(newPassword);
+            accountPage.getConfirmPasswordInput().type(newPassword);
             accountPage.getPasswordSaveButton().click();
             cy.contains("Passwort aktualisiert", {timeout: 10000}).should('exist');
             loginPage.login(users.cypress.mail, newPassword);
             sidebar.getSettingsButton().click();
             accountPage.getCurrentPasswordInput().type(newPassword);
             accountPage.getNewPasswordInput().type(newPassword);
-            accountPage.getRepeatedPasswordInput().type(newPassword);
+            accountPage.getConfirmPasswordInput().type(newPassword);
             accountPage.getPasswordSaveButton().click();
             accountPage.getNewPasswordMessage().should('contain', 'Neues Passwort darf nicht dem alten entsprechen.');
             currentCorrectPassword = newPassword;
@@ -219,7 +219,7 @@ describe('Profile Settings Page', () => {
             const invalidPassword = 'WrongPassword123!';
             accountPage.getCurrentPasswordInput().type(invalidPassword);
             accountPage.getNewPasswordInput().type('ValidNewPass1!');
-            accountPage.getRepeatedPasswordInput().type('ValidNewPass1!');
+            accountPage.getConfirmPasswordInput().type('ValidNewPass1!');
             accountPage.getPasswordSaveButton().click();
             accountPage.getCurrentPasswordMessage().should('contain', 'Falsches aktuelles Passwort.')
         });
@@ -227,9 +227,9 @@ describe('Profile Settings Page', () => {
         it('shows an error when the new and repeated passwords do not match', () => {
             accountPage.getCurrentPasswordInput().type(users.admin.password);
             accountPage.getNewPasswordInput().type('ValidNewPass1!');
-            accountPage.getRepeatedPasswordInput().type('DifferentPass1!');
+            accountPage.getConfirmPasswordInput().type('DifferentPass1!');
             accountPage.getPasswordSaveButton().click();
-            accountPage.getRepeatedPasswordMessage().should('contain', 'Passwörter stimmen nicht überein.');
+            accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein.');
         });
     })
 
@@ -237,7 +237,7 @@ describe('Profile Settings Page', () => {
         it('accepts valid password and enables save button', () => {
             accountPage.getCurrentPasswordInput().type('StrongPass1!');
             accountPage.getNewPasswordInput().type('StrongPass123!');
-            accountPage.getRepeatedPasswordInput().type('StrongPass123!');
+            accountPage.getConfirmPasswordInput().type('StrongPass123!');
             accountPage.getPasswordSaveButton().should('not.be.disabled');
         });
     })
@@ -310,20 +310,20 @@ describe('Profile Settings Page', () => {
                 .should('have.attr', 'type', 'password');
         });
         it('toggle repeated password', () => {
-            accountPage.getRepeatedPasswordInput().type("Something")
-            accountPage.getRepeatedPasswordInput()
+            accountPage.getConfirmPasswordInput().type("Something")
+            accountPage.getConfirmPasswordInput()
                 .should('have.attr', 'type', 'password');
-            accountPage.getRepeatedPasswordInput()
+            accountPage.getConfirmPasswordInput()
                 .parent()
                 .find('button')
                 .click();
-            accountPage.getRepeatedPasswordInput()
+            accountPage.getConfirmPasswordInput()
                 .should('have.attr', 'type', 'text');
-            accountPage.getRepeatedPasswordInput()
+            accountPage.getConfirmPasswordInput()
                 .parent()
                 .find('button')
                 .click();
-            accountPage.getRepeatedPasswordInput()
+            accountPage.getConfirmPasswordInput()
                 .should('have.attr', 'type', 'password');
         });
         it('change email without logging out', () => {
@@ -355,7 +355,7 @@ describe('Profile Settings Page', () => {
         sidebar.getSettingsButton().click();
         accountPage.getCurrentPasswordInput().type(currentCorrectPassword);
         accountPage.getNewPasswordInput().type(users.cypress.password);
-        accountPage.getRepeatedPasswordInput().type(users.cypress.password);
+        accountPage.getConfirmPasswordInput().type(users.cypress.password);
         accountPage.getPasswordSaveButton().click();
         cy.contains("Passwort aktualisiert", {timeout: 10000}).should('exist');
         currentCorrectPassword = users.cypress.password;
