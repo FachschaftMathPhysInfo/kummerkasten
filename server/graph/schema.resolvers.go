@@ -180,7 +180,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 }
 
 // DeleteLabel is the resolver for the deleteLabel field.
-func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []int32) (int32, error) {
+func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []string) (int32, error) {
 	result, err := r.DB.NewDelete().Model((*model.Label)(nil)).Where("id IN (?)", bun.In(ids)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete label: %v", err)

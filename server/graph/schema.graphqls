@@ -142,7 +142,7 @@ type Mutation {
     updateTicketState(ids: [String!]!, state: TicketState!): Int! @hasRole(role: USER)
 
     createLabel(label: NewLabel!): Label! @hasRole(role: USER)
-    deleteLabel(ids: [Int!]!): Int! @hasRole(role: ADMIN)
+    deleteLabel(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
 
     createUser(user: NewUser!): User! @hasRole(role: ADMIN)
