@@ -200,11 +200,21 @@ func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []int32) (int32,
 // UpdateLabel is the resolver for the updateLabel field.
 func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label model.UpdateLabel) (string, error) {
 	dbLabel := &models.Label{}
-	err := r.DB.NewSelect().Model(dbLabel).Where("id = ?", id).Limit(1).Scan(ctx)
-
+	idcount, err := r.DB.NewSelect().Model(dbLabel).
+		Where("id = ?", id).Count(ctx)
 	if err != nil {
 		log.Printf("Failed to find label with id %v: %v", id, err)
 		return "", fmt.Errorf("label with id %v not found", id)
+	}
+	if idcount != 1 {
+		if idcount == 0 {
+			log.Printf("Label with id %v not found or does not exist", id)
+			return "", err
+		}
+		if idcount > 1 {
+			log.Printf("Duplicate key value violates unique constraint label_pkey ID")
+			return "", err
+		}
 	}
 
 	if label.Name != nil {
@@ -412,7 +422,7 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
-func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.NewLabelToTicketAssignment) (int32, error) {
+func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
 	var labelsToTicketsEntries []*models.LabelsToTickets
 	updatedTickets := make(map[string]struct{})
 
@@ -452,28 +462,38 @@ func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*
 }
 
 // RemoveLabelFromTicket is the resolver for the removeLabelFromTicket field.
-func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelID string, ticketID string) (int32, error) {
-	if ticketID == "" || labelID == "" {
-		return 0, fmt.Errorf("ticketID and labelID cannot be empty")
+func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
+	updatedTickets := make(map[string]struct{})
+	var rowsAffected int64
+
+	for _, assignment := range assignments {
+		if assignment.TicketID == "" || assignment.LabelID == "" {
+			return 0, fmt.Errorf("ticketId and labelId cannot be empty")
+		}
+
+		result, err := r.DB.NewDelete().Model(&models.LabelsToTickets{}).
+			Where("ticket_id = ?", assignment.TicketID).Where("label_id = ?", assignment.LabelID).Exec(ctx)
+
+		if err != nil {
+			log.Printf("Failed to remove label '%s' from ticket '%s': %v", assignment.LabelID, assignment.TicketID, err)
+			return int32(rowsAffected), err
+		}
+
+		removalRowsAffected, err := result.RowsAffected()
+		if err != nil {
+			log.Printf("Failed to read affected rows: %v", err)
+			return int32(rowsAffected), err
+		}
+
+		rowsAffected = removalRowsAffected + rowsAffected
+
+		updatedTickets[assignment.TicketID] = struct{}{}
 	}
 
-	result, err := r.DB.NewDelete().Model((*models.LabelsToTickets)(nil)).Where("ticket_id = ?", ticketID).Where("label_id = ?", labelID).Exec(ctx)
-
-	if err != nil {
-		log.Printf("Failed to remove label '%s' from ticket '%s': %v", labelID, ticketID, err)
-		return 0, err
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		log.Printf("Failed to read affected rows: %v", err)
-		return 0, err
-	}
-
-	if rowsAffected > 0 {
+	for ticketID := range updatedTickets {
 		_, err := r.UpdateTicket(ctx, ticketID, model.UpdateTicket{})
 		if err != nil {
-			log.Printf("Failed to update LastModified for ticket %s", err)
+			log.Printf("Failed to update LastModified: %v", err)
 		}
 	}
 
