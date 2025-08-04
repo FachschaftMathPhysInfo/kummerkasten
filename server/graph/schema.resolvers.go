@@ -200,21 +200,11 @@ func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []int32) (int32,
 // UpdateLabel is the resolver for the updateLabel field.
 func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label model.UpdateLabel) (string, error) {
 	dbLabel := &models.Label{}
-	idcount, err := r.DB.NewSelect().Model(dbLabel).
-		Where("id = ?", id).Count(ctx)
+	err := r.DB.NewSelect().Model(dbLabel).Where("id = ?", id).Scan(ctx)
+
 	if err != nil {
 		log.Printf("Failed to find label with id %v: %v", id, err)
 		return "", fmt.Errorf("label with id %v not found", id)
-	}
-	if idcount != 1 {
-		if idcount == 0 {
-			log.Printf("Label with id %v not found or does not exist", id)
-			return "", err
-		}
-		if idcount > 1 {
-			log.Printf("Duplicate key value violates unique constraint label_pkey ID")
-			return "", err
-		}
 	}
 
 	if label.Name != nil {
