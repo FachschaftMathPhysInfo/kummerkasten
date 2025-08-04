@@ -1,15 +1,14 @@
 "use client"
 
-import {UserTable} from "@/app/(settings)/users/user-table";
+import {TableUser, UserTable} from "@/app/(settings)/users/user-table";
 import {useCallback, useEffect, useState} from "react";
-import {AllUsersDocument, AllUsersQuery, User} from "@/lib/graph/generated/graphql"
+import {AllUsersDocument, AllUsersQuery} from "@/lib/graph/generated/graphql"
 import {getClient} from "@/lib/graph/client";
-import {defaultUser} from "@/lib/graph/defaultTypes";
 import {toast} from "sonner";
 import {Users} from "lucide-react";
 
 export default function UserManagementPage() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<TableUser[]>([])
 
   const fetchUsers = useCallback(async () => {
     const client = getClient();
@@ -22,11 +21,7 @@ export default function UserManagementPage() {
         return
       }
 
-      const users: User[] = data.users?.map(user => ({
-        ...defaultUser,
-        ...user
-      }))
-      setUsers(users);
+      setUsers(data.users.filter(user => !!user));
     } catch (error) {
       toast.error("Fehler beim Laden der User")
       console.error(error)
@@ -40,7 +35,7 @@ export default function UserManagementPage() {
       {/*TODO: replace this with component when available*/}
       <div className={'flex flex-col'}>
         <span className={'flex gap-2 items-center'}>
-          <Users />
+          <Users/>
           <h1 className={'text-2xl font-bold'}>User Verwaltung</h1>
         </span>
 

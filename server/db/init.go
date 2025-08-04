@@ -78,6 +78,5 @@ func createTables(ctx context.Context, tables []interface{}) error {
 			return err
 		}
 	}
-
 	return nil
 }

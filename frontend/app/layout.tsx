@@ -7,6 +7,7 @@ import {UserSidebar, UserSidebarTrigger} from "@/components/user-sidebar";
 import {Toaster} from "@/components/ui/sonner";
 import {UserProvider} from "@/components/providers/user-provider";
 import {Footer} from "@/components/footer";
+import {ThemeProvider} from "@/components/providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,21 +31,23 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de" suppressHydrationWarning>
     <body
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-    <UserProvider>
-      <SidebarProvider>
+    <ThemeProvider attribute={'class'} defaultTheme={"system"}>
+      <UserProvider>
+        <SidebarProvider>
           <UserSidebar/>
           <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
             <UserSidebarTrigger/>
             {children}
-            <Footer />
+            <Footer/>
           </main>
           <Toaster richColors/>
-      </SidebarProvider>
-    </UserProvider>
+        </SidebarProvider>
+      </UserProvider>
+    </ThemeProvider>
     </body>
     </html>
   );

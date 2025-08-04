@@ -142,6 +142,19 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 	if err := insertData(ctx, db, (*models.Setting)(nil), settings, "Settings"); err != nil {
 		return err
 	}
+
+	qAPs := []*models.QuestionAnswerPair{
+		{Question: "Was ist der Kummerkasten?", Answer: "Eine anonyme Anlaufstelle für Kummer im und ums Studium."},
+		{Question: "Wofür ist der Kummerkasten?", Answer: "Zu schwere Zettel, Erschwerte Kommunikation mit einer/m Dozierenden, Zu hoher Lernaufwand in einer Veranstaltung, Probleme mit der Fachschaft,..."},
+		{Question: "Wer ist der Kummerkasten?", Answer: "Eine kleine Teilmenge der Fachschaft MathPhysInfo."},
+		{Question: "Wofür ist der Kummerkasten nicht da?", Answer: "Persönliche und mentale Probleme im Studium, Stress mit Kommilitonen"},
+		{Question: "Wie werden meine Daten verarbeitet?", Answer: "Dein Feedback landet vollkommen anonym bei uns im System, und wir kümmern uns in unserem Team darum dieses auszuwerten und mit allen benötigten Parteien zu bereden."},
+	}
+
+	if err := insertData(ctx, db, (*models.QuestionAnswerPair)(nil), qAPs, "Question Answer Pairs"); err != nil {
+		return err
+	}
+
 	return nil
 }
 
