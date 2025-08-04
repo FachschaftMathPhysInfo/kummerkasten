@@ -57,25 +57,23 @@ export function LabelTable(props: DataTableProps) {
 
   const client = getClient();
 
-  const resetDiallogState = () => {
+  const resetDialogState = () => {
     setDialogState({mode: null, currentLabel: null});
   }
 
   async function handleDelete() {
     if (!dialogState.currentLabel) {
       toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
-      console.error("failed to delete label: label not provided")
       return
     }
 
     try {
       await client.request<DeleteLabelsMutation>(DeleteLabelsDocument, {ids: [dialogState.currentLabel.id]})
       toast.success("Label wurde erfolgreich gelöscht")
-      resetDiallogState()
+      resetDialogState()
       props.refreshData()
-    } catch (error) {
+    } catch {
       toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
-      console.error(error)
     }
   }
 
@@ -125,11 +123,13 @@ export function LabelTable(props: DataTableProps) {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  data-cy={'label-table-row'}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
+                      data-cy={'labe-table-cell'}
                       key={cell.id}
                       className={'px-5 last:text-right'}
                     >
@@ -144,6 +144,7 @@ export function LabelTable(props: DataTableProps) {
             ) : (
               <TableRow>
                 <TableCell
+                  data-cy={'label-table-no-results-message'}
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
@@ -159,7 +160,7 @@ export function LabelTable(props: DataTableProps) {
         open={dialogState.mode === "update" || dialogState.mode === "add"}
         createMode={dialogState.mode === "add"}
         label={dialogState.currentLabel}
-        closeDialog={resetDiallogState}
+        closeDialog={resetDialogState}
         refreshData={props.refreshData}
       />
 
@@ -168,7 +169,7 @@ export function LabelTable(props: DataTableProps) {
         description={`Dies wird das Label ${dialogState.currentLabel?.name} unwiderruflich löschen`}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
-        closeDialog={resetDiallogState}
+        closeDialog={resetDialogState}
       />
     </div>
   );

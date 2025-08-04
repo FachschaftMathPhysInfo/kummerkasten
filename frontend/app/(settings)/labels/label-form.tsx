@@ -27,7 +27,7 @@ interface LabelFormProps {
 
 const labelFormSchema = z.object({
   name: z.string().min(2),
-  color: z.string().min(2),
+  color: z.string().length(7),
 })
 
 export default function LabelForm(props: LabelFormProps) {
@@ -41,12 +41,6 @@ export default function LabelForm(props: LabelFormProps) {
 
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
-
-  if (!props.createMode && !props.label) {
-    toast.error("Ein Fehler ist aufgetreten")
-    console.error("Failed editing label: Label not provided")
-    return null;
-  }
 
   async function onValidSubmit(data: z.infer<typeof labelFormSchema>) {
     setLoading(true)
@@ -70,9 +64,8 @@ export default function LabelForm(props: LabelFormProps) {
       toast.success("Label erstellt!")
       props.refreshData()
       props.closeDialog()
-    } catch (err) {
+    } catch {
       toast.error("Ein Fehler beim Erstellen des Labels ist aufgetreten")
-      console.error("Failed creating label: ", err)
     }
   }
 
@@ -85,18 +78,15 @@ export default function LabelForm(props: LabelFormProps) {
       toast.success("Label erfolgreich updated!")
       props.refreshData()
       props.closeDialog()
-    } catch (err) {
+    } catch {
       toast.error("Ein Fehler beim Updaten des Labels ist aufgetreten")
-      console.error("Failed updating label: ", err)
     }
   }
 
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={form.handleSubmit(onValidSubmit, () =>
-          setHasTriedToSubmit(true)
-        )}
+        onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
         className="space-y-4 w-full"
       >
 
@@ -107,9 +97,9 @@ export default function LabelForm(props: LabelFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder={props.label?.name ?? ""} {...field} />
+                <Input data-cy={'label-name-input'} placeholder={props.label?.name ?? ""} {...field} autoComplete={'off'} />
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'label-name-message'}/>
             </FormItem>
           )}
         />
@@ -121,15 +111,16 @@ export default function LabelForm(props: LabelFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Farbe</FormLabel>
               <FormControl>
-                <Input placeholder={props.label?.color ?? ""} {...field} />
+                <Input data-cy={'label-color-input'} placeholder={props.label?.color ?? ""} {...field} />
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'label-color-message'}/>
             </FormItem>
           )}
         />
 
         <div className={"flex justify-between items-center gap-x-12 mt-8"}>
           <Button
+            data-cy={'close-dialog-button'}
             onClick={props.closeDialog}
             variant={"outline"}
             type={"button"}
@@ -139,6 +130,7 @@ export default function LabelForm(props: LabelFormProps) {
           </Button>
 
           <Button
+            data-cy={'submit-button'}
             disabled={(!form.formState.isValid && hasTriedToSubmit) || loading}
             type="submit"
             className={"flex-grow"}

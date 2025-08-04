@@ -6,6 +6,7 @@ import {Edit2, MoreHorizontal, Trash,} from "lucide-react";
 import React from "react";
 import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-header";
 import {LabelTableDialogState} from "@/app/(settings)/labels/label-table";
+import {Badge} from "@/components/ui/badge";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<LabelTableDialogState>>;
@@ -16,16 +17,13 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
   return [
     {
       accessorKey: "name",
-      // Alternatives: force save names with first letter capitalized
-      sortingFn: (rowA, rowB) => {
-        const a = (rowA.original.name).toLowerCase();
-        const b = (rowB.original.name).toLowerCase();
-        return a.localeCompare(b);
-      },
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="Name"/>
       ),
-      cell: ({row}) => row.original.name,
+      cell: ({row}) =>
+        <Badge style={{backgroundColor: row.original.color}}>
+          {row.original.name}
+        </Badge>
     },
     {
       id: "actions",
@@ -34,7 +32,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button data-cy={'label-action-menu-button'} variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Menü öffnen</span>
                 <MoreHorizontal className="h-4 w-4"/>
               </Button>

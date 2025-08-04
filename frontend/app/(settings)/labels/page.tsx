@@ -22,9 +22,8 @@ export default function LabelManagementPage() {
       }
 
       setLabels(data.labels.filter(label => !!label));
-    } catch (error) {
-      toast.error("Fehler beim Laden der User")
-      console.error(error)
+    } catch {
+      toast.error("Fehler beim Laden der Label")
     }
   }, [])
 
@@ -43,7 +42,7 @@ export default function LabelManagementPage() {
           Erstelle, lösche und update Labels hier.
         </p>
       </div>
-      <LabelTable data={labels} refreshData={fetchLabels}/>
+      <LabelTable data-cy={'label-table'} data={labels} refreshData={fetchLabels}/>
     </div>
   )
 }
