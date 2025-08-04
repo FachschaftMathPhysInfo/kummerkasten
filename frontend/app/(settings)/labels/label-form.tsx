@@ -35,17 +35,17 @@ const labelFormSchema = z.object({
 })
 
 export default function LabelForm(props: LabelFormProps) {
+  const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
+  const [color, setColor] = useState(props.label?.color ?? "#AEAEAE")
+  const [loading, setLoading] = useState<boolean>(false)
+
   const form = useForm<z.infer<typeof labelFormSchema>>({
     resolver: zodResolver(labelFormSchema),
     defaultValues: {
       name: props.label?.name ?? "",
-      color: props.label?.color ?? "",
+      color: props.label?.color ?? color,
     }
   })
-
-  const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
-  const [color, setColor] = useState(props.label?.color ?? "#AEAEAE")
-  const [loading, setLoading] = useState<boolean>(false)
 
   async function onValidSubmit(data: z.infer<typeof labelFormSchema>) {
     setLoading(true)
@@ -102,7 +102,12 @@ export default function LabelForm(props: LabelFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input data-cy={'label-name-input'} placeholder={props.label?.name ?? ""} {...field} autoComplete={'off'} />
+                <Input
+                  data-cy={'label-name-input'}
+                  placeholder={props.label?.name ?? ""}
+                  {...field}
+                  onChange={e => field.onChange(e.target.value.toLowerCase())}
+                />
               </FormControl>
               <FormMessage data-cy={'label-name-message'}/>
             </FormItem>
