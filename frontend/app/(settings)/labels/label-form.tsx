@@ -26,8 +26,12 @@ interface LabelFormProps {
 }
 
 const labelFormSchema = z.object({
-  name: z.string().min(2),
-  color: z.string().length(7),
+  name: z.string().nonempty({
+    message: "Bitte gib dem Label einen Namen",
+  }),
+  color: z.string().regex(
+    new RegExp("^#([A-Fa-f0-9]{6})$"), "Bitte gültigen HEX-Code angeben"
+  ),
 })
 
 export default function LabelForm(props: LabelFormProps) {
@@ -40,6 +44,7 @@ export default function LabelForm(props: LabelFormProps) {
   })
 
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
+  const [color, setColor] = useState(props.label?.color ?? "#AEAEAE")
   const [loading, setLoading] = useState<boolean>(false)
 
   async function onValidSubmit(data: z.infer<typeof labelFormSchema>) {
@@ -111,7 +116,29 @@ export default function LabelForm(props: LabelFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Farbe</FormLabel>
               <FormControl>
-                <Input data-cy={'label-color-input'} placeholder={props.label?.color ?? ""} {...field} />
+                <div className={'flex space-x-8 items-center'}>
+                  <div className={'h-full min-h-9 aspect-square flex-shrink-0'}>
+                    <input
+                      type={"color"}
+                      value={color}
+                      onChange={e => {
+                        const newColor = e.target.value.toUpperCase();
+                        setColor(newColor);
+                        form.setValue("color", newColor);
+                      }}
+                      className={'w-full h-full rounded-lg m-0 cursor-pointer'}
+                    />
+                  </div>
+                  <Input
+                    type="text"
+                    {...field}
+                    value={field.value.toUpperCase()}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setColor(e.target.value.toUpperCase());
+                    }}
+                  />
+                </div>
               </FormControl>
               <FormMessage data-cy={'label-color-message'}/>
             </FormItem>
