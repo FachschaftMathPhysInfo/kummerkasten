@@ -21,7 +21,10 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
         <DataTableColumnHeader column={column} title="Name"/>
       ),
       cell: ({row}) =>
-        <Badge style={{backgroundColor: row.original.color}}>
+        <Badge
+          data-cy={'label-name-cell'}
+          style={{backgroundColor: row.original.color}}
+        >
           {row.original.name}
         </Badge>
     },
@@ -32,7 +35,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button data-cy={'label-action-menu-button'} variant="ghost" className="h-8 w-8 p-0">
+              <Button data-cy={'action-dropdown-trigger'} variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Menü öffnen</span>
                 <MoreHorizontal className="h-4 w-4"/>
               </Button>

@@ -42,7 +42,7 @@ export default function LabelManagementPage() {
           Erstelle, lösche und update Labels hier.
         </p>
       </div>
-      <LabelTable data-cy={'label-table'} data={labels} refreshData={fetchLabels}/>
+      <LabelTable data={labels} refreshData={fetchLabels}/>
     </div>
   )
 }

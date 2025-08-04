@@ -119,6 +119,7 @@ export default function LabelForm(props: LabelFormProps) {
                 <div className={'flex space-x-8 items-center'}>
                   <div className={'h-full min-h-9 aspect-square flex-shrink-0'}>
                     <input
+                      data-cy={'color-picker'}
                       type={"color"}
                       value={color}
                       onChange={e => {

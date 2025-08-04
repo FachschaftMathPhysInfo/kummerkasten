@@ -78,9 +78,10 @@ export function LabelTable(props: DataTableProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4"  data-cy={'label-table'}>
       <div className="flex items-center justify-between flex-wrap gap-2">
         <Button
+          data-cy={'create-label-button'}
           variant={"default"}
           onClick={() => {
             setDialogState({mode: "add", currentLabel: null});
@@ -91,6 +92,7 @@ export function LabelTable(props: DataTableProps) {
         </Button>
 
         <Input
+          data-cy={'label-searchbar'}
           placeholder="Namen filtern..."
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
@@ -123,13 +125,12 @@ export function LabelTable(props: DataTableProps) {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  data-cy={'label-table-row'}
+                  data-cy={'label-row'}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
-                      data-cy={'labe-table-cell'}
                       key={cell.id}
                       className={'px-5 last:text-right'}
                     >
@@ -144,7 +145,7 @@ export function LabelTable(props: DataTableProps) {
             ) : (
               <TableRow>
                 <TableCell
-                  data-cy={'label-table-no-results-message'}
+                  data-cy={'no-results-message'}
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
