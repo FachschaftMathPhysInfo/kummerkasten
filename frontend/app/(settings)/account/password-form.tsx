@@ -41,6 +41,7 @@ type PasswordFormData = z.infer<typeof passwordFormSchema>;
 export default function PasswordDataForm() {
     const {user, logout} = useUser();
     const [isSavingPassword, setIsSavingPassword] = useState(false);
+    const isItLoading = false;
     const [hasTriedPasswordSubmit, setHasTriedPasswordSubmit] = useState(false);
 
     const passwordForm = useForm<PasswordFormData>({
@@ -126,6 +127,7 @@ export default function PasswordDataForm() {
 
                 <SettingsBlock icon={<User/>} title={"Account"} hasTriedToSubmit={hasTriedPasswordSubmit}
                                isDirty={passwordForm.formState.isDirty}
+                               isLoading={isItLoading}
                                isSaving={isSavingPassword}
                                dataCy="input-settings-save">
                     <FormField

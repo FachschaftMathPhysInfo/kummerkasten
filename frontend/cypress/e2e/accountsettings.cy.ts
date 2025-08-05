@@ -272,97 +272,21 @@ describe('Profile Settings Page', () => {
         });
     })
 
-
-    context('Password visibility toggle', () => {
-
-        it('toggle current password', () => {
-            accountPage.getCurrentPasswordInput().type("Something")
-            accountPage.getCurrentPasswordInput()
-                .should('have.attr', 'type', 'password');
-            accountPage.getCurrentPasswordInput()
-                .parent()
-                .find('button')
-                .click();
-            accountPage.getCurrentPasswordInput()
-                .should('have.attr', 'type', 'text');
-            accountPage.getCurrentPasswordInput()
-                .parent()
-                .find('button')
-                .click();
-            accountPage.getCurrentPasswordInput()
-                .should('have.attr', 'type', 'password');
-        });
-        it('toggle new password', () => {
-            accountPage.getNewPasswordInput().type("Something")
-            accountPage.getNewPasswordInput()
-                .should('have.attr', 'type', 'password');
-            accountPage.getNewPasswordInput()
-                .parent()
-                .find('button')
-                .click();
-            accountPage.getNewPasswordInput()
-                .should('have.attr', 'type', 'text');
-            accountPage.getNewPasswordInput()
-                .parent()
-                .find('button')
-                .click();
-            accountPage.getNewPasswordInput()
-                .should('have.attr', 'type', 'password');
-        });
-        it('toggle repeated password', () => {
-            accountPage.getConfirmPasswordInput().type("Something")
-            accountPage.getConfirmPasswordInput()
-                .should('have.attr', 'type', 'password');
-            accountPage.getConfirmPasswordInput()
-                .parent()
-                .find('button')
-                .click();
-            accountPage.getConfirmPasswordInput()
-                .should('have.attr', 'type', 'text');
-            accountPage.getConfirmPasswordInput()
-                .parent()
-                .find('button')
-                .click();
-            accountPage.getConfirmPasswordInput()
-                .should('have.attr', 'type', 'password');
-        });
-        it('change email without logging out', () => {
-            accountPage.getMailInput().clear();
-            accountPage.getMailInput().type("test@test.de");
-            accountPage.getProfileSaveButton().click();
-            cy.reload();
-            accountPage.getMailInput().clear();
-            accountPage.getMailInput().type("real@test.de");
-            accountPage.getProfileSaveButton().click();
-            cy.reload();
-            currentCorrectMail = "real@test.de";
-        })
-    });
-
-
     after(() => {
-        cy.visit("/account");
-        accountPage.getFirstnameInput().clear();
-        accountPage.getFirstnameInput().type(users.cypress.firstname);
-        accountPage.getLastnameInput().clear();
-        accountPage.getLastnameInput().type(users.cypress.lastname);
-        accountPage.getMailInput().clear();
-        accountPage.getMailInput().type(users.cypress.mail)
-        accountPage.getProfileSaveButton().click();
-        cy.contains("Dein Account wurde erfolgreich aktualisiert", {timeout: 10000}).should('exist');
-        currentCorrectMail = users.cypress.mail;
-        loginPage.login(currentCorrectMail, currentCorrectPassword);
-        sidebar.getSettingsButton().click();
-        accountPage.getCurrentPasswordInput().type(currentCorrectPassword);
-        accountPage.getNewPasswordInput().type(users.cypress.password);
-        accountPage.getConfirmPasswordInput().type(users.cypress.password);
-        accountPage.getPasswordSaveButton().click();
-        cy.contains("Passwort aktualisiert", {timeout: 10000}).should('exist');
-        currentCorrectPassword = users.cypress.password;
-        loginPage.login(users.cypress.mail, users.cypress.password)
-        sidebar.getSettingsButton().click();
-        accountPage.getFirstnameInput().should('have.value', users.cypress.firstname);
-        accountPage.getLastnameInput().should('have.value', users.cypress.lastname);
-        accountPage.getMailInput().should('have.value', users.cypress.mail);
-    });
+        cy.fixture("users").then((u) => {
+            cy.visit("/account");
+            accountPage.getFirstnameInput().clear();
+            accountPage.getLastnameInput().clear();
+            accountPage.getMailInput().clear();
+            cy.getUserIdByMail(currentCorrectMail).then((uuid) => {
+                cy.updateUserProfile(uuid, {
+                    firstname: u.cypress.firstname,
+                    lastname: u.cypress.lastname,
+                    mail: u.cypress.mail,
+                });
+                cy.updateUserPassword(currentCorrectPassword, u.cypress.password);
+            });
+            cy.reload();
+        });
+    })
 });

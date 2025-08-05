@@ -36,3 +36,9 @@ query checkIfMailExists ($mail: [String!]!){
         mail
     }
 }
+
+query getUserIdByMail($mail: [String!]!) {
+    users(mail: $mail) {
+        id
+    }
+}

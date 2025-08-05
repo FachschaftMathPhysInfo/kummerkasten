@@ -3,7 +3,7 @@
 import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
     CheckIfMailExistsDocument,
@@ -19,6 +19,7 @@ import {Input} from "@/components/ui/input";
 import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
+import {PageLoader} from "@/components/page-loader";
 
 const accountDataSchema = z.object({
     firstname: z.string().min(1, "Vorname ist erforderlich").max(50, "Maximale Länge beträgt 50 Charaktere"),
@@ -30,8 +31,8 @@ type AccountDataFormData = z.infer<typeof accountDataSchema>;
 
 export default function AccountDataForm() {
     const {user, logout} = useUser();
-    const [loading, setLoading] = useState(true);
     const [isSavingAccount, setIsSavingAccount] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
 
     const form = useForm<z.infer<typeof accountDataSchema>>({
@@ -60,7 +61,7 @@ export default function AccountDataForm() {
                 lastname: userData.lastname,
                 mail: userData.mail,
             });
-            setLoading(false);
+            setIsLoading(false);
         } catch (error) {
             toast.error("Fehler beim Laden der User Daten");
             console.error(error);
@@ -99,14 +100,14 @@ export default function AccountDataForm() {
                         message: "Diese E-Mail-Adresse wird bereits verwendet.",
                     });
                     toast.error("Diese E-Mail-Adresse wird bereits verwendet.");
+                    setIsSavingAccount(false);
                     return;
                 }
             } catch (error) {
                 toast.error("Fehler beim Überprüfen der E-Mail-Adresse.");
                 console.error(error);
+                setIsSavingAccount(false);
                 return;
-            } finally {
-                setIsSavingAccount(false)
             }
         }
 
@@ -140,8 +141,8 @@ export default function AccountDataForm() {
     }
 
 
-    return (
 
+    return (
         <FormProvider {...form}>
             <form
                 onSubmit={form.handleSubmit(onValidSubmit, () =>
@@ -153,6 +154,7 @@ export default function AccountDataForm() {
                 <SettingsBlock icon={<User/>} title={"Account"} hasTriedToSubmit={hasTriedToSubmit}
                                isDirty={form.formState.isDirty}
                                isSaving={isSavingAccount}
+                               isLoading={isLoading}
                                dataCy="input-profile-save">
                     <FormField
                         control={form.control}
@@ -161,7 +163,7 @@ export default function AccountDataForm() {
                             <FormItem className={"flex-grow"}>
                                 <FormLabel>Vorname</FormLabel>
                                 <FormControl>
-                                    <Input placeholder={"Vorname"} {...field} data-cy={'account-firstname-input'} />
+                                    <Input placeholder={"Vorname"} {...field} data-cy={'account-firstname-input'}/>
                                 </FormControl>
                                 <FormMessage data-cy={'account-firstname-input-message'}/>
                             </FormItem>
@@ -175,7 +177,7 @@ export default function AccountDataForm() {
                             <FormItem className={"flex-grow"}>
                                 <FormLabel>Nachname</FormLabel>
                                 <FormControl>
-                                    <Input placeholder={"Nachname"} {...field} data-cy={'account-lastname-input'} />
+                                    <Input placeholder={"Nachname"} {...field} data-cy={'account-lastname-input'}/>
                                 </FormControl>
                                 <FormMessage data-cy={'account-lastname-input-message'}/>
                             </FormItem>
@@ -189,7 +191,8 @@ export default function AccountDataForm() {
                             <FormItem className={"flex-grow"}>
                                 <FormLabel>E-Mail</FormLabel>
                                 <FormControl>
-                                    <Input placeholder={"vor.nachname@kummerkasten.de"} {...field} data-cy={'account-mail-input'} />
+                                    <Input placeholder={"vor.nachname@kummerkasten.de"} {...field}
+                                           data-cy={'account-mail-input'}/>
                                 </FormControl>
                                 <FormMessage data-cy={'account-mail-input-message'}/>
                             </FormItem>

@@ -9,6 +9,7 @@ type SettingsBlockProps = {
     children: React.ReactNode,
     hasTriedToSubmit?: boolean;
     isSaving?: boolean;
+    isLoading?: boolean;
     isValid?: boolean;
     isDirty?: boolean;
     dataCy?: string;
@@ -20,6 +21,7 @@ export function SettingsBlock({
                                   children,
                                   hasTriedToSubmit,
                                   isSaving,
+                                  isLoading,
                                   isValid,
                                   isDirty,
                                   dataCy
@@ -30,6 +32,22 @@ export function SettingsBlock({
                 className: `w-7 h-7 ${(icon.props as { className?: string })?.className ?? ""}`.trim(),
             })
             : icon;
+
+    if (isLoading) {
+        return (
+            <Card className="m-8">
+                <CardTitle className="flex items-center ml-6">
+                    <div className="mr-4">{sizedIcon}</div>
+                    <h2 className="text-lg font-semibold">{title}</h2>
+                </CardTitle>
+                <CardContent>
+                    <div className="py-8 flex justify-center">
+                        <PageLoader compact message="Daten werden geladen..."/>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
 
     return (
