@@ -36,7 +36,7 @@ const labelFormSchema = z.object({
 
 export default function LabelForm(props: LabelFormProps) {
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
-  const [color, setColor] = useState(props.label?.color ?? "#AEAEAE")
+  const [color, setColor] = useState(props.label?.color ?? "#7A7777")
   const [loading, setLoading] = useState<boolean>(false)
 
   const form = useForm<z.infer<typeof labelFormSchema>>({
