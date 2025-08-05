@@ -125,9 +125,9 @@ input NewSetting {
     value: String!
 }
 
-input NewLabelToTicketAssignment {
+input LabelToTicketAssignment {
     labelID: String!
-    ticketId: String!
+    ticketID: String!
 }
 
 input NewQuestionAnswerPair{
@@ -142,7 +142,7 @@ type Mutation {
     updateTicketState(ids: [String!]!, state: TicketState!): Int! @hasRole(role: USER)
 
     createLabel(label: NewLabel!): Label! @hasRole(role: USER)
-    deleteLabel(ids: [Int!]!): Int! @hasRole(role: ADMIN)
+    deleteLabel(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
 
     createUser(user: NewUser!): User! @hasRole(role: ADMIN)
@@ -155,8 +155,8 @@ type Mutation {
     deleteSetting(keys: [String!]!): Int! @hasRole(role: ADMIN)
     updateSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
 
-    addLabelToTicket(assignment: [NewLabelToTicketAssignment!]!): Int! @hasRole(role: USER)
-    removeLabelFromTicket(labelID: String!, ticketId: Int!): Int! @hasRole(role: USER)
+    addLabelToTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
+    removeLabelFromTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
 
     createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
     deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
