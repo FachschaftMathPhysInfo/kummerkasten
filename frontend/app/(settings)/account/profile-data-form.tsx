@@ -19,7 +19,6 @@ import {Input} from "@/components/ui/input";
 import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
-import {PageLoader} from "@/components/page-loader";
 
 const accountDataSchema = z.object({
     firstname: z.string().min(1, "Vorname ist erforderlich").max(50, "Maximale Länge beträgt 50 Charaktere"),
@@ -139,7 +138,6 @@ export default function AccountDataForm() {
             setIsSavingAccount(false);
         }
     }
-
 
 
     return (
