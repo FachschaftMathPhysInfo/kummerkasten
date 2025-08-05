@@ -201,7 +201,7 @@ describe('Profile Settings Page', () => {
             accountPage.getNewPasswordInput().type(newPassword);
             accountPage.getConfirmPasswordInput().type(newPassword);
             accountPage.getPasswordSaveButton().click();
-            cy.contains("Passwort aktualisiert", {timeout: 10000}).should('exist');
+            cy.contains("Passwort aktualisiert", {timeout: 10000}).should('be.visible');
             loginPage.login(users.cypress.mail, newPassword);
             sidebar.getSettingsButton().click();
             accountPage.getCurrentPasswordInput().type(newPassword);
@@ -247,7 +247,7 @@ describe('Profile Settings Page', () => {
             accountPage.getFirstnameInput().clear();
             accountPage.getFirstnameInput().type('Alfred');
             accountPage.getProfileSaveButton().click();
-            cy.contains("Dein Account wurde erfolgreich aktualisiert").should('exist');
+            cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
             accountPage.getFirstnameInput().should('have.value', 'Alfred');
             cy.reload();
             accountPage.getFirstnameInput().should('have.value', 'Alfred');
@@ -256,7 +256,7 @@ describe('Profile Settings Page', () => {
             accountPage.getLastnameInput().clear();
             accountPage.getLastnameInput().type('Barnes');
             accountPage.getProfileSaveButton().click();
-            cy.contains("Dein Account wurde erfolgreich aktualisiert").should('exist');
+            cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
             accountPage.getLastnameInput().should('have.value', 'Barnes');
             cy.reload();
             accountPage.getLastnameInput().should('have.value', 'Barnes');
@@ -265,7 +265,7 @@ describe('Profile Settings Page', () => {
             accountPage.getMailInput().clear();
             accountPage.getMailInput().type('alfred.barnes@kummer.kasten');
             accountPage.getProfileSaveButton().click();
-            cy.contains("Dein Account wurde erfolgreich aktualisiert").should('exist');
+            cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
             loginPage.login('alfred.barnes@kummer.kasten', currentCorrectPassword);
             sidebar.getSettingsButton().click();
             currentCorrectMail = 'alfred.barnes@kummer.kasten';
