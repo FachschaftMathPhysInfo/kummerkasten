@@ -60,7 +60,7 @@ export function TicketCard({ticketID}: TicketProps) {
                         <div className="hidden md:flex md:mr-1">
                             {ticketLabels?.map((label) => (
                                 label?.id && <Badge key={label.id} className="md:mx-1"
-                                                    style={{backgroundColor: label.color}}>{label.name}</Badge>
+                                                    style={{backgroundColor: label.color ?? "#000000"}}>{label.name}</Badge>
                             ))}
                         </div>
                     </CardTitle>
