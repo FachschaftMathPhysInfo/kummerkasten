@@ -28,7 +28,7 @@ export default function TicketPage() {
     );
 
     return (
-        <div className="space-y-6 grow">
+        <div className="space-y-6 grow max-w-screen">
             <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
                                   icon={<TicketIcon/>}/>
             <div className="px-8">
@@ -38,9 +38,13 @@ export default function TicketPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            {filteredTickets.map((ticket) => (
-                ticket?.id && <TicketCard ticketID={ticket.id}/>
-            ))}
+            {filteredTickets.map((ticket) =>
+                    ticket?.id && (
+                        <div key={ticket.id} className="m-8">
+                            <TicketCard ticketID={ticket.id}/>
+                        </div>
+                    )
+            )}
         </div>
     );
 }
