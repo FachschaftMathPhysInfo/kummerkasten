@@ -1,0 +1,33 @@
+query allTickets {
+    tickets{
+        id,
+        title,
+        text,
+        note,
+        state,
+        createdAt,
+        lastModified,
+        labels {
+            name,
+            color,
+            id
+        }
+    }
+}
+
+query ticketById ($id: [ID!]){
+    tickets(id: $id){
+        id,
+        title,
+        text,
+        note,
+        state,
+        createdAt,
+        lastModified,
+        labels {
+            name,
+            color,
+            id
+        }
+    }
+}
