@@ -30,7 +30,6 @@ function useIsMobile(breakpoint = 380) {
 export function TicketCard({ticketID}: TicketProps) {
     const isMobile = useIsMobile();
     const client = getClient();
-    const [isLoading, setIsLoading] = useState(true);
     const [ticket, setTicket] = useState<Ticket>();
     const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
 
@@ -39,11 +38,10 @@ export function TicketCard({ticketID}: TicketProps) {
         const ticketData = data?.tickets?.[0];
         const labels = ticketData?.labels;
         if (ticketData) {
-            setIsLoading(false);
             setTicket(ticketData);
             setTicketLabels(labels ?? []);
         }
-    }, [ticketID]);
+    }, [ticketID, client]);
 
     useEffect(() => {
         void fetchTicketData();
