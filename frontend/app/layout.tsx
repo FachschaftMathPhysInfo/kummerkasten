@@ -10,45 +10,49 @@ import {Footer} from "@/components/footer";
 import {ThemeProvider} from "@/components/providers/theme-provider";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Kummerkasten",
-  description: "Kummerkasten der Fachschaft",
-  keywords: ["kummerkasten", "fachschaft", "mathphysinfo", "uni heidelberg"]
+    title: "Kummerkasten",
+    description: "Kummerkasten der Fachschaft",
+    keywords: ["kummerkasten", "fachschaft", "mathphysinfo", "uni heidelberg"]
 };
 
 export default function UserLayout({
-                                     children,
+                                       children,
                                    }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="de" suppressHydrationWarning>
-    <body
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-    >
-    <ThemeProvider attribute={'class'} defaultTheme={"system"}>
-      <UserProvider>
-        <SidebarProvider>
-          <UserSidebar/>
-          <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
-            <UserSidebarTrigger/>
-            {children}
-            <Footer/>
-          </main>
-          <Toaster richColors/>
-        </SidebarProvider>
-      </UserProvider>
-    </ThemeProvider>
-    </body>
-    </html>
-  );
+    return (
+        <html lang="de" suppressHydrationWarning>
+        <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+        <ThemeProvider attribute={'class'} defaultTheme={"system"}>
+            <UserProvider>
+                <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                        <div className="h-screen sticky top-0 shrink-0">
+                            <UserSidebar/>
+                        </div>
+                        <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
+                            <UserSidebarTrigger/>
+                            {children}
+                            <Footer/>
+                        </main>
+                    </div>
+                    <Toaster richColors/>
+                </SidebarProvider>
+            </UserProvider>
+        </ThemeProvider>
+        </body>
+        </html>
+    );
 }

@@ -79,7 +79,9 @@ export default function LoginForm() {
             <FormItem className={'flex-grow'}>
               <FormLabel hidden>E-Mail</FormLabel>
               <FormControl>
+                {/*Injected Icons by password managers will trigger a warning*/}
                 <Input
+                  suppressHydrationWarning
                   placeholder={'E-Mail'}
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}

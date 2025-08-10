@@ -8,6 +8,7 @@ query loginCheck($sid: String!) {
         firstname
         lastname
         role
+        id
     }
 }
 
@@ -18,5 +19,26 @@ query allUsers {
         lastname
         mail
         role
+    }
+}
+
+query userAccountData ($id:  [ID!]!){
+    users(id: $id){
+        firstname
+        lastname
+        mail
+    }
+}
+
+query checkIfMailExists ($mail: [String!]!){
+    users(mail: $mail){
+        id
+        mail
+    }
+}
+
+query getUserIdByMail($mail: [String!]!) {
+    users(mail: $mail) {
+        id
     }
 }

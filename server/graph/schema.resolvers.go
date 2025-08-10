@@ -60,7 +60,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:    l.ID,
 			Name:  l.Name,
-			Color: l.Color,
+			Color: &l.Color,
 		})
 	}
 
@@ -155,16 +155,18 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
-	colorValue := label.Color
-	match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
-	if !match {
-		return nil, fmt.Errorf("color was not provided in valid hex format")
+	newLabel := &models.Label{
+		ID:   uuid.New().String(),
+		Name: strings.ToLower(label.Name),
 	}
 
-	newLabel := &models.Label{
-		ID:    uuid.New().String(),
-		Name:  strings.ToLower(label.Name),
-		Color: label.Color,
+	if label.Color != nil {
+		colorValue := *label.Color
+		match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
+		if !match {
+			return nil, fmt.Errorf("color was not provided in valid hex format")
+		}
+		newLabel.Color = colorValue
 	}
 
 	if _, err := r.DB.NewInsert().Model(newLabel).Exec(ctx); err != nil {
@@ -175,7 +177,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	return &model.Label{
 		ID:      newLabel.ID,
 		Name:    newLabel.Name,
-		Color:   newLabel.Color,
+		Color:   &newLabel.Color,
 		Tickets: []*model.Ticket{},
 	}, nil
 }
@@ -217,6 +219,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 		if !match {
 			return "", fmt.Errorf("color was not provided in valid hex format")
 		}
+
 		dbLabel.Color = colorValue
 	}
 
@@ -478,6 +481,7 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 		rowsAffected = removalRowsAffected + rowsAffected
 
 		updatedTickets[assignment.TicketID] = struct{}{}
+
 	}
 
 	for ticketID := range updatedTickets {
@@ -576,7 +580,7 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 			gqlLabels = append(gqlLabels, &model.Label{
 				ID:    l.ID,
 				Name:  l.Name,
-				Color: l.Color,
+				Color: &l.Color,
 			})
 		}
 
@@ -628,7 +632,7 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:      l.ID,
 			Name:    l.Name,
-			Color:   l.Color,
+			Color:   &l.Color,
 			Tickets: gqlTickets,
 		})
 	}
