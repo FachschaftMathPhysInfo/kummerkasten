@@ -6,6 +6,7 @@ import {getClient} from "@/lib/graph/client";
 import {useCallback, useEffect, useState} from "react";
 import {AllTicketsDocument, AllTicketsQuery, Ticket} from "@/lib/graph/generated/graphql";
 import {Input} from "@/components/ui/input";
+import Link from "next/link";
 
 const client = getClient();
 
@@ -42,7 +43,9 @@ export default function TicketPage() {
             {filteredTickets.map((ticket) =>
                     ticket?.id && (
                         <div key={ticket.id} className="mx-8 my-4">
-                            <TicketCard ticketID={ticket.id}/>
+                            <Link href={`/tickets/${ticket.id}`} passHref>
+                                <TicketCard ticketID={ticket.id}/>
+                            </Link>
                         </div>
                     )
             )}
