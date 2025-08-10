@@ -25,7 +25,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Shield/>
+                  <Shield data-cy={'admin-icon'}/>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Admin</p>
@@ -45,9 +45,11 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
         return a.localeCompare(b);
       },
       header: ({column}) => (
-        <DataTableColumnHeader column={column} title="Nachname"/>
+        <span data-cy={'lastname-header'}>
+          <DataTableColumnHeader column={column} title="Nachname"/>
+        </span>
       ),
-      cell: ({row}) => row.original.lastname,
+      cell: ({row}) => <span data-cy={'lastname-cell'}>{row.original.lastname}</span>,
     },
     {
       accessorKey: "firstname",
@@ -57,9 +59,11 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
         return a.localeCompare(b);
       },
       header: ({column}) => (
-        <DataTableColumnHeader column={column} title="Vorname"/>
+        <span data-cy={'firstname-header'}>
+          <DataTableColumnHeader column={column} title="Vorname"/>
+        </span>
       ),
-      cell: ({row}) => row.original.firstname,
+      cell: ({row}) => <span data-cy={'firstname-cell'}>{row.original.firstname}</span>,
     },
     {
       accessorKey: "mail",
@@ -69,9 +73,11 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
         return a.localeCompare(b);
       },
       header: ({column}) => (
-        <DataTableColumnHeader column={column} title="E-Mail"/>
+        <span data-cy={'mail-header'}>
+          <DataTableColumnHeader column={column} title="E-Mail"/>
+        </span>
       ),
-      cell: ({row}) => row.original.mail,
+      cell: ({row}) => <span data-cy={'mail-cell'}>{row.original.mail}</span>,
     },
     {
       id: "actions",
@@ -83,10 +89,12 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
             {!(row.original.mail === user?.mail) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Menü öffnen</span>
-                    <MoreHorizontal className="h-4 w-4"/>
-                  </Button>
+                  <span data-cy={'action-dropdown'}>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Menü öffnen</span>
+                      <MoreHorizontal className="h-4 w-4"/>
+                    </Button>
+                  </span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {row.original.role === UserRole.Admin ? (

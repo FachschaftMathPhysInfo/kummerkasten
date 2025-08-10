@@ -60,7 +60,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:    l.ID,
 			Name:  l.Name,
-			Color: l.Color,
+			Color: &l.Color,
 		})
 	}
 
@@ -135,12 +135,9 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 
 // UpdateTicketState is the resolver for the updateTicketState field.
 func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, state model.TicketState) (int32, error) {
-	result, err := r.DB.NewUpdate().
-		Model((*models.Ticket)(nil)).
-		Where("id IN (?)", bun.In(ids)).
-		Set("state = ?", state).
-		Set("last_modified = ?", time.Now()).
-		Exec(ctx)
+	result, err := r.DB.NewUpdate().Model((*models.Ticket)(nil)).
+		Where("id IN (?)", bun.In(ids)).Set("state = ?", state).
+		Set("last_modified = ?", time.Now()).Exec(ctx)
 
 	if err != nil {
 		log.Printf("Failed to update setting state: %v", err)
@@ -158,29 +155,35 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
-	colorValue := label.Color
-	match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
-	if !match {
-		return nil, fmt.Errorf("color was not provided in valid hex format")
+	newLabel := &models.Label{
+		ID:   uuid.New().String(),
+		Name: strings.ToLower(label.Name),
 	}
 
-	insertedLabel := &model.Label{
-		ID:      uuid.New().String(),
-		Name:    strings.ToLower(label.Name),
-		Color:   label.Color,
-		Tickets: make([]*model.Ticket, 0),
+	if label.Color != nil {
+		colorValue := *label.Color
+		match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
+		if !match {
+			return nil, fmt.Errorf("color was not provided in valid hex format")
+		}
+		newLabel.Color = colorValue
 	}
 
-	if _, err := r.DB.NewInsert().Model(insertedLabel).Exec(ctx); err != nil {
+	if _, err := r.DB.NewInsert().Model(newLabel).Exec(ctx); err != nil {
 		log.Printf("Failed to create label: %v", err)
 		return nil, err
 	}
 
-	return insertedLabel, nil
+	return &model.Label{
+		ID:      newLabel.ID,
+		Name:    newLabel.Name,
+		Color:   &newLabel.Color,
+		Tickets: []*model.Ticket{},
+	}, nil
 }
 
 // DeleteLabel is the resolver for the deleteLabel field.
-func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []int32) (int32, error) {
+func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []string) (int32, error) {
 	result, err := r.DB.NewDelete().Model((*model.Label)(nil)).Where("id IN (?)", bun.In(ids)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete label: %v", err)
@@ -198,16 +201,16 @@ func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []int32) (int32,
 
 // UpdateLabel is the resolver for the updateLabel field.
 func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label model.UpdateLabel) (string, error) {
-	labels, err := r.Query().Labels(ctx, []string{id})
+	dbLabel := &models.Label{}
+	err := r.DB.NewSelect().Model(dbLabel).Where("id = ?", id).Scan(ctx)
 
-	if err != nil || len(labels) == 0 {
+	if err != nil {
+		log.Printf("Failed to find label with id %v: %v", id, err)
 		return "", fmt.Errorf("label with id %v not found", id)
 	}
 
-	updatedLabel := labels[0]
-
 	if label.Name != nil {
-		updatedLabel.Name = strings.ToLower(*label.Name)
+		dbLabel.Name = strings.ToLower(*label.Name)
 	}
 
 	if label.Color != nil {
@@ -217,15 +220,15 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 			return "", fmt.Errorf("color was not provided in valid hex format")
 		}
 
-		updatedLabel.Color = colorValue
+		dbLabel.Color = colorValue
 	}
 
-	if _, err := r.DB.NewUpdate().Model(updatedLabel).Where("id = ?", id).Exec(ctx); err != nil {
+	if _, err := r.DB.NewUpdate().Model(dbLabel).WherePK().Exec(ctx); err != nil {
 		log.Printf("Failed to update label %s: %v", id, err)
 		return "", err
 	}
 
-	return updatedLabel.ID, nil
+	return dbLabel.ID, nil
 }
 
 // CreateUser is the resolver for the createUser field.
@@ -412,13 +415,83 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
-func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignment []*model.NewLabelToTicketAssignment) (int32, error) {
-	panic(fmt.Errorf("not implemented: AddLabelToTicket - addLabelToTicket"))
+func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
+	var labelsToTicketsEntries []*models.LabelsToTickets
+	updatedTickets := make(map[string]struct{})
+
+	for _, assignment := range assignments {
+		if assignment.TicketID == "" || assignment.LabelID == "" {
+			return 0, fmt.Errorf("ticketId and labelId cannot be empty")
+		}
+
+		labelsToTicketsEntries = append(labelsToTicketsEntries, &models.LabelsToTickets{
+			TicketID: assignment.TicketID,
+			LabelID:  assignment.LabelID,
+		})
+
+		updatedTickets[assignment.TicketID] = struct{}{}
+	}
+
+	for ticketID := range updatedTickets {
+		_, err := r.UpdateTicket(ctx, ticketID, model.UpdateTicket{})
+		if err != nil {
+			log.Printf("Failed to update LastModified: %v", err)
+		}
+	}
+
+	result, err := r.DB.NewInsert().Model(&labelsToTicketsEntries).Exec(ctx)
+	if err != nil {
+		log.Printf("Failed to add labels to tickets: %v", err)
+		return 0, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return 0, err
+	}
+
+	return int32(rowsAffected), nil
 }
 
 // RemoveLabelFromTicket is the resolver for the removeLabelFromTicket field.
-func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelID string, ticketID int32) (int32, error) {
-	panic(fmt.Errorf("not implemented: RemoveLabelFromTicket - removeLabelFromTicket"))
+func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
+	updatedTickets := make(map[string]struct{})
+	var rowsAffected int64
+
+	for _, assignment := range assignments {
+		if assignment.TicketID == "" || assignment.LabelID == "" {
+			return 0, fmt.Errorf("ticketId and labelId cannot be empty")
+		}
+
+		result, err := r.DB.NewDelete().Model(&models.LabelsToTickets{}).
+			Where("ticket_id = ?", assignment.TicketID).Where("label_id = ?", assignment.LabelID).Exec(ctx)
+
+		if err != nil {
+			log.Printf("Failed to remove label '%s' from ticket '%s': %v", assignment.LabelID, assignment.TicketID, err)
+			return int32(rowsAffected), err
+		}
+
+		removalRowsAffected, err := result.RowsAffected()
+		if err != nil {
+			log.Printf("Failed to read affected rows: %v", err)
+			return int32(rowsAffected), err
+		}
+
+		rowsAffected = removalRowsAffected + rowsAffected
+
+		updatedTickets[assignment.TicketID] = struct{}{}
+
+	}
+
+	for ticketID := range updatedTickets {
+		_, err := r.UpdateTicket(ctx, ticketID, model.UpdateTicket{})
+		if err != nil {
+			log.Printf("Failed to update LastModified: %v", err)
+		}
+	}
+
+	return int32(rowsAffected), nil
 }
 
 // CreateQuestionAnswerPair is the resolver for the createQuestionAnswerPair field.
@@ -507,7 +580,7 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 			gqlLabels = append(gqlLabels, &model.Label{
 				ID:    l.ID,
 				Name:  l.Name,
-				Color: l.Color,
+				Color: &l.Color,
 			})
 		}
 
@@ -559,7 +632,7 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:      l.ID,
 			Name:    l.Name,
-			Color:   l.Color,
+			Color:   &l.Color,
 			Tickets: gqlTickets,
 		})
 	}

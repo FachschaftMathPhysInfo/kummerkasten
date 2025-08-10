@@ -4,5 +4,17 @@
     "lastname": "Kummerkasten",
     "mail": "admin@kummer.kasten",
     "password": "admin"
+  },
+  "fsles1": {
+    "firstname": "Fachschaft",
+    "lastname": "Eins",
+    "mail": "fsles1@kummerkasten.local",
+    "password": "fachschaft"
+  },
+  "chef": {
+    "firstname": "Chef",
+    "lastname": "Fe",
+    "mail": "cheffe@kummerkasten.local",
+    "password": "cheffe"
   }
 }

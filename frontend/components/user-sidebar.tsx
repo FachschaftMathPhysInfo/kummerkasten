@@ -28,11 +28,13 @@ export function UserSidebar() {
       title: "Tickets",
       url: "/tickets",
       icon: Tickets,
+      cypress: "sidebar-tickets"
     },
     {
       title: "Labels",
       url: "/labels",
       icon: Tags,
+      cypress: "sidebar-labels"
     },
   ]
 
@@ -41,13 +43,14 @@ export function UserSidebar() {
       title: "Users",
       url: "/users",
       icon: Users,
+      cypress: "sidebar-users"
     }
   ]
 
   if (!user) return null
 
   return (
-    <Sidebar className={'relative'} collapsible={"icon"}>
+    <Sidebar className={'relative'} collapsible={"icon"} data-cy={'sidebar'}>
       <SidebarContent className={'pr-10'}>
         <SidebarGroup className={'h-full justify-center'}>
           <SidebarGroupContent>
@@ -55,7 +58,7 @@ export function UserSidebar() {
               {userItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <a href={item.url} data-cy={item.cypress}>
                       <item.icon/>
                       <span>{item.title}</span>
                     </a>
@@ -65,7 +68,7 @@ export function UserSidebar() {
               {user?.role === UserRole.Admin && adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <a href={item.url} data-cy={item.cypress}>
                       <item.icon/>
                       <span>{item.title}</span>
                     </a>
@@ -84,6 +87,7 @@ export function UserSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+              data-cy={'sidebar-settings'}
               onClick={() => router.push("/profile")}
               className={'flex items-center'}
             >
@@ -92,6 +96,7 @@ export function UserSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+              data-cy={'sidebar-logout'}
               onClick={() => logout()}
               className={'flex items-center text-destructive'}
             >
@@ -108,7 +113,7 @@ export function UserSidebar() {
 export function UserSidebarTrigger() {
   const {user} = useUser();
   if (!user) return null;
-  return <SidebarTrigger/>
+  return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
 
 function ThemeSwitch() {
@@ -127,6 +132,7 @@ function ThemeSwitch() {
     <SidebarMenuButton
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       className={'flex items-center'}
+      data-cy={'sidebar-theme-toggle'}
     >
       {theme === "light" ? (
         <><Sun/>Hell</>
