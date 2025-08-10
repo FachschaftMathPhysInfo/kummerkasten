@@ -23,59 +23,62 @@ export function UserSidebar() {
     const {user, logout} = useUser()
     const router = useRouter()
 
-    const userItems = [
-        {
-            title: "Tickets",
-            url: "/tickets",
-            icon: Tickets,
-        },
-        {
-            title: "Labels",
-            url: "/labels",
-            icon: Tags,
-        },
-    ]
+  const userItems = [
+    {
+      title: "Tickets",
+      url: "/tickets",
+      icon: Tickets,
+      cypress: "sidebar-tickets"
+    },
+    {
+      title: "Labels",
+      url: "/labels",
+      icon: Tags,
+      cypress: "sidebar-labels"
+    },
+  ]
 
-    const adminItems = [
-        {
-            title: "Users",
-            url: "/users",
-            icon: Users,
-        }
-    ]
+  const adminItems = [
+    {
+      title: "Users",
+      url: "/users",
+      icon: Users,
+      cypress: "sidebar-users"
+    }
+  ]
 
     if (!user) return null
 
-    return (
-        <Sidebar className={'relative'} collapsible={"icon"}>
-            <SidebarContent className={'pr-10'}>
-                <SidebarGroup className={'h-full justify-center'}>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {userItems.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon/>
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                            {user?.role === UserRole.Admin && adminItems.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon/>
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-            </SidebarContent>
+  return (
+    <Sidebar className={'relative'} collapsible={"icon"} data-cy={'sidebar'}>
+      <SidebarContent className={'pr-10'}>
+        <SidebarGroup className={'h-full justify-center'}>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {userItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url} data-cy={item.cypress}>
+                      <item.icon/>
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+              {user?.role === UserRole.Admin && adminItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url} data-cy={item.cypress}>
+                      <item.icon/>
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
             <SidebarFooter>
                 <SidebarMenu>
@@ -108,33 +111,34 @@ export function UserSidebar() {
 }
 
 export function UserSidebarTrigger() {
-    const {user} = useUser();
-    if (!user) return null;
-    return <SidebarTrigger/>
+  const {user} = useUser();
+  if (!user) return null;
+  return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
 
 function ThemeSwitch() {
-    const [mounted, setMounted] = useState(false)
-    const {resolvedTheme, theme, setTheme} = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme, theme, setTheme } = useTheme()
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-    if (!mounted) {
-        return null
-    }
+  if (!mounted) {
+    return null
+  }
 
-    return (
-        <SidebarMenuButton
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className={'flex items-center'}
-        >
-            {theme === "light" ? (
-                <><Sun/>Hell</>
-            ) : (
-                <><Moon/>Dunkel</>
-            )}
-        </SidebarMenuButton>
-    )
+  return (
+    <SidebarMenuButton
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      className={'flex items-center'}
+      data-cy={'sidebar-theme-toggle'}
+    >
+      {theme === "light" ? (
+        <><Sun/>Hell</>
+      ) : (
+        <><Moon/>Dunkel</>
+      )}
+    </SidebarMenuButton>
+  )
 }

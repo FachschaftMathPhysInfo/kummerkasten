@@ -135,6 +135,7 @@ export function UserTable(props: DataTableProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <Button
+          data-cy={'create-user-button'}
           variant={"default"}
           onClick={() => {
             setDialogState({mode: "add", currentUser: null});
@@ -145,6 +146,7 @@ export function UserTable(props: DataTableProps) {
         </Button>
 
         <Input
+          data-cy={'user-searchbar'}
           placeholder="Nachnamen filtern..."
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
@@ -154,7 +156,7 @@ export function UserTable(props: DataTableProps) {
         />
       </div>
       <div className="rounded-md border overflow-hidden">
-        <Table>
+        <Table data-cy={'user-table'}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -177,6 +179,7 @@ export function UserTable(props: DataTableProps) {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  data-cy={'user-row'}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
@@ -195,6 +198,7 @@ export function UserTable(props: DataTableProps) {
             ) : (
               <TableRow>
                 <TableCell
+                  data-cy={'no-results-message'}
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >

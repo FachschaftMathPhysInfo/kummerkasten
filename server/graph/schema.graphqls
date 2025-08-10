@@ -37,10 +37,10 @@ type Ticket {
 }
 
 type Label {
-    id: String!
-    name: String!
-    color: String!
-    tickets: [Ticket!]
+  id: String!
+  name: String!
+  color: String
+  tickets: [Ticket!]
 }
 
 type User {
@@ -84,8 +84,8 @@ input NewTicket {
 }
 
 input NewLabel {
-    name: String!
-    color: String!
+  name: String!
+  color: String
 }
 
 input NewUser {
