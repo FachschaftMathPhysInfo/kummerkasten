@@ -7,8 +7,9 @@ import {useCallback, useEffect, useState} from "react";
 import {AllTicketsDocument, AllTicketsQuery, Ticket} from "@/lib/graph/generated/graphql";
 import {Input} from "@/components/ui/input";
 
+const client = getClient();
+
 export default function TicketPage() {
-    const client = getClient();
     const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -40,7 +41,7 @@ export default function TicketPage() {
             </div>
             {filteredTickets.map((ticket) =>
                     ticket?.id && (
-                        <div key={ticket.id} className="m-8">
+                        <div key={ticket.id} className="mx-8 my-4">
                             <TicketCard ticketID={ticket.id}/>
                         </div>
                     )
