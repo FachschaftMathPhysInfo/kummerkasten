@@ -19,7 +19,7 @@ export default function TicketPage() {
         if (data.tickets) {
             setTickets(data.tickets);
         }
-    }, [client]);
+    }, []);
 
     useEffect(() => {
         void fetchTickets();

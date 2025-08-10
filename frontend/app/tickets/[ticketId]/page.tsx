@@ -15,11 +15,6 @@ import {
 } from "@/lib/graph/generated/graphql";
 import {Card, CardContent} from "@/components/ui/card";
 
-type Props = {
-    params: {
-        ticketId: string
-    }
-}
 
 const client = getClient();
 
@@ -36,12 +31,12 @@ export default function TicketDetailView() {
     const fetchTickets = useCallback(async () => {
         const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
         if (data.tickets) setTickets(data.tickets.filter(t => t !== null) as Ticket[]);
-    }, [client]);
+    }, []);
 
     const fetchTicketDetail = useCallback(async () => {
         const data = await client.request<TicketByIdQuery>(TicketByIdDocument, {id: ticketId});
         if (data.tickets?.[0]) setTicket(data.tickets[0]);
-    }, [client, ticketId]);
+    }, [ticketId]);
 
     useEffect(() => {
         void fetchTickets();

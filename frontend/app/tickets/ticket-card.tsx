@@ -39,7 +39,7 @@ export function TicketCard({ticketID}: TicketProps) {
             setTicket(ticketData);
             setTicketLabels(labels ?? []);
         }
-    }, [ticketID, client]);
+    }, [ticketID]);
 
     useEffect(() => {
         void fetchTicketData();
