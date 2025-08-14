@@ -1,12 +1,27 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import type {NextRequest} from 'next/server'
+import {NextResponse} from 'next/server'
+import {getClient} from "@/lib/graph/client";
+import {LoginCheckDocument, LoginCheckQuery} from "@/lib/graph/generated/graphql";
 
 const PUBLIC_ROUTES = ['/', '/login']
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  const sid = request.cookies.get('sid')?.value
-  const isLoggedIn = !!sid
+export async function middleware(request: NextRequest) {
+  const {pathname} = request.nextUrl
+
+  async function checkIsLoggedIn() {
+    const client = getClient()
+    const sid = request.cookies.get('sid')?.value;
+    if(!sid) return false;
+
+    try {
+      const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
+      return loggedInData.loginCheck !== null
+    } catch {
+      return false
+    }
+  }
+
+  const isLoggedIn = await checkIsLoggedIn()
 
   if (pathname === '/login' && isLoggedIn) {
     return NextResponse.redirect(new URL('/tickets', request.url))
@@ -17,13 +32,22 @@ export function middleware(request: NextRequest) {
   }
 
   if (!isLoggedIn) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    const response = NextResponse.redirect(new URL('/login', request.url))
+    response.cookies.delete('sid')
+    return response
   }
 
   return NextResponse.next()
 }
 
-// Does not run on: form, public assets
 export const config = {
-  matcher: ['/((?!^$|_next/|favicon.ico).*)'],
+  matcher: [
+    '/login',
+    '/tickets',
+    '/users',
+    '/labels',
+    '/profile',
+    '/settings',
+    '/t/:path*',
+  ],
 }
