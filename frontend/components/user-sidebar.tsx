@@ -50,7 +50,7 @@ export function UserSidebar() {
   if (!user) return null
 
   return (
-    <Sidebar className={'relative'} collapsible={"icon"} data-cy={'sidebar'}>
+    <Sidebar className={'fixed h-screen top-0 left-0'} collapsible={"icon"} data-cy={'sidebar'}>
       <SidebarContent className={'pr-10'}>
         <SidebarGroup className={'h-full justify-center'}>
           <SidebarGroupContent>
@@ -107,7 +107,6 @@ export function UserSidebar() {
       </SidebarFooter>
     </Sidebar>
   );
-
 }
 
 export function UserSidebarTrigger() {

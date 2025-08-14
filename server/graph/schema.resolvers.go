@@ -26,16 +26,16 @@ import (
 func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTicket) (*model.Ticket, error) {
 	var labels []*models.Label
 
-	for _, formLabel := range ticket.Labels {
+	for _, labelName := range ticket.Labels {
 		label := &models.Label{}
 		err := r.DB.NewSelect().
 			Model(label).
-			Where("LOWER(name) = ?", strings.ToLower(formLabel.String())).
+			Where("LOWER(name) = ?", strings.ToLower(string(labelName))).
 			Limit(1).
 			Scan(ctx)
 		if err != nil {
-			log.Printf("Label not found: %s", formLabel.String())
-			return nil, fmt.Errorf("label not found: %s", formLabel.String())
+			log.Printf("Label not found: %s", labelName)
+			return nil, fmt.Errorf("label not found: %s", labelName)
 		}
 		labels = append(labels, label)
 	}
@@ -55,12 +55,26 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		return nil, err
 	}
 
+	if len(labels) > 0 {
+		var labelsToTickets []models.LabelsToTickets
+		for _, label := range labels {
+			labelsToTickets = append(labelsToTickets, models.LabelsToTickets{
+				LabelID:  label.ID,
+				TicketID: dbTicket.ID,
+			})
+		}
+		if _, err := r.DB.NewInsert().Model(&labelsToTickets).Exec(ctx); err != nil {
+			log.Printf("Failed to link labels to ticket: %v", err)
+		}
+	}
+
 	var gqlLabels []*model.Label
 	for _, l := range dbTicket.Labels {
 		gqlLabels = append(gqlLabels, &model.Label{
-			ID:    l.ID,
-			Name:  l.Name,
-			Color: &l.Color,
+			ID:        l.ID,
+			Name:      l.Name,
+			Color:     &l.Color,
+			FormLabel: &l.FormLabel,
 		})
 	}
 
@@ -169,16 +183,22 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 		newLabel.Color = colorValue
 	}
 
+	if label.FormLabel != nil {
+		newLabel.FormLabel = *label.FormLabel
+	}
+	form := newLabel.FormLabel
+
 	if _, err := r.DB.NewInsert().Model(newLabel).Exec(ctx); err != nil {
 		log.Printf("Failed to create label: %v", err)
 		return nil, err
 	}
 
 	return &model.Label{
-		ID:      newLabel.ID,
-		Name:    newLabel.Name,
-		Color:   &newLabel.Color,
-		Tickets: []*model.Ticket{},
+		ID:        newLabel.ID,
+		Name:      newLabel.Name,
+		Color:     &newLabel.Color,
+		FormLabel: &form,
+		Tickets:   []*model.Ticket{},
 	}, nil
 }
 
@@ -221,6 +241,10 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 		}
 
 		dbLabel.Color = colorValue
+	}
+
+	if label.FormLabel != nil {
+		dbLabel.FormLabel = *label.FormLabel
 	}
 
 	if _, err := r.DB.NewUpdate().Model(dbLabel).WherePK().Exec(ctx); err != nil {
@@ -577,10 +601,12 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 	for _, t := range dbTickets {
 		var gqlLabels []*model.Label
 		for _, l := range t.Labels {
+			form := l.FormLabel
 			gqlLabels = append(gqlLabels, &model.Label{
-				ID:    l.ID,
-				Name:  l.Name,
-				Color: &l.Color,
+				ID:        l.ID,
+				Name:      l.Name,
+				FormLabel: &form,
+				Color:     &l.Color,
 			})
 		}
 
@@ -618,22 +644,25 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 	for _, l := range dbLabels {
 		var gqlTickets []*model.Ticket
 		for _, t := range l.Tickets {
+			note := t.Note
 			gqlTickets = append(gqlTickets, &model.Ticket{
 				ID:           t.ID,
 				Title:        t.Title,
 				Text:         t.Text,
-				Note:         &t.Note,
+				Note:         &note,
 				State:        t.State,
 				CreatedAt:    t.CreatedAt,
 				LastModified: t.LastModified,
 			})
 		}
 
+		form := l.FormLabel
 		gqlLabels = append(gqlLabels, &model.Label{
-			ID:      l.ID,
-			Name:    l.Name,
-			Color:   &l.Color,
-			Tickets: gqlTickets,
+			ID:        l.ID,
+			Name:      l.Name,
+			Color:     &l.Color,
+			FormLabel: &form,
+			Tickets:   gqlTickets,
 		})
 	}
 

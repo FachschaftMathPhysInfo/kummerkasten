@@ -3,13 +3,15 @@
 import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
   CreateTicketMutation,
   NewTicket,
-  FormLabels,
   CreateTicketDocument,
+  FormLabelsQuery,
+  FormLabelsDocument,
+  Label
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {LoaderCircle, Send} from "lucide-react";
@@ -27,7 +29,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 
 const formUiSchema = z.object({
   labels: z
-    .array(z.nativeEnum(FormLabels))
+    .array(z.string())
     .min(1, "Bitte wählen Sie mindestens ein Label aus."),
   title: z.string().min(1, "Die Zusammenfassung darf nicht leer sein."),
   text: z.string().min(1, "Die Nachricht darf nicht leer sein."),
@@ -44,6 +46,33 @@ export default function FormUi() {
   });
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [formLabels, setFormLabels] = useState<Label[]>([]);
+  const [isLabelsLoading, setIsLabelsLoading] = useState<boolean>(true);
+  const [labelsError, setLabelsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLabels = async () => {
+      try {
+        setIsLabelsLoading(true);
+        const client = getClient();
+        const data = await client.request<FormLabelsQuery>(FormLabelsDocument);
+        if (data.labels) {
+          const filteredLabels = data.labels
+            .filter((label): label is Label => label !== null)
+            .filter(label => label.formLabel);
+          setFormLabels(filteredLabels);
+        } else {
+          setFormLabels([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch form labels:", err);
+        setLabelsError("Form labels could not be loaded.");
+      } finally {
+        setIsLabelsLoading(false);
+      }
+    };
+    void fetchLabels();
+  }, []);
 
   async function onValidSubmit(data: z.infer<typeof formUiSchema>) {
     setLoading(true);
@@ -79,38 +108,39 @@ export default function FormUi() {
         )}
         className="space-y-4 w-full"
       >
-        {/* Label selection */}
         <FormField
             control={form.control}
             name="labels"
             render={() => (
                 <FormItem className="space-y-3">
                 <FormLabel>An wen ist das Feedback gerichtet?</FormLabel>
-                {Object.values(FormLabels).map((label) => (
+                {isLabelsLoading && <div className="flex items-center justify-center"><LoaderCircle className="animate-spin" /></div>}
+                {labelsError && <p className="text-red-500">{labelsError}</p>}
+                {!isLabelsLoading && formLabels.length > 0 && formLabels.map((label) => (
                     <FormField
-                    key={label}
+                    key={label.id}
                     control={form.control}
                     name="labels"
                     render={({field}) => {
                         return (
                         <FormItem
-                            key={label}
+                            key={label.id}
                             className="flex flex-row items-start space-x-3 space-y-0"
                         >
                             <FormControl>
                             <Checkbox
-                                checked={field.value?.includes(label)}
+                                checked={field.value?.includes(label.name)}
                                 onCheckedChange={(checked) => {
                                 return checked
-                                    ? field.onChange([...field.value, label])
+                                    ? field.onChange([...field.value, label.name])
                                     : field.onChange(
-                                        field.value?.filter((value) => value !== label)
+                                        field.value?.filter((value) => value !== label.name)
                                     );
                                 }}
                             />
                             </FormControl>
                             <FormLabel className="font-normal capitalize">
-                            {label}
+                            {label.name}
                             </FormLabel>
                         </FormItem>
                         );
@@ -121,8 +151,7 @@ export default function FormUi() {
                 </FormItem>
             )}
         />
-
-        {/* Summary field */}
+  
         <FormField
           control={form.control}
           name="title"
@@ -136,8 +165,6 @@ export default function FormUi() {
             </FormItem>
           )}
         />
-
-        {/* Feedback text field */}
         <FormField
           control={form.control}
           name="text"
@@ -155,8 +182,6 @@ export default function FormUi() {
             </FormItem>
           )}
         />
-
-        {/* Submit button */}
         <Button
           disabled={(!form.formState.isValid && hasTriedToSubmit) || loading}
           type="submit"
