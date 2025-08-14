@@ -45,7 +45,7 @@ type Label {
 
 type User {
     id: String!
-    sid: String!
+    sid: [String!]
     mail: String!
     firstname: String!
     lastname: String!

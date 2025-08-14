@@ -233,7 +233,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (*model.User, error) {
-	sid, _ := auth.GenerateSID()
+	newSid, _ := auth.GenerateSID()
 
 	hashedPassword, err := auth.HashPassword(user.Password)
 
@@ -243,7 +243,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 
 	newUser := &model.User{
 		ID:           uuid.New().String(),
-		Sid:          sid,
+		Sid:          []string{newSid},
 		Mail:         user.Mail,
 		Firstname:    user.Firstname,
 		Lastname:     user.Lastname,
@@ -280,22 +280,20 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, ids []string) (int32,
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model.UpdateUser) (string, error) {
-	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
-
-	if err != nil || len(users) == 0 {
+	dbUser := &models.User{}
+	err := r.DB.NewSelect().Model(dbUser).Where("id = ?", id).Scan(ctx)
+	if err != nil {
 		return "", fmt.Errorf("user with id %v not found", id)
 	}
 
-	updatedUser := users[0]
-
 	if user.Mail != nil {
-		updatedUser.Mail = *user.Mail
+		dbUser.Mail = *user.Mail
 	}
 	if user.Firstname != nil {
-		updatedUser.Firstname = *user.Firstname
+		dbUser.Firstname = *user.Firstname
 	}
 	if user.Lastname != nil {
-		updatedUser.Lastname = *user.Lastname
+		dbUser.Lastname = *user.Lastname
 	}
 	if user.Password != nil {
 		hashedPassword, err := auth.HashPassword(*user.Password)
@@ -305,52 +303,50 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 			return "", err
 		}
 
-		updatedUser.Password = hashedPassword
+		dbUser.Password = hashedPassword
 	}
 	if user.Sid != nil {
-		updatedUser.Sid = *user.Sid
+		dbUser.Sid = append(dbUser.Sid, *user.Sid)
 	}
 
-	updatedUser.LastModified = time.Now()
+	dbUser.LastModified = time.Now()
 
-	if _, err := r.DB.NewUpdate().Model(updatedUser).
+	if _, err := r.DB.NewUpdate().Model(dbUser).
 		Where("id = ?", id).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to update user: %v", err)
 		return "", err
 	}
 
-	return updatedUser.Sid, nil
+	return dbUser.ID, nil
 }
 
 // ChangeRole is the resolver for the changeRole field.
 func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model.UserRole) (string, error) {
-	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
-
-	if err != nil || len(users) == 0 {
+	dbUser := &models.User{}
+	err := r.DB.NewSelect().Model(dbUser).Where("id = ?", id).Scan(ctx)
+	if err != nil {
 		return "", fmt.Errorf("user with id %v not found", id)
 	}
 
-	updatedUser := users[0]
+	dbUser.Role = role
+	dbUser.LastModified = time.Now()
 
-	updatedUser.Role = role
-	updatedUser.LastModified = time.Now()
-
-	if _, err := r.DB.NewUpdate().Model(updatedUser).
-		Where("id = ?", id).
-		Exec(ctx); err != nil {
+	if _, err := r.DB.NewUpdate().Model(dbUser).Where("id = ?", id).Exec(ctx); err != nil {
 		log.Printf("Failed to update user role: %v", err)
 		return "", err
 	}
 
-	return updatedUser.ID, nil
+	return dbUser.ID, nil
 }
 
 // Logout is the resolver for the logout field.
 func (r *mutationResolver) Logout(ctx context.Context, sid string) (string, error) {
-	var users []model.User
+	var users []models.User // Fix: Use models.User instead of model.User
 
-	err := r.DB.NewSelect().Model(&users).Where("sid = ?", sid).Scan(ctx)
+	err := r.DB.NewSelect().Model(&users).
+		Where("? = ANY(sid)", sid).
+		Scan(ctx)
 	if err != nil || len(users) == 0 {
 		log.Printf("Failed to fetch user for logout: %v", err)
 		return err.Error(), err
@@ -358,9 +354,16 @@ func (r *mutationResolver) Logout(ctx context.Context, sid string) (string, erro
 
 	user := users[0]
 
-	if _, err = r.DB.NewUpdate().Model(&user).
+	newSids := make([]string, 0, len(user.Sid))
+	for _, s := range user.Sid {
+		if s != sid {
+			newSids = append(newSids, s)
+		}
+	}
+
+	if _, err := r.DB.NewUpdate().Model(&user).
+		Set("sid = ?", newSids).
 		Where("id = ?", user.ID).
-		Set("sid = ?", "").
 		Exec(ctx); err != nil {
 		log.Printf("Failed to logout user: %v", err)
 		return err.Error(), err
@@ -642,9 +645,9 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, role *model.UserRole) ([]*model.User, error) {
-	var users []*model.User
+	var dbUsers []models.User // Fix: Use models.User for database query
 
-	query := r.DB.NewSelect().Model(&users)
+	query := r.DB.NewSelect().Model(&dbUsers)
 
 	if len(id) > 0 {
 		query = query.Where("id IN (?)", bun.In(id))
@@ -661,7 +664,24 @@ func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, r
 		return nil, err
 	}
 
-	return users, nil
+	// Convert to GraphQL models for return
+	var gqlUsers []*model.User
+	for _, dbUser := range dbUsers {
+		gqlUsers = append(gqlUsers, &model.User{
+			ID:           dbUser.ID,
+			Sid:          dbUser.Sid,
+			Mail:         dbUser.Mail,
+			Firstname:    dbUser.Firstname,
+			Lastname:     dbUser.Lastname,
+			Password:     dbUser.Password,
+			Role:         dbUser.Role,
+			CreatedAt:    dbUser.CreatedAt,
+			LastModified: dbUser.LastModified,
+			LastLogin:    dbUser.LastLogin,
+		})
+	}
+
+	return gqlUsers, nil
 }
 
 // Settings is the resolver for the settings field.
@@ -684,26 +704,33 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
-	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
-	if err != nil || len(users) == 0 {
+	var dbUsers []*models.User
+	err := r.DB.NewSelect().Model(&dbUsers).
+		Where("mail = ?", mail).
+		Scan(ctx)
+	if err != nil || len(dbUsers) == 0 {
 		log.Printf("Failed to fetch user for login: %v", err)
 		return false, err
 	}
 
-	user := users[0]
-	hashedPassword := user.Password
+	user := dbUsers[0]
 
-	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
-		log.Printf("Password is incorrect for %v is incorrect", user.Mail)
+	if err := auth.VerifyPassword(user.Password, password); err != nil {
+		log.Printf("Password is incorrect for %v", user.Mail)
 		return false, nil
 	}
 
-	if user.Sid == "" {
-		user.Sid, err = auth.GenerateSID()
-		if err != nil {
-			log.Printf("Failed to generate SID: %v", err)
-			return false, err
-		}
+	newSid, err := auth.GenerateSID()
+	if err != nil {
+		log.Printf("Failed to generate SID: %v", err)
+		return false, err
+	}
+
+	user.Sid = append(user.Sid, newSid)
+
+	const MaxSidsPerAccount = 15
+	if len(user.Sid) >= MaxSidsPerAccount {
+		user.Sid = user.Sid[len(user.Sid)-MaxSidsPerAccount:]
 	}
 
 	now := time.Now()
@@ -718,7 +745,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	http.SetCookie(httpResponseWriter, &http.Cookie{
 		Name:     "sid",
-		Value:    user.Sid,
+		Value:    newSid,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   os.Getenv("ENV") != "DEV",
@@ -733,7 +760,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
 	var users []*model.User
 
-	if err := r.DB.NewSelect().Model(&users).Where("sid = ?", sid).Scan(ctx); err != nil {
+	if err := r.DB.NewSelect().Model(&users).Where("? = ANY(sid)", sid).Scan(ctx); err != nil {
 		return nil, err
 	}
 
