@@ -2,22 +2,29 @@
 
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
-import {Link, NotepadText, Trash2, X} from "lucide-react";
+import {Edit2, Link, Trash2, X} from "lucide-react";
 import {Label, Ticket} from "@/lib/graph/generated/graphql";
+import React, {useState} from "react";
+import {TicketDialogState} from "@/app/tickets/page";
 
 interface TicketStatusBarProps {
     ticket: Ticket | null;
     ticketLabels: Label[];
+    setDialogState: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-export default function TicketStatusBar({ticket, ticketLabels}: TicketStatusBarProps) {
+
+export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: TicketStatusBarProps) {
     if (!ticket) return <p>Lade Daten ...</p>;
 
     return (
         <div className="flex flex-col justify-between items-center h-full">
             <div className="flex items-stretch justify-center">
                 <Button variant="ghost"><Link/></Button>
-                <Button variant="ghost"><NotepadText/></Button>
+                <Button variant="ghost" onClick={() => setDialogState({
+                    mode: "update",
+                    currentTicket: ticket
+                })}><Edit2/></Button>
                 <Button variant="ghost"><Trash2/></Button>
                 <Button variant="ghost"><X/></Button>
             </div>

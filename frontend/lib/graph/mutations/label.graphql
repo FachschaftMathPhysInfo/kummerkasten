@@ -1,0 +1,7 @@
+mutation addLabelsToTicket($assignments: [LabelToTicketAssignment!]!) {
+    addLabelToTicket(assignments: $assignments)
+}
+
+mutation removeLabelsFromTicket($assignments: [LabelToTicketAssignment!]!) {
+    removeLabelFromTicket(assignments: $assignments)
+}

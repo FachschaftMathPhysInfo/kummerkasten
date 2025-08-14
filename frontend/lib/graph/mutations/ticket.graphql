@@ -1,0 +1,3 @@
+mutation updateTicket($id: String!, $ticket: UpdateTicket!){
+    updateTicket(id: $id, ticket: $ticket)
+}

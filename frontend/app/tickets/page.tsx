@@ -10,9 +10,20 @@ import Link from "next/link";
 
 const client = getClient();
 
+export type TicketDialogState = {
+    mode: "update" | "delete" | null;
+    currentTicket: Ticket | null
+}
+
+
 export default function TicketPage() {
     const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
+
+    const resetDialogState = ()=>{
+        setDialogState({mode: null, currentTicket: null})
+    }
 
     const fetchTickets = useCallback(async () => {
         const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
@@ -44,7 +55,7 @@ export default function TicketPage() {
                     ticket?.id && (
                         <div key={ticket.id} className="mx-8 my-4">
                             <Link href={`/tickets/${ticket.id}`} passHref>
-                                <TicketCard ticketID={ticket.id}/>
+                                <TicketCard ticketID={ticket.id} setDialogState={setDialogState}/>
                             </Link>
                         </div>
                     )

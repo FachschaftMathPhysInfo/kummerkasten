@@ -1,0 +1,8 @@
+query allLabels {
+    labels{
+        id,
+        color,
+        name,
+    }
+}
+

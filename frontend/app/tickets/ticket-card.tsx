@@ -7,10 +7,12 @@ import {Link, MoreHorizontal, MoreVertical, NotepadText, Trash2} from "lucide-re
 import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {getClient} from "@/lib/graph/client";
+import {TicketDialogState} from "@/app/tickets/page";
 
 
 type TicketProps = {
     ticketID: string
+    setDialogState: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
 function useIsMobile(breakpoint = 380) {
@@ -26,7 +28,7 @@ function useIsMobile(breakpoint = 380) {
 
 const client = getClient();
 
-export function TicketCard({ticketID}: TicketProps) {
+export function TicketCard({ticketID,setDialogState}: TicketProps) {
     const isMobile = useIsMobile();
     const [ticket, setTicket] = useState<Ticket>();
     const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -93,7 +95,10 @@ export function TicketCard({ticketID}: TicketProps) {
                                     </div>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent side="bottom" align="end">
-                                    <DropdownMenuItem onClick={() => console.log("Edit", ticketID)}>
+                                    <DropdownMenuItem onClick={() => {
+                                        if (!ticket) return;
+                                        setDialogState({mode: "update", currentTicket: ticket});
+                                    }}>
                                         <NotepadText/> Bearbeiten
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => console.log("Link", ticketID)}>

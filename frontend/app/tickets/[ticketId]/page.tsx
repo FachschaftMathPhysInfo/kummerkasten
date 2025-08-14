@@ -8,6 +8,8 @@ import {AllTicketsDocument, AllTicketsQuery, Label, Ticket, TicketByIdDocument, 
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
 import TicketStatusBar from "@/app/tickets/[ticketId]/ticket-status-bar";
+import {TicketDialogState} from "@/app/tickets/page";
+import TicketDialog from "@/app/tickets/[ticketId]/ticket-dialog";
 
 const client = getClient();
 
@@ -19,6 +21,11 @@ export default function TicketPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [ticket, setTicket] = useState<Ticket | null>(null);
     const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
+
+    const [dialogState, setDialogState] = useState<TicketDialogState>({
+        mode: null,
+        currentTicket: null
+    });
 
     const fetchTickets = useCallback(async () => {
         const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
@@ -52,9 +59,17 @@ export default function TicketPage() {
                     <TicketDetailView ticket={ticket} ticketId={ticketId}/>
                 </ResizablePanel>
                 <ResizablePanel defaultSize={13}>
-                    <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels}/>
+                    <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
                 </ResizablePanel>
             </ResizablePanelGroup>
+            <TicketDialog
+                open={dialogState.mode === "update"}
+                createMode={false}
+                ticket={dialogState.currentTicket}
+                closeDialog={() => setDialogState({ mode: null, currentTicket: null })}
+                refreshData={fetchTickets}
+            />
         </div>
+
     );
 }
