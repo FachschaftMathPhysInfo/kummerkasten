@@ -12,5 +12,5 @@ export const defaultUser: User = {
   mail: 'max.musterperson@mail.com',
   role: UserRole.User,
   password: 'invalid',
-  sid: "invalid sid"
+  sid: ["invalid sid"]
 }
