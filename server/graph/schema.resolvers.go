@@ -758,7 +758,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 // LoginCheck is the resolver for the loginCheck field.
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
-	var users []*model.User
+	var users []*models.User
 
 	if err := r.DB.NewSelect().Model(&users).Where("? = ANY(sid)", sid).Scan(ctx); err != nil {
 		return nil, err
@@ -768,7 +768,21 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 		return nil, nil
 	}
 
-	return users[0], nil
+	dbUser := users[0]
+	gqlUser := model.User{
+		ID:           dbUser.ID,
+		Sid:          dbUser.Sid,
+		Mail:         dbUser.Mail,
+		Firstname:    dbUser.Firstname,
+		Lastname:     dbUser.Lastname,
+		Password:     "",
+		Role:         dbUser.Role,
+		CreatedAt:    dbUser.CreatedAt,
+		LastModified: dbUser.LastModified,
+		LastLogin:    dbUser.LastLogin,
+	}
+
+	return &gqlUser, nil
 }
 
 // QuestionAnswerPairs is the resolver for the questionAnswerPairs field.
