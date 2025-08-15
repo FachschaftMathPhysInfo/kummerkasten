@@ -101,22 +101,26 @@ export default function FormUi() {
   }
 
   return (
+    <div className="w-full max-w-4xl mx-auto text-center bg-kummerkasten-highlight-bg rounded-lg p-6 my-8">
+      <h2 className="text-3xl font-semibold mb-4">Deine anonyme Nachricht</h2>
     <FormProvider {...form}>
       <form
         onSubmit={form.handleSubmit(onValidSubmit, () =>
           setHasTriedToSubmit(true)
         )}
-        className="space-y-4 w-full"
+        className="space-y-4"
       >
         <FormField
             control={form.control}
             name="labels"
             render={() => (
                 <FormItem className="space-y-3">
-                <FormLabel>An wen ist das Feedback gerichtet?</FormLabel>
+                <FormLabel className="text-lg">An wen ist das Feedback gerichtet?</FormLabel>
                 {isLabelsLoading && <div className="flex items-center justify-center"><LoaderCircle className="animate-spin" /></div>}
                 {labelsError && <p className="text-red-500">{labelsError}</p>}
-                {!isLabelsLoading && formLabels.length > 0 && formLabels.map((label) => (
+                {!isLabelsLoading && formLabels.length > 0 &&  (
+                  <div className="flex flex-row flex-wrap gap-4">
+                    {formLabels.map((label) => (
                     <FormField
                     key={label.id}
                     control={form.control}
@@ -125,7 +129,7 @@ export default function FormUi() {
                         return (
                         <FormItem
                             key={label.id}
-                            className="flex flex-row items-start space-x-3 space-y-0"
+                            className="flex flex-row items-center space-x-1 space-y-0"
                         >
                             <FormControl>
                             <Checkbox
@@ -139,7 +143,7 @@ export default function FormUi() {
                                 }}
                             />
                             </FormControl>
-                            <FormLabel className="font-normal capitalize">
+                            <FormLabel className="font-normal capitalize text-lg">
                             {label.name}
                             </FormLabel>
                         </FormItem>
@@ -147,6 +151,8 @@ export default function FormUi() {
                     }}
                     />
                 ))}
+                  </div>
+                )}
                 <FormMessage />
                 </FormItem>
             )}
@@ -157,9 +163,12 @@ export default function FormUi() {
           name="title"
           render={({field}) => (
             <FormItem>
-              <FormLabel>Zusammenfassung</FormLabel>
+              <FormLabel className="text-lg">Zusammenfassung</FormLabel>
               <FormControl>
-                <Input placeholder="Zusammenfassung" {...field} />
+                <Input 
+                  placeholder="Betreff" 
+                  className="bg-background text-foreground"
+                  {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -170,11 +179,11 @@ export default function FormUi() {
           name="text"
           render={({field}) => (
             <FormItem>
-              <FormLabel>Feedback</FormLabel>
+              <FormLabel className="text-lg">Feedback</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Deine anonyme Nachricht"
-                  className="resize-none"
+                  className="resize-none bg-background text-foreground"
                   {...field}
                 />
               </FormControl>
@@ -196,5 +205,6 @@ export default function FormUi() {
         </Button>
       </form>
     </FormProvider>
+    </div>
   );
 }
