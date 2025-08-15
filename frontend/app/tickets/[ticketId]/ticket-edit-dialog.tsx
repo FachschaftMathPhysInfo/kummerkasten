@@ -146,19 +146,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
                 />
                 <FormField
                     control={form.control}
-                    name="note"
-                    render={({field}) => (
-                        <FormItem className="flex-grow">
-                            <FormLabel>Note</FormLabel>
-                            <FormControl>
-                                <Input placeholder={"Note"}{...field}/>
-                            </FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
                     name="state"
                     render={({field}) => (
                         <FormItem className="flex-grow">
