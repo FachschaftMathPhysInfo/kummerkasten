@@ -114,71 +114,31 @@ export default function TicketPage() {
                     placeholder="Suche nach Text..."
                     value={searchTermText}
                     onChange={(e) => setSearchTermText(e.target.value)}
+                    className="hidden md:flex"
                 />
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-[200px] justify-between">
-                            {stateFilter && stateFilter.length > 0
-                                ? `${stateFilter.length} Status ausgewählt`
-                                : "Status auswählen"}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-[250px]">
-                        <Command>
-                            <CommandInput placeholder="Status suchen..."/>
-                            <CommandGroup>
-                                {Object.values(TicketState).map((state) => {
-                                    const isSelected = stateFilter?.includes(state);
-                                    return (
-                                        <CommandItem
-                                            key={state}
-                                            onSelect={() => {
-                                                setStateFilter((prev) =>
-                                                    isSelected
-                                                        ? prev?.filter((s) => s !== state)
-                                                        : [...(prev ?? []), state]
-                                                );
-                                            }}
-                                        >
-                                            <Check
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    isSelected ? "opacity-100" : "opacity-0"
-                                                )}
-                                            />
-                                            {state}
-                                        </CommandItem>
-                                    );
-                                })}
-                            </CommandGroup>
-                        </Command>
-                    </PopoverContent>
-                </Popover>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-[200px] justify-between">
-                            {labelFilter && labelFilter.length > 0
-                                ? `${labelFilter.length} Labels ausgewählt`
-                                : "Labels auswählen"}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-[250px]">
-                        <Command>
-                            <CommandInput placeholder="Labels suchen..."/>
-                            <CommandGroup>
-                                {tickets
-                                    .flatMap((t) => t?.labels ?? [])
-                                    .filter((v, i, a) => v && a.findIndex((l) => l.id === v.id) === i)
-                                    .map((label) => {
-                                        const isSelected = labelFilter?.includes(label.id);
+                <div className="hidden md:flex gap-2">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-[200px] justify-between">
+                                {stateFilter && stateFilter.length > 0
+                                    ? `${stateFilter.length} Status ausgewählt`
+                                    : "Status auswählen"}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-[250px]">
+                            <Command>
+                                <CommandInput placeholder="Status suchen..."/>
+                                <CommandGroup>
+                                    {Object.values(TicketState).map((state) => {
+                                        const isSelected = stateFilter?.includes(state);
                                         return (
                                             <CommandItem
-                                                key={label.id}
+                                                key={state}
                                                 onSelect={() => {
-                                                    setLabelFilter((prev) =>
+                                                    setStateFilter((prev) =>
                                                         isSelected
-                                                            ? prev?.filter((l) => l !== label.id)
-                                                            : [...(prev ?? []), label.id]
+                                                            ? prev?.filter((s) => s !== state)
+                                                            : [...(prev ?? []), state]
                                                     );
                                                 }}
                                             >
@@ -188,20 +148,63 @@ export default function TicketPage() {
                                                         isSelected ? "opacity-100" : "opacity-0"
                                                     )}
                                                 />
-                                                {label.name}
+                                                {state}
                                             </CommandItem>
                                         );
                                     })}
-                            </CommandGroup>
-                        </Command>
-                    </PopoverContent>
-                </Popover>
-                <DateRangeFilter
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    endDate={endDate}
-                    setEndDate={setEndDate}
-                />
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-[200px] justify-between">
+                                {labelFilter && labelFilter.length > 0
+                                    ? `${labelFilter.length} Labels ausgewählt`
+                                    : "Labels auswählen"}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-[250px]">
+                            <Command>
+                                <CommandInput placeholder="Labels suchen..."/>
+                                <CommandGroup>
+                                    {tickets
+                                        .flatMap((t) => t?.labels ?? [])
+                                        .filter((v, i, a) => v && a.findIndex((l) => l.id === v.id) === i)
+                                        .map((label) => {
+                                            const isSelected = labelFilter?.includes(label.id);
+                                            return (
+                                                <CommandItem
+                                                    key={label.id}
+                                                    onSelect={() => {
+                                                        setLabelFilter((prev) =>
+                                                            isSelected
+                                                                ? prev?.filter((l) => l !== label.id)
+                                                                : [...(prev ?? []), label.id]
+                                                        );
+                                                    }}
+                                                >
+                                                    <Check
+                                                        className={cn(
+                                                            "mr-2 h-4 w-4",
+                                                            isSelected ? "opacity-100" : "opacity-0"
+                                                        )}
+                                                    />
+                                                    {label.name}
+                                                </CommandItem>
+                                            );
+                                        })}
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                    <DateRangeFilter
+                        startDate={startDate}
+                        setStartDate={setStartDate}
+                        endDate={endDate}
+                        setEndDate={setEndDate}
+                    />
+                </div>
             </div>
             {filteredTickets.map((ticket) =>
                     ticket?.id && (

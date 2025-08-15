@@ -6,7 +6,8 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components
 import {getClient} from "@/lib/graph/client";
 import {
     AllTicketsDocument,
-    AllTicketsQuery, DeleteTicketDocument,
+    AllTicketsQuery,
+    DeleteTicketDocument,
     DeleteTicketMutation,
     Label,
     Ticket,
@@ -50,7 +51,7 @@ export default function TicketPage() {
         setTicketLabels(ticketData?.labels ?? []);
     }, [ticketId]);
 
-    const resetDialogState = ()=>{
+    const resetDialogState = () => {
         setDialogState({mode: null, currentTicket: null})
     }
 
@@ -71,13 +72,18 @@ export default function TicketPage() {
         }
     }
 
-    useEffect(() => { void fetchTickets(); }, [fetchTickets]);
-    useEffect(() => { void fetchTicketDetail(); }, [fetchTicketDetail, ticketId]);
+    useEffect(() => {
+        void fetchTickets();
+    }, [fetchTickets]);
+    useEffect(() => {
+        void fetchTicketDetail();
+    }, [fetchTicketDetail, ticketId]);
 
     return (
         <div className="w-full h-full flex flex-col pt-2 grow">
-            <ResizablePanelGroup direction="horizontal" className="flex flex-grow">
-                <ResizablePanel defaultSize={30} minSize={20} maxSize={30} className="border-r border-gray-500 flex flex-col">
+            <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow">
+                <ResizablePanel defaultSize={30} minSize={20} maxSize={30}
+                                className="border-r border-gray-500 flex-col hidden md:flex">
                     <TicketSidebar
                         tickets={tickets}
                         searchTerm={searchTerm}
@@ -89,15 +95,18 @@ export default function TicketPage() {
                 <ResizablePanel defaultSize={50} className="border-r border-gray-500 flex flex-col">
                     <TicketDetailView ticket={ticket} ticketId={ticketId}/>
                 </ResizablePanel>
-                <ResizablePanel defaultSize={13}>
-                    <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
-                </ResizablePanel>
+                    <ResizablePanel defaultSize={13} className="hidden md:flex flex-col">
+                        <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
+                    </ResizablePanel>
             </ResizablePanelGroup>
+            <div className="md:hidden border-t border-gray-300">
+                <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState} />
+            </div>
             <TicketDialog
                 open={dialogState.mode === "update"}
                 createMode={false}
                 ticket={dialogState.currentTicket}
-                closeDialog={() => setDialogState({ mode: null, currentTicket: null })}
+                closeDialog={() => setDialogState({mode: null, currentTicket: null})}
                 refreshData={async () => {
                     await fetchTickets();
                     await fetchTicketDetail();

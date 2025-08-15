@@ -74,7 +74,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                     label?.id &&
                     <Badge
                         key={label.id}
-                        className="hidden md:flex mb-3 w-full text-white justify-center"
+                        className="flex mb-3 w-full text-white justify-center"
                         style={{backgroundColor: label.color ?? "#000000"}}
                     >
                         {label.name}
