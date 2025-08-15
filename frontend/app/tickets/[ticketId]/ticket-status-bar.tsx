@@ -32,8 +32,8 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
     if (!ticket) return <div/>;
 
     return (
-        <div className="flex flex-col justify-between items-center h-full">
-            <div className="flex items-stretch justify-center">
+        <div className="flex flex-col md:flex-col justify-between items-center h-full">
+            <div className="flex items-center justify-center md:flex-row">
                 <Button variant="ghost" onClick={copyCurrentUrl}><Link/></Button>
                 <Button variant="ghost" onClick={() => setDialogState({
                     mode: "update",
@@ -45,7 +45,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                 })}><Trash2/></Button>
                 <Button variant="ghost" onClick={() => router.push("/tickets")}><X/></Button>
             </div>
-            <div className="flex flex-col border-2 border-dotted rounded-2xl w-[70%] justify-center p-2">
+            <div className="flex flex-col border-2 border-dotted rounded-2xl md:w-[70%] justify-center p-2 mb-2">
                 <div className="flex justify-between items-center">
                     <div className="text-sm ">Status:</div>
                     <Badge
@@ -69,12 +69,12 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                     <div>{new Date(ticket.lastModified).toLocaleDateString()}</div>
                 </div>
             </div>
-            <div className="flex flex-col">
+            <div className="flex md:flex-col flex-row justify-center gap-1 md:gap-0 overflow-x-auto max-w-full">
                 {ticketLabels?.map((label) => (
                     label?.id &&
                     <Badge
                         key={label.id}
-                        className="flex mb-3 w-full text-white justify-center"
+                        className="flex mb-3 md:w-full text-white justify-center"
                         style={{backgroundColor: label.color ?? "#000000"}}
                     >
                         {label.name}
