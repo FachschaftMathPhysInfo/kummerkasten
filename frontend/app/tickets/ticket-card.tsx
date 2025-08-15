@@ -8,6 +8,7 @@ import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {getClient} from "@/lib/graph/client";
 import {TicketDialogState} from "@/app/tickets/page";
+import {toast} from "sonner";
 
 
 type TicketProps = {
@@ -46,6 +47,18 @@ export function TicketCard({ticketID,setDialogState}: TicketProps) {
     useEffect(() => {
         void fetchTicketData();
     }, [fetchTicketData]);
+
+
+    const copyTicketUrl = async () => {
+        try {
+            const url = `${window.location.origin}/tickets/${ticketID}`;
+            await navigator.clipboard.writeText(url);
+            toast.success("Link kopiert!");
+        } catch {
+            toast.error("Kopieren fehlgeschlagen");
+        }
+    };
+
 
     return (
         <Card className="w-full p-3">
@@ -95,17 +108,22 @@ export function TicketCard({ticketID,setDialogState}: TicketProps) {
                                     </div>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent side="bottom" align="end">
-                                    <DropdownMenuItem onClick={() => {
-                                        if (!ticket) return;
-                                        setDialogState({mode: "update", currentTicket: ticket});
-                                    }}>
-                                        <NotepadText/> Bearbeiten
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => console.log("Link", ticketID)}>
+                                    <DropdownMenuItem
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            copyTicketUrl();
+                                        }}
+                                    >
                                         <Link/> Link kopieren
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onClick={() => console.log("Delete", ticketID)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            if (!ticket) return;
+                                            setDialogState({mode: "delete", currentTicket: ticket});
+                                        }}
                                         className="text-destructive"
                                     >
                                         <Trash2 className="text-destructive"/> Löschen
@@ -116,7 +134,6 @@ export function TicketCard({ticketID,setDialogState}: TicketProps) {
 
                     </div>
                 </div>
-
             </CardTitle>
         </Card>
 

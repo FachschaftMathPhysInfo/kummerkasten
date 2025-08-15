@@ -4,8 +4,10 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {Edit2, Link, Trash2, X} from "lucide-react";
 import {Label, Ticket} from "@/lib/graph/generated/graphql";
-import React, {useState} from "react";
+import React from "react";
 import {TicketDialogState} from "@/app/tickets/page";
+import {useRouter} from "next/navigation";
+import {toast} from "sonner";
 
 interface TicketStatusBarProps {
     ticket: Ticket | null;
@@ -15,18 +17,33 @@ interface TicketStatusBarProps {
 
 
 export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: TicketStatusBarProps) {
-    if (!ticket) return <p>Lade Daten ...</p>;
+    const router = useRouter();
+
+    const copyCurrentUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            toast.success("Link kopiert!");
+        } catch {
+            toast.error("Kopieren fehlgeschlagen");
+        }
+    };
+
+
+    if (!ticket) return <div/>;
 
     return (
         <div className="flex flex-col justify-between items-center h-full">
             <div className="flex items-stretch justify-center">
-                <Button variant="ghost"><Link/></Button>
+                <Button variant="ghost" onClick={copyCurrentUrl}><Link/></Button>
                 <Button variant="ghost" onClick={() => setDialogState({
                     mode: "update",
                     currentTicket: ticket
                 })}><Edit2/></Button>
-                <Button variant="ghost"><Trash2/></Button>
-                <Button variant="ghost"><X/></Button>
+                <Button variant="ghost" onClick={() => setDialogState({
+                    mode: "delete",
+                    currentTicket: ticket
+                })}><Trash2/></Button>
+                <Button variant="ghost" onClick={() => router.push("/tickets")}><X/></Button>
             </div>
             <div className="flex flex-col border-2 border-dotted rounded-2xl w-[70%] justify-center p-2">
                 <div className="flex justify-between items-center">
@@ -57,13 +74,10 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                     label?.id &&
                     <Badge
                         key={label.id}
-                        className="hidden md:flex mb-3 w-full text-white justify-between"
+                        className="hidden md:flex mb-3 w-full text-white justify-center"
                         style={{backgroundColor: label.color ?? "#000000"}}
                     >
                         {label.name}
-                        <button type="button" className="p-0 m-0 hover:opacity-75">
-                            <X className="h-3 w-3"/>
-                        </button>
                     </Badge>
                 ))}
             </div>

@@ -1,23 +1,30 @@
 "use client";
 
 import {Ticket} from "@/lib/graph/generated/graphql";
+import {PageLoader} from "@/components/page-loader";
+import {SerializedEditorState} from "lexical";
+import {useEffect, useState} from "react";
 
 interface TicketDetailViewProps {
     ticket: Ticket | null;
     ticketId?: string;
 }
 
-export default function TicketDetailView({ticket, ticketId}: TicketDetailViewProps) {
-    if (!ticketId) {
-        return (
-            <div className="flex items-center justify-center h-full text-gray-500">
-                Bitte wählen Sie ein Ticket aus der Übersicht.
-            </div>
-        );
-    }
+export default function TicketDetailView({ticket}: TicketDetailViewProps) {
+    const [editorState, setEditorState] = useState<SerializedEditorState | undefined>(undefined);
+
+    useEffect(() => {
+        if (ticket?.note) {
+            try {
+                setEditorState(JSON.parse(ticket.note));
+            } catch (error) {
+                console.error("Fehler beim Parsen von ticket.note:", error);
+            }
+        }
+    }, [ticket]);
 
     if (!ticket) {
-        return <>Loading Ticket...</>;
+        return <PageLoader message="Bitte wählen Sie ein Ticket aus der Übersicht."/>
     }
 
     return (

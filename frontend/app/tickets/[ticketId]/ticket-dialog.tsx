@@ -21,7 +21,6 @@ export default function TicketDialog(props: TicketDialogProps) {
                     Ticket Bearbeiten
                 </DialogTitle>
                 <TicketEditDialog
-                    createMode={props.createMode}
                     ticket={props.ticket}
                     closeDialog={props.closeDialog}
                     refreshData={props.refreshData}

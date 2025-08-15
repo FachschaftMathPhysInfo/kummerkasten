@@ -26,7 +26,6 @@ import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/
 import {cn} from "@/lib/utils";
 
 interface TicketEditDialogProps {
-    createMode: boolean;
     ticket: Ticket | null;
     closeDialog: () => void
     refreshData: () => void
@@ -118,6 +117,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
             toast.success("Ticket wurde aktualisiert.")
             setHasTriedToSubmit(true)
             props.closeDialog()
+            props.refreshData()
         } catch (error) {
             toast.error("Beim Aktualisieren des Tickets ist ein Fehler aufgetreten.")
             console.error(error)
