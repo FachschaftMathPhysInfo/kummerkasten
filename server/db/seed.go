@@ -220,6 +220,7 @@ func seedTestUsers(ctx context.Context, db *bun.DB) error {
 		"fsles1@kummerkasten.local",
 		"fsles2@kummerkasten.local",
 		"fsles3@kummerkasten.local",
+		"admin@cypress.kummer",
 	}
 
 	for _, email := range testEmails {
@@ -279,6 +280,15 @@ func seedTestUsers(ctx context.Context, db *bun.DB) error {
 			Lastname:     "Drei",
 			Password:     "fachschaft",
 			Role:         model.UserRoleUser,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "admin@cypress.kummer",
+			Firstname:    "Admin",
+			Lastname:     "Cypress",
+			Password:     "OriginalPassword1!",
+			Role:         model.UserRoleAdmin,
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		},
