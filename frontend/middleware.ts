@@ -1,7 +1,7 @@
 import type {NextRequest} from 'next/server'
 import {NextResponse} from 'next/server'
-import {getClient} from "@/lib/graph/client";
 import {LoginCheckDocument, LoginCheckQuery} from "@/lib/graph/generated/graphql";
+import {GraphQLClient} from "graphql-request";
 
 const PUBLIC_ROUTES = ['/', '/login']
 
@@ -9,19 +9,22 @@ export async function middleware(request: NextRequest) {
   const {pathname} = request.nextUrl
 
   async function checkIsLoggedIn() {
-    const client = getClient()
     const sid = request.cookies.get('sid')?.value;
     if(!sid) return false;
 
+
     try {
+      const client = new GraphQLClient(new URL("/api", 'http:localhost:8080').toString())
       const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
       return loggedInData.loginCheck !== null
-    } catch {
+    } catch (err) {
+      // console.log(err)
       return false
     }
   }
 
   const isLoggedIn = await checkIsLoggedIn()
+  console.log('Is logged in: ', isLoggedIn)
 
   if (pathname === '/login' && isLoggedIn) {
     return NextResponse.redirect(new URL('/tickets', request.url))
