@@ -18,6 +18,7 @@ query allTickets {
 query ticketById ($id: [ID!]){
     tickets(id: $id){
         id,
+        originalTitle,
         title,
         text,
         note,

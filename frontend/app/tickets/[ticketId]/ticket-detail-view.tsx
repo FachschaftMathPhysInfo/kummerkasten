@@ -15,7 +15,7 @@ export default function TicketDetailView({ticket}: TicketDetailViewProps) {
     return (
         <div className="flex mx-6">
             <div className="flex flex-col">
-                <h1 className="text-2xl font-semibold mb-4">{ticket.title}</h1>
+                <h1 className="text-2xl font-semibold mb-4" title={"Original Titel: " + ticket.originalTitle}>{ticket.title}</h1>
                 <div className="flex flex-col grow">
                     <div className="flex">{ticket.text}</div>
                 </div>
