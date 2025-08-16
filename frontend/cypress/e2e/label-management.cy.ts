@@ -28,7 +28,7 @@ describe('User Management Page Tests', () => {
     it('should show search results if they exist', () => {
       const query = "Soziales"
       page.search(query)
-      // There is only one user with last name containing soziales in our seeds
+      // Seeds only contain one label 'soziales'
       page.getLabelRows().should('have.length', 1)
       page.getLabelRows().each(($el) => {
         cy.wrap($el).find('td').should('contain.text', query)
