@@ -41,13 +41,14 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 	}
 
 	dbTicket := &models.Ticket{
-		ID:           uuid.New().String(),
-		Text:         ticket.Text,
-		Title:        ticket.Title,
-		State:        model.TicketStateNew,
-		Labels:       labels,
-		CreatedAt:    time.Now(),
-		LastModified: time.Now(),
+		ID:            uuid.New().String(),
+		Text:          ticket.Text,
+		OriginalTitle: ticket.OriginalTitle,
+		Title:         ticket.OriginalTitle,
+		State:         model.TicketStateNew,
+		Labels:        labels,
+		CreatedAt:     time.Now(),
+		LastModified:  time.Now(),
 	}
 
 	if _, err := r.DB.NewInsert().Model(dbTicket).Exec(ctx); err != nil {
@@ -65,13 +66,14 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 	}
 
 	gqlTicket := &model.Ticket{
-		ID:           dbTicket.ID,
-		Title:        dbTicket.Title,
-		Text:         dbTicket.Text,
-		State:        dbTicket.State,
-		CreatedAt:    dbTicket.CreatedAt,
-		LastModified: dbTicket.LastModified,
-		Labels:       gqlLabels,
+		ID:            dbTicket.ID,
+		OriginalTitle: dbTicket.Title,
+		Title:         dbTicket.Title,
+		Text:          dbTicket.Text,
+		State:         dbTicket.State,
+		CreatedAt:     dbTicket.CreatedAt,
+		LastModified:  dbTicket.LastModified,
+		Labels:        gqlLabels,
 	}
 
 	return gqlTicket, nil
@@ -585,14 +587,15 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 		}
 
 		gqlTickets = append(gqlTickets, &model.Ticket{
-			ID:           t.ID,
-			Title:        t.Title,
-			Text:         t.Text,
-			Note:         &t.Note,
-			State:        t.State,
-			CreatedAt:    t.CreatedAt,
-			LastModified: t.LastModified,
-			Labels:       gqlLabels,
+			ID:            t.ID,
+			OriginalTitle: t.OriginalTitle,
+			Title:         t.Title,
+			Text:          t.Text,
+			Note:          &t.Note,
+			State:         t.State,
+			CreatedAt:     t.CreatedAt,
+			LastModified:  t.LastModified,
+			Labels:        gqlLabels,
 		})
 	}
 

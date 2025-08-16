@@ -28,6 +28,7 @@ enum FormLabels {
 type Ticket {
     id: String!
     title: String!
+    originalTitle: String!
     text: String!
     note: String
     state: TicketState!
@@ -78,7 +79,7 @@ type Query {
 }
 
 input NewTicket {
-    title: String!
+    originalTitle: String!
     text: String!
     labels: [FormLabels!]
 }
