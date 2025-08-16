@@ -3,7 +3,7 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {Card, CardTitle} from "@/components/ui/card";
 import {Label, Ticket, TicketByIdDocument, TicketByIdQuery} from "@/lib/graph/generated/graphql";
-import {Link, MoreHorizontal, MoreVertical, NotepadText, Trash2} from "lucide-react";
+import {Link, MoreHorizontal, MoreVertical, Trash2} from "lucide-react";
 import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {getClient} from "@/lib/graph/client";
@@ -29,7 +29,7 @@ function useIsMobile(breakpoint = 380) {
 
 const client = getClient();
 
-export function TicketCard({ticketID,setDialogState}: TicketProps) {
+export function TicketCard({ticketID, setDialogState}: TicketProps) {
     const isMobile = useIsMobile();
     const [ticket, setTicket] = useState<Ticket>();
     const [ticketLabels, setTicketLabels] = useState<Label[]>([]);

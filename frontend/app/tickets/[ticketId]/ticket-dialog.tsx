@@ -5,7 +5,6 @@ import {Edit2} from "lucide-react";
 
 interface TicketDialogProps {
     open: boolean;
-    createMode: boolean;
     ticket: Ticket | null;
     closeDialog: () => void;
     refreshData: () => void;

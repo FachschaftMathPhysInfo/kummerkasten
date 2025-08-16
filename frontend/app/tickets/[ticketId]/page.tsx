@@ -93,18 +93,17 @@ export default function TicketPage() {
                 </ResizablePanel>
                 <ResizableHandle/>
                 <ResizablePanel defaultSize={50} className="border-r border-gray-500 flex flex-col">
-                    <TicketDetailView ticket={ticket} ticketId={ticketId}/>
+                    <TicketDetailView ticket={ticket}/>
                 </ResizablePanel>
-                    <ResizablePanel defaultSize={13} className="hidden md:flex flex-col">
-                        <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
-                    </ResizablePanel>
+                <ResizablePanel defaultSize={13} className="hidden md:flex flex-col">
+                    <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
+                </ResizablePanel>
             </ResizablePanelGroup>
             <div className="md:hidden border-t border-gray-300">
-                <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState} />
+                <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
             </div>
             <TicketDialog
                 open={dialogState.mode === "update"}
-                createMode={false}
                 ticket={dialogState.currentTicket}
                 closeDialog={() => setDialogState({mode: null, currentTicket: null})}
                 refreshData={async () => {

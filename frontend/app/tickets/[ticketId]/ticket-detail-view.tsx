@@ -5,7 +5,6 @@ import {PageLoader} from "@/components/page-loader";
 
 interface TicketDetailViewProps {
     ticket: Ticket | null;
-    ticketId?: string;
 }
 
 export default function TicketDetailView({ticket}: TicketDetailViewProps) {

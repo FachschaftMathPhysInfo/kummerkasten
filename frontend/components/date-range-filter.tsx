@@ -1,10 +1,9 @@
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
+import {Calendar} from "@/components/ui/calendar"
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
+import {Button} from "@/components/ui/button"
+import {CalendarIcon} from "lucide-react"
+import {format} from "date-fns"
 import * as React from "react"
-import {Ticket} from "@/lib/graph/generated/graphql";
 
 interface DateRangeFilterProps {
     startDate: Date | null
@@ -13,7 +12,7 @@ interface DateRangeFilterProps {
     setEndDate: (date: Date | null) => void
 }
 
-export function DateRangeFilter({ startDate, setStartDate, endDate, setEndDate }:DateRangeFilterProps) {
+export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate}: DateRangeFilterProps) {
     return (
         <div className="flex gap-2">
             <Popover>
@@ -22,7 +21,7 @@ export function DateRangeFilter({ startDate, setStartDate, endDate, setEndDate }
                         variant="outline"
                         className="w-[180px] justify-start text-left font-normal"
                     >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-2 h-4 w-4"/>
                         {startDate ? format(startDate, "PPP") : <span>Startdatum wählen</span>}
                     </Button>
                 </PopoverTrigger>
@@ -41,7 +40,7 @@ export function DateRangeFilter({ startDate, setStartDate, endDate, setEndDate }
                         variant="outline"
                         className="w-[180px] justify-start text-left font-normal"
                     >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-2 h-4 w-4"/>
                         {endDate ? format(endDate, "PPP") : <span>Enddatum wählen</span>}
                     </Button>
                 </PopoverTrigger>

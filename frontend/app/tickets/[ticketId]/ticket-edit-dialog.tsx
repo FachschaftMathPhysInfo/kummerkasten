@@ -5,7 +5,10 @@ import {
     AddLabelsToTicketDocument,
     AddLabelsToTicketMutation,
     AllLabelsDocument,
-    AllLabelsQuery, Label, RemoveLabelsFromTicketDocument, RemoveLabelsFromTicketMutation,
+    AllLabelsQuery,
+    Label,
+    RemoveLabelsFromTicketDocument,
+    RemoveLabelsFromTicketMutation,
     Ticket,
     TicketState,
     UpdateTicket,
@@ -75,6 +78,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
             const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
             setAllLabels((data.labels ?? []).filter((l): l is Label => l !== null));
         }
+
         fetchLabels();
     }, []);
 
@@ -99,20 +103,23 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
         }
 
         try {
-            await client.request<UpdateTicketMutation>(UpdateTicketDocument, {id: props.ticket.id, ticket: updatedTicket})
-            if (labelsToAdd.length){
+            await client.request<UpdateTicketMutation>(UpdateTicketDocument, {
+                id: props.ticket.id,
+                ticket: updatedTicket
+            })
+            if (labelsToAdd.length) {
                 const labelsToAddAssignments = labelsToAdd.map(labelID => ({
                     labelID,
                     ticketID: ticketId
                 }));
                 await client.request<AddLabelsToTicketMutation>(AddLabelsToTicketDocument, {assignments: labelsToAddAssignments});
             }
-            if (labelsToRemove.length){
+            if (labelsToRemove.length) {
                 const labelsToRemoveAssignments = labelsToRemove.map(labelID => ({
                     labelID,
                     ticketID: ticketId
                 }));
-                await client.request<RemoveLabelsFromTicketMutation>(RemoveLabelsFromTicketDocument,{assignments: labelsToRemoveAssignments})
+                await client.request<RemoveLabelsFromTicketMutation>(RemoveLabelsFromTicketDocument, {assignments: labelsToRemoveAssignments})
             }
             toast.success("Ticket wurde aktualisiert.")
             setHasTriedToSubmit(true)
