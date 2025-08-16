@@ -41,6 +41,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
                 mode: "update",
                 currentLabel: row.original
               })}
+              data-cy={'label-edit-button'}
             >
               <Edit2/>
             </Button>
@@ -53,6 +54,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
                 currentLabel: row.original
               })}
               className={'text-destructive'}
+              data-cy={'label-delete-button'}
             >
               <Trash className={'stroke-destructive'}/>
             </Button>

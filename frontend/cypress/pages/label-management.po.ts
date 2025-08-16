@@ -30,14 +30,26 @@ export function getNameCells() {
   return cy.get("[data-cy=label-name-cell]")
 }
 
-export function getActionsOfLabels(name?: string) {
+export function getDeleteButtonsOfLabels(name?: string) {
   if (name) {
     return getLabelRows().filter((_, row) => {
       return Cypress.$(row).find('td').filter((_, td) => {
         return Cypress.$(td).text().trim() === name;
       }).length > 0;
-    }).find('[data-cy=action-dropdown-trigger]')
+    }).find('[data-cy=label-delete-button]')
   } else {
-    return cy.get("[data-cy=action-dropdown-trigger]")
+    return cy.get("[data-cy=label-delete-button]")
+  }
+}
+
+export function getEditButtonsOfLabels(name?: string) {
+  if (name) {
+    return getLabelRows().filter((_, row) => {
+      return Cypress.$(row).find('td').filter((_, td) => {
+        return Cypress.$(td).text().trim() === name;
+      }).length > 0;
+    }).find('[data-cy=label-edit-button]')
+  } else {
+    return cy.get("[data-cy=label-edit-button]")
   }
 }

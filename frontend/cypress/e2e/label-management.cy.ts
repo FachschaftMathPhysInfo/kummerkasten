@@ -42,8 +42,12 @@ describe('User Management Page Tests', () => {
       page.getNoResultsMessage().should('be.visible')
     });
 
-    it('should have an action menu for every label', () => {
-      page.getActionsOfLabels().should('have.length', 8)
+    it('should have an edit button for every label', () => {
+      page.getEditButtonsOfLabels().should('have.length', 8)
+    });
+
+    it('should have a delete button for every label', () => {
+      page.getDeleteButtonsOfLabels().should('have.length', 8)
     });
   })
 
