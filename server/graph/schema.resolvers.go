@@ -155,6 +155,12 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
+	const MAXLABELLENGTH = 50
+
+	if len(label.Name) > MAXLABELLENGTH {
+		return nil, fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
+	}
+
 	colorValue := label.Color
 	match, _ := regexp.MatchString("^#[[:xdigit:]]{6}$", colorValue)
 	if !match {
@@ -208,6 +214,11 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	}
 
 	if label.Name != nil {
+		const MAXLABELLENGTH = 50
+		if len(*label.Name) > MAXLABELLENGTH {
+			return "", fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
+		}
+
 		dbLabel.Name = strings.ToLower(*label.Name)
 	}
 

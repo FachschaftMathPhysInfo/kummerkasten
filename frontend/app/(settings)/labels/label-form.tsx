@@ -9,7 +9,8 @@ import {
   CreateLabelDocument,
   CreateLabelMutation,
   Label,
-  NewLabel, UpdateLabelDocument,
+  NewLabel,
+  UpdateLabelDocument,
   UpdateLabelMutation
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
@@ -17,6 +18,8 @@ import {LoaderCircle, PlusCircle, Save} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
+
+const LabelMaxLength = 50;
 
 interface LabelFormProps {
   createMode: boolean;
@@ -26,6 +29,8 @@ interface LabelFormProps {
 }
 
 const labelFormSchema = z.object({
+  // This field has a max length of 50, but is already restricted by the input itself and the api,
+  // so I did not add further length checks
   name: z.string().nonempty({
     message: "Bitte gib dem Label einen Namen",
   }),
@@ -105,11 +110,19 @@ export default function LabelForm(props: LabelFormProps) {
                 <Input
                   data-cy={'label-name-input'}
                   placeholder={props.label?.name ?? ""}
+                  maxLength={50}
                   {...field}
                   onChange={e => field.onChange(e.target.value.toLowerCase())}
                 />
               </FormControl>
-              <FormMessage data-cy={'label-name-message'}/>
+              <div className={'w-full flex justify-between'}>
+                <div>
+                  <FormMessage/>
+                </div>
+                <div className={'text-xs text-muted-foreground'}>
+                  {field.value.length} / {LabelMaxLength}
+                </div>
+              </div>
             </FormItem>
           )}
         />
