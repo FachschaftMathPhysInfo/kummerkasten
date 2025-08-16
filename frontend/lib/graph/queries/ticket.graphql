@@ -1,6 +1,7 @@
 query allTickets {
     tickets{
         id,
+        originalTitle,
         title,
         text,
         note,
