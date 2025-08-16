@@ -19,6 +19,7 @@ import {Button} from "@/components/ui/button";
 import {PlusCircle} from "lucide-react";
 import {LabelColumns} from "@/app/(settings)/labels/label-columns";
 import LabelDialog from "@/app/(settings)/labels/label-dialog";
+import {DataTablePagination} from "@/components/table-utils/data-table-pagination";
 
 interface DataTableProps {
   data: Label[];
@@ -42,11 +43,11 @@ export function LabelTable(props: DataTableProps) {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       columnFilters,
       columnVisibility,
@@ -78,8 +79,8 @@ export function LabelTable(props: DataTableProps) {
   }
 
   return (
-    <div className="space-y-4"  data-cy={'label-table'}>
-      <div className="flex items-center justify-between flex-wrap gap-2">
+    <div className="space-y-2"  data-cy={'label-table'}>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
         <Button
           data-cy={'create-label-button'}
           variant={"default"}
@@ -156,6 +157,7 @@ export function LabelTable(props: DataTableProps) {
           </TableBody>
         </Table>
       </div>
+      <DataTablePagination table={table}/>
 
       <LabelDialog
         open={dialogState.mode === "update" || dialogState.mode === "add"}
