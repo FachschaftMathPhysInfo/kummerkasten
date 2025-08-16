@@ -157,7 +157,7 @@ export function LabelTable(props: DataTableProps) {
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table}/>
+      <DataTablePagination table={table} disableElementsPerPage/>
 
       <LabelDialog
         open={dialogState.mode === "update" || dialogState.mode === "add"}
