@@ -28,11 +28,11 @@ export default function TicketSidebar({tickets, searchTerm, setSearchTerm, selec
                 {filteredTickets.map(t => (
                     <div
                         key={t.id}
-                        className={`p-2 cursor-pointer rounded ${t.id === selectedTicketId ? "bg-accent" : "hover:bg-accent"}`}
+                        className={`flex flex-row p-2 cursor-pointer rounded items-center ${t.id === selectedTicketId ? "bg-accent" : "hover:bg-accent"}`}
                         onClick={() => router.push(`/tickets/${t.id}`)}
                     >
                         <Badge
-                            className="text-white px-2 py-1 rounded mr-5"
+                            className="text-white px-2 py-1 rounded mr-5 h-2"
                             style={{
                                 backgroundColor:
                                     t.state === "NEW" ? "#839176" :
@@ -40,7 +40,7 @@ export default function TicketSidebar({tickets, searchTerm, setSearchTerm, selec
                                             t.state === "CLOSED" ? "#DF517F" : "gray"
                             }}
                         />
-                        {t.title}
+                        <div className="truncate max-w-[250px]" title={t.title}>{t.title}</div>
                     </div>
                 ))}
             </div>
