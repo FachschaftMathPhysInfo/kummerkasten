@@ -39,6 +39,8 @@ export default function TicketPage() {
     const [startDate, setStartDate] = useState<Date | null>(null)
     const [endDate, setEndDate] = useState<Date | null>(null)
     const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
+    const [sortField, setSortField] = useState<"Erstellt" | "Geändert" | "Titel">("Erstellt");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
     const resetDialogState = () => {
         setDialogState({mode: null, currentTicket: null})
@@ -81,6 +83,26 @@ export default function TicketPage() {
         return matchesTitle && matchesText && matchesState && matchesLabel && matchesStartDate && matchesEndDate;
     });
 
+    const sortedTickets = [...filteredTickets].sort((a, b) => {
+        if (!a || !b) return 0;
+        let valA: string | number = "";
+        let valB: string | number = "";
+
+        if (sortField === "Erstellt") {
+            valA = new Date(a.createdAt).getTime();
+            valB = new Date(b.createdAt).getTime();
+        } else if (sortField === "Geändert") {
+            valA = new Date(a.lastModified).getTime();
+            valB = new Date(b.lastModified).getTime();
+        } else if (sortField === "Titel") {
+            valA = a.title.toLowerCase();
+            valB = b.title.toLowerCase();
+        }
+
+        if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+        if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+    });
 
     async function handleDelete() {
         if (!dialogState.currentTicket) {
@@ -109,20 +131,22 @@ export default function TicketPage() {
                     placeholder="Suche nach Titel..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    data-cy="search-title"
                 />
                 <Input
                     placeholder="Suche nach Text..."
                     value={searchTermText}
                     onChange={(e) => setSearchTermText(e.target.value)}
                     className="hidden md:flex"
+                    data-cy="search-text"
                 />
                 <div className="hidden md:flex gap-2">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-[200px] justify-between">
+                            <Button variant="outline" className="max-w-[200px] justify-between" data-cy="button-status">
                                 {stateFilter && stateFilter.length > 0
-                                    ? `${stateFilter.length} Status ausgewählt`
-                                    : "Status auswählen"}
+                                    ? `${stateFilter.length} Status`
+                                    : "Status"}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-[250px]">
@@ -158,10 +182,10 @@ export default function TicketPage() {
                     </Popover>
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-[200px] justify-between">
+                            <Button variant="outline" className="max-w-[200px] justify-between" data-cy="button-label">
                                 {labelFilter && labelFilter.length > 0
-                                    ? `${labelFilter.length} Labels ausgewählt`
-                                    : "Labels auswählen"}
+                                    ? `${labelFilter.length} Labels`
+                                    : "Labels"}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-[250px]">
@@ -204,11 +228,36 @@ export default function TicketPage() {
                         endDate={endDate}
                         setEndDate={setEndDate}
                     />
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-[200px] justify-between"  data-cy="sort-button">
+                                Sortieren: {sortField} ({sortOrder})
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-[250px]">
+                            <Command>
+                                <CommandGroup heading="Feld">
+                                    {["Erstellt", "Geändert", "Titel"].map((field) => (
+                                        <CommandItem
+                                            key={field}
+                                            onSelect={() => setSortField(field as typeof sortField)}
+                                        >
+                                            {field}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                                <CommandGroup heading="Reihenfolge">
+                                    <CommandItem onSelect={() => setSortOrder("asc")} data-cy="sort-order-asc">Aufsteigend</CommandItem>
+                                    <CommandItem onSelect={() => setSortOrder("desc")} data-cy="sort-order-desc">Absteigend</CommandItem>
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
                 </div>
             </div>
-            {filteredTickets.map((ticket) =>
+            {sortedTickets.map((ticket) =>
                     ticket?.id && (
-                        <div key={ticket.id} className="mx-8 my-4">
+                        <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
                             <Link href={`/tickets/${ticket.id}`} passHref>
                                 <TicketCard ticketID={ticket.id} setDialogState={setDialogState}/>
                             </Link>
@@ -221,6 +270,8 @@ export default function TicketPage() {
                 onConfirm={handleDelete}
                 isOpen={dialogState.mode === "delete"}
                 closeDialog={resetDialogState}
+                data-cy-confirm="confirm-delete"
+                data-cy-cancel="cancel-delete"
             />
         </div>
     );

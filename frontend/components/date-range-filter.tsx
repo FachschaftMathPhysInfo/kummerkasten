@@ -19,10 +19,10 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate}: 
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
-                        className="w-[180px] justify-start text-left font-normal"
+                        className="max-w-[100px] justify-start text-left font-normal"
                     >
                         <CalendarIcon className="mr-2 h-4 w-4"/>
-                        {startDate ? format(startDate, "PPP") : <span>Startdatum wählen</span>}
+                        {startDate ? format(startDate, "PPP") : <span>Start</span>}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="p-0">
@@ -38,10 +38,10 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate}: 
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
-                        className="w-[180px] justify-start text-left font-normal"
+                        className="max-w-[100px] justify-start text-left font-normal"
                     >
                         <CalendarIcon className="mr-2 h-4 w-4"/>
-                        {endDate ? format(endDate, "PPP") : <span>Enddatum wählen</span>}
+                        {endDate ? format(endDate, "PPP") : <span>Ende</span>}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="p-0">

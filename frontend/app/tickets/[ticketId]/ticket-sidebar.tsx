@@ -23,6 +23,7 @@ export default function TicketSidebar({tickets, searchTerm, setSearchTerm, selec
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="mb-4"
+                data-cy="search-ticket-detail"
             />
             <div>
                 {filteredTickets.map(t => (
@@ -30,6 +31,7 @@ export default function TicketSidebar({tickets, searchTerm, setSearchTerm, selec
                         key={t.id}
                         className={`flex flex-row p-2 cursor-pointer rounded items-center ${t.id === selectedTicketId ? "bg-accent" : "hover:bg-accent"}`}
                         onClick={() => router.push(`/tickets/${t.id}`)}
+                        data-cy={`ticket-card-${t.id}`}
                     >
                         <Badge
                             className="text-white px-2 py-1 rounded mr-5 h-2"
@@ -39,8 +41,9 @@ export default function TicketSidebar({tickets, searchTerm, setSearchTerm, selec
                                         t.state === "OPEN" ? "#192B51" :
                                             t.state === "CLOSED" ? "#DF517F" : "gray"
                             }}
+                            data-cy={`ticket-status-${t.id}`}
                         />
-                        <div className="truncate max-w-[250px]" title={t.title}>{t.title}</div>
+                        <div className="truncate max-w-[250px]" title={t.title} data-cy={`ticket-title-${t.id}`}>{t.title}</div>
                     </div>
                 ))}
             </div>

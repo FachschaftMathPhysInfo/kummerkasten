@@ -83,12 +83,12 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                                 ? "open"
                                 : "fin"}
                     </Badge>
-                    <div className="flex text-md absolute ml-[60px] truncate max-w-[140px] md:max-w-[600px]">
+                    <div className="flex text-md absolute ml-[60px] truncate max-w-[20%] md:max-w-[20%]" title={ticket?.title}>
                         {ticket?.title}
                     </div>
                     <div className="flex flex-col items-end">
                         <div className=" md:flex md:mr-1">
-                            <div className="flex md:max-w-[400px] overflow-x-auto whitespace-nowrap gap-1">
+                            <div className="flex md:max-w-[300px] overflow-x-auto whitespace-nowrap gap-1">
                                 {ticketLabels?.map((label) => (
                                     label?.id &&
                                     <Badge key={label.id} className="hidden md:flex md:mx-1  justify-center text-white"
