@@ -2,7 +2,7 @@
 
 import React, {useCallback, useEffect, useState} from "react";
 import {Card, CardTitle} from "@/components/ui/card";
-import {Label, Ticket, TicketByIdDocument, TicketByIdQuery} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
 import {Link, MoreHorizontal, MoreVertical, Trash2} from "lucide-react";
 import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
@@ -35,7 +35,7 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
     const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
 
     const fetchTicketData = useCallback(async () => {
-        const data = await client.request<TicketByIdQuery>(TicketByIdDocument, {id: ticketID});
+        const data = await client.request<TicketsByIdsQuery>(TicketsByIdsDocument, {id: ticketID});
         const ticketData = data?.tickets?.[0];
         const labels = ticketData?.labels;
         if (ticketData) {

@@ -11,8 +11,8 @@ import {
     DeleteTicketMutation,
     Label,
     Ticket,
-    TicketByIdDocument,
-    TicketByIdQuery
+    TicketsByIdsDocument,
+    TicketsByIdsQuery
 } from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
@@ -45,7 +45,7 @@ export default function TicketPage() {
 
     const fetchTicketDetail = useCallback(async () => {
         if (!ticketId) return;
-        const data = await client.request<TicketByIdQuery>(TicketByIdDocument, {id: ticketId});
+        const data = await client.request<TicketsByIdsQuery>(TicketsByIdsDocument, {id: ticketId});
         const ticketData = data?.tickets?.[0];
         setTicket(ticketData ?? null);
         setTicketLabels(ticketData?.labels ?? []);

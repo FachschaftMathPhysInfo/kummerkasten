@@ -16,7 +16,7 @@ query allTickets {
     }
 }
 
-query ticketById ($id: [ID!]){
+query ticketsByIds ($id: [ID!]){
     tickets(id: $id){
         id,
         originalTitle,
