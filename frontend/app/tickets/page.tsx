@@ -182,9 +182,9 @@ export default function TicketPage() {
                                     <SheetHeader>
                                         <SheetTitle>Filter</SheetTitle>
                                     </SheetHeader>
-                                    <div className="flex flex-col mt-4 px-4">
-                                        <div className="flex flex-row gap-2">
-                                            <div className="font-semibold mt-1">Status:</div>
+                                    <div className="flex flex-col mt-0 px-4">
+                                        <div className="flex flex-row gap-2 justify-between">
+                                            <div className="font-semibold">Status:</div>
                                             <Button variant="outline" className="w-fit justify-between"
                                                     onClick={() => setShowMobileFilters((prev) => !prev)}>
                                                 {stateFilter.length > 0 ? `${stateFilter.length} ausgewählt` : "Status filtern"}
@@ -217,8 +217,8 @@ export default function TicketPage() {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex flex-col mt-4 px-4">
-                                        <div className="flex flex-row gap-2">
+                                    <div className="flex flex-col mt-4">
+                                        <div className="flex flex-row gap-2 px-4 justify-between">
                                             <div className="font-semibold mt-1">Labels:</div>
                                             <Button
                                                 variant="outline"
@@ -230,7 +230,6 @@ export default function TicketPage() {
                                                     : "Labels filtern"}
                                             </Button>
                                         </div>
-
                                         {showMobileLabelFilter && (
                                             <div className="mt-2 px-4">
                                                 <div
@@ -286,7 +285,6 @@ export default function TicketPage() {
                                             </div>
                                         )}
                                     </div>
-
                                     <div className="flex flex-col mt-4 px-4">
                                         <div className="flex flex-col gap-2">
                                             <div className="font-semibold mt-1 mb-1">Datum:</div>
@@ -300,45 +298,53 @@ export default function TicketPage() {
                                         </div>
                                     </div>
                                     <div className="flex flex-col mt-4 px-4">
-                                        <div className="flex flex-row gap-2">
-                                            <div className="font-semibold mt-1">Sortieren:</div>
+                                        <div className="flex flex-row gap-2 justify-between items-center">
+                                            <div className="font-semibold mt-1 mb-1">Sortieren:</div>
                                             <Button
                                                 variant="outline"
-                                                className="w-fit justify-between"
+                                                size="sm"
+                                                className="w-fit justify-between text-sm"
                                                 onClick={() => setShowMobileSort((prev) => !prev)}
                                             >
                                                 {sortField} {sortOrder === "asc" ? "↑" : "↓"}
                                             </Button>
                                         </div>
                                         {showMobileSort && (
-                                            <div className="mt-2 border rounded-md overflow-hidden">
-                                                <div className="flex flex-col p-2 gap-2">
-                                                    <div className="font-medium">Feld</div>
-                                                    {["Erstellt", "Geändert", "Titel"].map((field) => (
+                                            <div className="mt-1 border rounded-md overflow-hidden mb-4">
+                                                <div className="flex flex-col p-1 gap-1">
+                                                    <div className="text-xs">Feld</div>
+                                                    <div className="flex flex-row gap-1 flex-wrap">
+                                                        {["Erstellt", "Geändert", "Titel"].map((field) => (
+                                                            <Button
+                                                                key={field}
+                                                                variant={sortField === field ? "secondary" : "outline"}
+                                                                size="sm"
+                                                                className="flex-1 text-xs"
+                                                                onClick={() => setSortField(field as typeof sortField)}
+                                                            >
+                                                                {field}
+                                                            </Button>
+                                                        ))}
+                                                    </div>
+                                                    <div className="text-xs mt-1">Reihenfolge</div>
+                                                    <div className="flex flex-row gap-1">
                                                         <Button
-                                                            key={field}
-                                                            variant={sortField === field ? "secondary" : "outline"}
-                                                            className="w-full flex justify-start"
-                                                            onClick={() => setSortField(field as typeof sortField)}
+                                                            variant={sortOrder === "asc" ? "secondary" : "outline"}
+                                                            size="sm"
+                                                            className="flex-1 text-xs"
+                                                            onClick={() => setSortOrder("asc")}
                                                         >
-                                                            {field}
+                                                            Aufsteigend
                                                         </Button>
-                                                    ))}
-                                                    <div className="font-medium mt-2">Reihenfolge</div>
-                                                    <Button
-                                                        variant={sortOrder === "asc" ? "secondary" : "outline"}
-                                                        className="w-full flex justify-start"
-                                                        onClick={() => setSortOrder("asc")}
-                                                    >
-                                                        Aufsteigend
-                                                    </Button>
-                                                    <Button
-                                                        variant={sortOrder === "desc" ? "secondary" : "outline"}
-                                                        className="w-full flex justify-start"
-                                                        onClick={() => setSortOrder("desc")}
-                                                    >
-                                                        Absteigend
-                                                    </Button>
+                                                        <Button
+                                                            variant={sortOrder === "desc" ? "secondary" : "outline"}
+                                                            size="sm"
+                                                            className="flex-1 text-xs"
+                                                            onClick={() => setSortOrder("desc")}
+                                                        >
+                                                            Absteigend
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}
