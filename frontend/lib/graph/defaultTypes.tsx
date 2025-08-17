@@ -1,4 +1,4 @@
-import {User, UserRole} from "@/lib/graph/generated/graphql";
+import {Label, User, UserRole} from "@/lib/graph/generated/graphql";
 
 const now = new Date()
 
@@ -13,4 +13,10 @@ export const defaultUser: User = {
   role: UserRole.User,
   password: 'invalid',
   sid: "invalid sid"
+}
+
+export const defaultLabel: Label = {
+  id: "invalid ID",
+  name: "default name",
+  color: "#7a7777"
 }
