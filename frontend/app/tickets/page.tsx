@@ -191,7 +191,7 @@ export default function TicketPage() {
                                             </Button>
                                         </div>
                                         {showMobileFilters && (
-                                            <div className="mt-2 border rounded-md overflow-hidden">
+                                            <div className="mt-2 overflow-hidden">
                                                 {Object.values(TicketState).map((state) => {
                                                     const isSelected = stateFilter.includes(state);
                                                     return (
@@ -233,7 +233,7 @@ export default function TicketPage() {
                                         {showMobileLabelFilter && (
                                             <div className="mt-2 px-4">
                                                 <div
-                                                    className="border rounded-md overflow-hidden max-h-[150px] overflow-y-auto">
+                                                    className="overflow-hidden max-h-[150px] overflow-y-auto">
                                                     <Input
                                                         placeholder="Label suchen..."
                                                         value={labelSearchTerm}
