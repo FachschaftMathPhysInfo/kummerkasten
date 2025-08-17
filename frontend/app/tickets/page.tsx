@@ -1,14 +1,17 @@
 "use client"
 import {ManagementPageHeader} from "@/components/management-page-header";
-import {Check, TicketIcon} from "lucide-react";
+import {ArrowDown, ArrowUp, Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
 import {getClient} from "@/lib/graph/client";
 import React, {useCallback, useEffect, useState} from "react";
 import {
+    AllLabelsDocument,
+    AllLabelsQuery,
     AllTicketsDocument,
     AllTicketsQuery,
     DeleteTicketDocument,
     DeleteTicketMutation,
+    Label,
     Ticket,
     TicketState
 } from "@/lib/graph/generated/graphql";
@@ -21,6 +24,8 @@ import {cn} from "@/lib/utils";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
+import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
+
 
 const client = getClient();
 
@@ -29,11 +34,21 @@ export type TicketDialogState = {
     currentTicket: Ticket | null
 }
 
+function useIsMobile(breakpoint = 480) {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const update = () => setIsMobile(window.innerWidth < breakpoint);
+        update();
+        window.addEventListener("resize", update);
+        return () => window.removeEventListener("resize", update);
+    }, [breakpoint]);
+    return isMobile;
+}
 
 export default function TicketPage() {
     const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
+    const [labels, setLabels] = useState<(Label | null)[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [searchTermText, setSearchTermText] = useState("");
     const [stateFilter, setStateFilter] = useState<string[]>([]);
     const [labelFilter, setLabelFilter] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<Date | null>(null)
@@ -41,6 +56,12 @@ export default function TicketPage() {
     const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
     const [sortField, setSortField] = useState<"Erstellt" | "Geändert" | "Titel">("Erstellt");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    const isMobile = useIsMobile();
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [showMobileLabelFilter, setShowMobileLabelFilter] = useState(false);
+    const [labelSearchTerm, setLabelSearchTerm] = useState("");
+    const [showMobileSort, setShowMobileSort] = React.useState(false);
+
 
     const resetDialogState = () => {
         setDialogState({mode: null, currentTicket: null})
@@ -53,20 +74,25 @@ export default function TicketPage() {
         }
     }, []);
 
+    const fetchAllLabels = useCallback(async () => {
+        const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
+        if (data.labels) {
+            setLabels(data.labels);
+        }
+    }, []);
+
     useEffect(() => {
         void fetchTickets();
-    }, [fetchTickets]);
+        void fetchAllLabels();
+    }, [fetchTickets, fetchAllLabels]);
 
     const filteredTickets = tickets.filter(ticket => {
         if (!ticket) return false;
 
-        const matchesTitle = ticket.title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-
-        const matchesText = ticket.text
-            .toLowerCase()
-            .includes(searchTermText.toLowerCase());
+        const filterSearch = searchTerm.toLowerCase();
+        const matchesTitleOrText =
+            ticket.title.toLowerCase().includes(filterSearch) ||
+            ticket.text.toLowerCase().includes(filterSearch);
 
         const matchesState =
             stateFilter.length > 0 ? stateFilter.includes(ticket.state) : true;
@@ -79,9 +105,18 @@ export default function TicketPage() {
         const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
         const matchesEndDate = endDate ? new Date(ticket.createdAt) <= endDate : true
 
-
-        return matchesTitle && matchesText && matchesState && matchesLabel && matchesStartDate && matchesEndDate;
+        return matchesTitleOrText && matchesState && matchesLabel && matchesStartDate && matchesEndDate;
     });
+
+    const resetAllFilters = () => {
+        setStateFilter([]);
+        setLabelFilter([]);
+        setStartDate(null);
+        setEndDate(null);
+        setSortField("Erstellt");
+        setSortOrder("asc");
+        setLabelSearchTerm("");
+    };
 
     const sortedTickets = [...filteredTickets].sort((a, b) => {
         if (!a || !b) return 0;
@@ -127,132 +162,343 @@ export default function TicketPage() {
             <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
                                   icon={<TicketIcon/>}/>
             <div className="px-8 flex gap-4">
-                <Input
-                    placeholder="Suche nach Titel..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    data-cy="search-title"
-                />
-                <Input
-                    placeholder="Suche nach Text..."
-                    value={searchTermText}
-                    onChange={(e) => setSearchTermText(e.target.value)}
-                    className="hidden md:flex"
-                    data-cy="search-text"
-                />
-                <div className="hidden md:flex gap-2">
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="max-w-[200px] justify-between" data-cy="button-status">
-                                {stateFilter && stateFilter.length > 0
-                                    ? `${stateFilter.length} Status`
-                                    : "Status"}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[250px]">
-                            <Command>
-                                <CommandInput placeholder="Status suchen..."/>
-                                <CommandGroup>
-                                    {Object.values(TicketState).map((state) => {
-                                        const isSelected = stateFilter?.includes(state);
-                                        return (
-                                            <CommandItem
-                                                key={state}
-                                                onSelect={() => {
-                                                    setStateFilter((prev) =>
-                                                        isSelected
-                                                            ? prev?.filter((s) => s !== state)
-                                                            : [...(prev ?? []), state]
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex gap-2">
+                        <Input
+                            placeholder="Suche nach Inhalt..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            data-cy="search-title"
+                        />
+                        {isMobile ? (
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline" data-cy="mobile-filter-button">
+                                        Filter
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="right" className="w-[85%] sm:w-[400px] overflow-y-auto">
+                                    <SheetHeader>
+                                        <SheetTitle>Filter</SheetTitle>
+                                    </SheetHeader>
+                                    <div className="flex flex-col mt-4 px-4">
+                                        <div className="flex flex-row gap-2">
+                                            <div className="font-semibold mt-1">Status:</div>
+                                            <Button variant="outline" className="w-fit justify-between"
+                                                    onClick={() => setShowMobileFilters((prev) => !prev)}>
+                                                {stateFilter.length > 0 ? `${stateFilter.length} ausgewählt` : "Status filtern"}
+                                            </Button>
+                                        </div>
+                                        {showMobileFilters && (
+                                            <div className="mt-2 border rounded-md overflow-hidden">
+                                                {Object.values(TicketState).map((state) => {
+                                                    const isSelected = stateFilter.includes(state);
+                                                    return (
+                                                        <Button
+                                                            key={state}
+                                                            variant={isSelected ? "secondary" : "outline"}
+                                                            className="w-full flex items-center justify-start gap-2"
+                                                            onClick={() =>
+                                                                setStateFilter((prev) =>
+                                                                    isSelected
+                                                                        ? prev.filter((s) => s !== state)
+                                                                        : [...prev, state]
+                                                                )
+                                                            }
+                                                        >
+                                                            <Check
+                                                                className={cn("mr-2 h-4 w-4", isSelected ? "opacity-100" : "opacity-0")}
+                                                            />
+                                                            {state === "NEW" ? "New" : state === "OPEN" ? "Open" : "Closed"}
+                                                        </Button>
                                                     );
-                                                }}
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col mt-4 px-4">
+                                        <div className="flex flex-row gap-2">
+                                            <div className="font-semibold mt-1">Labels:</div>
+                                            <Button
+                                                variant="outline"
+                                                className="w-fit justify-between"
+                                                onClick={() => setShowMobileLabelFilter((prev) => !prev)}
                                             >
-                                                <Check
-                                                    className={cn(
-                                                        "mr-2 h-4 w-4",
-                                                        isSelected ? "opacity-100" : "opacity-0"
-                                                    )}
-                                                />
-                                                {state}
-                                            </CommandItem>
-                                        );
-                                    })}
-                                </CommandGroup>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="max-w-[200px] justify-between" data-cy="button-label">
-                                {labelFilter && labelFilter.length > 0
-                                    ? `${labelFilter.length} Labels`
-                                    : "Labels"}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[250px]">
-                            <Command>
-                                <CommandInput placeholder="Labels suchen..."/>
-                                <CommandGroup>
-                                    {tickets
-                                        .flatMap((t) => t?.labels ?? [])
-                                        .filter((v, i, a) => v && a.findIndex((l) => l.id === v.id) === i)
-                                        .map((label) => {
-                                            const isSelected = labelFilter?.includes(label.id);
-                                            return (
-                                                <CommandItem
-                                                    key={label.id}
-                                                    onSelect={() => {
-                                                        setLabelFilter((prev) =>
-                                                            isSelected
-                                                                ? prev?.filter((l) => l !== label.id)
-                                                                : [...(prev ?? []), label.id]
-                                                        );
-                                                    }}
-                                                >
-                                                    <Check
-                                                        className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            isSelected ? "opacity-100" : "opacity-0"
-                                                        )}
+                                                {labelFilter.length > 0
+                                                    ? `${labelFilter.length} ausgewählt`
+                                                    : "Labels filtern"}
+                                            </Button>
+                                        </div>
+
+                                        {showMobileLabelFilter && (
+                                            <div className="mt-2 px-4">
+                                                <div
+                                                    className="border rounded-md overflow-hidden max-h-[150px] overflow-y-auto">
+                                                    <Input
+                                                        placeholder="Label suchen..."
+                                                        value={labelSearchTerm}
+                                                        onChange={(e) => setLabelSearchTerm(e.target.value)}
+                                                        className="w-full flex items-center justify-start gap-2"
                                                     />
-                                                    {label.name}
-                                                </CommandItem>
-                                            );
-                                        })}
-                                </CommandGroup>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-                    <DateRangeFilter
-                        startDate={startDate}
-                        setStartDate={setStartDate}
-                        endDate={endDate}
-                        setEndDate={setEndDate}
-                    />
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-[200px] justify-between"  data-cy="sort-button">
-                                Sortieren: {sortField} ({sortOrder})
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[250px]">
-                            <Command>
-                                <CommandGroup heading="Feld">
-                                    {["Erstellt", "Geändert", "Titel"].map((field) => (
-                                        <CommandItem
-                                            key={field}
-                                            onSelect={() => setSortField(field as typeof sortField)}
-                                        >
-                                            {field}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                                <CommandGroup heading="Reihenfolge">
-                                    <CommandItem onSelect={() => setSortOrder("asc")} data-cy="sort-order-asc">Aufsteigend</CommandItem>
-                                    <CommandItem onSelect={() => setSortOrder("desc")} data-cy="sort-order-desc">Absteigend</CommandItem>
-                                </CommandGroup>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
+                                                    {labels
+                                                        .filter((label) =>
+                                                            label?.name.toLowerCase().includes(labelSearchTerm.toLowerCase())
+                                                        )
+                                                        .map((label) => {
+                                                            const isSelected = label?.id ? labelFilter.includes(label.id) : false;
+                                                            return (
+                                                                <Button
+                                                                    key={label?.id}
+                                                                    variant={isSelected ? "secondary" : "outline"}
+                                                                    className="w-full flex items-center justify-start gap-2"
+                                                                    onClick={() => {
+                                                                        if (!label?.id) return;
+                                                                        setLabelFilter((prev) =>
+                                                                            isSelected
+                                                                                ? prev.filter((l) => l !== label?.id)
+                                                                                : [...prev, label.id]
+                                                                        )
+                                                                    }}
+                                                                >
+                                                                    <Check
+                                                                        className={cn(
+                                                                            "mr-2 h-4 w-4",
+                                                                            isSelected ? "opacity-100" : "opacity-0"
+                                                                        )}
+                                                                    />
+                                                                    {label?.name}
+                                                                </Button>
+                                                            );
+                                                        })}
+                                                    {labelFilter.length > 0 && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="w-full justify-center mt-2"
+                                                            onClick={() => setLabelFilter([])}
+                                                            data-cy="clear-labels"
+                                                        >
+                                                            <Trash2 className="mr-2"/> Filter löschen
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex flex-col mt-4 px-4">
+                                        <div className="flex flex-col gap-2">
+                                            <div className="font-semibold mt-1 mb-1">Datum:</div>
+                                            <DateRangeFilter
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                                mobile={true}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col mt-4 px-4">
+                                        <div className="flex flex-row gap-2">
+                                            <div className="font-semibold mt-1">Sortieren:</div>
+                                            <Button
+                                                variant="outline"
+                                                className="w-fit justify-between"
+                                                onClick={() => setShowMobileSort((prev) => !prev)}
+                                            >
+                                                {sortField} {sortOrder === "asc" ? "↑" : "↓"}
+                                            </Button>
+                                        </div>
+                                        {showMobileSort && (
+                                            <div className="mt-2 border rounded-md overflow-hidden">
+                                                <div className="flex flex-col p-2 gap-2">
+                                                    <div className="font-medium">Feld</div>
+                                                    {["Erstellt", "Geändert", "Titel"].map((field) => (
+                                                        <Button
+                                                            key={field}
+                                                            variant={sortField === field ? "secondary" : "outline"}
+                                                            className="w-full flex justify-start"
+                                                            onClick={() => setSortField(field as typeof sortField)}
+                                                        >
+                                                            {field}
+                                                        </Button>
+                                                    ))}
+                                                    <div className="font-medium mt-2">Reihenfolge</div>
+                                                    <Button
+                                                        variant={sortOrder === "asc" ? "secondary" : "outline"}
+                                                        className="w-full flex justify-start"
+                                                        onClick={() => setSortOrder("asc")}
+                                                    >
+                                                        Aufsteigend
+                                                    </Button>
+                                                    <Button
+                                                        variant={sortOrder === "desc" ? "secondary" : "outline"}
+                                                        className="w-full flex justify-start"
+                                                        onClick={() => setSortOrder("desc")}
+                                                    >
+                                                        Absteigend
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+                        ) : (
+                            <div className="flex gap-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="max-w-[200px] justify-between"
+                                                data-cy="button-status">
+                                            {stateFilter && stateFilter.length > 0
+                                                ? `${stateFilter.length} Status`
+                                                : "Status"}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="p-0 w-[250px]">
+                                        <Command>
+                                            <CommandInput placeholder="Status suchen..."/>
+                                            <CommandGroup>
+                                                {Object.values(TicketState).map((state) => {
+                                                    const isSelected = stateFilter?.includes(state);
+                                                    return (
+                                                        <CommandItem
+                                                            key={state}
+                                                            onSelect={() => {
+                                                                setStateFilter((prev) =>
+                                                                    isSelected
+                                                                        ? prev?.filter((s) => s !== state)
+                                                                        : [...(prev ?? []), state]
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    isSelected ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {state === "NEW"
+                                                                ? "New"
+                                                                : state === "OPEN"
+                                                                    ? "Open"
+                                                                    : "Closed"}
+                                                        </CommandItem>
+                                                    );
+                                                })}
+                                            </CommandGroup>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="max-w-[200px] justify-between"
+                                                data-cy="button-label">
+                                            {labelFilter && labelFilter.length > 0
+                                                ? `${labelFilter.length} Labels`
+                                                : "Labels"}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="p-0 w-[250px]">
+                                        <Command>
+                                            <CommandInput placeholder="Labels suchen..."/>
+                                            <CommandGroup>
+                                                {labels
+                                                    .filter((label) => label && label.name.toLowerCase().includes(labelSearchTerm.toLowerCase()))
+                                                    .map((label) => {
+                                                        if (!label) return null;
+                                                        const isSelected = labelFilter?.includes(label.id);
+                                                        return (
+                                                            <CommandItem
+                                                                key={label.id}
+                                                                onSelect={() => {
+                                                                    setLabelFilter((prev) =>
+                                                                        isSelected
+                                                                            ? prev?.filter((l) => l !== label.id)
+                                                                            : [...(prev ?? []), label.id]
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        isSelected ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                {label.name}
+                                                            </CommandItem>
+                                                        );
+                                                    })}
+                                            </CommandGroup>
+                                            {labelFilter.length > 0 && (
+                                                <div className="p-2 border-t">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="w-full justify-center"
+                                                        onClick={() => setLabelFilter([])}
+                                                        data-cy="clear-labels"
+                                                    >
+                                                        <Trash2/>
+                                                        Filter löschen
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                                <DateRangeFilter
+                                    startDate={startDate}
+                                    setStartDate={setStartDate}
+                                    endDate={endDate}
+                                    setEndDate={setEndDate}
+                                />
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-[170px] justify-between items-center"
+                                                data-cy="sort-button">
+                                <span className="flex justify-center items-center"> Sortieren: {sortField}{" "}
+                                    {sortOrder === "asc" ? (
+                                        <ArrowUp className="inline h-4 w-4 ml-1"/>
+                                    ) : (
+                                        <ArrowDown className="inline h-4 w-4 ml-1"/>
+                                    )}
+                                </span>
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="p-0 w-[250px]">
+                                        <Command>
+                                            <CommandGroup heading="Feld">
+                                                {["Erstellt", "Geändert", "Titel"].map((field) => (
+                                                    <CommandItem
+                                                        key={field}
+                                                        onSelect={() => setSortField(field as typeof sortField)}
+                                                    >
+                                                        {field}
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                            <CommandGroup heading="Reihenfolge">
+                                                <CommandItem onSelect={() => setSortOrder("asc")}
+                                                             data-cy="sort-order-asc">Aufsteigend</CommandItem>
+                                                <CommandItem onSelect={() => setSortOrder("desc")}
+                                                             data-cy="sort-order-desc">Absteigend</CommandItem>
+                                            </CommandGroup>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        )}
+                    </div>
+                    <Button
+                        variant="outline"
+                        className="whitespace-nowrap"
+                        onClick={resetAllFilters}
+                        data-cy="reset-filters"
+                    >
+                        <Trash2 className="text-destructive"/>
+                        Filter zurücksetzen
+                    </Button>
                 </div>
             </div>
             {sortedTickets.map((ticket) =>
@@ -264,6 +510,7 @@ export default function TicketPage() {
                         </div>
                     )
             )}
+
             <ConfirmationDialog
                 mode="confirmation"
                 description={`Dies wird das Ticket ${dialogState.currentTicket?.title} unwiderruflich löschen`}

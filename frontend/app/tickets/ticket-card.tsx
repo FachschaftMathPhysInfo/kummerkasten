@@ -65,7 +65,7 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
             <CardTitle className="flex flex-col ml-2 justify-between">
                 <div className="flex justify-between items-center w-full">
                     <Badge
-                        className="text-white"
+                        className="absolute left-11 md:relative md:left-0 text-white"
                         style={{
                             backgroundColor:
                                 ticket?.state === "NEW"
@@ -81,9 +81,9 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                             ? "new"
                             : ticket?.state === "OPEN"
                                 ? "open"
-                                : "fin"}
+                                : "closed"}
                     </Badge>
-                    <div className="flex text-md absolute ml-[60px] truncate max-w-[20%] md:max-w-[20%]" title={ticket?.title}>
+                    <div className="flex-grow truncate text-md pl-[60px] md:absolute md:pl-[70px]" title={ticket?.title}>
                         {ticket?.title}
                     </div>
                     <div className="flex flex-col items-end">
