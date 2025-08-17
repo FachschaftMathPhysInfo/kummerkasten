@@ -109,6 +109,7 @@ export default function TicketPage() {
     });
 
     const resetAllFilters = () => {
+        setSearchTerm("");
         setStateFilter([]);
         setLabelFilter([]);
         setStartDate(null);
