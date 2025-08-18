@@ -14,11 +14,12 @@ export async function middleware(request: NextRequest) {
 
 
     try {
-      const client = new GraphQLClient(new URL("/api", 'http:localhost:8080').toString())
+      const apiUrl = new URL("/api", request.nextUrl.origin)
+      apiUrl.port = '8080'
+      const client = new GraphQLClient(apiUrl.toString())
       const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
       return loggedInData.loginCheck !== null
     } catch (err) {
-      // console.log(err)
       return false
     }
   }
