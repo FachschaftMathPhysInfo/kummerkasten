@@ -92,16 +92,13 @@ export default function TicketPage() {
                     />
                 </ResizablePanel>
                 <ResizableHandle/>
-                <ResizablePanel defaultSize={50} className="border-r border-gray-500 flex flex-col">
+                <ResizablePanel defaultSize={50} className=" flex flex-row justfiy-between">
                     <TicketDetailView ticket={ticket}/>
-                </ResizablePanel>
-                <ResizablePanel defaultSize={13} className="hidden md:flex flex-col">
-                    <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
+                    <div className="flex grow justify-end mr-5">
+                        <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
+                    </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
-            <div className="md:hidden border-t border-gray-300">
-                <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
-            </div>
             <TicketDialog
                 open={dialogState.mode === "update"}
                 ticket={dialogState.currentTicket}
