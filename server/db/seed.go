@@ -29,35 +29,35 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 	labels := []*models.Label{
 		{
-			Name:  "Dozent*in",
+			Name:  "dozent*in",
 			Color: "#474770",
 		},
 		{
-			Name:  "Prof. Mathe",
+			Name:  "prof. mathe",
 			Color: "#476870",
 		},
 		{
-			Name:  "Veranstaltung",
+			Name:  "veranstaltung",
 			Color: "#47704e",
 		},
 		{
-			Name:  "Lineare Algebra",
+			Name:  "lineare algebra",
 			Color: "#487047",
 		},
 		{
-			Name:  "Fachschaft",
+			Name:  "fachschaft",
 			Color: "#477068",
 		},
 		{
-			Name:  "Gremienwahlen",
+			Name:  "gremienwahlen",
 			Color: "#706047",
 		},
 		{
-			Name:  "Sonstiges",
+			Name:  "sonstiges",
 			Color: "#70476f",
 		},
 		{
-			Name:  "Soziales",
+			Name:  "soziales",
 			Color: "#6a4770",
 		},
 	}

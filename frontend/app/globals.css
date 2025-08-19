@@ -44,6 +44,28 @@
 }
 
 :root {
+  input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: none;
+    outline: none;
+  }
+
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  input[type="color"]::-webkit-color-swatch {
+    border: none;
+  }
+
+  input[type="color"]::-moz-color-swatch {
+    border: none;
+  }
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

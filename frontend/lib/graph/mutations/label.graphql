@@ -1,3 +1,17 @@
+mutation createLabel($label: NewLabel!) {
+    createLabel(label: $label){
+        id
+    }
+}
+
+mutation updateLabel($id: String!, $label: UpdateLabel!) {
+    updateLabel(id: $id, label: $label)
+}
+
+mutation deleteLabels($ids: [String!]!) {
+    deleteLabel(ids: $ids)
+}
+
 mutation addLabelsToTicket($assignments: [LabelToTicketAssignment!]!) {
     addLabelToTicket(assignments: $assignments)
 }

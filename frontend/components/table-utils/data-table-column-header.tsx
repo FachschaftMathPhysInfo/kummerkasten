@@ -22,6 +22,7 @@ export function DataTableColumnHeader<TData, TValue>({
 
   return (
     <Button
+      data-cy={'table-header-button'}
       variant="ghost"
       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
     >
