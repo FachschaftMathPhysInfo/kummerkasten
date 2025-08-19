@@ -1,15 +1,15 @@
 "use client"
 
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarTrigger
 } from "@/components/ui/sidebar";
 import {LogOut, Moon, Settings, Sun, Tags, Tickets, Users} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
@@ -20,8 +20,8 @@ import {useEffect, useState} from "react";
 
 
 export function UserSidebar() {
-  const {user, logout} = useUser()
-  const router = useRouter()
+    const {user, logout} = useUser()
+    const router = useRouter()
 
   const userItems = [
     {
@@ -47,7 +47,7 @@ export function UserSidebar() {
     }
   ]
 
-  if (!user) return null
+    if (!user) return null
 
   return (
     <Sidebar className={'fixed h-screen top-0 left-0'} collapsible={"icon"} data-cy={'sidebar'}>
@@ -79,34 +79,33 @@ export function UserSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <ThemeSwitch />
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              data-cy={'sidebar-settings'}
-              onClick={() => router.push("/profile")}
-              className={'flex items-center'}
-            >
-              <Settings/> Einstellungen
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              data-cy={'sidebar-logout'}
-              onClick={() => logout()}
-              className={'flex items-center text-destructive'}
-            >
-              <LogOut className={'stroke-destructive'}/> Logout
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
-  );
+            <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <ThemeSwitch/>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            data-cy={'sidebar-settings'}
+                            onClick={() => router.push("/account")}
+                            className={'flex items-center'}
+                        >
+                            <Settings/> Einstellungen
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            data-cy={'sidebar-logout'}
+                            onClick={() => logout()}
+                            className={'flex items-center text-destructive'}
+                        >
+                            <LogOut className={'stroke-destructive'}/> Logout
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
+        </Sidebar>
+    );
 }
 
 export function UserSidebarTrigger() {

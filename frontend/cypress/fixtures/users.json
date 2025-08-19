@@ -1,4 +1,11 @@
 {
+  "cypress": {
+    "firstname": "Admin",
+    "lastname": "Cypress",
+    "mail": "admin@cypress.kummer",
+    "password": "OriginalPassword1!",
+    "id": "123456"
+  },
   "admin": {
     "firstname": "Admin",
     "lastname": "Kummerkasten",
