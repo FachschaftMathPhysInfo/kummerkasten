@@ -168,7 +168,11 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
                                     <SelectContent>
                                         {Object.values(TicketState).map((state) => (
                                             <SelectItem key={state} value={state}>
-                                                {state}
+                                                {state === "NEW"
+                                                    ? "New"
+                                                    : state === "OPEN"
+                                                        ? "Open"
+                                                        : "Closed"}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
