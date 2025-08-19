@@ -98,7 +98,7 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                             </div>
                             <div
                                 className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
-                                Geändert: {format(new Date(ticket?.lastModified || '').toLocaleDateString(),"dd.MM.yy")}
+                                Geändert: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
