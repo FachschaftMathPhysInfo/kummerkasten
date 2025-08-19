@@ -9,6 +9,7 @@ import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 import {getClient} from "@/lib/graph/client";
 import {TicketDialogState} from "@/app/tickets/page";
 import {toast} from "sonner";
+import {format} from "date-fns";
 
 
 type TicketProps = {
@@ -97,7 +98,7 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                             </div>
                             <div
                                 className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
-                                Geändert: {new Date(ticket?.lastModified || '').toLocaleDateString()}
+                                Geändert: {format(new Date(ticket?.lastModified || '').toLocaleDateString(),"dd.MM.yy")}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

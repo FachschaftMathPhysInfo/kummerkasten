@@ -105,7 +105,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                         <SheetHeader className="pt-2"><SheetTitle>Details</SheetTitle></SheetHeader>
                         <div className="flex flex-col justify-center items-center h-full w-full">
                             <div
-                                className="flex flex-col border-2 border-dotted rounded-2xl w-[80%] justify-center p-2 gap-4">
+                                className="flex flex-col justify-center gap-4">
                                 <div className="flex flex-row justify-between items-center">
                                     <div>Status:</div>
                                     <Badge
@@ -124,8 +124,8 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                                     <div>Erstellt:</div>
                                     <div>{format(new Date(ticket.createdAt).toLocaleDateString(), "dd.MM.yy")}</div>
                                 </div>
-                                <div className="flex flex-row justify-between items-center">
-                                    <div>Geändert:</div>
+                                <div className="flex flex-row justify-between items-center gap-12">
+                                    <div className="pr-6">Geändert:</div>
                                     <div>{format(new Date(ticket.lastModified).toLocaleDateString(), "dd.MM.yy")}</div>
                                 </div>
                             </div>
