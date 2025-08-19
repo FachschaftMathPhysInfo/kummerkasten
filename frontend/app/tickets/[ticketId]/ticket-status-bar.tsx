@@ -2,13 +2,23 @@
 
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
-import {Edit2, Link, Trash2, X} from "lucide-react";
+import {AlignLeftIcon, Edit2, Link, MoreVertical, Trash2} from "lucide-react";
 import {Label, Ticket} from "@/lib/graph/generated/graphql";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {useRouter} from "next/navigation";
 import {toast} from "sonner";
-import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
+} from "@/components/ui/sheet";
+import {format} from "date-fns";
 
 interface TicketStatusBarProps {
     ticket: Ticket | null;
@@ -16,9 +26,20 @@ interface TicketStatusBarProps {
     setDialogState: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
+function useIsMobile(breakpoint = 480) {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const update = () => setIsMobile(window.innerWidth < breakpoint);
+        update();
+        window.addEventListener("resize", update);
+        return () => window.removeEventListener("resize", update);
+    }, [breakpoint]);
+    return isMobile;
+}
 
 export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: TicketStatusBarProps) {
     const router = useRouter();
+    const isMobile = useIsMobile();
 
     const copyCurrentUrl = async () => {
         try {
@@ -36,72 +57,104 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
         <>
             <Sheet>
                 <SheetTrigger asChild>
-                    <Button variant="outline" data-cy="mobile-filter-button">
-                        Details
-                    </Button>
+                    {isMobile ? <Button variant="outline" data-cy="mobile-filter-button">
+                            <MoreVertical/>
+                        </Button> :
+                        <Button variant="outline" data-cy="mobile-filter-button">
+                            Details
+                        </Button>}
+
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[85%] sm:w-[400px] overflow-y-auto">
+                <SheetContent side="right" className="w-[85%] sm:w-[300px] overflow-y-auto">
                     <SheetHeader>
-                        <SheetTitle>Details</SheetTitle>
+                        <SheetTitle>Ticket-Details</SheetTitle>
+                        <SheetDescription>Bearbeite und sehe Details zum ausgewählten Ticket ein.</SheetDescription>
                     </SheetHeader>
-                    <div className="flex flex-col justify-between items-center h-full w-full">
-                        <div className="flex flex-wrap justify-center gap-0 max-w-fit">
-                            <Button variant="ghost" onClick={copyCurrentUrl}
-                                    data-cy="copy-link-statusbar"><Link/></Button>
-                            <Button variant="ghost" onClick={() => setDialogState({
-                                mode: "update",
-                                currentTicket: ticket
-                            })} data-cy="edit-ticket"><Edit2/></Button>
-                            <Button variant="ghost" onClick={() => setDialogState({
-                                mode: "delete",
-                                currentTicket: ticket
-                            })} data-cy="delete-ticket-statusbar"><Trash2/></Button>
-                            <Button variant="ghost" onClick={() => router.push("/tickets")}
-                                    data-cy="exit-ticket"><X/></Button>
-                        </div>
-                        <div
-                            className="flex flex-col border-2 border-dotted rounded-2xl md:w-[70%] justify-center p-2 mb-2 gap-1">
-                            <div className="flex md:flex-col justify-between items-center gap-2 md:gap-1">
-                                <div className="text-sm ">Status:</div>
-                                <Badge
-                                    className="text-white rounded"
-                                    style={{
-                                        backgroundColor: ticket.state === "NEW" ? "#839176" :
-                                            ticket.state === "OPEN" ? "#192B51" :
-                                                ticket.state === "CLOSED" ? "#DF517F" : "gray"
-                                    }}
-                                    data-cy="ticket-status-badge-detail"
-                                >
-                                    {ticket.state.toLowerCase()}
-                                </Badge>
-                            </div>
-                            <div className="flex flex-col text-sm justify-between items-center">
-                                <div>Erstellt:</div>
-                                <div>{new Date(ticket.createdAt).toLocaleDateString()}</div>
-                            </div>
-                            <div className="flex flex-col text-sm justify-between items-center">
-                                <div>Geändert:</div>
-                                <div>{new Date(ticket.lastModified).toLocaleDateString()}</div>
+                    <div className="flex flex-col flex-grow justify-between">
+                        <SheetHeader className="pt-0">
+                            <SheetTitle>Aktionen</SheetTitle>
+                        </SheetHeader>
+                        <div className="flex flex-col justify-center items-center h-full w-full">
+                            <div className="flex flex-col gap-2">
+                                <div className="flex flex-row justify-between items-center">
+                                    <div>Ticket-Übersicht:</div>
+                                    <Button variant="outline" onClick={() => router.push("/tickets")}
+                                            data-cy="exit-ticket"><AlignLeftIcon/></Button>
+                                </div>
+                                <div className="flex flex-row items-center justify-between">
+                                    <div className="flex justify-start">Link kopieren:</div>
+                                    <Button className="flex justify-end" variant="outline" onClick={copyCurrentUrl}
+                                            data-cy="copy-link-statusbar"><Link/></Button>
+                                </div>
+                                <div className="flex flex-row justify-between items-center gap-8">
+                                    <div>Ticket bearbeiten:</div>
+                                    <Button variant="outline" onClick={() => setDialogState({
+                                        mode: "update",
+                                        currentTicket: ticket
+                                    })} data-cy="edit-ticket"><Edit2/></Button>
+                                </div>
+                                <div className="flex flex-row justify-between items-center">
+                                    <div className="text-destructive">Ticket löschen:</div>
+                                    <Button variant="destructive" onClick={() => setDialogState({
+                                        mode: "delete",
+                                        currentTicket: ticket
+                                    })} data-cy="delete-ticket-statusbar"><Trash2/></Button>
+                                </div>
                             </div>
                         </div>
-                        <div
-                            className="flex md:flex-col flex-row gap-2 overflow-x-auto max-w-full py-2 items-center overflow-y-auto max-h-[100px] mb-3">
-                            {ticketLabels?.map((label) => (
-                                label?.id &&
-                                <Badge
-                                    key={label.id}
-                                    className="flex-shrink-0 text-white justify-center px-3 py-1 md:w-full"
-                                    style={{backgroundColor: label.color ?? "#000000"}}
-                                    data-cy={`ticket-label-${label.id}`}
-                                >
-                                    {label.name}
-                                </Badge>
-                            ))}
+                        <SheetHeader className="pt-2"><SheetTitle>Details</SheetTitle></SheetHeader>
+                        <div className="flex flex-col justify-center items-center h-full w-full">
+                            <div
+                                className="flex flex-col border-2 border-dotted rounded-2xl w-[80%] justify-center p-2 gap-4">
+                                <div className="flex flex-row justify-between items-center">
+                                    <div>Status:</div>
+                                    <Badge
+                                        className="text-white rounded"
+                                        style={{
+                                            backgroundColor: ticket.state === "NEW" ? "#839176" :
+                                                ticket.state === "OPEN" ? "#192B51" :
+                                                    ticket.state === "CLOSED" ? "#DF517F" : "gray"
+                                        }}
+                                        data-cy="ticket-status-badge-detail"
+                                    >
+                                        {ticket.state.toLowerCase()}
+                                    </Badge>
+                                </div>
+                                <div className="flex flex-row justify-between items-center">
+                                    <div>Erstellt:</div>
+                                    <div>{format(new Date(ticket.createdAt).toLocaleDateString(), "dd.MM.yy")}</div>
+                                </div>
+                                <div className="flex flex-row justify-between items-center">
+                                    <div>Geändert:</div>
+                                    <div>{format(new Date(ticket.lastModified).toLocaleDateString(), "dd.MM.yy")}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <SheetHeader><SheetTitle>Labels</SheetTitle></SheetHeader>
+                        <div className="flex flex-col justify-center items-center h-full w-full py-0">
+                            <div
+                                className="flex flex-col gap-2 overflow-x-auto max-w-full py-0 items-center overflow-y-auto max-h-[100px] md:max-h-[170px]">
+                                {ticketLabels?.map((label) => (
+                                    label?.id &&
+                                    <Badge
+                                        key={label.id}
+                                        className="flex-shrink-0 text-white justify-center px-3 py-1 md:w-full"
+                                        style={{backgroundColor: label.color ?? "#000000"}}
+                                        data-cy={`ticket-label-${label.id}`}
+                                    >
+                                        {label.name}
+                                    </Badge>
+                                ))}
+                            </div>
                         </div>
                     </div>
+                    <SheetFooter>
+                        <SheetClose asChild>
+                            <Button variant="outline">Close</Button>
+                        </SheetClose>
+                    </SheetFooter>
                 </SheetContent>
             </Sheet>
-
         </>
     );
 }
