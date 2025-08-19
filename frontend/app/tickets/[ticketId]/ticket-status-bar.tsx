@@ -63,7 +63,6 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                         <Button variant="outline" data-cy="mobile-filter-button">
                             Details
                         </Button>}
-
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[85%] sm:w-[300px] overflow-y-auto">
                     <SheetHeader>

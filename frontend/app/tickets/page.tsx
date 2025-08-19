@@ -1,4 +1,5 @@
 "use client"
+
 import {ManagementPageHeader} from "@/components/management-page-header";
 import {ArrowDown, ArrowUp, Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";

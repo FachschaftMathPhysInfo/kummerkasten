@@ -134,7 +134,6 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-
                     </div>
                 </div>
             </CardTitle>
