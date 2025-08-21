@@ -32,7 +32,7 @@ type Ticket {
 type Label {
   id: String!
   name: String!
-  color: String
+  color: String!
   formLabel: Boolean
   tickets: [Ticket!]
 }

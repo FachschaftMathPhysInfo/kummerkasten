@@ -73,7 +73,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:        l.ID,
 			Name:      l.Name,
-			Color:     &l.Color,
+			Color:     l.Color,
 			FormLabel: &l.FormLabel,
 		})
 	}
@@ -202,7 +202,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	return &model.Label{
 		ID:        newLabel.ID,
 		Name:      newLabel.Name,
-		Color:     &newLabel.Color,
+		Color:     newLabel.Color,
 		FormLabel: &form,
 		Tickets:   []*model.Ticket{},
 	}, nil
@@ -617,7 +617,7 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 				ID:        l.ID,
 				Name:      l.Name,
 				FormLabel: &form,
-				Color:     &l.Color,
+				Color:     l.Color,
 			})
 		}
 
@@ -671,7 +671,7 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:        l.ID,
 			Name:      l.Name,
-			Color:     &l.Color,
+			Color:     l.Color,
 			FormLabel: &form,
 			Tickets:   gqlTickets,
 		})
