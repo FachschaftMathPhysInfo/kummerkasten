@@ -48,9 +48,13 @@ export default function FormUi() {
   const [loading, setLoading] = useState<boolean>(false);
   const [formLabels, setFormLabels] = useState<Label[]>([]);
   const [isLabelsLoading, setIsLabelsLoading] = useState<boolean>(true);
-  const [labelsError, setLabelsError] = useState<string | null>(null);
+  const {formState: {isSubmitSuccessful} } = form;
 
   useEffect(() => {
+    if (isSubmitSuccessful) {
+      form.reset();
+      setHasTriedToSubmit(false);
+    }
     const fetchLabels = async () => {
       try {
         setIsLabelsLoading(true);
@@ -66,13 +70,13 @@ export default function FormUi() {
         }
       } catch (err) {
         console.error("Failed to fetch form labels:", err);
-        setLabelsError("Form labels could not be loaded.");
+        toast.error("Form labels could not be loaded.");
       } finally {
         setIsLabelsLoading(false);
       }
     };
     void fetchLabels();
-  }, []);
+  }, [form.reset, isSubmitSuccessful]);
 
   async function onValidSubmit(data: z.infer<typeof formUiSchema>) {
     setLoading(true);
@@ -114,12 +118,11 @@ export default function FormUi() {
             control={form.control}
             name="labels"
             render={() => (
-                <FormItem className="space-y-3">
+              <FormItem>
                 <FormLabel className="text-lg">An wen ist das Feedback gerichtet?</FormLabel>
                 {isLabelsLoading && <div className="flex items-center justify-center"><LoaderCircle className="animate-spin" /></div>}
-                {labelsError && <p className="text-red-500">{labelsError}</p>}
                 {!isLabelsLoading && formLabels.length > 0 &&  (
-                  <div className="flex flex-row flex-wrap gap-4">
+                  <div className="flex flex-row flex-wrap">
                     {formLabels.map((label) => (
                     <FormField
                     key={label.id}
@@ -129,23 +132,23 @@ export default function FormUi() {
                         return (
                         <FormItem
                             key={label.id}
-                            className="flex flex-row items-center space-x-1 space-y-0"
                         >
                             <FormControl>
-                            <Checkbox
-                                checked={field.value?.includes(label.name)}
-                                onCheckedChange={(checked) => {
-                                return checked
-                                    ? field.onChange([...field.value, label.name])
-                                    : field.onChange(
+                              <div className={'flex items-center gap-2 mx-2'}>
+                                <Checkbox
+                                  checked={field.value?.includes(label.name)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value, label.name])
+                                      : field.onChange(
                                         field.value?.filter((value) => value !== label.name)
-                                    );
-                                }}
-                            />
+                                      );
+                                  }}
+                                />
+                                <span className={'capitalize'}>{label.name}</span>
+                              </div>
+
                             </FormControl>
-                            <FormLabel className="font-normal capitalize text-lg">
-                            {label.name}
-                            </FormLabel>
                         </FormItem>
                         );
                     }}
@@ -156,7 +159,7 @@ export default function FormUi() {
                 <FormMessage />
                 </FormItem>
             )}
-        />
+          />
   
         <FormField
           control={form.control}

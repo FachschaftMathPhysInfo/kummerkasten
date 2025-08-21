@@ -38,26 +38,26 @@ import { QQuestionAnswerPairDocument, QQuestionAnswerPairQuery, QuestionAnswerPa
   }, []);
 
   return (
-    <section className="w-full max-w-4xl mx-auto my-12 p-8 bg-kummerkasten-highlight-bg text-white rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold text-gray-200 mb-6 text-center">Häufig gestellte Fragen</h2>
+    <section className="w-full max-w-4xl mx-auto my-12 p-8 bg-kummerkasten-highlight-bg rounded-lg shadow-lg">
+      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Häufig gestellte Fragen</h2>
       {loading && (
         <div className="flex justify-center items-center py-8">
-          <LoaderCircle className="animate-spin h-8 w-8 text-gray-400" />
+          <LoaderCircle className="animate-spin h-8 w-8 text-foreground" />
         </div>
       )}
       {error && (
-        <div className="text-center text-red-400 py-8">
+        <div className="text-center text-destructive py-8">
           {error}
         </div>
       )}
       {!loading && !error && faqs.length > 0 ? (
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq) => (
-            <AccordionItem key={faq.id} value={faq.id} className="border-gray-700">
-              <AccordionTrigger className="hover:no-underline text-lg text-gray-100">
+            <AccordionItem key={faq.id} value={faq.id}className="border-foreground-muted">
+              <AccordionTrigger className="hover:no-underline text-lg text-foreground">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-gray-300 leading-relaxed">
+              <AccordionContent className="text-foreground leading-relaxed">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
@@ -65,7 +65,7 @@ import { QQuestionAnswerPairDocument, QQuestionAnswerPairQuery, QuestionAnswerPa
         </Accordion>
       ) : (
         !loading && !error && (
-          <div className="text-center text-gray-400 py-8">
+          <div className="text-center text-foreground py-8">
             Keine FAQs verfügbar.
           </div>
         )

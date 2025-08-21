@@ -15,9 +15,9 @@ export default function KummerkastenPage() {
           alt="Kummerkasten Logo"
           width={1024}
           height={1024}
-          className="w-24 h-24 rounded-full mr-4"
+          className="w-16 h-16   sm:w-16 sm:h-16 lg:w-24 lg:h-24 xl:w-30 xl:h-30 rounded-full mr-4" 
         />
-        <h1 className="text-5xl font-extrabold tracking-tight text-gray-100">Kummerkasten</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground">Kummerkasten</h1>
       </div>
       
       <AboutSection />
