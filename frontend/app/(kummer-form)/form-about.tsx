@@ -2,9 +2,7 @@
 
 import React from 'react';
 
-interface AboutSectionProps {}
-
-const AboutSection: React.FC<AboutSectionProps> = () => {
+export default function AboutSection () {
   return (
     <section className="flex flex-col items-center justify-center p-8 bg-kummerkasten-highlight-bg text-white rounded-lg shadow-lg max-w-4xl mx-auto my-8">
 
@@ -25,4 +23,3 @@ const AboutSection: React.FC<AboutSectionProps> = () => {
   );
 };
 
-export default AboutSection;

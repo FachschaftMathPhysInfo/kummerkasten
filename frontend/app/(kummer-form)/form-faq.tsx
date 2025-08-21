@@ -1,4 +1,4 @@
-"use client"; // Mark as a client component
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -8,11 +8,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { LoaderCircle } from "lucide-react";
-import { getClient } from "@/lib/graph/client"; // Assumed path to your GraphQL client
+import { getClient } from "@/lib/graph/client";
 import { QQuestionAnswerPairDocument, QQuestionAnswerPairQuery, QuestionAnswerPair } from "@/lib/graph/generated/graphql";
 
 
-const FaqSection: React.FC = () => {
+ function FaqSection() {
   const [faqs, setFaqs] = useState<QuestionAnswerPair[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
