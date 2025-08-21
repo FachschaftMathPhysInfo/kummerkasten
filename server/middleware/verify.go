@@ -9,9 +9,19 @@ import (
 )
 
 func VerifySID(ctx context.Context, sid string, db *bun.DB) (*model.User, error) {
+	var sessions []*model.Session
+
+	if err := db.NewSelect().Model(&sessions).Where("id = ?", sid).Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	if sessions == nil {
+		return nil, nil
+	}
+	
 	var users []*model.User
 
-	err := db.NewSelect().Model(&users).Where("sid = ?", sid).Scan(ctx)
+	err := db.NewSelect().Model(&users).Where("id = ?", sessions[0].UserID).Scan(ctx)
 	if err != nil || len(users) == 0 {
 		log.Printf("User could not be verified. SID not found in database")
 		return nil, err
