@@ -30,7 +30,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 	labels := []*models.Label{
 		{
-			Name:      "Dozent*in",
+			Name:      "dozent*in",
 			Color:     "#474770",
 			FormLabel: true,
 		},
@@ -39,7 +39,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Color: "#476870",
 		},
 		{
-			Name:      "Veranstaltung",
+			Name:      "veranstaltung",
 			Color:     "#47704e",
 			FormLabel: true,
 		},
@@ -48,27 +48,18 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Color: "#487047",
 		},
 		{
-			Name:      "Fachschaft",
+			Name:      "fachschaft",
 			Color:     "#477068",
 			FormLabel: true,
-			Name:  "fachschaft",
-			Color: "#477068",
 		},
 		{
 			Name:  "gremienwahlen",
 			Color: "#706047",
 		},
 		{
-			Name:      "Sonstiges",
-			Color:     "#70476f",
-			FormLabel: true,
-		},
-		{
-			Name:      "Soziales",
+			Name:      "sonstiges",
 			Color:     "#6a4770",
 			FormLabel: true,
-			Name:  "sonstiges",
-			Color: "#70476f",
 		},
 		{
 			Name:  "soziales",
