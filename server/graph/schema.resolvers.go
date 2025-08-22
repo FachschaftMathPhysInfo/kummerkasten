@@ -694,11 +694,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		return false, nil
 	}
 
-	newSid, err := auth.GenerateSID()
-	if err != nil {
-		return false, err
-	}
-
+	newSid := uuid.New().String()
 	now := time.Now()
 	user.LastLogin = &now
 	expiresAt := now.AddDate(0, 0, 2)
