@@ -102,6 +102,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                         mode="single"
                         selected={startDate || undefined}
                         onSelect={(date) => setStartDate(date || null)}
+                        hidden={endDate ? { after: endDate } : undefined}
                     />
                 </PopoverContent>
             </Popover>
@@ -122,6 +123,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                         mode="single"
                         selected={endDate || undefined}
                         onSelect={(date) => setEndDate(date || null)}
+                        hidden={startDate ? { before: startDate } : undefined}
                     />
                 </PopoverContent>
             </Popover>

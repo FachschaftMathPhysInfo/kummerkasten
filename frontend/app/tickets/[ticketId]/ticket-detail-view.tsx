@@ -9,7 +9,11 @@ interface TicketDetailViewProps {
 
 export default function TicketDetailView({ticket}: TicketDetailViewProps) {
     if (!ticket) {
-        return <PageLoader message="Bitte wählen Sie ein Ticket aus der Übersicht."/>
+        return (
+            <div className="flex flex-grow items-center justify-end">
+                <PageLoader message="Bitte wählen Sie ein Ticket aus der Übersicht." loading={false}/>
+            </div>
+        )
     }
 
     return (

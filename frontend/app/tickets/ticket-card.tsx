@@ -74,7 +74,7 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                                     : ticket?.state === "OPEN"
                                         ? "#192B51"
                                         : ticket?.state === "CLOSED"
-                                            ? "#DF517F"
+                                            ? "#ff574d"
                                             : "white"
                         }}
                     >

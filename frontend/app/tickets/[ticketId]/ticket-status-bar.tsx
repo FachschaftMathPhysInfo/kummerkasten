@@ -121,11 +121,11 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                                 </div>
                                 <div className="flex flex-row justify-between items-center">
                                     <div>Erstellt:</div>
-                                    <div>{format(new Date(ticket.createdAt).toLocaleDateString(), "dd.MM.yy")}</div>
+                                    <div>{format(new Date(ticket.createdAt), "dd.MM.yy")}</div>
                                 </div>
                                 <div className="flex flex-row justify-between items-center gap-12">
                                     <div className="pr-6">Geändert:</div>
-                                    <div>{format(new Date(ticket.lastModified).toLocaleDateString(), "dd.MM.yy")}</div>
+                                    <div>{format(new Date(ticket.lastModified), "dd.MM.yy")}</div>
                                 </div>
                             </div>
                         </div>

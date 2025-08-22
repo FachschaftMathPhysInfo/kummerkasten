@@ -340,7 +340,7 @@ export default function TicketSidebar({
                                         : t.state === "OPEN"
                                             ? "#192B51"
                                             : t.state === "CLOSED"
-                                                ? "#DF517F"
+                                                ? "#ff574d"
                                                 : "gray",
                             }}
                             data-cy={`ticket-status-${t.id}`}
