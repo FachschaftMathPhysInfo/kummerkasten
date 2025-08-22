@@ -731,6 +731,25 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		Expires:  expiresAt,
 	})
 
+	// Prune User Sessions
+	var userSessions []*model.Session
+	if _, err := r.DB.NewSelect().
+		Model(&userSessions).
+		Where("user_id = ?", user.ID).
+		Order("expires_at DESC").
+		Exec(ctx); err != nil {
+		return false, err
+	}
+
+	const MaxSessionsPerUser = 20
+	if len(userSessions) > MaxSessionsPerUser {
+		sessionsToDelete := userSessions[:MaxSessionsPerUser]
+
+		if _, err := r.DB.NewDelete().Model(&sessionsToDelete).Exec(ctx); err != nil {
+			return false, err
+		}
+	}
+
 	return true, nil
 }
 

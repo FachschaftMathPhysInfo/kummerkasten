@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/uptrace/bun"
 	"log"
+	"time"
 
 	"github.com/Plebysnacc/kummerkasten/graph/model"
 )
@@ -18,7 +19,12 @@ func VerifySID(ctx context.Context, sid string, db *bun.DB) (*model.User, error)
 	if sessions == nil {
 		return nil, nil
 	}
-	
+
+	if sessions[0].ExpiresAt.Before(time.Now()) {
+		_, _ = db.NewDelete().Model(sessions[0]).Exec(ctx)
+		return nil, nil
+	}
+
 	var users []*model.User
 
 	err := db.NewSelect().Model(&users).Where("id = ?", sessions[0].UserID).Scan(ctx)
