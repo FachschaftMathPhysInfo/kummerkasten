@@ -19,6 +19,7 @@ import {
     SheetTrigger
 } from "@/components/ui/sheet";
 import {format} from "date-fns";
+import {calculateFontColor} from "@/lib/calculate-colors";
 
 interface TicketStatusBarProps {
     ticket: Ticket | null;
@@ -112,7 +113,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                                         style={{
                                             backgroundColor: ticket.state === "NEW" ? "#839176" :
                                                 ticket.state === "OPEN" ? "#192B51" :
-                                                    ticket.state === "CLOSED" ? "#DF517F" : "gray"
+                                                    ticket.state === "CLOSED" ? "#DF517F" : "gray",
                                         }}
                                         data-cy="ticket-status-badge-detail"
                                     >
@@ -137,8 +138,8 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                                     label?.id &&
                                     <Badge
                                         key={label.id}
-                                        className="flex-shrink-0 text-white justify-center px-3 py-1 md:w-full"
-                                        style={{backgroundColor: label.color ?? "#000000"}}
+                                        className="flex-shrink-0 justify-center px-3 py-1 md:w-full"
+                                        style={{backgroundColor: label.color, color: calculateFontColor(label.color)}}
                                         data-cy={`ticket-label-${label.id}`}
                                     >
                                         {label.name}

@@ -10,6 +10,7 @@ import {getClient} from "@/lib/graph/client";
 import {TicketDialogState} from "@/app/tickets/page";
 import {toast} from "sonner";
 import {format} from "date-fns";
+import {calculateFontColor} from "@/lib/calculate-colors";
 
 
 type TicketProps = {
@@ -84,7 +85,8 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                                 ? "open"
                                 : "closed"}
                     </Badge>
-                    <div className="flex-grow truncate text-md pl-[60px] md:absolute md:pl-[70px]" title={ticket?.title}>
+                    <div className="flex-grow truncate text-md pl-[60px] md:absolute md:pl-[70px]"
+                         title={ticket?.title}>
                         {ticket?.title}
                     </div>
                     <div className="flex flex-col items-end">
@@ -92,8 +94,11 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                             <div className="flex md:max-w-[300px] overflow-x-auto whitespace-nowrap gap-1">
                                 {ticketLabels?.map((label) => (
                                     label?.id &&
-                                    <Badge key={label.id} className="hidden md:flex md:mx-1  justify-center text-white"
-                                           style={{backgroundColor: label.color ?? "#000000"}}>{label.name}</Badge>
+                                    <Badge key={label.id} className="hidden md:flex md:mx-1  justify-center"
+                                           style={{
+                                               backgroundColor: label.color,
+                                               color: calculateFontColor(label.color)
+                                           }}>{label.name}</Badge>
                                 ))}
                             </div>
                             <div
