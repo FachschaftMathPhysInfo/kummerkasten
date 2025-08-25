@@ -246,17 +246,16 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (*model.User, error) {
-	sid, _ := auth.GenerateSID()
-
 	hashedPassword, err := auth.HashPassword(user.Password)
 
 	if err != nil {
 		log.Printf("Failed to create user")
 	}
 
+	userId := uuid.New().String()
+
 	newUser := &model.User{
-		ID:           uuid.New().String(),
-		Sid:          sid,
+		ID:           userId,
 		Mail:         user.Mail,
 		Firstname:    user.Firstname,
 		Lastname:     user.Lastname,
@@ -320,9 +319,6 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 
 		updatedUser.Password = hashedPassword
 	}
-	if user.Sid != nil {
-		updatedUser.Sid = *user.Sid
-	}
 
 	updatedUser.LastModified = time.Now()
 
@@ -333,7 +329,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 		return "", err
 	}
 
-	return updatedUser.Sid, nil
+	return updatedUser.ID, nil
 }
 
 // ChangeRole is the resolver for the changeRole field.
@@ -361,22 +357,11 @@ func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model
 
 // Logout is the resolver for the logout field.
 func (r *mutationResolver) Logout(ctx context.Context, sid string) (string, error) {
-	var users []model.User
-
-	err := r.DB.NewSelect().Model(&users).Where("sid = ?", sid).Scan(ctx)
-	if err != nil || len(users) == 0 {
-		log.Printf("Failed to fetch user for logout: %v", err)
-		return err.Error(), err
-	}
-
-	user := users[0]
-
-	if _, err = r.DB.NewUpdate().Model(&user).
-		Where("id = ?", user.ID).
-		Set("sid = ?", "").
+	if _, err := r.DB.NewDelete().Model((*model.Session)(nil)).
+		Where("id = ?", sid).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to logout user: %v", err)
-		return err.Error(), err
+		return "", err
 	}
 
 	return "", nil
@@ -712,16 +697,21 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		return false, nil
 	}
 
-	if user.Sid == "" {
-		user.Sid, err = auth.GenerateSID()
-		if err != nil {
-			log.Printf("Failed to generate SID: %v", err)
-			return false, err
-		}
-	}
-
+	newSid := uuid.New().String()
 	now := time.Now()
 	user.LastLogin = &now
+	expiresAt := now.AddDate(0, 0, 2)
+
+	newSession := &model.Session{
+		ID:        newSid,
+		UserID:    user.ID,
+		ExpiresAt: expiresAt,
+	}
+
+	if _, err := r.DB.NewInsert().Model(newSession).Exec(ctx); err != nil {
+		log.Printf("Failed to create new session: %v", err)
+		return false, err
+	}
 
 	if _, err := r.DB.NewUpdate().Model(user).Where("mail = ?", mail).Exec(ctx); err != nil {
 		log.Printf("Failed to update sid: %v", err)
@@ -732,22 +722,56 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	http.SetCookie(httpResponseWriter, &http.Cookie{
 		Name:     "sid",
-		Value:    user.Sid,
+		Value:    newSid,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   os.Getenv("ENV") != "DEV",
 		SameSite: http.SameSiteLaxMode,
-		Expires:  time.Now().Add(2 * 24 * time.Hour),
+		Expires:  expiresAt,
 	})
+
+	var userSessions []*model.Session
+	if _, err := r.DB.NewSelect().
+		Model(&userSessions).
+		Where("user_id = ?", user.ID).
+		Order("expires_at DESC").
+		Exec(ctx); err != nil {
+		return false, err
+	}
+
+	const MaxSessionsPerUser = 20
+	if len(userSessions) > MaxSessionsPerUser {
+		sessionsToDelete := userSessions[:MaxSessionsPerUser]
+
+		if _, err := r.DB.NewDelete().Model(&sessionsToDelete).Exec(ctx); err != nil {
+			return false, err
+		}
+	}
 
 	return true, nil
 }
 
 // LoginCheck is the resolver for the loginCheck field.
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
+	if sid == nil {
+		return nil, nil
+	}
+
+	var sessions []*model.Session
+
+	if err := r.DB.NewSelect().Model(&sessions).Where("id = ?", sid).Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	if sessions == nil {
+		return nil, nil
+	}
+
 	var users []*model.User
 
-	if err := r.DB.NewSelect().Model(&users).Where("sid = ?", sid).Scan(ctx); err != nil {
+	if err := r.DB.NewSelect().Model(&users).
+		Where("id = ?", sessions[0].UserID).
+		Scan(ctx); err != nil {
 		return nil, err
 	}
 

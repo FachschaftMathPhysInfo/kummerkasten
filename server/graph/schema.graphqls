@@ -46,7 +46,6 @@ type Label {
 
 type User {
     id: String!
-    sid: String!
     mail: String!
     firstname: String!
     lastname: String!
@@ -66,6 +65,12 @@ type QuestionAnswerPair {
     id: String!
     question: String!
     answer: String!
+}
+
+type Session {
+    id: String!
+    user_id: String!
+    expires_at: Time!
 }
 
 type Query {
@@ -101,7 +106,6 @@ input UpdateUser {
     firstname: String
     lastname: String
     password: String
-    sid: String
 }
 
 input UpdateTicket {

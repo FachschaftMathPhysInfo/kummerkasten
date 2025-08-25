@@ -10,7 +10,7 @@ import {toast} from "sonner";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
-import {User} from "lucide-react";
+import {ShieldUser} from "lucide-react";
 import {Input} from "@/components/ui/input";
 
 const passwordFormSchema = z
@@ -116,6 +116,7 @@ export default function PasswordDataForm() {
 
 
     return (
+
         <FormProvider {...passwordForm}>
             <form
                 onSubmit={passwordForm.handleSubmit(onPasswordSubmit, () =>
@@ -124,7 +125,7 @@ export default function PasswordDataForm() {
                 className="space-y-4 w-full"
             >
 
-                <SettingsBlock icon={<User/>} title={"Account"} hasTriedToSubmit={hasTriedPasswordSubmit}
+                <SettingsBlock icon={<ShieldUser/>} title={"Sicherheit"} hasTriedToSubmit={hasTriedPasswordSubmit}
                                isDirty={passwordForm.formState.isDirty}
                                isLoading={isItLoading}
                                isSaving={isSavingPassword}
