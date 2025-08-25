@@ -86,7 +86,7 @@ export default function FormUi() {
 
     const newTicket: NewTicket = {
       labels: data.labels,
-      title: data.title,
+      originalTitle: data.title,
       text: data.text,
     };
 
