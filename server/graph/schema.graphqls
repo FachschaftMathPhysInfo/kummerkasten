@@ -67,7 +67,7 @@ type QuestionAnswerPair {
 }
 
 type Session {
-    id: String!,
+    id: String!
     user_id: String!
     expires_at: Time!
 }

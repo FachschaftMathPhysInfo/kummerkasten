@@ -727,7 +727,6 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		Expires:  expiresAt,
 	})
 
-	// Prune User Sessions
 	var userSessions []*model.Session
 	if _, err := r.DB.NewSelect().
 		Model(&userSessions).
