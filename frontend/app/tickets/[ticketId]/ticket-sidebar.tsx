@@ -93,7 +93,7 @@ export default function TicketSidebar({
         if (data.labels) {
             setLabels(data.labels);
         }
-    }, []);
+    }, [client]);
     useEffect(() => {
         void fetchAllLabels();
     }, [fetchAllLabels]);
