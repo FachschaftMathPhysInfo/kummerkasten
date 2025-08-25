@@ -11,3 +11,11 @@ mutation updateLabel($id: String!, $label: UpdateLabel!) {
 mutation deleteLabels($ids: [String!]!) {
     deleteLabel(ids: $ids)
 }
+
+mutation addLabelsToTicket($assignments: [LabelToTicketAssignment!]!) {
+    addLabelToTicket(assignments: $assignments)
+}
+
+mutation removeLabelsFromTicket($assignments: [LabelToTicketAssignment!]!) {
+    removeLabelFromTicket(assignments: $assignments)
+}

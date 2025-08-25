@@ -1,7 +1,7 @@
 query allLabels {
-    labels {
-        id
-        name
-        color
+    labels{
+        id,
+        color,
+        name,
     }
 }

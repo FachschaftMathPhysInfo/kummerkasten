@@ -10,14 +10,15 @@ import (
 type Ticket struct {
 	bun.BaseModel `bun:"table:tickets"`
 
-	ID           string            `bun:",pk,default:gen_random_UUID(),type:uuid"`
-	Title        string            `bun:",notnull"`
-	Text         string            `bun:",notnull"`
-	Note         string            `bun:""`
-	State        model.TicketState `bun:",notnull,default:'NEW'"`
-	CreatedAt    time.Time         `bun:",notnull,default:current_timestamp"`
-	LastModified time.Time         `bun:",notnull,default:current_timestamp"`
-	Labels       []*Label          `bun:"m2m:labels_to_tickets"`
+	ID            string            `bun:",pk,default:gen_random_UUID(),type:uuid"`
+	OriginalTitle string            `bun:",notnull"`
+	Title         string            `bun:",notnull"`
+	Text          string            `bun:",notnull"`
+	Note          string            `bun:""`
+	State         model.TicketState `bun:",notnull,default:'NEW'"`
+	CreatedAt     time.Time         `bun:",notnull,default:current_timestamp"`
+	LastModified  time.Time         `bun:",notnull,default:current_timestamp"`
+	Labels        []*Label          `bun:"m2m:labels_to_tickets"`
 }
 
 type LabelsToTickets struct {
