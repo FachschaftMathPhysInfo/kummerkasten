@@ -5,8 +5,8 @@ import {Card, CardContent, CardTitle} from "@/components/ui/card";
 
 export default function AboutSection () {
   return (
-      <Card className="flex flex-col items-center justify-center p-8 bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg text-foreground rounded-lg shadow-lg max-w-4xl mx-auto my-8">
-        <CardTitle className='text-3xl font-semibold text-foreground mb-4'>Was ist der Kummerkasten?</CardTitle>
+      <Card className="flex flex-col items-center justify-center p-6 bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg text-foreground rounded-lg shadow-lg max-w-4xl mx-auto my-4">
+        <CardTitle className='text-2xl font-semibold text-foreground mb-2'>Was ist der Kummerkasten?</CardTitle>
         <CardContent>
           <p className="text-lg leading-relaxed text-muted-foreground">
             Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy

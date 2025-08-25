@@ -1,4 +1,4 @@
-query QQuestionAnswerPair{
+query allQuestionAnswerPair{
  questionAnswerPairs{
   question
   answer

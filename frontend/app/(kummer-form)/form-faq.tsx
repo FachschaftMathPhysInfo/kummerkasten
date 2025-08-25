@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { LoaderCircle } from "lucide-react";
 import { getClient } from "@/lib/graph/client";
-import { QQuestionAnswerPairDocument, QQuestionAnswerPairQuery, QuestionAnswerPair } from "@/lib/graph/generated/graphql";
+import { AllQuestionAnswerPairDocument, AllQuestionAnswerPairQuery, QuestionAnswerPair } from "@/lib/graph/generated/graphql";
 
 
  function FaqSection() {
@@ -22,7 +22,7 @@ import { QQuestionAnswerPairDocument, QQuestionAnswerPairQuery, QuestionAnswerPa
       try {
         setLoading(true);
         const client = getClient();
-        const data = await client.request<QQuestionAnswerPairQuery>(QQuestionAnswerPairDocument);
+        const data = await client.request<AllQuestionAnswerPairQuery>(AllQuestionAnswerPairDocument);
         const filteredFaqs = (data.questionAnswerPairs ?? [])
           .filter((faq): faq is QuestionAnswerPair => faq !== null);
 
@@ -38,7 +38,7 @@ import { QQuestionAnswerPairDocument, QQuestionAnswerPairQuery, QuestionAnswerPa
   }, []);
 
   return (
-    <section className="w-full max-w-4xl mx-auto my-12 p-8 bg-kummerkasten-highlight-bg rounded-lg shadow-lg">
+    <section className="w-full max-w-4xl mx-auto my-8 p-3 bg-kummerkasten-highlight-bg rounded-lg shadow-lg">
       <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Häufig gestellte Fragen</h2>
       {loading && (
         <div className="flex justify-center items-center py-8">
@@ -51,13 +51,13 @@ import { QQuestionAnswerPairDocument, QQuestionAnswerPairQuery, QuestionAnswerPa
         </div>
       )}
       {!loading && !error && faqs.length > 0 ? (
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="multiple" className="w-full">
           {faqs.map((faq) => (
-            <AccordionItem key={faq.id} value={faq.id}className="border-foreground-muted">
-              <AccordionTrigger className="hover:no-underline text-lg text-foreground">
+            <AccordionItem key={faq.id} value={faq.id} className="border-foreground-muted">
+              <AccordionTrigger className="text-lg text-foreground items-center hover:no-underline">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-foreground leading-relaxed">
+              <AccordionContent className="text-foreground leading-relaxed transition-all">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

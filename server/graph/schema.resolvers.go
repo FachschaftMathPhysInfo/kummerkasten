@@ -40,6 +40,16 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		labels = append(labels, label)
 	}
 
+	const MaxTitleLength = 70
+	if len(ticket.Title) > MaxTitleLength {
+		return nil, fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
+	}
+
+	const MaxTextLength = 3000
+	if len(ticket.Text) > MaxTitleLength {
+		return nil, fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
+	}
+
 	dbTicket := &models.Ticket{
 		ID:           uuid.New().String(),
 		Text:         ticket.Text,
@@ -192,7 +202,8 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	if label.FormLabel != nil {
 		newLabel.FormLabel = *label.FormLabel
 	}
-	form := newLabel.FormLabel
+
+	formBool := newLabel.FormLabel
 
 	if _, err := r.DB.NewInsert().Model(newLabel).Exec(ctx); err != nil {
 		log.Printf("Failed to create label: %v", err)
@@ -203,7 +214,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 		ID:        newLabel.ID,
 		Name:      newLabel.Name,
 		Color:     newLabel.Color,
-		FormLabel: &form,
+		FormLabel: &formBool,
 		Tickets:   []*model.Ticket{},
 	}, nil
 }
@@ -655,24 +666,22 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 	for _, l := range dbLabels {
 		var gqlTickets []*model.Ticket
 		for _, t := range l.Tickets {
-			note := t.Note
 			gqlTickets = append(gqlTickets, &model.Ticket{
 				ID:           t.ID,
 				Title:        t.Title,
 				Text:         t.Text,
-				Note:         &note,
+				Note:         &t.Note,
 				State:        t.State,
 				CreatedAt:    t.CreatedAt,
 				LastModified: t.LastModified,
 			})
 		}
 
-		form := l.FormLabel
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:        l.ID,
 			Name:      l.Name,
 			Color:     l.Color,
-			FormLabel: &form,
+			FormLabel: &l.FormLabel,
 			Tickets:   gqlTickets,
 		})
 	}

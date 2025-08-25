@@ -4,6 +4,7 @@ import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState, useEffect} from "react";
+import { cn } from "@/lib/utils"
 import {getClient} from "@/lib/graph/client";
 import {
   CreateTicketMutation,
@@ -30,9 +31,9 @@ import {Checkbox} from "@/components/ui/checkbox";
 const formUiSchema = z.object({
   labels: z
     .array(z.string())
-    .min(1, "Bitte wählen Sie mindestens ein Label aus."),
-  title: z.string().min(1, "Die Zusammenfassung darf nicht leer sein."),
-  text: z.string().min(1, "Die Nachricht darf nicht leer sein."),
+    .min(1, "Bitte wähle mindestens ein Label aus."),
+  title: z.string().min(1, "Die Zusammenfassung darf nicht leer sein.").max(70, "Die Zusammenfassung ist zu lang."),
+  text: z.string().min(1, "Die Nachricht darf nicht leer sein.").max(3000, "Die Nachricht ist zu lang"),
 });
 
 export default function FormUi() {
@@ -43,12 +44,13 @@ export default function FormUi() {
       title: "",
       text: "",
     },
+    mode: "onChange", 
   });
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [formLabels, setFormLabels] = useState<Label[]>([]);
   const [isLabelsLoading, setIsLabelsLoading] = useState<boolean>(true);
-  const {formState: {isSubmitSuccessful} } = form;
+  const {formState: {isSubmitSuccessful, errors} } = form;
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -97,7 +99,7 @@ export default function FormUi() {
       form.reset();
     } catch (error) {
       toast.error(
-        "Beim Senden des Feedbacks ist ein Fehler aufgetreten"
+        "Beim Senden des Feedbacks ist ein Fehler aufgetreten."
       );
       console.error(error);
     }
@@ -105,109 +107,112 @@ export default function FormUi() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto text-center bg-kummerkasten-highlight-bg rounded-lg p-6 my-8">
+    <div className="w-full max-w-4xl mx-auto bg-kummerkasten-highlight-bg rounded-lg p-3 my-8">
       <h2 className="text-3xl font-semibold mb-4">Deine anonyme Nachricht</h2>
-    <FormProvider {...form}>
-      <form
-        onSubmit={form.handleSubmit(onValidSubmit, () =>
-          setHasTriedToSubmit(true)
-        )}
-        className="space-y-4"
-      >
-        <FormField
+      <FormProvider {...form}>
+        <form
+          onSubmit={form.handleSubmit(onValidSubmit, () =>
+            setHasTriedToSubmit(true)
+          )}
+          className="space-y-4"
+        >
+          <FormField
+              control={form.control}
+              name="labels"
+              render={() => (
+                <FormItem>
+                  <FormLabel className={cn('data-[error=true]:text-foreground text-lg')}>Worum geht es in deinem Feedback?</FormLabel>
+                  {isLabelsLoading && 
+                    <div className="flex items-center justify-center">
+                      <LoaderCircle className="animate-spin" />
+                    </div>}
+                  {!isLabelsLoading && formLabels.length> 0 &&  (
+                    <div className="flex flex-row flex-wrap">
+                      {formLabels.map((label) => (
+                      <FormField
+                      key={label.id}
+                      control={form.control}
+                      name="labels"
+                      render={({field}) => {
+                          return (
+                          <FormItem
+                              key={label.id}
+                          >
+                              <FormControl>
+                                <div className={'flex items-center gap-2 mx-2'}>
+                                  <Checkbox
+                                  className={cn("h-4 w-4 shrink-0 rounded-sm ring-offset-background focus-visible:outline-none focus-visible:border-2")}
+                                    checked={field.value?.includes(label.name)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, label.name])
+                                        : field.onChange(
+                                          field.value?.filter((value) => value !== label.name)
+                                        );
+                                    }}
+                                  />
+                                  <span className={cn('capitalize', hasTriedToSubmit && errors.labels ? 'text-destructive' : '')}>{label.name}</span>
+                                </div>
+                              </FormControl>
+                          </FormItem>
+                          );
+                      }}
+                      />
+                  ))}
+                    </div>
+                  )}
+                  <FormMessage/>
+                  </FormItem>
+              )}
+            />
+    
+          <FormField
             control={form.control}
-            name="labels"
-            render={() => (
+            name="title"
+            render={({field}) => (
               <FormItem>
-                <FormLabel className="text-lg">An wen ist das Feedback gerichtet?</FormLabel>
-                {isLabelsLoading && <div className="flex items-center justify-center"><LoaderCircle className="animate-spin" /></div>}
-                {!isLabelsLoading && formLabels.length > 0 &&  (
-                  <div className="flex flex-row flex-wrap">
-                    {formLabels.map((label) => (
-                    <FormField
-                    key={label.id}
-                    control={form.control}
-                    name="labels"
-                    render={({field}) => {
-                        return (
-                        <FormItem
-                            key={label.id}
-                        >
-                            <FormControl>
-                              <div className={'flex items-center gap-2 mx-2'}>
-                                <Checkbox
-                                  checked={field.value?.includes(label.name)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...field.value, label.name])
-                                      : field.onChange(
-                                        field.value?.filter((value) => value !== label.name)
-                                      );
-                                  }}
-                                />
-                                <span className={'capitalize'}>{label.name}</span>
-                              </div>
-
-                            </FormControl>
-                        </FormItem>
-                        );
-                    }}
-                    />
-                ))}
-                  </div>
-                )}
-                <FormMessage />
-                </FormItem>
+                <FormLabel className="text-lg">Titel</FormLabel>
+                <FormControl>
+                  <Input className={cn("bg-background text-foreground")}
+                    placeholder="Vorlesung ..." 
+                    {...field} />
+                </FormControl>
+                <FormMessage/>
+              </FormItem>
             )}
           />
-  
-        <FormField
-          control={form.control}
-          name="title"
-          render={({field}) => (
-            <FormItem>
-              <FormLabel className="text-lg">Zusammenfassung</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Betreff" 
-                  className="bg-background text-foreground"
-                  {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="text"
-          render={({field}) => (
-            <FormItem>
-              <FormLabel className="text-lg">Feedback</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Deine anonyme Nachricht"
-                  className="resize-none bg-background text-foreground"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          disabled={(!form.formState.isValid && hasTriedToSubmit) || loading}
-          type="submit"
-          className="w-full flex justify-center items-center gap-2"
-        >
-          {loading ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            <Send />
-          )}
-          Absenden
-        </Button>
-      </form>
-    </FormProvider>
+          <FormField
+            control={form.control}
+            name="text"
+            render={({field}) => (
+              <FormItem>
+                <FormLabel className="text-lg">Feedback</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Deine anonyme Nachricht"
+                    className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
+                                "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
+                                "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}
+                    {...field} />
+                </FormControl>
+                <FormMessage/>
+              </FormItem>
+            )}
+          />
+          <Button
+            disabled={!form.formState.isValid || loading}
+            type="submit"
+            className="w-full flex justify-center items-center gap-2"
+          >
+            {loading ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              <Send/>
+            )}
+            Absenden
+          </Button>
+        </form>
+      </FormProvider>
     </div>
   );
 }

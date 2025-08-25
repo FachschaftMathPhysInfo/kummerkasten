@@ -1,4 +1,4 @@
-mutation CreateTicket($ticket: NewTicket!) {
+mutation createTicket($ticket: NewTicket!) {
     createTicket(ticket: $ticket) {
         id
     }
