@@ -1,7 +1,7 @@
 import {Calendar} from "@/components/ui/calendar"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {Button} from "@/components/ui/button"
-import {CalendarIcon, RotateCcw, Trash2} from "lucide-react"
+import {CalendarIcon, RotateCcw} from "lucide-react"
 import {format} from "date-fns"
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import * as React from "react"
