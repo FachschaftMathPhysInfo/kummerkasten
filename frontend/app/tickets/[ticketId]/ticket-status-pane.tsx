@@ -70,7 +70,7 @@ export default function TicketStatusPane({ticket, ticketLabels, setDialogStateAc
         </SheetContent>
       </Sheet>
     ) : (
-      <div className={'flex flex-col w-[300px] overflow-y-auto px-10 pt-15 gap-10'}>
+      <div className={'flex flex-col w-[300px] overflow-y-auto px-10 pt-15 gap-10 mr-5'}>
         <TicketActionsBar
           copyCurrentUrl={copyCurrentUrl}
           ticket={ticket}
