@@ -98,51 +98,47 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
           </Button>
         </div>
 
-        <SheetHeader className="pt-2"><SheetTitle>Details</SheetTitle></SheetHeader>
-        <div className="flex flex-col justify-center items-center h-full w-full">
-          <div
-            className="flex flex-col justify-center gap-4">
-            <div className="flex flex-row justify-between items-center">
-              <div>Status:</div>
-              <Badge
-                className="text-white rounded"
-                style={{
-                  backgroundColor: ticket.state === "NEW" ? "#839176" :
-                    ticket.state === "OPEN" ? "#192B51" :
-                      ticket.state === "CLOSED" ? "#DF517F" : "gray"
-                }}
-                data-cy="ticket-status-badge-detail"
-              >
-                {ticket.state.toLowerCase()}
-              </Badge>
-            </div>
-            <div className="flex flex-row justify-between items-center">
-              <div>Erstellt:</div>
-              <div>{format(new Date(ticket.createdAt), "dd.MM.yy")}</div>
-            </div>
-            <div className="flex flex-row justify-between items-center gap-12">
-              <div className="pr-6">Geändert:</div>
-              <div>{format(new Date(ticket.lastModified), "dd.MM.yy")}</div>
-            </div>
+        <div className="flex flex-col items-center w-full px-10 my-10 gap-1">
+          <div className="w-full flex justify-between items-center">
+            <span>Status:</span>
+            <Badge
+              className="text-white rounded"
+              style={{
+                backgroundColor: ticket.state === "NEW" ? "#839176" :
+                  ticket.state === "OPEN" ? "#192B51" :
+                    ticket.state === "CLOSED" ? "#DF517F" : "gray"
+              }}
+              data-cy="ticket-status-badge-detail"
+            >
+              {ticket.state.toLowerCase()}
+            </Badge>
+          </div>
+
+          <div className="w-full flex justify-between items-center">
+            <span>Erstellt:</span>
+            <div>{format(new Date(ticket.createdAt), "dd.MM.yy")}</div>
+          </div>
+
+          <div className="w-full flex justify-between items-center gap-12">
+            <span>Geändert:</span>
+            <div>{format(new Date(ticket.lastModified), "dd.MM.yy")}</div>
           </div>
         </div>
-        <SheetHeader><SheetTitle>Labels</SheetTitle></SheetHeader>
-        <div className="flex flex-col justify-center items-center h-full w-full py-0">
-          <div
-            className="flex flex-col gap-2 overflow-x-auto max-w-full py-0 items-center overflow-y-auto max-h-[100px] md:max-h-[170px]">
-            {ticketLabels?.map((label) => (
-              label?.id &&
-              <Badge
-                key={label.id}
-                className="flex-shrink-0 text-white justify-center px-3 py-1 md:w-full"
-                style={{backgroundColor: label.color ?? "#000000"}}
-                data-cy={`ticket-label-${label.id}`}
-              >
-                {label.name}
-              </Badge>
-            ))}
-          </div>
+
+        <div
+          className="flex flex-col gap-2 overflow-y-scroll grow px-10">
+          {ticketLabels?.map((label) => (
+            <Badge
+              key={label.id}
+              className="text-white max-w-full px-1"
+              style={{backgroundColor: label.color}}
+              data-cy={`ticket-label-${label.id}`}
+            >
+              <span className="truncate max-w-full px-1">{label.name}</span>
+            </Badge>
+          ))}
         </div>
+
         <SheetFooter>
           <SheetClose asChild>
             <Button variant="outline">Close</Button>
