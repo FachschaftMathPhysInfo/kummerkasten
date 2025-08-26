@@ -247,7 +247,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 			return "", fmt.Errorf("unique constraint error: label with name %v does already exist", label.Name)
 		}
 
-		dbLabel.Name = strings.ToLower(*label.Name)
+		dbLabel.Name = *label.Name
 	}
 
 	if label.Color != nil {
