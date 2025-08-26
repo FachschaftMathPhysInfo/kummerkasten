@@ -235,7 +235,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 			return "", fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
 		}
 
-		var labels []*model.Label
+		var labels []*models.Label
 
 		if err := r.DB.NewSelect().Model(&labels).
 			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
