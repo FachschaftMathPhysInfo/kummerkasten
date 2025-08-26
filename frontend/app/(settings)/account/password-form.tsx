@@ -10,10 +10,8 @@ import {toast} from "sonner";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
-import {User} from "lucide-react";
 import PasswordInput from "@/components/password-input";
 import {ShieldUser} from "lucide-react";
-import {Input} from "@/components/ui/input";
 
 const passwordFormSchema = z
   .object({
