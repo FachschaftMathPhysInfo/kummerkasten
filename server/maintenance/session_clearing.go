@@ -8,13 +8,12 @@ import (
 	"time"
 )
 
-func ClearSessionIDs(ctx context.Context, r *graph.Resolver) error {
-	timeThreshold := time.Now().Add(time.Hour * -12)
-	if _, err := r.DB.NewUpdate().Model((*model.User)(nil)).
-		Where("last_login < ?", timeThreshold).
-		Set("sid = ?", "").
+func ClearExpiredSessions(ctx context.Context, r *graph.Resolver) error {
+	now := time.Now()
+	if _, err := r.DB.NewDelete().Model((*model.Session)(nil)).
+		Where("expires_at < ?", now).
 		Exec(ctx); err != nil {
-		log.Println("Error clearing session IDs: couldn't fetch users")
+		log.Printf("Error clearing session IDs: %v", err)
 		return err
 	}
 

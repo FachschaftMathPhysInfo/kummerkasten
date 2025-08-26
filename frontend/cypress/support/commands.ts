@@ -109,6 +109,55 @@ Cypress.Commands.add(
     }
 );
 
+Cypress.Commands.add("getAllTickets", (): Cypress.Chainable<any> => {
+    const query = `
+        query allTickets {
+            tickets {
+                id
+                originalTitle
+                title
+                text
+                note
+                state
+                createdAt
+                lastModified
+                labels {
+                    id
+                    name
+                    color
+                }
+            }
+        }
+    `;
+
+    return cy.request({
+        method: "POST",
+        url: "/api",
+        headers: { "Content-Type": "application/json" },
+        body: { query, operationName: "allTickets" },
+    }).its("body.data.tickets");
+});
+
+Cypress.Commands.add("getAllLabels", (): Cypress.Chainable<any> => {
+    const query = `
+        query allLabels {
+            labels {
+                id
+                name
+                color
+            }
+        }
+    `;
+
+    return cy.request({
+        method: "POST",
+        url: "/api",
+        headers: { "Content-Type": "application/json" },
+        body: { query, operationName: "allLabels" },
+    }).its("body.data.labels");
+});
+
+
 
 declare global {
     namespace Cypress {
@@ -122,6 +171,10 @@ declare global {
             updateUserProfile(id: string, user: UpdateUser): Chainable<Response<any>>;
 
             updateUserPassword(currentPassword: string, newPassword: string): Chainable<Response<any>>;
+
+            getAllTickets(): Chainable<any>;
+
+            getAllLabels(): Chainable<any>;
         }
     }
 }

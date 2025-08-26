@@ -28,6 +28,7 @@ enum FormLabels {
 type Ticket {
     id: String!
     title: String!
+    originalTitle: String!
     text: String!
     note: String
     state: TicketState!
@@ -45,7 +46,6 @@ type Label {
 
 type User {
     id: String!
-    sid: String!
     mail: String!
     firstname: String!
     lastname: String!
@@ -67,6 +67,12 @@ type QuestionAnswerPair {
     answer: String!
 }
 
+type Session {
+    id: String!
+    user_id: String!
+    expires_at: Time!
+}
+
 type Query {
     tickets(id: [ID!], state: [TicketState!]): [Ticket] @hasRole(role: USER)
     labels(ids: [ID!]): [Label] @hasRole(role: USER)
@@ -78,7 +84,7 @@ type Query {
 }
 
 input NewTicket {
-    title: String!
+    originalTitle: String!
     text: String!
     labels: [FormLabels!]
 }
@@ -100,7 +106,6 @@ input UpdateUser {
     firstname: String
     lastname: String
     password: String
-    sid: String
 }
 
 input UpdateTicket {

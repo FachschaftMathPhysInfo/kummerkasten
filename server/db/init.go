@@ -25,6 +25,7 @@ var (
 		(*models.Setting)(nil),
 		(*models.Ticket)(nil),
 		(*models.QuestionAnswerPair)(nil),
+		(*models.Session)(nil),
 	}
 
 	relations = []interface{}{

@@ -112,7 +112,7 @@ func initCors() {
 func initCron() {
 	cronjob = cron.New()
 	if err := cronjob.AddFunc("@hourly", func() {
-		if err := maintenance.ClearSessionIDs(ctx, resolver); err != nil {
+		if err := maintenance.ClearExpiredSessions(ctx, resolver); err != nil {
 			log.Printf("failed cronjob: %v", err)
 		}
 	}); err != nil {
