@@ -76,7 +76,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                   setEndDate(null);
                 }}
               >
-                <Trash2/> Löschen
+                <RotateCcw/> Zurücksetzen
               </Button>
             </div>
           )}
