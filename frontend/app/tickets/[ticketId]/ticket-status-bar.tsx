@@ -4,21 +4,13 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {Edit2, MoreVertical, Share2, Trash2} from "lucide-react";
 import {Label, Ticket} from "@/lib/graph/generated/graphql";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {toast} from "sonner";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger
-} from "@/components/ui/sheet";
+import {Sheet, SheetClose, SheetContent, SheetFooter, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {format} from "date-fns";
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
+import {useSidebar} from "@/components/ui/sidebar";
 
 interface TicketStatusBarProps {
   ticket: Ticket | null;
@@ -26,19 +18,8 @@ interface TicketStatusBarProps {
   setDialogStateAction: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-function useIsMobile(breakpoint = 480) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const update = () => setIsMobile(window.innerWidth < breakpoint);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [breakpoint]);
-  return isMobile;
-}
-
 export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAction}: TicketStatusBarProps) {
-  const isMobile = useIsMobile();
+  const {isMobile} = useSidebar()
 
   const copyCurrentUrl = async () => {
     try {
@@ -49,8 +30,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
     }
   };
 
-
-  if (!ticket) return <div/>;
+  if (!ticket) return null;
 
   return (
     <Sheet>
