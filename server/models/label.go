@@ -8,6 +8,6 @@ type Label struct {
 	ID        string    `bun:",pk,default:gen_random_UUID(),type:uuid"`
 	Name      string    `bun:",unique,notnull"`
 	Color     string    `bun:"type:varchar(8),default:'#7a7777'"`
-	FormLabel bool      `bun:",default:false"`
+	FormLabel bool      `bun:",default:false,notnull"`
 	Tickets   []*Ticket `bun:"m2m:labels_to_tickets"`
 }
