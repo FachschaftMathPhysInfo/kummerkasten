@@ -18,6 +18,7 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet";
 import {format} from "date-fns";
+import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 
 interface TicketStatusBarProps {
   ticket: Ticket | null;
@@ -61,11 +62,10 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
             Details
           </Button>}
       </SheetTrigger>
-      <SheetContent side="right" className="w-[85%] sm:w-[300px] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Ticket-Details</SheetTitle>
-          <SheetDescription>Bearbeite und sehe Details zum ausgewählten Ticket ein.</SheetDescription>
-        </SheetHeader>
+      <SheetContent side="right" className="w-[85%] sm:w-[300px] overflow-y-auto px-10 pt-15 gap-10">
+        <VisuallyHidden>
+          <SheetTitle>Ticket Detail Bereich</SheetTitle>
+        </VisuallyHidden>
         <div className="flex justify-evenly items-center">
           <Button
             variant="outline"
@@ -98,7 +98,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
           </Button>
         </div>
 
-        <div className="flex flex-col items-center w-full px-10 my-10 gap-1">
+        <div className="flex flex-col items-center w-full gap-1">
           <div className="w-full flex justify-between items-center">
             <span>Status:</span>
             <Badge
@@ -126,7 +126,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
         </div>
 
         <div
-          className="flex flex-col gap-2 overflow-y-scroll grow px-10">
+          className="flex flex-col gap-2 overflow-y-scroll grow">
           {ticketLabels?.map((label) => (
             <Badge
               key={label.id}
