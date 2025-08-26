@@ -144,6 +144,7 @@ export default function LabelForm(props: LabelFormProps) {
                         const newColor = e.target.value.toUpperCase();
                         setColor(newColor);
                         form.setValue("color", newColor);
+                        form.clearErrors("color")
                       }}
                       className={'w-full h-full rounded-lg m-0 cursor-pointer'}
                     />
