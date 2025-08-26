@@ -11,6 +11,9 @@ import {Sheet, SheetClose, SheetContent, SheetFooter, SheetTitle, SheetTrigger} 
 import {format} from "date-fns";
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import {useSidebar} from "@/components/ui/sidebar";
+import LabelArea from "@/app/tickets/[ticketId]/label-area";
+import TicketInfoArea from "@/app/tickets/[ticketId]/ticket-info-area";
+import TicketActionsBar from "@/app/tickets/[ticketId]/ticket-actions-bar";
 
 interface TicketStatusBarProps {
   ticket: Ticket | null;
@@ -46,79 +49,20 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
         <VisuallyHidden>
           <SheetTitle>Ticket Detail Bereich</SheetTitle>
         </VisuallyHidden>
-        <div className="flex justify-evenly items-center">
-          <Button
-            variant="outline"
-            onClick={copyCurrentUrl}
-            data-cy="copy-link-statusbar"
-          >
-            <Share2/>
-          </Button>
 
-          <Button
-            variant="outline"
-            onClick={() => setDialogStateAction({
-              mode: "update",
-              currentTicket: ticket
-            })}
-            data-cy="edit-ticket"
-          >
-            <Edit2/>
-          </Button>
+        <TicketActionsBar
+          copyCurrentUrl={copyCurrentUrl}
+          ticket={ticket}
+          setDialogStateAction={setDialogStateAction}
+        />
 
-          <Button
-            variant="destructive"
-            onClick={() => setDialogStateAction({
-              mode: "delete",
-              currentTicket: ticket
-            })}
-            data-cy="delete-ticket-statusbar"
-          >
-            <Trash2/>
-          </Button>
-        </div>
+        <TicketInfoArea
+          state={ticket.state}
+          createdAt={new Date(ticket.createdAt)}
+          lastModified={new Date(ticket.lastModified)}
+        />
 
-        <div className="flex flex-col items-center w-full gap-1">
-          <div className="w-full flex justify-between items-center">
-            <span>Status:</span>
-            <Badge
-              className="text-white rounded"
-              style={{
-                backgroundColor: ticket.state === "NEW" ? "#839176" :
-                  ticket.state === "OPEN" ? "#192B51" :
-                    ticket.state === "CLOSED" ? "#DF517F" : "gray"
-              }}
-              data-cy="ticket-status-badge-detail"
-            >
-              {ticket.state.toLowerCase()}
-            </Badge>
-          </div>
-
-          <div className="w-full flex justify-between items-center">
-            <span>Erstellt:</span>
-            <div>{format(new Date(ticket.createdAt), "dd.MM.yy")}</div>
-          </div>
-
-          <div className="w-full flex justify-between items-center gap-12">
-            <span>Geändert:</span>
-            <div>{format(new Date(ticket.lastModified), "dd.MM.yy")}</div>
-          </div>
-        </div>
-
-        <div
-          className="flex flex-col gap-2 overflow-y-scroll grow">
-          {ticketLabels?.map((label) => (
-            <Badge
-              key={label.id}
-              className="text-white max-w-full px-1"
-              style={{backgroundColor: label.color}}
-              data-cy={`ticket-label-${label.id}`}
-            >
-              <span className="truncate max-w-full px-1">{label.name}</span>
-            </Badge>
-          ))}
-        </div>
-
+        {ticketLabels && <LabelArea labels={ticketLabels}/>}
         <SheetFooter>
           <SheetClose asChild>
             <Button variant="outline">Close</Button>
