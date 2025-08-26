@@ -33,9 +33,9 @@ const passwordSchema = z.string()
   });
 
 const userFormSchema = z.object({
-  firstname: z.string().min(2),
-  lastname: z.string().min(2),
-  mail: z.email(),
+  firstname: z.string().min(2, {error: "Bitte verwende mindestens 2 Zeichen"}),
+  lastname: z.string().min(2, {error: "Bitte verwende mindestens 2 Zeichen"}),
+  mail: z.email({error: "Bitte gib ein gültiges Format an"}),
   password: passwordSchema,
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
