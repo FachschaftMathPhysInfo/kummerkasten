@@ -24,7 +24,7 @@ import {clsx} from "clsx";
 export function UserSidebar() {
   const {user, logout} = useUser()
   const router = useRouter()
-  const {open} = useSidebar()
+  const {open, isMobile} = useSidebar()
 
   const userItems = [
     {
@@ -55,13 +55,15 @@ export function UserSidebar() {
   return (
     <Sidebar className={'relative'} collapsible={"icon"} data-cy={'sidebar'}>
       <SidebarContent className={'pr-10 relative'}>
-        <SidebarTrigger
-          data-cy="sidebar-trigger"
-          className={clsx(
-            "absolute top-0 mt-5 transition-all",
-            open ? "right-0 mr-5" : "left-1/2 -translate-x-1/2"
-          )}
-        />
+        {!isMobile && (
+          <SidebarTrigger
+            data-cy="sidebar-trigger"
+            className={clsx(
+              "absolute top-0 mt-5 transition-all",
+              open ? "right-0 mr-5" : "left-1/2 -translate-x-1/2"
+            )}
+          />
+        )}
         <SidebarGroup className={'h-full justify-center'}>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -118,6 +120,13 @@ export function UserSidebar() {
     </Sidebar>
   );
 
+}
+
+export function UserSidebarTrigger() {
+  const {user} = useUser();
+  const {isMobile} = useSidebar()
+  if (!user || !isMobile) return null;
+  return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
 
 function ThemeSwitch() {

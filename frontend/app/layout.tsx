@@ -3,7 +3,7 @@ import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import React from "react";
 import {SidebarProvider} from "@/components/ui/sidebar";
-import {UserSidebar} from "@/components/user-sidebar";
+import {UserSidebar, UserSidebarTrigger} from "@/components/user-sidebar";
 import {Toaster} from "@/components/ui/sonner";
 import {UserProvider} from "@/components/providers/user-provider";
 import {Footer} from "@/components/footer";
@@ -43,6 +43,7 @@ export default function UserLayout({
                             <UserSidebar/>
                         </div>
                         <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
+                            <UserSidebarTrigger/>
                             {children}
                             <Footer/>
                         </main>
