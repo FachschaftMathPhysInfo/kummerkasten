@@ -71,7 +71,7 @@ export default function TicketPage() {
       !!startDate ||
       !!endDate
     )
-  }, [[stateFilter], [labelFilter], startDate, endDate]);
+  }, [stateFilter.length, labelFilter.length, startDate, endDate]);
 
   const resetDialogState = () => {
     setDialogState({mode: null, currentTicket: null})
