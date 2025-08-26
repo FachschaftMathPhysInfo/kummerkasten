@@ -23,7 +23,7 @@ import {format} from "date-fns";
 interface TicketStatusBarProps {
     ticket: Ticket | null;
     ticketLabels: Label[];
-    setDialogState: React.Dispatch<React.SetStateAction<TicketDialogState>>;
+    setDialogStateAction: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
 function useIsMobile(breakpoint = 480) {
@@ -37,7 +37,7 @@ function useIsMobile(breakpoint = 480) {
     return isMobile;
 }
 
-export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: TicketStatusBarProps) {
+export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAction}: TicketStatusBarProps) {
     const router = useRouter();
     const isMobile = useIsMobile();
 
@@ -87,14 +87,14 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                                 </div>
                                 <div className="flex flex-row justify-between items-center gap-8">
                                     <div>Ticket bearbeiten:</div>
-                                    <Button variant="outline" onClick={() => setDialogState({
+                                    <Button variant="outline" onClick={() => setDialogStateAction({
                                         mode: "update",
                                         currentTicket: ticket
                                     })} data-cy="edit-ticket"><Edit2/></Button>
                                 </div>
                                 <div className="flex flex-row justify-between items-center">
                                     <div className="text-destructive">Ticket löschen:</div>
-                                    <Button variant="destructive" onClick={() => setDialogState({
+                                    <Button variant="destructive" onClick={() => setDialogStateAction({
                                         mode: "delete",
                                         currentTicket: ticket
                                     })} data-cy="delete-ticket-statusbar"><Trash2/></Button>

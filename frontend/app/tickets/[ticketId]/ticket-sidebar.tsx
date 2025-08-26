@@ -33,18 +33,17 @@ import {format} from "date-fns";
 interface TicketSidebarProps {
     tickets: Ticket[];
     searchTerm: string;
-    setSearchTerm: (term: string) => void;
+    setSearchTermAction: (term: string) => void;
     selectedTicketId?: string;
 }
 
 export default function TicketSidebar({
                                           tickets,
                                           searchTerm,
-                                          setSearchTerm,
+                                          setSearchTermAction,
                                           selectedTicketId,
                                       }: TicketSidebarProps) {
     const router = useRouter();
-    const client = getClient();
     const [labels, setLabels] = useState<(Label | null)[]>([]);
     const [stateFilter, setStateFilter] = useState<string[]>([]);
     const [labelFilter, setLabelFilter] = useState<string[]>([]);
@@ -89,17 +88,19 @@ export default function TicketSidebar({
     });
 
     const fetchAllLabels = useCallback(async () => {
+        const client = getClient();
         const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
         if (data.labels) {
             setLabels(data.labels);
         }
-    }, [client]);
+    }, []);
+
     useEffect(() => {
         void fetchAllLabels();
     }, [fetchAllLabels]);
 
     const resetAllFilters = () => {
-        setSearchTerm("");
+        setSearchTermAction("");
         setStateFilter([]);
         setLabelFilter([]);
         setStartDate(null);
@@ -151,7 +152,7 @@ export default function TicketSidebar({
                 <Input
                     placeholder="Suche nach Tickets..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => setSearchTermAction(e.target.value)}
                     className="mb-4"
                     data-cy="search-ticket-detail"
                 />
