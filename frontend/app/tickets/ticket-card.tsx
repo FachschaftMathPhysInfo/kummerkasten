@@ -79,10 +79,10 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                         }}
                     >
                         {ticket?.state === "NEW"
-                            ? "new"
+                            ? "neu"
                             : ticket?.state === "OPEN"
-                                ? "open"
-                                : "closed"}
+                                ? "offen"
+                                : "fertig"}
                     </Badge>
                     <div className="flex-grow truncate text-md pl-[60px] md:absolute md:pl-[70px]" title={ticket?.title}>
                         {ticket?.title}
