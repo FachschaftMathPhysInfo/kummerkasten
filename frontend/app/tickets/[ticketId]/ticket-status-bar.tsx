@@ -3,7 +3,7 @@
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {AlignLeftIcon, Edit2, Link, MoreVertical, Trash2} from "lucide-react";
-import {Label, Ticket} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import React, {useEffect, useState} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {useRouter} from "next/navigation";
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
+import {cn} from "@/lib/utils";
 
 interface TicketStatusBarProps {
     ticket: Ticket | null;
@@ -108,15 +109,15 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogState}: 
                                 className="flex flex-col justify-center gap-4">
                                 <div className="flex flex-row justify-between items-center">
                                     <div>Status:</div>
-                                    <Badge
-                                        className="text-white rounded"
-                                        style={{
-                                            backgroundColor: ticket.state === "NEW" ? "#839176" :
-                                                ticket.state === "OPEN" ? "#192B51" :
-                                                    ticket.state === "CLOSED" ? "#DF517F" : "gray",
-                                        }}
-                                        data-cy="ticket-status-badge-detail"
-                                    >
+                                        <Badge
+                                            className={cn(
+                                                "rounded text-white",
+                                                ticket?.state === TicketState.New && "bg-ticketstate-new",
+                                                ticket?.state === TicketState.Open && "bg-ticketstate-open",
+                                                ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
+                                            )}
+                                            data-cy="ticket-status-badge-detail"
+                                        >
                                         {ticket.state.toLowerCase()}
                                     </Badge>
                                 </div>

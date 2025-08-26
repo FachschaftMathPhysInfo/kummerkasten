@@ -2,7 +2,7 @@
 
 import React, {useCallback, useEffect, useState} from "react";
 import {Card, CardTitle} from "@/components/ui/card";
-import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery, TicketState} from "@/lib/graph/generated/graphql";
 import {Link, MoreHorizontal, MoreVertical, Trash2} from "lucide-react";
 import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
@@ -11,6 +11,7 @@ import {TicketDialogState} from "@/app/tickets/page";
 import {toast} from "sonner";
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
+import {cn} from "@/lib/utils";
 
 
 type TicketProps = {
@@ -67,21 +68,16 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
             <CardTitle className="flex flex-col ml-2 justify-between">
                 <div className="flex justify-between items-center w-full">
                     <Badge
-                        className="absolute left-11 md:relative md:left-0 text-white"
-                        style={{
-                            backgroundColor:
-                                ticket?.state === "NEW"
-                                    ? "#839176"
-                                    : ticket?.state === "OPEN"
-                                        ? "#192B51"
-                                        : ticket?.state === "CLOSED"
-                                            ? "#ff574d"
-                                            : "white"
-                        }}
+                        className={cn(
+                            "absolute left-11 md:relative md:left-0 color: calculateFontColor(label.color)",
+                            ticket?.state === TicketState.New && "bg-ticketstate-new",
+                            ticket?.state === TicketState.Open && "bg-ticketstate-open",
+                            ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
+                        )}
                     >
-                        {ticket?.state === "NEW"
+                        {ticket?.state === TicketState.New
                             ? "new"
-                            : ticket?.state === "OPEN"
+                            : ticket?.state === TicketState.Open
                                 ? "open"
                                 : "closed"}
                     </Badge>
