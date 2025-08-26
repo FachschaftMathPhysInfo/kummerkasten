@@ -677,6 +677,50 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 	return gqlLabels, nil
 }
 
+// FormLabels is the resolver for the formLabels field.
+func (r *queryResolver) FormLabels(ctx context.Context, ids []string) ([]*model.Label, error) {
+	var dbLabels []*models.Label
+
+	query := r.DB.NewSelect().Model(&dbLabels).Relation("Tickets")
+
+	if len(ids) > 0 {
+		query = query.Where("label.id IN (?)", bun.In(ids))
+	}
+
+	query = query.Where("label.form_label = ?", true)
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to get form labels: %v", err)
+		return nil, err
+	}
+
+	var gqlLabels []*model.Label
+	for _, l := range dbLabels {
+		var gqlTickets []*model.Ticket
+		for _, t := range l.Tickets {
+			gqlTickets = append(gqlTickets, &model.Ticket{
+				ID:           t.ID,
+				Title:        t.Title,
+				Text:         t.Text,
+				Note:         &t.Note,
+				State:        t.State,
+				CreatedAt:    t.CreatedAt,
+				LastModified: t.LastModified,
+			})
+		}
+
+		gqlLabels = append(gqlLabels, &model.Label{
+			ID:        l.ID,
+			Name:      l.Name,
+			Color:     l.Color,
+			FormLabel: &l.FormLabel,
+			Tickets:   gqlTickets,
+		})
+	}
+
+	return gqlLabels, nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, role *model.UserRole) ([]*model.User, error) {
 	var users []*model.User

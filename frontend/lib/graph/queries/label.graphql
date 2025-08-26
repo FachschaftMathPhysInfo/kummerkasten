@@ -5,3 +5,11 @@ query allLabels {
         name,
     }
 }
+
+query formLabels {
+  formLabels {
+    id
+    name
+    formLabel
+  }
+}

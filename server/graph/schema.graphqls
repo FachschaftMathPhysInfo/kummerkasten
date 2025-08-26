@@ -69,7 +69,8 @@ type Session {
 
 type Query {
     tickets(id: [ID!], state: [TicketState!]): [Ticket] @hasRole(role: USER)
-    labels(ids: [ID!]): [Label]
+    labels(ids: [ID!]): [Label] @hasRole(role: USER)
+    formLabels(ids: [ID!]): [Label]
     users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     login(mail: String!, password: String!): Boolean!

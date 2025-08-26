@@ -62,8 +62,8 @@ export default function FormUi() {
         setIsLabelsLoading(true);
         const client = getClient();
         const data = await client.request<FormLabelsQuery>(FormLabelsDocument);
-        if (data.labels) {
-          const filteredLabels = data.labels
+        if (data.formLabels) {
+          const filteredLabels = data.formLabels
             .filter((label): label is Label => label !== null)
             .filter(label => label.formLabel);
           setFormLabels(filteredLabels);

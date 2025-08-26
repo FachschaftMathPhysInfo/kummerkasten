@@ -1,7 +1,0 @@
-query formLabels {
-  labels {
-    id
-    name
-    formLabel
-  }
-}
