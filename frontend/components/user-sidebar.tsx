@@ -1,5 +1,4 @@
 "use client"
-
 import {
   Sidebar,
   SidebarContent,
@@ -19,13 +18,10 @@ import {useRouter} from "next/navigation";
 import {useTheme} from "next-themes";
 import {useEffect, useState} from "react";
 import {clsx} from "clsx";
-
-
 export function UserSidebar() {
   const {user, logout} = useUser()
   const router = useRouter()
   const {open, isMobile} = useSidebar()
-
   const userItems = [
     {
       title: "Tickets",
@@ -40,7 +36,6 @@ export function UserSidebar() {
       cypress: "sidebar-labels"
     },
   ]
-
   const adminItems = [
     {
       title: "Users",
@@ -49,12 +44,11 @@ export function UserSidebar() {
       cypress: "sidebar-users"
     }
   ]
-
   if (!user) return null
 
   return (
-    <Sidebar className={'relative'} collapsible={"icon"} data-cy={'sidebar'}>
-      <SidebarContent className={'pr-10 relative'}>
+    <Sidebar className={'fixed h-screen top-0 left-0'} collapsible={"icon"} data-cy={'sidebar'}>
+      <SidebarContent className={'pr-10'}>
         {!isMobile && (
           <SidebarTrigger
             data-cy="sidebar-trigger"
@@ -91,36 +85,35 @@ export function UserSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+     <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <ThemeSwitch/>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            data-cy={'sidebar-settings'}
+                            onClick={() => router.push("/account")}
+                            className={'flex items-center'}
+                        >
+                            <Settings/> Einstellungen
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            data-cy={'sidebar-logout'}
+                            onClick={() => logout()}
+                            className={'flex items-center text-destructive'}
+                        >
+                            <LogOut className={'stroke-destructive'}/> Logout
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
+        </Sidebar>
+    );
 
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <ThemeSwitch/>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              data-cy={'sidebar-settings'}
-              onClick={() => router.push("/account")}
-              className={'flex items-center'}
-            >
-              <Settings/> Einstellungen
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              data-cy={'sidebar-logout'}
-              onClick={() => logout()}
-              className={'flex items-center text-destructive'}
-            >
-              <LogOut className={'stroke-destructive'}/> Logout
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
-  );
-
-}
+  }
 
 export function UserSidebarTrigger() {
   const {user} = useUser();
@@ -128,19 +121,15 @@ export function UserSidebarTrigger() {
   if (!user || !isMobile) return null;
   return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
-
 function ThemeSwitch() {
   const [mounted, setMounted] = useState(false)
   const {resolvedTheme, theme, setTheme} = useTheme()
-
   useEffect(() => {
     setMounted(true)
   }, [])
-
   if (!mounted) {
     return null
   }
-
   return (
     <SidebarMenuButton
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}

@@ -175,7 +175,7 @@ export default function FormUi() {
             render={({field}) => (
              <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">Titel</FormLabel>
+                  <FormLabel>Titel</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     titleWatch.length > 70 && "text-destructive"
@@ -186,6 +186,7 @@ export default function FormUi() {
                 <FormControl>
                   <Input className={cn("bg-background text-foreground")}
                     placeholder="Vorlesung ..." 
+                    maxLength={70}
                     {...field} />
                 </FormControl>
                 <FormMessage/>
@@ -209,6 +210,7 @@ export default function FormUi() {
                 <FormControl>
                   <Textarea
                     placeholder="Deine anonyme Nachricht"
+                    maxLength={3000}
                     className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
                                 "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
                                 "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}
