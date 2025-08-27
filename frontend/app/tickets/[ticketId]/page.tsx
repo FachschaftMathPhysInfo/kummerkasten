@@ -21,6 +21,7 @@ import {TicketDialogState} from "@/app/tickets/page";
 import TicketDialog from "@/app/tickets/[ticketId]/ticket-dialog";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {toast} from "sonner";
+import {useSidebar} from "@/components/ui/sidebar";
 
 const client = getClient();
 
@@ -31,6 +32,7 @@ export default function TicketPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
+  const { isMobile } = useSidebar()
 
   const [dialogState, setDialogState] = useState<TicketDialogState>({
     mode: null,
@@ -96,8 +98,10 @@ export default function TicketPage() {
         </ResizablePanel>
         <ResizableHandle/>
         <ResizablePanel defaultSize={50} className="flex justfiy-between">
-          <TicketDetailView ticket={ticket}/>
-          <TicketStatusPane ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
+          <TicketDetailView ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
+          {!isMobile && (
+            <TicketStatusPane ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
+          )}
         </ResizablePanel>
       </ResizablePanelGroup>
 

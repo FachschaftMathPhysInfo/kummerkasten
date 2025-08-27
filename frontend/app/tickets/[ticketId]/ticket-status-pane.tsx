@@ -63,9 +63,6 @@ export default function TicketStatusPane({ticket, ticketLabels, setDialogStateAc
 
           {ticketLabels && <LabelArea labels={ticketLabels}/>}
           <SheetFooter>
-            <SheetClose asChild>
-              <Button variant="outline">Close</Button>
-            </SheetClose>
           </SheetFooter>
         </SheetContent>
       </Sheet>

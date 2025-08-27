@@ -1,7 +1,7 @@
 "use client"
 
 import {Button} from "@/components/ui/button";
-import {Edit2, Share2, Trash2} from "lucide-react";
+import {Clipboard, Edit2, Trash2} from "lucide-react";
 import React from "react";
 import {Ticket} from "@/lib/graph/generated/graphql";
 import {TicketDialogState} from "@/app/tickets/page";
@@ -14,15 +14,7 @@ interface TicketActionsBarProps {
 
 export default function TicketActionsBar(props: TicketActionsBarProps) {
   return (
-    <div className="flex justify-evenly items-center">
-      <Button
-        variant="outline"
-        onClick={props.copyCurrentUrl}
-        data-cy="copy-link-statusbar"
-      >
-        <Share2/>
-      </Button>
-
+    <div className="flex justify-between items-center">
       <Button
         variant="outline"
         onClick={() => props.setDialogStateAction({
@@ -32,6 +24,14 @@ export default function TicketActionsBar(props: TicketActionsBarProps) {
         data-cy="edit-ticket"
       >
         <Edit2/>
+      </Button>
+
+      <Button
+        variant="outline"
+        onClick={props.copyCurrentUrl}
+        data-cy="copy-link-statusbar"
+      >
+        <Clipboard/>
       </Button>
 
       <Button

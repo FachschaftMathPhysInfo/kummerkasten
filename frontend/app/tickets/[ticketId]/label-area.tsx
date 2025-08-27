@@ -8,7 +8,7 @@ interface LabelAreaProps {
 
 export default function LabelArea({labels}: LabelAreaProps) {
   return (
-    <div className="flex flex-col gap-2 overflow-y-scroll grow">
+    <div className="flex flex-col gap-2 overflow-y-scroll grow items-end">
       {labels.map((label) => (
         <Badge
           key={label.id}
