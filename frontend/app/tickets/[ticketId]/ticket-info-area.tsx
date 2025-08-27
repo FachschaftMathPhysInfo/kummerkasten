@@ -17,9 +17,8 @@ export default function TicketInfoArea({state, createdAt, lastModified}: TicketI
         <Badge
           className="text-white rounded"
           style={{
-            backgroundColor: state === "NEW" ? "#839176" :
-              state === "OPEN" ? "#192B51" :
-                state === "CLOSED" ? "#DF517F" : "gray"
+            backgroundColor: state === TicketState.New ? "#839176" :
+              state === TicketState.Open ? "#192B51" : "CLOSED"
           }}
           data-cy="ticket-status-badge-detail"
         >
