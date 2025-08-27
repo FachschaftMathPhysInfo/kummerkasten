@@ -33,18 +33,17 @@ import {format} from "date-fns";
 interface TicketSidebarProps {
     tickets: Ticket[];
     searchTerm: string;
-    setSearchTerm: (term: string) => void;
+    setSearchTermAction: (term: string) => void;
     selectedTicketId?: string;
 }
 
 export default function TicketSidebar({
                                           tickets,
                                           searchTerm,
-                                          setSearchTerm,
+                                          setSearchTermAction,
                                           selectedTicketId,
                                       }: TicketSidebarProps) {
     const router = useRouter();
-    const client = getClient();
     const [labels, setLabels] = useState<(Label | null)[]>([]);
     const [stateFilter, setStateFilter] = useState<string[]>([]);
     const [labelFilter, setLabelFilter] = useState<string[]>([]);
@@ -89,17 +88,19 @@ export default function TicketSidebar({
     });
 
     const fetchAllLabels = useCallback(async () => {
+        const client = getClient();
         const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
         if (data.labels) {
             setLabels(data.labels);
         }
     }, []);
+
     useEffect(() => {
         void fetchAllLabels();
     }, [fetchAllLabels]);
 
     const resetAllFilters = () => {
-        setSearchTerm("");
+        setSearchTermAction("");
         setStateFilter([]);
         setLabelFilter([]);
         setStartDate(null);
@@ -151,7 +152,7 @@ export default function TicketSidebar({
                 <Input
                     placeholder="Suche nach Tickets..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => setSearchTermAction(e.target.value)}
                     className="mb-4"
                     data-cy="search-ticket-detail"
                 />
@@ -332,17 +333,12 @@ export default function TicketSidebar({
                         data-cy={`ticket-card-${t.id}`}
                     >
                         <Badge
-                            className="text-white px-2 py-1 rounded mr-5 h-2"
-                            style={{
-                                backgroundColor:
-                                    t.state === "NEW"
-                                        ? "#839176"
-                                        : t.state === "OPEN"
-                                            ? "#192B51"
-                                            : t.state === "CLOSED"
-                                                ? "#ff574d"
-                                                : "gray",
-                            }}
+                            className={cn(
+                                "text-white px-2 py-1 rounded mr-5 h-2",
+                                t.state === "NEW" && "bg-ticketstate-new",
+                                t.state === "OPEN" && "bg-ticketstate-open",
+                                t.state === "CLOSED" && "bg-ticketstate-closed"
+                            )}
                             data-cy={`ticket-status-${t.id}`}
                         />
                         <div className="flex flex-row justify-between w-full">
