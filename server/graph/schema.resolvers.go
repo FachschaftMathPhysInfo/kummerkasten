@@ -46,7 +46,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 	}
 
 	const MaxTextLength = 3000
-	if len(ticket.Text) > MaxTitleLength {
+	if len(ticket.Text) > MaxTextLength {
 		return nil, fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
 	}
 
