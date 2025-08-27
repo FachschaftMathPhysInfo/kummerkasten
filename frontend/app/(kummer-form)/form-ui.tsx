@@ -52,6 +52,9 @@ export default function FormUi() {
   const [isLabelsLoading, setIsLabelsLoading] = useState<boolean>(true);
   const {formState: {isSubmitSuccessful, errors} } = form;
 
+  const titleWatch = form.watch("title", "");
+  const textWatch = form.watch("text", "");
+
   useEffect(() => {
     if (isSubmitSuccessful) {
       form.reset();
@@ -171,12 +174,22 @@ export default function FormUi() {
             name="title"
             render={({field}) => (
               <FormItem>
-                <FormLabel className="text-lg">Titel</FormLabel>
-                <FormControl>
-                  <Input className={cn("bg-background text-foreground")}
-                    placeholder="Vorlesung ..." 
-                    {...field} />
-                </FormControl>
+                <div className="flex justify-between items-center relative">
+                  <FormLabel className="text-lg">Titel</FormLabel>
+                </div>
+                <div className="relative">
+                  <FormControl>
+                    <Input className={cn("bg-background text-foreground pr-10")}
+                      placeholder="Vorlesung ..." 
+                      {...field} />
+                  </FormControl>
+                  <span className={cn(
+                    "absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground",
+                    titleWatch.length > 70 && "text-destructive"
+                  )}>
+                    {titleWatch.length} / 70
+                  </span>
+                </div>
                 <FormMessage/>
               </FormItem>
             )}
@@ -186,15 +199,25 @@ export default function FormUi() {
             name="text"
             render={({field}) => (
               <FormItem>
-                <FormLabel className="text-lg">Feedback</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Deine anonyme Nachricht"
-                    className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
-                                "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
-                                "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}
-                    {...field} />
-                </FormControl>
+                <div className="relative">
+                  <FormLabel className="text-lg">Feedback</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Deine anonyme Nachricht"
+                      className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
+                                  "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
+                                  "focus-visible:ring-ring focus-visible:ring-offset-2 pr-10",)}
+                      {...field} />
+                  </FormControl>
+                  <div className="absolute bottom-3 right-3">
+                    <span className={cn(
+                      "text-sm text-muted-foreground",
+                      textWatch.length > 3000 && "text-destructive"
+                    )}>
+                      {textWatch.length} / 3000
+                    </span>
+                  </div>
+                </div>
                 <FormMessage/>
               </FormItem>
             )}
