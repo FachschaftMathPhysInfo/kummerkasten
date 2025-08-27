@@ -1,6 +1,6 @@
 "use client";
 
-import {z} from "zod";
+import {maxLength, z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState, useEffect} from "react";
@@ -53,7 +53,9 @@ export default function FormUi() {
   const {formState: {isSubmitSuccessful, errors} } = form;
 
   const titleWatch = form.watch("title", "");
+  const titleMaxLength = 50;
   const textWatch = form.watch("text", "");
+  const textMaxLength = 3000;
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -110,8 +112,8 @@ export default function FormUi() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-kummerkasten-highlight-bg rounded-lg p-3 my-8">
-      <h2 className="text-3xl font-semibold mb-4">Deine anonyme Nachricht</h2>
+    <div className="w-full max-w-4xl mx-auto bg-kummerkasten-highlight-bg rounded-lg p-6 my-4">
+      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Deine anonyme Nachricht</h2>
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(onValidSubmit, () =>
@@ -124,7 +126,7 @@ export default function FormUi() {
               name="labels"
               render={() => (
                 <FormItem>
-                  <FormLabel className={cn('data-[error=true]:text-foreground text-lg')}>Worum geht es in deinem Feedback?</FormLabel>
+                  <FormLabel className={cn('data-[error=true]:text-destructive text-lg ')}>Worum geht es in deinem Feedback?</FormLabel>
                   {isLabelsLoading && 
                     <div className="flex items-center justify-center">
                       <LoaderCircle className="animate-spin" />
@@ -173,23 +175,21 @@ export default function FormUi() {
             control={form.control}
             name="title"
             render={({field}) => (
-              <FormItem>
-                <div className="flex justify-between items-center relative">
+             <FormItem>
+                <div className="flex justify-between items-center">
                   <FormLabel className="text-lg">Titel</FormLabel>
-                </div>
-                <div className="relative">
-                  <FormControl>
-                    <Input className={cn("bg-background text-foreground pr-10")}
-                      placeholder="Vorlesung ..." 
-                      {...field} />
-                  </FormControl>
                   <span className={cn(
-                    "absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground",
+                    "text-sm text-muted-foreground",
                     titleWatch.length > 70 && "text-destructive"
                   )}>
                     {titleWatch.length} / 70
                   </span>
                 </div>
+                <FormControl>
+                  <Input className={cn("bg-background text-foreground")}
+                    placeholder="Vorlesung ..." 
+                    {...field} />
+                </FormControl>
                 <FormMessage/>
               </FormItem>
             )}
@@ -199,25 +199,23 @@ export default function FormUi() {
             name="text"
             render={({field}) => (
               <FormItem>
-                <div className="relative">
+                <div className="flex justify-between items-center">
                   <FormLabel className="text-lg">Feedback</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Deine anonyme Nachricht"
-                      className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
-                                  "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
-                                  "focus-visible:ring-ring focus-visible:ring-offset-2 pr-10",)}
-                      {...field} />
-                  </FormControl>
-                  <div className="absolute bottom-3 right-3">
-                    <span className={cn(
-                      "text-sm text-muted-foreground",
-                      textWatch.length > 3000 && "text-destructive"
-                    )}>
-                      {textWatch.length} / 3000
-                    </span>
-                  </div>
+                  <span className={cn(
+                    "text-sm text-muted-foreground",
+                    textWatch.length > 3000 && "text-destructive"
+                  )}>
+                    {textWatch.length} / 3000
+                  </span>
                 </div>
+                <FormControl>
+                  <Textarea
+                    placeholder="Deine anonyme Nachricht"
+                    className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
+                                "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
+                                "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}
+                    {...field} />
+                </FormControl>
                 <FormMessage/>
               </FormItem>
             )}

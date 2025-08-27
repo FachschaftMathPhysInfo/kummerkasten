@@ -38,7 +38,7 @@ import { AllQuestionAnswerPairDocument, AllQuestionAnswerPairQuery, QuestionAnsw
   }, []);
 
   return (
-    <section className="w-full max-w-4xl mx-auto my-8 p-3 bg-kummerkasten-highlight-bg rounded-lg shadow-lg">
+    <section className="w-full max-w-4xl mx-auto p-6 my-4 bg-kummerkasten-highlight-bg rounded-lg shadow-lg">
       <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Häufig gestellte Fragen</h2>
       {loading && (
         <div className="flex justify-center items-center py-8">
