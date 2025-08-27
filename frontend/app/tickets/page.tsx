@@ -513,7 +513,7 @@ export default function TicketPage() {
                     ticket?.id && (
                         <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
                             <Link href={`/tickets/${ticket.id}`} passHref>
-                                <TicketCard ticketID={ticket.id} setDialogState={setDialogState}/>
+                                <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
                             </Link>
                         </div>
                     )

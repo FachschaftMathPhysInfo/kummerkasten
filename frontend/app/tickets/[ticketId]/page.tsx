@@ -87,7 +87,7 @@ export default function TicketPage() {
                     <TicketSidebar
                         tickets={tickets}
                         searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
+                        setSearchTermAction={setSearchTerm}
                         selectedTicketId={ticketId}
                     />
                 </ResizablePanel>
@@ -95,7 +95,7 @@ export default function TicketPage() {
                 <ResizablePanel defaultSize={50} className=" flex flex-row justfiy-between">
                     <TicketDetailView ticket={ticket}/>
                     <div className="flex grow justify-end mr-5">
-                        <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
+                        <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>

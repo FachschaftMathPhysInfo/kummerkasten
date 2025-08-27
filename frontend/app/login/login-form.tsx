@@ -12,6 +12,7 @@ import {useUser} from "@/components/providers/user-provider";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {cn} from "@/lib/utils";
+import PasswordInput from "@/components/password-input";
 
 
 const loginFormSchema = z.object({
@@ -101,9 +102,8 @@ export default function LoginForm() {
             <FormItem>
               <FormLabel hidden>Password</FormLabel>
               <FormControl>
-                <Input
+                <PasswordInput
                   placeholder={'Passwort'}
-                  type={"password"}
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}
                   onChange={(e) => handleInputChange(field, e.target.value)}
