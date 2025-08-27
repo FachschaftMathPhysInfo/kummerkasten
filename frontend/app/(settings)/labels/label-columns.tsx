@@ -7,6 +7,7 @@ import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-
 import {LabelTableDialogState} from "@/app/(settings)/labels/label-table";
 import {Badge} from "@/components/ui/badge";
 import {calculateFontColor} from "@/lib/calculate-colors";
+import {compareInLowercase} from "@/lib/utils";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<LabelTableDialogState>>;
@@ -20,6 +21,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="Name"/>
       ),
+      sortingFn: compareInLowercase,
       cell: ({row}) =>
         <Badge
           data-cy={'label-name-cell'}

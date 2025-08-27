@@ -25,8 +25,7 @@ import {toast} from "sonner";
 const client = getClient();
 
 export default function TicketPage() {
-    const params = useParams();
-    const ticketId = params.ticketId as string;
+    const { ticketId } = useParams();
 
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -87,15 +86,15 @@ export default function TicketPage() {
                     <TicketSidebar
                         tickets={tickets}
                         searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        selectedTicketId={ticketId}
+                        setSearchTermAction={setSearchTerm}
+                        selectedTicketId={String(ticketId)}
                     />
                 </ResizablePanel>
                 <ResizableHandle/>
                 <ResizablePanel defaultSize={50} className=" flex flex-row justfiy-between">
                     <TicketDetailView ticket={ticket}/>
                     <div className="flex grow justify-end mr-5">
-                        <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogState={setDialogState}/>
+                        <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>

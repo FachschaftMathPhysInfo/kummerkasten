@@ -37,6 +37,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-ticketstate-new: var(--ticketstate-new);
+  --color-ticketstate-open: var(--ticketstate-open);
+  --color-ticketstate-closed: var(--ticketstate-closed);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -98,6 +101,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --ticketstate-new: oklch(0.6377 0.0424 129.92);
+  --ticketstate-open: oklch(0.2957 0.0732 263.48);
+  --ticketstate-closed: oklch(0.6832 0.2055 27.32);
 }
 
 .dark {
@@ -132,6 +138,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --ticketstate-new: oklch(0.6377 0.0424 129.92);
+  --ticketstate-open: oklch(0.2957 0.0732 263.48);
+  --ticketstate-closed: oklch(0.6832 0.2055 27.32);
 }
 
 @layer base {

@@ -26,6 +26,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
+import {useSidebar} from "@/components/ui/sidebar";
 
 
 const client = getClient();
@@ -33,17 +34,6 @@ const client = getClient();
 export type TicketDialogState = {
   mode: "update" | "delete" | null;
   currentTicket: Ticket | null
-}
-
-function useIsMobile(breakpoint = 480) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const update = () => setIsMobile(window.innerWidth < breakpoint);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [breakpoint]);
-  return isMobile;
 }
 
 export default function TicketPage() {
@@ -57,7 +47,7 @@ export default function TicketPage() {
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
   const [sortField, setSortField] = useState<"Erstellt" | "Geändert" | "Titel">("Erstellt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const isMobile = useIsMobile();
+  const {isMobile} = useSidebar();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showMobileLabelFilter, setShowMobileLabelFilter] = useState(false);
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
@@ -525,7 +515,7 @@ export default function TicketPage() {
             ticket?.id && (
               <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
                 <Link href={`/tickets/${ticket.id}`} passHref>
-                  <TicketCard ticketID={ticket.id} setDialogState={setDialogState}/>
+                  <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
                 </Link>
               </div>
             )
@@ -543,5 +533,4 @@ export default function TicketPage() {
       />
     </div>
   )
-    ;
 }

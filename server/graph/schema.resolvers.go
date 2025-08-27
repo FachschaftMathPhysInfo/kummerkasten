@@ -163,9 +163,21 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 		return nil, fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
 	}
 
+	var labels []*models.Label
+
+	if err := r.DB.NewSelect().Model(&labels).
+		Where("LOWER(name) = ?", strings.ToLower(label.Name)).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	if len(labels) != 0 {
+		return nil, fmt.Errorf("unique constraint error: label with name %v does already exist", label.Name)
+	}
+
 	newLabel := &models.Label{
 		ID:   uuid.New().String(),
-		Name: strings.ToLower(label.Name),
+		Name: label.Name,
 	}
 
 	if label.Color != nil {
@@ -223,7 +235,19 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 			return "", fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
 		}
 
-		dbLabel.Name = strings.ToLower(*label.Name)
+		var labels []*models.Label
+
+		if err := r.DB.NewSelect().Model(&labels).
+			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
+			Scan(ctx); err != nil {
+			return "", err
+		}
+
+		if len(labels) != 0 {
+			return "", fmt.Errorf("unique constraint error: label with name %v does already exist", label.Name)
+		}
+
+		dbLabel.Name = *label.Name
 	}
 
 	if label.Color != nil {
