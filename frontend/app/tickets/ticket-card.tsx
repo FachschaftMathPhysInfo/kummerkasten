@@ -16,7 +16,7 @@ import {cn} from "@/lib/utils";
 
 type TicketProps = {
     ticketID: string
-    setDialogState: React.Dispatch<React.SetStateAction<TicketDialogState>>;
+    setDialogStateAction: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
 function useIsMobile(breakpoint = 380) {
@@ -32,7 +32,7 @@ function useIsMobile(breakpoint = 380) {
 
 const client = getClient();
 
-export function TicketCard({ticketID, setDialogState}: TicketProps) {
+export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
     const isMobile = useIsMobile();
     const [ticket, setTicket] = useState<Ticket>();
     const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -126,7 +126,7 @@ export function TicketCard({ticketID, setDialogState}: TicketProps) {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             if (!ticket) return;
-                                            setDialogState({mode: "delete", currentTicket: ticket});
+                                            setDialogStateAction({mode: "delete", currentTicket: ticket});
                                         }}
                                         className="text-destructive"
                                     >
