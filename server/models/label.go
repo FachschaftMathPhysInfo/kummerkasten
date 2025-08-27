@@ -6,7 +6,7 @@ type Label struct {
 	bun.BaseModel `bun:"table:labels"`
 
 	ID        string    `bun:",pk,default:gen_random_UUID(),type:uuid"`
-	Name      string    `bun:",unique,notnull"`
+	Name    string    `bun:",notnull,unique"`
 	Color     string    `bun:"type:varchar(8),default:'#7a7777'"`
 	FormLabel bool      `bun:",default:false,notnull"`
 	Tickets   []*Ticket `bun:"m2m:labels_to_tickets"`
