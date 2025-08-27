@@ -81,7 +81,7 @@ export default function FormUi() {
       }
     };
     void fetchLabels();
-  }, [form.reset, isSubmitSuccessful]);
+  }, [form, isSubmitSuccessful]);
 
   async function onValidSubmit(data: z.infer<typeof formUiSchema>) {
     setLoading(true);
