@@ -6,7 +6,7 @@ import {Label, Ticket} from "@/lib/graph/generated/graphql";
 import React from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {toast} from "sonner";
-import {Sheet, SheetClose, SheetContent, SheetFooter, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {Sheet, SheetContent, SheetFooter, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import {useSidebar} from "@/components/ui/sidebar";
 import LabelArea from "@/app/tickets/[ticketId]/label-area";
@@ -37,14 +37,9 @@ export default function TicketStatusPane({ticket, ticketLabels, setDialogStateAc
     (
       <Sheet>
         <SheetTrigger asChild>
-          {isMobile ? <Button variant="outline" data-cy="mobile-filter-button">
-              <MoreVertical/>
-            </Button> :
-            <Button variant="outline" data-cy="mobile-filter-button">
-              Details
-            </Button>}
+          <Button variant="outline" data-cy="mobile-filter-button"><MoreVertical/></Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[85%] overflow-y-auto px-10 pt-15 gap-10">
+        <SheetContent side="right" className="w-[85%] overflow-y-auto px-10 pt-15 gap-10 [&>button]:hidden">
           <VisuallyHidden>
             <SheetTitle>Ticket Detail Bereich</SheetTitle>
           </VisuallyHidden>
@@ -67,7 +62,7 @@ export default function TicketStatusPane({ticket, ticketLabels, setDialogStateAc
         </SheetContent>
       </Sheet>
     ) : (
-      <div className={'flex flex-col w-[300px] overflow-y-auto px-10 pt-15 gap-10 mr-5'}>
+      <div className={'flex flex-col w-[300px] overflow-y-auto px-10 gap-10 mr-5'}>
         <TicketActionsBar
           copyCurrentUrl={copyCurrentUrl}
           ticket={ticket}
