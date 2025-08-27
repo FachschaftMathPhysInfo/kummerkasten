@@ -1,6 +1,6 @@
 "use client";
 
-import {maxLength, z} from "zod";
+import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState, useEffect} from "react";
@@ -53,9 +53,7 @@ export default function FormUi() {
   const {formState: {isSubmitSuccessful, errors} } = form;
 
   const titleWatch = form.watch("title", "");
-  const titleMaxLength = 50;
   const textWatch = form.watch("text", "");
-  const textMaxLength = 3000;
 
   useEffect(() => {
     if (isSubmitSuccessful) {
