@@ -96,7 +96,7 @@ export default function LabelForm(props: LabelFormProps) {
       if (String(error).includes('unique constraint')) {
         form.setError("name", { message: "Ein Label mit diesem Namen existiert bereits"})
       } else {
-        toast.error("Ein Fehler beim Erstellen des Labels ist aufgetreten")
+        toast.error("Ein Fehler beim Aktualisieren des Labels ist aufgetreten")
       }
     }
   }
