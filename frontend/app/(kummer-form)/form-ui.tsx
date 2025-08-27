@@ -110,7 +110,7 @@ export default function FormUi() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-kummerkasten-highlight-bg rounded-lg p-6 my-4">
+    <div className="w-full max-w-4xl rounded-lg p-6 my-4 border">
       <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Deine anonyme Nachricht</h2>
       <FormProvider {...form}>
         <form
