@@ -12,7 +12,7 @@ import { getClient } from "@/lib/graph/client";
 import { AllQuestionAnswerPairDocument, AllQuestionAnswerPairQuery, QuestionAnswerPair } from "@/lib/graph/generated/graphql";
 
 
- function FaqSection() {
+ export default function FaqSection() {
   const [faqs, setFaqs] = useState<QuestionAnswerPair[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,5 +73,3 @@ import { AllQuestionAnswerPairDocument, AllQuestionAnswerPairQuery, QuestionAnsw
     </section>
   );
 };
-
-export default FaqSection;
