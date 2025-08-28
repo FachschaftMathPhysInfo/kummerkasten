@@ -160,8 +160,11 @@ export default function TicketPage() {
 
   return (
     <div className="space-y-6 grow max-w-screen">
-      <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
-                            icon={<TicketIcon/>}/>
+      <ManagementPageHeader
+        title="Tickets"
+        description="Bearbeite alle verfügbaren Tickets"
+        icon={<TicketIcon/>}
+      />
       <div className="px-8 flex gap-4">
         <div className="flex flex-col gap-2 w-full">
           <div className="flex gap-2">
@@ -174,7 +177,10 @@ export default function TicketPage() {
             {isMobile ? (
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" data-cy="mobile-filter-button">
+                  <Button
+                    variant="outline"
+                    className={cn(areFiltersSet && 'border border-accent')}
+                    data-cy="mobile-filter-button">
                     Filter
                   </Button>
                 </SheetTrigger>
@@ -355,8 +361,14 @@ export default function TicketPage() {
               <div className="flex gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="max-w-[200px] justify-between"
-                            data-cy="button-status">
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'max-w-[200px] justify-between',
+                        stateFilter.length > 0 && 'border border-accent'
+                      )}
+                      data-cy="button-status"
+                    >
                       {stateFilter && stateFilter.length > 0
                         ? `${stateFilter.length} Status`
                         : "Status"}
@@ -399,8 +411,13 @@ export default function TicketPage() {
                 </Popover>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="max-w-[200px] justify-between"
-                            data-cy="button-label">
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "max-w-[200px] justify-between",
+                        labelFilter.length > 0 && 'border border-accent'
+                      )}
+                      data-cy="button-label">
                       {labelFilter && labelFilter.length > 0
                         ? `${labelFilter.length} Labels`
                         : "Labels"}

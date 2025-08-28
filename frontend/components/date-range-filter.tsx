@@ -6,6 +6,7 @@ import {format} from "date-fns"
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import * as React from "react"
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {cn} from "@/lib/utils";
 
 interface DateRangeFilterProps {
   startDate: Date | null
@@ -28,7 +29,13 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                 </SheetTitle>
               </SheetHeader>
               <SheetTrigger asChild>
-                <Button variant="outline" className="w-fit justify-between">
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-fit justify-between",
+                    !!startDate && "border bg-accent"
+                  )}
+                >
                   {startDate ? format(startDate, "dd.MM.yy") : "Start"}
                 </Button>
               </SheetTrigger>
@@ -50,7 +57,13 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                 </SheetTitle>
               </SheetHeader>
               <SheetTrigger asChild>
-                <Button variant="outline" className="w-fit justify-between">
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-fit justify-between",
+                    !!endDate && "border bg-accent"
+                  )}
+                >
                   {endDate ? format(endDate, "dd.MM.yy") : "Ende"}
                 </Button>
               </SheetTrigger>
