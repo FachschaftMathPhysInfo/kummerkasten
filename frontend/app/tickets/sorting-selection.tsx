@@ -39,7 +39,10 @@ export default function SortingSelection(props: SortingSelectionProps) {
             {["Erstellt", "Geändert", "Titel"].map((field) => (
               <CommandItem
                 key={field}
-                className={cn(props.sorting.field === field && 'bg-accent/50')}
+                className={cn(
+                  props.sorting.field === field
+                    ? 'bg-accent/50 hover:!bg-accent/70'
+                    : 'data-[selected=true]:!bg-muted-foreground/10')}
                 onSelect={() => props.setSorting(prevState => ({
                   field: field as TicketSortingField,
                   orderAscending: !prevState.orderAscending
