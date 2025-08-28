@@ -36,6 +36,13 @@ export type TicketDialogState = {
   currentTicket: Ticket | null
 }
 
+export type TicketSorting = {
+  field: TicketSortingField,
+  orderAscending: boolean
+}
+
+export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
+
 export default function TicketPage() {
   const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
   const [labels, setLabels] = useState<(Label | null)[]>([]);
@@ -45,8 +52,8 @@ export default function TicketPage() {
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
-  const [sortField, setSortField] = useState<"Erstellt" | "Geändert" | "Titel">("Erstellt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<TicketSortingField>("Erstellt");
+  const [sortOrderAscending, setSortOrderAscending] = useState(true);
   const {isMobile} = useSidebar();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showMobileLabelFilter, setShowMobileLabelFilter] = useState(false);
@@ -115,7 +122,7 @@ export default function TicketPage() {
     setStartDate(null);
     setEndDate(null);
     setSortField("Erstellt");
-    setSortOrder("asc");
+    setSortOrderAscending(true);
     setLabelSearchTerm("");
   };
 
@@ -135,8 +142,8 @@ export default function TicketPage() {
       valB = b.title.toLowerCase();
     }
 
-    if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-    if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+    if (valA < valB) return sortOrderAscending ? -1 : 1;
+    if (valA > valB) return sortOrderAscending ? 1 : -1;
     return 0;
   });
 
@@ -306,7 +313,7 @@ export default function TicketPage() {
                         className="w-fit justify-between text-sm"
                         onClick={() => setShowMobileSort((prev) => !prev)}
                       >
-                        {sortField} {sortOrder === "asc" ? "↑" : "↓"}
+                        {sortField} {sortOrderAscending ? "↑" : "↓"}
                       </Button>
                     </div>
                     {showMobileSort && (
@@ -329,18 +336,18 @@ export default function TicketPage() {
                           <div className="text-xs mt-1">Reihenfolge</div>
                           <div className="flex flex-row gap-1">
                             <Button
-                              variant={sortOrder === "asc" ? "secondary" : "outline"}
+                              variant={sortOrderAscending ? "secondary" : "outline"}
                               size="sm"
                               className="flex-1 text-xs"
-                              onClick={() => setSortOrder("asc")}
+                              onClick={() => setSortOrderAscending(true)}
                             >
                               Aufsteigend
                             </Button>
                             <Button
-                              variant={sortOrder === "desc" ? "secondary" : "outline"}
+                              variant={!sortOrderAscending ? "secondary" : "outline"}
                               size="sm"
                               className="flex-1 text-xs"
-                              onClick={() => setSortOrder("desc")}
+                              onClick={() => setSortOrderAscending(false)}
                             >
                               Absteigend
                             </Button>
@@ -460,40 +467,7 @@ export default function TicketPage() {
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[170px] justify-between items-center"
-                            data-cy="sort-button">
-                                <span className="flex justify-center items-center"> Sortieren: {sortField}{" "}
-                                  {sortOrder === "asc" ? (
-                                    <ArrowUp className="inline h-4 w-4 ml-1"/>
-                                  ) : (
-                                    <ArrowDown className="inline h-4 w-4 ml-1"/>
-                                  )}
-                                </span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
-                    <Command>
-                      <CommandGroup heading="Feld">
-                        {["Erstellt", "Geändert", "Titel"].map((field) => (
-                          <CommandItem
-                            key={field}
-                            onSelect={() => setSortField(field as typeof sortField)}
-                          >
-                            {field}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                      <CommandGroup heading="Reihenfolge">
-                        <CommandItem onSelect={() => setSortOrder("asc")}
-                                     data-cy="sort-order-asc">Aufsteigend</CommandItem>
-                        <CommandItem onSelect={() => setSortOrder("desc")}
-                                     data-cy="sort-order-desc">Absteigend</CommandItem>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+
               </div>
             )}
           </div>
