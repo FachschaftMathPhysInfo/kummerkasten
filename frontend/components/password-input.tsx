@@ -26,7 +26,7 @@ export default function PasswordInput(props: React.ComponentProps<typeof Input>)
       <Input
         {...props}
         type={visible ? "text" : "password"}
-        className={cn(showToggle && "pr-10")}
+        className={cn(showToggle && "pr-10", props.className)}
       />
       {showToggle && (
         <Button
