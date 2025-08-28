@@ -33,10 +33,10 @@ export default function PasswordInput(props: React.ComponentProps<typeof Input>)
           type="button"
           variant="ghost"
           size="sm"
-          className="absolute right-1 top-1/2 -translate-y-1/2 px-2"
+          className="absolute right-0.5 top-1/2 -translate-y-1/2 px-2"
           onClick={() => setVisible((v) => !v)}
         >
-          {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          {visible ? <EyeOff className="h-4 aspect-square" /> : <Eye className="h-4 aspect-square" />}
         </Button>
       )}
     </div>
