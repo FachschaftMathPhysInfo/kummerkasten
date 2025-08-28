@@ -119,6 +119,15 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
 
                       <DropdownMenuItem
                         onClick={() => props.setDialogState({
+                          mode: "resetPassword",
+                          currentUser: row.original
+                        })}
+                      >
+                        Password zurücksetzen
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => props.setDialogState({
                           mode: "delete",
                           currentUser: row.original
                         })}
