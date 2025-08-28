@@ -25,8 +25,7 @@ import {toast} from "sonner";
 const client = getClient();
 
 export default function TicketPage() {
-    const params = useParams();
-    const ticketId = params.ticketId as string;
+    const { ticketId } = useParams();
 
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -88,7 +87,7 @@ export default function TicketPage() {
                         tickets={tickets}
                         searchTerm={searchTerm}
                         setSearchTermAction={setSearchTerm}
-                        selectedTicketId={ticketId}
+                        selectedTicketId={String(ticketId)}
                     />
                 </ResizablePanel>
                 <ResizableHandle/>

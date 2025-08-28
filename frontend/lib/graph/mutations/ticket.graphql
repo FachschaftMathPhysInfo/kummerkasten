@@ -1,3 +1,9 @@
+mutation createTicket($ticket: NewTicket!) {
+    createTicket(ticket: $ticket) {
+        id
+    }
+}
+
 mutation updateTicket($id: String!, $ticket: UpdateTicket!){
     updateTicket(id: $id, ticket: $ticket)
 }

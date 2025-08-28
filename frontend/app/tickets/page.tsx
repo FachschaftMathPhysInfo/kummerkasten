@@ -26,6 +26,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
+import {useSidebar} from "@/components/ui/sidebar";
 
 
 const client = getClient();
@@ -33,17 +34,6 @@ const client = getClient();
 export type TicketDialogState = {
   mode: "update" | "delete" | null;
   currentTicket: Ticket | null
-}
-
-function useIsMobile(breakpoint = 480) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const update = () => setIsMobile(window.innerWidth < breakpoint);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [breakpoint]);
-  return isMobile;
 }
 
 export default function TicketPage() {
@@ -57,12 +47,21 @@ export default function TicketPage() {
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
   const [sortField, setSortField] = useState<"Erstellt" | "Geändert" | "Titel">("Erstellt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const isMobile = useIsMobile();
+  const {isMobile} = useSidebar();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showMobileLabelFilter, setShowMobileLabelFilter] = useState(false);
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
-  const [showMobileSort, setShowMobileSort] = React.useState(false);
+  const [showMobileSort, setShowMobileSort] = useState(false);
+  const [areFiltersSet, setAreFiltersSet] = useState(false);
 
+  useEffect(() => {
+    setAreFiltersSet(
+      stateFilter.length > 0 ||
+      labelFilter.length > 0 ||
+      !!startDate ||
+      !!endDate
+    )
+  }, [stateFilter.length, labelFilter.length, startDate, endDate]);
 
   const resetDialogState = () => {
     setDialogState({mode: null, currentTicket: null})
@@ -211,7 +210,7 @@ export default function TicketPage() {
                               <Check
                                 className={cn("mr-2 h-4 w-4", isSelected ? "opacity-100" : "opacity-0")}
                               />
-                              {state === "NEW" ? "Neu" : state === "OPEN" ? "Offen" : "Fertig"}
+                              {state === TicketState.New ? "Neu" : state === TicketState.Open ? "Offen" : "Fertig"}
                             </Button>
                           );
                         })}
@@ -386,11 +385,11 @@ export default function TicketPage() {
                                   isSelected ? "opacity-100" : "opacity-0"
                                 )}
                               />
-                              {state === "NEW"
-                                ? "New"
-                                : state === "OPEN"
-                                  ? "Open"
-                                  : "Closed"}
+                              {state === TicketState.New
+                                ? "Neu"
+                                : state === TicketState.Open
+                                  ? "Offen"
+                                  : "Geschlossen"}
                             </CommandItem>
                           );
                         })}
@@ -498,25 +497,27 @@ export default function TicketPage() {
               </div>
             )}
           </div>
-          <Button
-            variant="outline"
-            className="whitespace-nowrap"
-            onClick={resetAllFilters}
-            data-cy="reset-filters"
-          >
-            <Trash2 className="text-destructive"/>
-            Filter zurücksetzen
-          </Button>
+          {areFiltersSet && (
+            <Button
+              variant="outline"
+              className="whitespace-nowrap"
+              onClick={resetAllFilters}
+              data-cy="reset-filters"
+            >
+              <Trash2 className="text-destructive"/>
+              Filter zurücksetzen
+            </Button>
+          )}
         </div>
       </div>
       {sortedTickets.map((ticket) =>
-          ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
-              <Link href={`/tickets/${ticket.id}`} passHref>
-                <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
-              </Link>
-            </div>
-          )
+            ticket?.id && (
+              <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+                <Link href={`/tickets/${ticket.id}`} passHref>
+                  <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
+                </Link>
+              </div>
+            )
       )}
 
       <ConfirmationDialog
@@ -529,5 +530,5 @@ export default function TicketPage() {
         data-cy-cancel="cancel-delete"
       />
     </div>
-  );
+  )
 }

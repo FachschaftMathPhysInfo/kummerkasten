@@ -3,14 +3,15 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
 	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/Plebysnacc/kummerkasten/utils"
 	"github.com/uptrace/bun"
-	"log"
-	"os"
-	"time"
 )
 
 func SeedData(ctx context.Context, db *bun.DB) error {
@@ -29,32 +30,36 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 	labels := []*models.Label{
 		{
-			Name:  "dozent*in",
-			Color: "#474770",
+			Name:      "dozent*in",
+			Color:     "#474770",
+			FormLabel: true,
 		},
 		{
 			Name:  "prof. mathe",
 			Color: "#476870",
 		},
 		{
-			Name:  "veranstaltung",
-			Color: "#47704e",
+			Name:      "veranstaltung",
+			Color:     "#47704e",
+			FormLabel: true,
 		},
 		{
 			Name:  "lineare algebra",
 			Color: "#487047",
 		},
 		{
-			Name:  "fachschaft",
-			Color: "#477068",
+			Name:      "fachschaft",
+			Color:     "#477068",
+			FormLabel: true,
 		},
 		{
 			Name:  "gremienwahlen",
 			Color: "#706047",
 		},
 		{
-			Name:  "sonstiges",
-			Color: "#70476f",
+			Name:      "sonstiges",
+			Color:     "#6a4770",
+			FormLabel: true,
 		},
 		{
 			Name:  "soziales",

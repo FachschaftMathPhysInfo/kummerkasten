@@ -6,6 +6,7 @@ import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {Tags} from "lucide-react";
 import {LabelTable} from "@/app/(settings)/labels/label-table";
+import {ManagementPageHeader} from "@/components/management-page-header";
 
 export default function LabelManagementPage() {
   const [labels, setLabels] = useState<Label[]>([])
@@ -30,19 +31,15 @@ export default function LabelManagementPage() {
   useEffect(() => void fetchLabels(), [fetchLabels])
 
   return (
-    <div className={'w-full h-full flex flex-col gap-6 px-10 grow'}>
-      {/*TODO: replace this with component when available*/}
-      <div className={'flex flex-col'}>
-        <span className={'flex gap-2 items-center'}>
-          <Tags/>
-          <h1 className={'text-2xl font-bold'}>Label Verwaltung</h1>
-        </span>
-
-        <p className={'text-xl text-muted-foreground'}>
-          Erstelle, lösche und update Labels hier.
-        </p>
+    <div className="w-full h-full flex flex-col grow">
+      <ManagementPageHeader
+        icon={<Tags/>}
+        title="Label Verwaltung"
+        description="Erstelle, lösche und update Labels hier."
+      />
+      <div className={'w-full h-full flex flex-col gap-6 px-10 pt-4 grow'}>
+        <LabelTable data={labels} refreshData={fetchLabels}/>
       </div>
-      <LabelTable data={labels} refreshData={fetchLabels}/>
     </div>
   )
 }

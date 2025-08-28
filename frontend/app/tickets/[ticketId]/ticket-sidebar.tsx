@@ -333,17 +333,12 @@ export default function TicketSidebar({
                         data-cy={`ticket-card-${t.id}`}
                     >
                         <Badge
-                            className="text-white px-2 py-1 rounded mr-5 h-2"
-                            style={{
-                                backgroundColor:
-                                    t.state === "NEW"
-                                        ? "#839176"
-                                        : t.state === "OPEN"
-                                            ? "#192B51"
-                                            : t.state === "CLOSED"
-                                                ? "#ff574d"
-                                                : "gray",
-                            }}
+                            className={cn(
+                                "text-white px-2 py-1 rounded mr-5 h-2",
+                                t.state === "NEW" && "bg-ticketstate-new",
+                                t.state === "OPEN" && "bg-ticketstate-open",
+                                t.state === "CLOSED" && "bg-ticketstate-closed"
+                            )}
                             data-cy={`ticket-status-${t.id}`}
                         />
                         <div className="flex flex-row justify-between w-full">
