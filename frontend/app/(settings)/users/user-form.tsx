@@ -18,18 +18,18 @@ interface UserFormProps {
 }
 
 const passwordSchema = z.string()
-  .min(12, "Passwort muss mindestens 12 Zeichen lang sein.")
+  .min(12, "Passwort muss mindestens 12 Zeichen lang sein")
   .refine((val) => /[a-z]/.test(val), {
-    message: "Passwort muss mindestens einen Kleinbuchstaben enthalten.",
+    message: "Passwort muss mindestens einen Kleinbuchstaben enthalten",
   })
   .refine((val) => /[A-Z]/.test(val), {
-    message: "Passwort muss mindestens einen Großbuchstaben enthalten.",
+    message: "Passwort muss mindestens einen Großbuchstaben enthalten",
   })
   .refine((val) => /[0-9]/.test(val), {
-    message: "Passwort muss mindestens eine Zahl enthalten.",
+    message: "Passwort muss mindestens eine Zahl enthalten",
   })
   .refine((val) => /[^A-Za-z0-9]/.test(val), {
-    message: "Passwort muss mindestens ein Sonderzeichen enthalten.",
+    message: "Passwort muss mindestens ein Sonderzeichen enthalten",
   });
 
 const userFormSchema = z.object({
@@ -40,7 +40,7 @@ const userFormSchema = z.object({
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   path: ["confirmPassword"],
-  message: "Passwörter stimmen nicht überein.",
+  message: "Passwörter stimmen nicht überein",
 });
 
 export default function UserForm(props: UserFormProps) {
