@@ -1,7 +1,7 @@
 "use client"
 
 import {ManagementPageHeader} from "@/components/management-page-header";
-import {ArrowDown, ArrowUp, Check, TicketIcon, Trash2} from "lucide-react";
+import {Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
 import {getClient} from "@/lib/graph/client";
 import React, {useCallback, useEffect, useState} from "react";
@@ -27,9 +27,8 @@ import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
+import SortingSelection from "@/app/tickets/sorting-selection";
 
-
-const client = getClient();
 
 export type TicketDialogState = {
   mode: "update" | "delete" | null;
@@ -44,22 +43,47 @@ export type TicketSorting = {
 export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
 
 export default function TicketPage() {
-  const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
-  const [labels, setLabels] = useState<(Label | null)[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [labels, setLabels] = useState<Label[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [stateFilter, setStateFilter] = useState<string[]>([]);
   const [labelFilter, setLabelFilter] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
-  const [sortField, setSortField] = useState<TicketSortingField>("Erstellt");
-  const [sortOrderAscending, setSortOrderAscending] = useState(true);
+  const [sorting, setSorting] = useState<TicketSorting>({field: "Erstellt", orderAscending: true});
   const {isMobile} = useSidebar();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showMobileLabelFilter, setShowMobileLabelFilter] = useState(false);
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
   const [showMobileSort, setShowMobileSort] = useState(false);
   const [areFiltersSet, setAreFiltersSet] = useState(false);
+
+  const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
+  const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
+
+  const fetchTickets = useCallback(async () => {
+    const client = getClient();
+    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
+    if (data.tickets) setTickets(data.tickets.filter(ticket => !!ticket))
+  }, []);
+
+  const fetchAllLabels = useCallback(async () => {
+    const client = getClient();
+    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
+    if (data.labels) setLabels(data.labels.filter(label => !!label));
+  }, []);
+
+  useEffect(() => {
+    const newFilteredTickets = filterTickets(tickets);
+    setFilteredTickets(newFilteredTickets)
+
+    setSortedTickets(sortTickets([...newFilteredTickets]))
+  }, [tickets, stateFilter, labelFilter, searchTerm, startDate, endDate]);
+
+  useEffect(() => {
+    setSortedTickets(sortTickets([...filteredTickets]))
+  }, []);
 
   useEffect(() => {
     setAreFiltersSet(
@@ -70,50 +94,65 @@ export default function TicketPage() {
     )
   }, [stateFilter.length, labelFilter.length, startDate, endDate]);
 
-  const resetDialogState = () => {
-    setDialogState({mode: null, currentTicket: null})
-  }
-
-  const fetchTickets = useCallback(async () => {
-    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
-    if (data.tickets) {
-      setTickets(data.tickets);
-    }
-  }, []);
-
-  const fetchAllLabels = useCallback(async () => {
-    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) {
-      setLabels(data.labels);
-    }
-  }, []);
-
   useEffect(() => {
     void fetchTickets();
     void fetchAllLabels();
   }, [fetchTickets, fetchAllLabels]);
 
-  const filteredTickets = tickets.filter(ticket => {
-    if (!ticket) return false;
+  function sortTickets(tickets: Ticket[]) {
+    tickets.sort((a, b) => {
+      if (!a || !b) return 0;
+      let valA: string | number = "";
+      let valB: string | number = "";
 
-    const filterSearch = searchTerm.toLowerCase();
-    const matchesTitleOrText =
-      ticket.title.toLowerCase().includes(filterSearch) ||
-      ticket.text.toLowerCase().includes(filterSearch);
+      if (sorting.field === "Erstellt") {
+        valA = new Date(a.createdAt).getTime();
+        valB = new Date(b.createdAt).getTime();
+      } else if (sorting.field === "Geändert") {
+        valA = new Date(a.lastModified).getTime();
+        valB = new Date(b.lastModified).getTime();
+      } else if (sorting.field === "Titel") {
+        valA = a.title.toLowerCase();
+        valB = b.title.toLowerCase();
+      }
 
-    const matchesState =
-      stateFilter.length > 0 ? stateFilter.includes(ticket.state) : true;
+      if (valA < valB) return sorting.orderAscending ? -1 : 1;
+      if (valA > valB) return sorting.orderAscending ? 1 : -1;
+      return 0;
+    });
 
-    const matchesLabel =
-      labelFilter.length > 0
-        ? ticket.labels?.some((label) => labelFilter.includes(label.id))
-        : true;
+    return tickets;
+  }
 
-    const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
-    const matchesEndDate = endDate ? new Date(ticket.createdAt) <= endDate : true
+  function filterTickets(tickets: Ticket[]) {
+    tickets.filter(ticket => {
+      if (!ticket) return false;
 
-    return matchesTitleOrText && matchesState && matchesLabel && matchesStartDate && matchesEndDate;
-  });
+      const filterSearch = searchTerm.toLowerCase();
+      const matchesTitleOrText =
+        ticket.title.toLowerCase().includes(filterSearch) ||
+        ticket.text.toLowerCase().includes(filterSearch);
+
+      const matchesState =
+        stateFilter.length > 0 ? stateFilter.includes(ticket.state) : true;
+
+      const matchesLabel =
+        labelFilter.length > 0
+          ? ticket.labels?.some((label) => labelFilter.includes(label.id))
+          : true;
+
+      const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
+      const matchesEndDate = endDate ? new Date(ticket.createdAt) <= endDate : true
+
+      return matchesTitleOrText && matchesState && matchesLabel && matchesStartDate && matchesEndDate;
+    });
+
+    return tickets
+  }
+
+  const resetDialogState = () => {
+    setDialogState({mode: null, currentTicket: null})
+  }
 
   const resetAllFilters = () => {
     setSearchTerm("");
@@ -121,31 +160,9 @@ export default function TicketPage() {
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
-    setSortField("Erstellt");
-    setSortOrderAscending(true);
+    setSorting({field: "Erstellt", orderAscending: true});
     setLabelSearchTerm("");
   };
-
-  const sortedTickets = [...filteredTickets].sort((a, b) => {
-    if (!a || !b) return 0;
-    let valA: string | number = "";
-    let valB: string | number = "";
-
-    if (sortField === "Erstellt") {
-      valA = new Date(a.createdAt).getTime();
-      valB = new Date(b.createdAt).getTime();
-    } else if (sortField === "Geändert") {
-      valA = new Date(a.lastModified).getTime();
-      valB = new Date(b.lastModified).getTime();
-    } else if (sortField === "Titel") {
-      valA = a.title.toLowerCase();
-      valB = b.title.toLowerCase();
-    }
-
-    if (valA < valB) return sortOrderAscending ? -1 : 1;
-    if (valA > valB) return sortOrderAscending ? 1 : -1;
-    return 0;
-  });
 
   async function handleDelete() {
     if (!dialogState.currentTicket) {
@@ -154,6 +171,7 @@ export default function TicketPage() {
     }
 
     try {
+      const client = getClient();
       await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
       toast.success("Ticket wurde erfolgreich gelöscht")
       setTickets((prev) =>
@@ -164,6 +182,8 @@ export default function TicketPage() {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
+
+  console.log("Sorting: ", sorting)
 
   return (
     <div className="space-y-6 grow max-w-screen">
@@ -313,7 +333,7 @@ export default function TicketPage() {
                         className="w-fit justify-between text-sm"
                         onClick={() => setShowMobileSort((prev) => !prev)}
                       >
-                        {sortField} {sortOrderAscending ? "↑" : "↓"}
+                        {sorting.field} {sorting.orderAscending ? "↑" : "↓"}
                       </Button>
                     </div>
                     {showMobileSort && (
@@ -324,10 +344,13 @@ export default function TicketPage() {
                             {["Erstellt", "Geändert", "Titel"].map((field) => (
                               <Button
                                 key={field}
-                                variant={sortField === field ? "secondary" : "outline"}
+                                variant={sorting.field === field ? "secondary" : "outline"}
                                 size="sm"
                                 className="flex-1 text-xs"
-                                onClick={() => setSortField(field as typeof sortField)}
+                                onClick={() => setSorting(prevState => ({
+                                  ...prevState,
+                                  field: field as TicketSortingField
+                                }))}
                               >
                                 {field}
                               </Button>
@@ -336,18 +359,24 @@ export default function TicketPage() {
                           <div className="text-xs mt-1">Reihenfolge</div>
                           <div className="flex flex-row gap-1">
                             <Button
-                              variant={sortOrderAscending ? "secondary" : "outline"}
+                              variant={sorting.orderAscending ? "secondary" : "outline"}
                               size="sm"
                               className="flex-1 text-xs"
-                              onClick={() => setSortOrderAscending(true)}
+                              onClick={() => setSorting(prevState => ({
+                                ...prevState,
+                                orderAscending:  true
+                              }))}
                             >
                               Aufsteigend
                             </Button>
                             <Button
-                              variant={!sortOrderAscending ? "secondary" : "outline"}
+                              variant={sorting.orderAscending ? "outline" : "secondary"}
                               size="sm"
                               className="flex-1 text-xs"
-                              onClick={() => setSortOrderAscending(false)}
+                              onClick={() => setSorting(prevState => ({
+                                ...prevState,
+                                orderAscending: false
+                              }))}
                             >
                               Absteigend
                             </Button>
@@ -461,12 +490,15 @@ export default function TicketPage() {
                     </Command>
                   </PopoverContent>
                 </Popover>
+
                 <DateRangeFilter
                   startDate={startDate}
                   setStartDate={setStartDate}
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
+
+                <SortingSelection setSorting={setSorting} sorting={sorting}/>
 
               </div>
             )}

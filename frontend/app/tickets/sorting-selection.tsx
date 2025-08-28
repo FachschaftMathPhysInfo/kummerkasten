@@ -1,9 +1,10 @@
+"use client"
+
 import React from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {ArrowDown, ArrowUp} from "lucide-react";
-import {Command, CommandGroup} from "@/components/ui/command";
-import {CommandItem} from "cmdk";
+import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
 import {TicketSorting, TicketSortingField} from "@/app/tickets/page";
 
 interface SortingSelectionProps {
@@ -36,10 +37,10 @@ export default function SortingSelection(props: SortingSelectionProps) {
             {["Erstellt", "Geändert", "Titel"].map((field) => (
               <CommandItem
                 key={field}
-                onSelect={() => props.setSorting(prevState => {
-                  prevState.field = field as TicketSortingField
-                  return prevState
-                })}
+                onSelect={() => props.setSorting(prevState => ({
+                  ...prevState,
+                  field: field as TicketSortingField,
+                }))}
               >
                 {field}
               </CommandItem>
@@ -47,19 +48,19 @@ export default function SortingSelection(props: SortingSelectionProps) {
           </CommandGroup>
           <CommandGroup heading="Reihenfolge">
             <CommandItem
-              onSelect={() => props.setSorting(prevState => {
-                prevState.orderAscending = true
-                return prevState
-              })}
+              onSelect={() => props.setSorting(prevState => ({
+                ...prevState,
+                orderAscending: true
+              }))}
               data-cy="sort-order-asc"
             >
               Aufsteigend
             </CommandItem>
             <CommandItem
-              onSelect={() => props.setSorting(prevState => {
-                prevState.orderAscending = false
-                return prevState
-              })}
+              onSelect={() => props.setSorting(prevState => ({
+                ...prevState,
+                orderAscending: false
+              }))}
               data-cy="sort-order-desc"
             >
               Absteigend
