@@ -6,6 +6,8 @@ import {Button} from "@/components/ui/button";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
 import {TicketSorting, TicketSortingField} from "@/app/tickets/page";
+import {cn} from "@/lib/utils";
+import {sort} from "next/dist/build/webpack/loaders/css-loader/src/utils";
 
 interface SortingSelectionProps {
   setSorting: React.Dispatch<React.SetStateAction<TicketSorting>>;
@@ -33,38 +35,19 @@ export default function SortingSelection(props: SortingSelectionProps) {
       </PopoverTrigger>
       <PopoverContent className="p-0 w-[250px]">
         <Command>
-          <CommandGroup heading="Feld">
+          <CommandGroup>
             {["Erstellt", "Geändert", "Titel"].map((field) => (
               <CommandItem
                 key={field}
+                className={cn(props.sorting.field === field && 'bg-accent/50')}
                 onSelect={() => props.setSorting(prevState => ({
-                  ...prevState,
                   field: field as TicketSortingField,
+                  orderAscending: !prevState.orderAscending
                 }))}
               >
                 {field}
               </CommandItem>
             ))}
-          </CommandGroup>
-          <CommandGroup heading="Reihenfolge">
-            <CommandItem
-              onSelect={() => props.setSorting(prevState => ({
-                ...prevState,
-                orderAscending: true
-              }))}
-              data-cy="sort-order-asc"
-            >
-              Aufsteigend
-            </CommandItem>
-            <CommandItem
-              onSelect={() => props.setSorting(prevState => ({
-                ...prevState,
-                orderAscending: false
-              }))}
-              data-cy="sort-order-desc"
-            >
-              Absteigend
-            </CommandItem>
           </CommandGroup>
         </Command>
       </PopoverContent>

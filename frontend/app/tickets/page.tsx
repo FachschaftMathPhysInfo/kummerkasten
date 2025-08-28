@@ -83,7 +83,14 @@ export default function TicketPage() {
 
   useEffect(() => {
     setSortedTickets(sortTickets([...filteredTickets]))
-  }, []);
+  }, [sorting.field, sorting.orderAscending]);
+
+  useEffect(() => {
+    setSorting(prevState => ({
+      ...prevState,
+      orderAscending: true
+    }))
+  }, [sorting.field]);
 
   useEffect(() => {
     setAreFiltersSet(
