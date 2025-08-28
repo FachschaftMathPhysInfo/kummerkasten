@@ -179,7 +179,7 @@ export default function TicketPage() {
                 <SheetTrigger asChild>
                   <Button
                     variant="outline"
-                    className={cn(areFiltersSet && 'border border-accent')}
+                    className={cn(areFiltersSet && 'border !border-accent')}
                     data-cy="mobile-filter-button">
                     Filter
                   </Button>
@@ -365,7 +365,7 @@ export default function TicketPage() {
                       variant="outline"
                       className={cn(
                         'max-w-[200px] justify-between',
-                        stateFilter.length > 0 && 'border border-accent'
+                        stateFilter.length > 0 && 'border !border-accent'
                       )}
                       data-cy="button-status"
                     >
@@ -415,7 +415,7 @@ export default function TicketPage() {
                       variant="outline"
                       className={cn(
                         "max-w-[200px] justify-between",
-                        labelFilter.length > 0 && 'border border-accent'
+                        labelFilter.length > 0 && 'border !border-accent'
                       )}
                       data-cy="button-label">
                       {labelFilter && labelFilter.length > 0

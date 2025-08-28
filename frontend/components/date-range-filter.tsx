@@ -31,10 +31,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className={cn(
-                    "w-fit justify-between",
-                    !!startDate && "border bg-accent"
-                  )}
+                  className={"w-fit justify-between"}
                 >
                   {startDate ? format(startDate, "dd.MM.yy") : "Start"}
                 </Button>
@@ -59,10 +56,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className={cn(
-                    "w-fit justify-between",
-                    !!endDate && "border bg-accent"
-                  )}
+                  className={"w-fit justify-between"}
                 >
                   {endDate ? format(endDate, "dd.MM.yy") : "Ende"}
                 </Button>
@@ -102,9 +96,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
     <div className="flex gap-2">
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-          >
+          <Button variant="outline" className={cn(!!startDate && "border !border-accent")}>
             <CalendarIcon className="mr-1 h-4 w-4"/>
             {startDate ? format(startDate, "dd.MM.yy") : <span>Start</span>}
           </Button>
@@ -132,9 +124,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-          >
+          <Button variant="outline" className={cn(!!endDate && "border !border-accent")}>
             <CalendarIcon className="mr-1 h-4 w-4"/>
             {endDate ? format(endDate, "dd.MM.yy") : <span>Ende</span>}
           </Button>
