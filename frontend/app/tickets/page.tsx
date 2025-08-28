@@ -389,7 +389,7 @@ export default function TicketPage() {
                                 ? "Neu"
                                 : state === TicketState.Open
                                   ? "Offen"
-                                  : "Geschlossen"}
+                                  : "Fertig"}
                             </CommandItem>
                           );
                         })}
