@@ -7,7 +7,6 @@ import {ArrowDown, ArrowUp} from "lucide-react";
 import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
 import {TicketSorting, TicketSortingField} from "@/app/tickets/page";
 import {cn} from "@/lib/utils";
-import {sort} from "next/dist/build/webpack/loaders/css-loader/src/utils";
 
 interface SortingSelectionProps {
   setSorting: React.Dispatch<React.SetStateAction<TicketSorting>>;
@@ -42,7 +41,8 @@ export default function SortingSelection(props: SortingSelectionProps) {
                 className={cn(
                   props.sorting.field === field
                     ? 'bg-accent/50 hover:!bg-accent/70'
-                    : 'data-[selected=true]:!bg-muted-foreground/10')}
+                    : 'data-[selected=true]:!bg-muted-foreground/10'
+                )}
                 onSelect={() => props.setSorting(prevState => ({
                   field: field as TicketSortingField,
                   orderAscending: !prevState.orderAscending
