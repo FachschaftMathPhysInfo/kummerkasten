@@ -1,15 +1,15 @@
 "use client"
-
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarTrigger
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar
 } from "@/components/ui/sidebar";
 import {LogOut, Moon, Settings, Sun, Tags, Tickets, Users} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
@@ -17,12 +17,11 @@ import {UserRole} from "@/lib/graph/generated/graphql";
 import {useRouter} from "next/navigation";
 import {useTheme} from "next-themes";
 import {useEffect, useState} from "react";
-
-
+import {clsx} from "clsx";
 export function UserSidebar() {
-    const {user, logout} = useUser()
-    const router = useRouter()
-
+  const {user, logout} = useUser()
+  const router = useRouter()
+  const {open, isMobile} = useSidebar()
   const userItems = [
     {
       title: "Tickets",
@@ -37,7 +36,6 @@ export function UserSidebar() {
       cypress: "sidebar-labels"
     },
   ]
-
   const adminItems = [
     {
       title: "Users",
@@ -46,12 +44,20 @@ export function UserSidebar() {
       cypress: "sidebar-users"
     }
   ]
-
-    if (!user) return null
+  if (!user) return null
 
   return (
-    <Sidebar className={'relative'} collapsible={"icon"} data-cy={'sidebar'}>
+    <Sidebar className={'fixed h-screen top-0 left-0'} collapsible={"icon"} data-cy={'sidebar'}>
       <SidebarContent className={'pr-10'}>
+        {!isMobile && (
+          <SidebarTrigger
+            data-cy="sidebar-trigger"
+            className={clsx(
+              "absolute top-0 mt-5 transition-all",
+              open ? "right-0 mr-5" : "left-1/2 -translate-x-1/2"
+            )}
+          />
+        )}
         <SidebarGroup className={'h-full justify-center'}>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -79,8 +85,7 @@ export function UserSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-            <SidebarFooter>
+     <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <ThemeSwitch/>
@@ -108,26 +113,23 @@ export function UserSidebar() {
         </Sidebar>
     );
 
-}
+  }
 
 export function UserSidebarTrigger() {
   const {user} = useUser();
-  if (!user) return null;
+  const {isMobile} = useSidebar()
+  if (!user || !isMobile) return null;
   return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
-
 function ThemeSwitch() {
   const [mounted, setMounted] = useState(false)
-  const { resolvedTheme, theme, setTheme } = useTheme()
-
+  const {resolvedTheme, theme, setTheme} = useTheme()
   useEffect(() => {
     setMounted(true)
   }, [])
-
   if (!mounted) {
     return null
   }
-
   return (
     <SidebarMenuButton
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}

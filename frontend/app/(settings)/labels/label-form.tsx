@@ -74,8 +74,12 @@ export default function LabelForm(props: LabelFormProps) {
       toast.success("Label erstellt!")
       props.refreshData()
       props.closeDialog()
-    } catch {
-      toast.error("Ein Fehler beim Erstellen des Labels ist aufgetreten")
+    } catch (error){
+      if (String(error).includes('unique constraint')) {
+        form.setError("name", { message: "Ein Label mit diesem Namen existiert bereits"})
+      } else {
+        toast.error("Ein Fehler beim Erstellen des Labels ist aufgetreten")
+      }
     }
   }
 
@@ -88,8 +92,12 @@ export default function LabelForm(props: LabelFormProps) {
       toast.success("Label erfolgreich updated!")
       props.refreshData()
       props.closeDialog()
-    } catch {
-      toast.error("Ein Fehler beim Updaten des Labels ist aufgetreten")
+    } catch (error) {
+      if (String(error).includes('unique constraint')) {
+        form.setError("name", { message: "Ein Label mit diesem Namen existiert bereits"})
+      } else {
+        toast.error("Ein Fehler beim Aktualisieren des Labels ist aufgetreten")
+      }
     }
   }
 
@@ -112,7 +120,7 @@ export default function LabelForm(props: LabelFormProps) {
                   placeholder={props.label?.name ?? ""}
                   maxLength={50}
                   {...field}
-                  onChange={e => field.onChange(e.target.value.toLowerCase())}
+                  onChange={e => field.onChange(e.target.value)}
                 />
               </FormControl>
               <div className={'w-full flex justify-between'}>
@@ -144,6 +152,8 @@ export default function LabelForm(props: LabelFormProps) {
                         const newColor = e.target.value.toUpperCase();
                         setColor(newColor);
                         form.setValue("color", newColor);
+                        form.clearErrors("color");
+                        if (hasTriedToSubmit) void form.trigger("color")
                       }}
                       className={'w-full h-full rounded-lg m-0 cursor-pointer'}
                     />
@@ -155,6 +165,7 @@ export default function LabelForm(props: LabelFormProps) {
                     onChange={(e) => {
                       field.onChange(e);
                       setColor(e.target.value.toUpperCase());
+                      if(hasTriedToSubmit) void form.trigger('color')
                     }}
                   />
                 </div>

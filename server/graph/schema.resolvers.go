@@ -26,18 +26,28 @@ import (
 func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTicket) (*model.Ticket, error) {
 	var labels []*models.Label
 
-	for _, formLabel := range ticket.Labels {
+	for _, labelName := range ticket.Labels {
 		label := &models.Label{}
 		err := r.DB.NewSelect().
 			Model(label).
-			Where("LOWER(name) = ?", strings.ToLower(formLabel.String())).
+			Where("LOWER(name) = ?", strings.ToLower(string(labelName))).
 			Limit(1).
 			Scan(ctx)
 		if err != nil {
-			log.Printf("Label not found: %s", formLabel.String())
-			return nil, fmt.Errorf("label not found: %s", formLabel.String())
+			log.Printf("Label not found: %s", labelName)
+			return nil, fmt.Errorf("label not found: %s", labelName)
 		}
 		labels = append(labels, label)
+	}
+
+	const MaxTitleLength = 70
+	if len(ticket.OriginalTitle) > MaxTitleLength {
+		return nil, fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
+	}
+
+	const MaxTextLength = 3000
+	if len(ticket.Text) > MaxTextLength {
+		return nil, fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
 	}
 
 	dbTicket := &models.Ticket{
@@ -56,12 +66,26 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		return nil, err
 	}
 
+	if len(labels) > 0 {
+		var labelsToTickets []models.LabelsToTickets
+		for _, label := range labels {
+			labelsToTickets = append(labelsToTickets, models.LabelsToTickets{
+				LabelID:  label.ID,
+				TicketID: dbTicket.ID,
+			})
+		}
+		if _, err := r.DB.NewInsert().Model(&labelsToTickets).Exec(ctx); err != nil {
+			log.Printf("Failed to link labels to ticket: %v", err)
+		}
+	}
+
 	var gqlLabels []*model.Label
 	for _, l := range dbTicket.Labels {
 		gqlLabels = append(gqlLabels, &model.Label{
-			ID:    l.ID,
-			Name:  l.Name,
-			Color: l.Color,
+			ID:        l.ID,
+			Name:      l.Name,
+			Color:     l.Color,
+			FormLabel: &l.FormLabel,
 		})
 	}
 
@@ -163,9 +187,21 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 		return nil, fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
 	}
 
+	var labels []*models.Label
+
+	if err := r.DB.NewSelect().Model(&labels).
+		Where("LOWER(name) = ?", strings.ToLower(label.Name)).
+		Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	if len(labels) != 0 {
+		return nil, fmt.Errorf("unique constraint error: label with name %v does already exist", label.Name)
+	}
+
 	newLabel := &models.Label{
 		ID:   uuid.New().String(),
-		Name: strings.ToLower(label.Name),
+		Name: label.Name,
 	}
 
 	if label.Color != nil {
@@ -177,16 +213,23 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 		newLabel.Color = colorValue
 	}
 
+	if label.FormLabel != nil {
+		newLabel.FormLabel = *label.FormLabel
+	}
+
+	formBool := newLabel.FormLabel
+
 	if _, err := r.DB.NewInsert().Model(newLabel).Exec(ctx); err != nil {
 		log.Printf("Failed to create label: %v", err)
 		return nil, err
 	}
 
 	return &model.Label{
-		ID:      newLabel.ID,
-		Name:    newLabel.Name,
-		Color:   newLabel.Color,
-		Tickets: []*model.Ticket{},
+		ID:        newLabel.ID,
+		Name:      newLabel.Name,
+		Color:     newLabel.Color,
+		FormLabel: &formBool,
+		Tickets:   []*model.Ticket{},
 	}, nil
 }
 
@@ -223,7 +266,19 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 			return "", fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
 		}
 
-		dbLabel.Name = strings.ToLower(*label.Name)
+		var labels []*models.Label
+
+		if err := r.DB.NewSelect().Model(&labels).
+			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
+			Scan(ctx); err != nil {
+			return "", err
+		}
+
+		if len(labels) != 0 {
+			return "", fmt.Errorf("unique constraint error: label with name %v does already exist", label.Name)
+		}
+
+		dbLabel.Name = *label.Name
 	}
 
 	if label.Color != nil {
@@ -234,6 +289,10 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 		}
 
 		dbLabel.Color = colorValue
+	}
+
+	if label.FormLabel != nil {
+		dbLabel.FormLabel = *label.FormLabel
 	}
 
 	if _, err := r.DB.NewUpdate().Model(dbLabel).WherePK().Exec(ctx); err != nil {
@@ -575,10 +634,12 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 	for _, t := range dbTickets {
 		var gqlLabels []*model.Label
 		for _, l := range t.Labels {
+			form := l.FormLabel
 			gqlLabels = append(gqlLabels, &model.Label{
-				ID:    l.ID,
-				Name:  l.Name,
-				Color: l.Color,
+				ID:        l.ID,
+				Name:      l.Name,
+				FormLabel: &form,
+				Color:     l.Color,
 			})
 		}
 
@@ -629,10 +690,55 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 		}
 
 		gqlLabels = append(gqlLabels, &model.Label{
-			ID:      l.ID,
-			Name:    l.Name,
-			Color:   l.Color,
-			Tickets: gqlTickets,
+			ID:        l.ID,
+			Name:      l.Name,
+			Color:     l.Color,
+			FormLabel: &l.FormLabel,
+			Tickets:   gqlTickets,
+		})
+	}
+
+	return gqlLabels, nil
+}
+
+// FormLabels is the resolver for the formLabels field.
+func (r *queryResolver) FormLabels(ctx context.Context, ids []string) ([]*model.Label, error) {
+	var dbLabels []*models.Label
+
+	query := r.DB.NewSelect().Model(&dbLabels).Relation("Tickets")
+
+	if len(ids) > 0 {
+		query = query.Where("label.id IN (?)", bun.In(ids))
+	}
+
+	query = query.Where("label.form_label = ?", true)
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to get form labels: %v", err)
+		return nil, err
+	}
+
+	var gqlLabels []*model.Label
+	for _, l := range dbLabels {
+		var gqlTickets []*model.Ticket
+		for _, t := range l.Tickets {
+			gqlTickets = append(gqlTickets, &model.Ticket{
+				ID:           t.ID,
+				Title:        t.Title,
+				Text:         t.Text,
+				Note:         &t.Note,
+				State:        t.State,
+				CreatedAt:    t.CreatedAt,
+				LastModified: t.LastModified,
+			})
+		}
+
+		gqlLabels = append(gqlLabels, &model.Label{
+			ID:        l.ID,
+			Name:      l.Name,
+			Color:     l.Color,
+			FormLabel: &l.FormLabel,
+			Tickets:   gqlTickets,
 		})
 	}
 

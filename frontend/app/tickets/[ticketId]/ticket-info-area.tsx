@@ -2,6 +2,7 @@ import {TicketState} from "@/lib/graph/generated/graphql";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import React from "react";
+import {cn} from "@/lib/utils";
 
 interface TicketInfoAreaProps {
   state: TicketState,
@@ -15,11 +16,12 @@ export default function TicketInfoArea({state, createdAt, lastModified}: TicketI
       <div className="w-full flex justify-between items-center">
         <span>Status:</span>
         <Badge
-          className="text-white rounded"
-          style={{
-            backgroundColor: state === TicketState.New ? "#839176" :
-              state === TicketState.Open ? "#192B51" : "CLOSED"
-          }}
+          className={cn(
+            'text-white rounded',
+            state === TicketState.New ? 'bg-ticketstate-new'
+              : state === TicketState.Open ? 'bg-ticketstate-open'
+              : 'bg-ticketstate-closed'
+          )}
           data-cy="ticket-status-badge-detail"
         >
           {state.toLowerCase()}
