@@ -462,7 +462,7 @@ export default function TicketPage() {
                 />
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[170px] justify-between items-center"
+                    <Button variant="outline" className="min-w-[170px] w-fit justify-between items-center"
                             data-cy="sort-button">
                                 <span className="flex justify-center items-center"> Sortieren: {sortField}{" "}
                                   {sortOrder === "asc" ? (
