@@ -21,7 +21,7 @@ import Link from "next/link";
 import {toast} from "sonner";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/command";
-import {cn} from "@/lib/utils";
+import {cn, compareStringSets} from "@/lib/utils";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
@@ -40,7 +40,7 @@ export default function TicketPage() {
   const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
   const [labels, setLabels] = useState<(Label | null)[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [stateFilter, setStateFilter] = useState<string[]>([]);
+  const [stateFilter, setStateFilter] = useState<string[]>([TicketState.New, TicketState.Open]);
   const [labelFilter, setLabelFilter] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
@@ -53,15 +53,25 @@ export default function TicketPage() {
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
   const [showMobileSort, setShowMobileSort] = useState(false);
   const [areFiltersSet, setAreFiltersSet] = useState(false);
+  const [stateFilterSet, setStateFilterSet] = useState(false);
+
+  useEffect(() => {
+    const originalState = new Set([TicketState.New, TicketState.Open])
+    const currentState = new Set(stateFilter)
+    setStateFilterSet(!compareStringSets(originalState, currentState))
+  // We can't add the expected stateFilter as array dependency, as it will change size
+  // and thus throw an error
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateFilter.length]);
 
   useEffect(() => {
     setAreFiltersSet(
-      stateFilter.length > 0 ||
+      stateFilterSet ||
       labelFilter.length > 0 ||
       !!startDate ||
       !!endDate
     )
-  }, [stateFilter.length, labelFilter.length, startDate, endDate]);
+  }, [stateFilterSet, labelFilter.length, startDate, endDate]);
 
   const resetDialogState = () => {
     setDialogState({mode: null, currentTicket: null})
@@ -365,7 +375,7 @@ export default function TicketPage() {
                       variant="outline"
                       className={cn(
                         'max-w-[200px] justify-between',
-                        stateFilter.length > 0 && 'border !border-accent'
+                         stateFilterSet && 'border !border-accent'
                       )}
                       data-cy="button-status"
                     >
