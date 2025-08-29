@@ -28,6 +28,7 @@ import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
 import LabelSelection from "@/components/label-selection";
+import LabelBadge from "@/components/label-badge";
 
 
 const client = getClient();
@@ -230,13 +231,12 @@ export default function TicketPage() {
                     </div>
                     {showMobileLabelFilter && (
                       <div className="mt-2 px-4">
-                        <div
-                          className="overflow-hidden max-h-[150px] overflow-y-auto">
+                        <div className="overflow-hidden max-h-[150px] overflow-y-auto">
                           <Input
                             placeholder="Label suchen..."
                             value={labelSearchTerm}
                             onChange={(e) => setLabelSearchTerm(e.target.value)}
-                            className="w-full flex items-center justify-start gap-2"
+                            className="w-full mb-2"
                           />
                           {labels
                             .filter((label) =>
@@ -252,7 +252,7 @@ export default function TicketPage() {
                               return (
                                 <Button
                                   key={label.id}
-                                  variant={isSelected ? "secondary" : "outline"}
+                                  variant={"ghost"}
                                   className="w-full flex items-center justify-start gap-2"
                                   onClick={() => {
                                     setLabelFilter((prev) =>
@@ -268,7 +268,7 @@ export default function TicketPage() {
                                       isSelected ? "opacity-100" : "opacity-0"
                                     )}
                                   />
-                                  {label.name}
+                                  <LabelBadge label={label}/>
                                 </Button>
                               );
                             })}
@@ -399,69 +399,25 @@ export default function TicketPage() {
                     </Command>
                   </PopoverContent>
                 </Popover>
-                {/*<Popover>*/}
-                {/*  <PopoverTrigger asChild>*/}
-                {/*    <Button variant="outline" className="max-w-[200px] justify-between"*/}
-                {/*            data-cy="button-label">*/}
-                {/*      {labelFilter && labelFilter.length > 0*/}
-                {/*        ? `${labelFilter.length} Labels`*/}
-                {/*        : "Labels"}*/}
-                {/*    </Button>*/}
-                {/*  </PopoverTrigger>*/}
-                {/*  <PopoverContent className="p-0 w-[250px]">*/}
-                {/*    <Command>*/}
-                {/*      <CommandInput placeholder="Labels suchen..."/>*/}
-                {/*      <CommandGroup>*/}
-                {/*        {labels*/}
-                {/*          .filter((label) => label && label.name.toLowerCase().includes(labelSearchTerm.toLowerCase()))*/}
-                {/*          .filter(label => !!label)*/}
-                {/*          .map((label) => {*/}
-                {/*            const isSelected = labelFilter.map(l => l.id).includes(label.id);*/}
-                {/*            return (*/}
-                {/*              <CommandItem*/}
-                {/*                key={label.id}*/}
-                {/*                onSelect={() => {*/}
-                {/*                  setLabelFilter((prev) =>*/}
-                {/*                    isSelected*/}
-                {/*                      ? prev?.filter((l) => l.id !== label.id)*/}
-                {/*                      : [...(prev ?? []), label]*/}
-                {/*                  );*/}
-                {/*                }}*/}
-                {/*              >*/}
-                {/*                <Check*/}
-                {/*                  className={cn(*/}
-                {/*                    "mr-2 h-4 w-4",*/}
-                {/*                    isSelected ? "opacity-100" : "opacity-0"*/}
-                {/*                  )}*/}
-                {/*                />*/}
-                {/*                {label.name}*/}
-                {/*              </CommandItem>*/}
-                {/*            );*/}
-                {/*          })}*/}
-                {/*      </CommandGroup>*/}
-                {/*      {labelFilter.length > 0 && (*/}
-                {/*        <div className="p-2 border-t">*/}
-                {/*          <Button*/}
-                {/*            variant="ghost"*/}
-                {/*            size="sm"*/}
-                {/*            className="w-full justify-center"*/}
-                {/*            onClick={() => setLabelFilter([])}*/}
-                {/*            data-cy="clear-labels"*/}
-                {/*          >*/}
-                {/*            <Trash2/>*/}
-                {/*            Filter löschen*/}
-                {/*          </Button>*/}
-                {/*        </div>*/}
-                {/*      )}*/}
-                {/*    </Command>*/}
-                {/*  </PopoverContent>*/}
-                {/*</Popover>*/}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="max-w-[200px] justify-between"
+                            data-cy="button-label">
+                      {labelFilter && labelFilter.length > 0
+                        ? `${labelFilter.length} Labels`
+                        : "Labels"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 w-[250px]">
+                    <LabelSelection
+                      labels={labels}
+                      selectedLabels={labelFilter}
+                      setLabels={(labels) => setLabelFilter(labels)}
+                    />
+                  </PopoverContent>
+                </Popover>
 
-                <LabelSelection
-                  labels={labels}
-                  selectedLabels={labelFilter}
-                  setLabels={setLabelFilter}
-                />
+
                 <DateRangeFilter
                   startDate={startDate}
                   setStartDate={setStartDate}

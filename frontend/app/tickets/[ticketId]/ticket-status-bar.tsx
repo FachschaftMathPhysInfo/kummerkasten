@@ -21,6 +21,7 @@ import {
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {cn} from "@/lib/utils";
+import LabelBadge from "@/components/label-badge";
 
 interface TicketStatusBarProps {
     ticket: Ticket | null;
@@ -136,15 +137,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
                             <div
                                 className="flex flex-col gap-2 overflow-x-auto max-w-full py-0 items-center overflow-y-auto max-h-[100px] md:max-h-[170px]">
                                 {ticketLabels?.map((label) => (
-                                    label?.id &&
-                                    <Badge
-                                        key={label.id}
-                                        className="flex-shrink-0 justify-center px-3 py-1 md:w-full"
-                                        style={{backgroundColor: label.color, color: calculateFontColor(label.color)}}
-                                        data-cy={`ticket-label-${label.id}`}
-                                    >
-                                        {label.name}
-                                    </Badge>
+                                    label?.id && <LabelBadge label={label} />
                                 ))}
                             </div>
                         </div>

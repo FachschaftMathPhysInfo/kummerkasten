@@ -1,35 +1,19 @@
 import {Label} from "@/lib/graph/generated/graphql";
 import React from "react";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/command";
 import {Check, RotateCcw} from "lucide-react";
 import {cn} from "@/lib/utils";
 import LabelBadge from "@/components/label-badge";
 
-// Modal is not yet used, but will be important for the mobile sheet view
 interface LabelSelectionProps {
-  modal?: boolean;
   labels: Label[];
   selectedLabels: Label[];
-  setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
+  setLabels: (labels: Label[]) => void;
 }
 
 export default function LabelSelection({labels, selectedLabels, setLabels}: LabelSelectionProps) {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="max-w-[200px] justify-between"
-          data-cy="button-label"
-        >
-          {selectedLabels.length > 0
-            ? `${selectedLabels.length} Labels`
-            : "Labels"}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0 w-[250px]">
         <Command>
           <CommandInput placeholder="Labels suchen..."/>
           <CommandGroup>
@@ -39,10 +23,10 @@ export default function LabelSelection({labels, selectedLabels, setLabels}: Labe
                 <CommandItem
                   key={label.id}
                   onSelect={() => {
-                    setLabels((prev) =>
+                    setLabels(
                       isSelected
-                        ? prev.filter((l) => l.id !== label.id)
-                        : [...(prev ?? []), label]
+                        ? selectedLabels.filter((l) => l.id !== label.id)
+                        : [...selectedLabels, label]
                     )
                   }}
                   className={'data-[selected=true]:!bg-accent/50'}
@@ -68,7 +52,5 @@ export default function LabelSelection({labels, selectedLabels, setLabels}: Labe
             </div>
           )}
         </Command>
-      </PopoverContent>
-    </Popover>
   )
 }
