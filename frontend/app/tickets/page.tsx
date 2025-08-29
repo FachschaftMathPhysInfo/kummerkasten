@@ -27,6 +27,7 @@ import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
+import LabelSelection from "@/components/label-selection";
 
 
 const client = getClient();
@@ -38,10 +39,10 @@ export type TicketDialogState = {
 
 export default function TicketPage() {
   const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
-  const [labels, setLabels] = useState<(Label | null)[]>([]);
+  const [labels, setLabels] = useState<(Label[])>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [stateFilter, setStateFilter] = useState<string[]>([]);
-  const [labelFilter, setLabelFilter] = useState<string[]>([]);
+  const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
@@ -76,10 +77,8 @@ export default function TicketPage() {
 
   const fetchAllLabels = useCallback(async () => {
     const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) {
-      setLabels(data.labels);
-    }
-  }, []);
+    if (data.labels) setLabels(data.labels.filter(label => !!label))
+  }, [])
 
   useEffect(() => {
     void fetchTickets();
@@ -97,10 +96,9 @@ export default function TicketPage() {
     const matchesState =
       stateFilter.length > 0 ? stateFilter.includes(ticket.state) : true;
 
-    const matchesLabel =
-      labelFilter.length > 0
-        ? ticket.labels?.some((label) => labelFilter.includes(label.id))
-        : true;
+    const matchesLabel = labelFilter.length > 0
+      ? ticket.labels?.some((label) => labelFilter.map(l => l.id).includes(label.id))
+      : true;
 
     const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
     const matchesEndDate = endDate ? new Date(ticket.createdAt) <= endDate : true
@@ -244,19 +242,23 @@ export default function TicketPage() {
                             .filter((label) =>
                               label?.name.toLowerCase().includes(labelSearchTerm.toLowerCase())
                             )
+                            // for some reason, using it with && in the upper filter does not work...
+                            .filter((label) => !!label)
                             .map((label) => {
-                              const isSelected = label?.id ? labelFilter.includes(label.id) : false;
+                              const isSelected = label.id
+                                ? labelFilter.map(l => l.id).includes(label.id)
+                                : false;
+
                               return (
                                 <Button
-                                  key={label?.id}
+                                  key={label.id}
                                   variant={isSelected ? "secondary" : "outline"}
                                   className="w-full flex items-center justify-start gap-2"
                                   onClick={() => {
-                                    if (!label?.id) return;
                                     setLabelFilter((prev) =>
                                       isSelected
-                                        ? prev.filter((l) => l !== label?.id)
-                                        : [...prev, label.id]
+                                        ? prev.filter((l) => l.id !== label?.id)
+                                        : [...prev, label]
                                     )
                                   }}
                                 >
@@ -266,7 +268,7 @@ export default function TicketPage() {
                                       isSelected ? "opacity-100" : "opacity-0"
                                     )}
                                   />
-                                  {label?.name}
+                                  {label.name}
                                 </Button>
                               );
                             })}
@@ -397,63 +399,69 @@ export default function TicketPage() {
                     </Command>
                   </PopoverContent>
                 </Popover>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="max-w-[200px] justify-between"
-                            data-cy="button-label">
-                      {labelFilter && labelFilter.length > 0
-                        ? `${labelFilter.length} Labels`
-                        : "Labels"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
-                    <Command>
-                      <CommandInput placeholder="Labels suchen..."/>
-                      <CommandGroup>
-                        {labels
-                          .filter((label) => label && label.name.toLowerCase().includes(labelSearchTerm.toLowerCase()))
-                          .map((label) => {
-                            if (!label) return null;
-                            const isSelected = labelFilter?.includes(label.id);
-                            return (
-                              <CommandItem
-                                key={label.id}
-                                onSelect={() => {
-                                  setLabelFilter((prev) =>
-                                    isSelected
-                                      ? prev?.filter((l) => l !== label.id)
-                                      : [...(prev ?? []), label.id]
-                                  );
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    isSelected ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {label.name}
-                              </CommandItem>
-                            );
-                          })}
-                      </CommandGroup>
-                      {labelFilter.length > 0 && (
-                        <div className="p-2 border-t">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full justify-center"
-                            onClick={() => setLabelFilter([])}
-                            data-cy="clear-labels"
-                          >
-                            <Trash2/>
-                            Filter löschen
-                          </Button>
-                        </div>
-                      )}
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                {/*<Popover>*/}
+                {/*  <PopoverTrigger asChild>*/}
+                {/*    <Button variant="outline" className="max-w-[200px] justify-between"*/}
+                {/*            data-cy="button-label">*/}
+                {/*      {labelFilter && labelFilter.length > 0*/}
+                {/*        ? `${labelFilter.length} Labels`*/}
+                {/*        : "Labels"}*/}
+                {/*    </Button>*/}
+                {/*  </PopoverTrigger>*/}
+                {/*  <PopoverContent className="p-0 w-[250px]">*/}
+                {/*    <Command>*/}
+                {/*      <CommandInput placeholder="Labels suchen..."/>*/}
+                {/*      <CommandGroup>*/}
+                {/*        {labels*/}
+                {/*          .filter((label) => label && label.name.toLowerCase().includes(labelSearchTerm.toLowerCase()))*/}
+                {/*          .filter(label => !!label)*/}
+                {/*          .map((label) => {*/}
+                {/*            const isSelected = labelFilter.map(l => l.id).includes(label.id);*/}
+                {/*            return (*/}
+                {/*              <CommandItem*/}
+                {/*                key={label.id}*/}
+                {/*                onSelect={() => {*/}
+                {/*                  setLabelFilter((prev) =>*/}
+                {/*                    isSelected*/}
+                {/*                      ? prev?.filter((l) => l.id !== label.id)*/}
+                {/*                      : [...(prev ?? []), label]*/}
+                {/*                  );*/}
+                {/*                }}*/}
+                {/*              >*/}
+                {/*                <Check*/}
+                {/*                  className={cn(*/}
+                {/*                    "mr-2 h-4 w-4",*/}
+                {/*                    isSelected ? "opacity-100" : "opacity-0"*/}
+                {/*                  )}*/}
+                {/*                />*/}
+                {/*                {label.name}*/}
+                {/*              </CommandItem>*/}
+                {/*            );*/}
+                {/*          })}*/}
+                {/*      </CommandGroup>*/}
+                {/*      {labelFilter.length > 0 && (*/}
+                {/*        <div className="p-2 border-t">*/}
+                {/*          <Button*/}
+                {/*            variant="ghost"*/}
+                {/*            size="sm"*/}
+                {/*            className="w-full justify-center"*/}
+                {/*            onClick={() => setLabelFilter([])}*/}
+                {/*            data-cy="clear-labels"*/}
+                {/*          >*/}
+                {/*            <Trash2/>*/}
+                {/*            Filter löschen*/}
+                {/*          </Button>*/}
+                {/*        </div>*/}
+                {/*      )}*/}
+                {/*    </Command>*/}
+                {/*  </PopoverContent>*/}
+                {/*</Popover>*/}
+
+                <LabelSelection
+                  labels={labels}
+                  selectedLabels={labelFilter}
+                  setLabels={setLabelFilter}
+                />
                 <DateRangeFilter
                   startDate={startDate}
                   setStartDate={setStartDate}

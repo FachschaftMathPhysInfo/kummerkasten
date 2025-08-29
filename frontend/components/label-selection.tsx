@@ -11,10 +11,11 @@ import LabelBadge from "@/components/label-badge";
 interface LabelSelectionProps {
   modal?: boolean;
   labels: Label[];
+  selectedLabels: Label[];
   setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
 }
 
-export default function LabelSelection({labels, setLabels}: LabelSelectionProps) {
+export default function LabelSelection({labels, selectedLabels, setLabels}: LabelSelectionProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -23,8 +24,8 @@ export default function LabelSelection({labels, setLabels}: LabelSelectionProps)
           className="max-w-[200px] justify-between"
           data-cy="button-label"
         >
-          {labels.length > 0
-            ? `${labels.length} Labels`
+          {selectedLabels.length > 0
+            ? `${selectedLabels.length} Labels`
             : "Labels"}
         </Button>
       </PopoverTrigger>
@@ -33,7 +34,7 @@ export default function LabelSelection({labels, setLabels}: LabelSelectionProps)
           <CommandInput placeholder="Labels suchen..."/>
           <CommandGroup>
             {labels.map((label) => {
-              const isSelected = labels.includes(label);
+              const isSelected = selectedLabels.map(l => l.id).includes(label.id);
               return (
                 <CommandItem
                   key={label.id}
@@ -44,6 +45,7 @@ export default function LabelSelection({labels, setLabels}: LabelSelectionProps)
                         : [...(prev ?? []), label]
                     )
                   }}
+                  className={'data-[selected=true]:!bg-accent/50'}
                 >
                   <Check className={cn("mr-2 h-4 w-4", isSelected ? "opacity-100" : "opacity-0")}/>
                   <LabelBadge label={label}/>
