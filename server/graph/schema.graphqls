@@ -59,6 +59,7 @@ type QuestionAnswerPair {
     id: String!
     question: String!
     answer: String!
+    order: Int!
 }
 
 type Session {
@@ -117,11 +118,6 @@ input UpdateLabel {
     formLabel: Boolean
 }
 
-input UpdateQuestionAnswerPair{
-    question: String
-    answer: String
-}
-
 input NewSetting {
     key: String!
     value: String!
@@ -135,6 +131,16 @@ input LabelToTicketAssignment {
 input NewQuestionAnswerPair{
     question: String!
     answer: String!
+}
+
+input UpdateQuestionAnswerPair{
+    question: String
+    answer: String
+}
+
+input UpdateQuestionAnswerPairOrder{
+    id: String!
+    order: Int!
 }
 
 type Mutation {
@@ -163,4 +169,5 @@ type Mutation {
     createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
     deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: ADMIN)
+    updateQuestionAnswerPairOrder(QAPs: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: ADMIN)
 }
