@@ -1,0 +1,20 @@
+mutation CreateQuestionAnswerPair($questionAnswerPair: NewQuestionAnswerPair!) {
+  createQuestionAnswerPair(questionAnswerPair: $questionAnswerPair) {
+    id
+    question
+    answer
+    order
+  }
+}
+
+mutation UpdateQuestionAnswerPair($id: String!, $questionAnswerPair: UpdateQuestionAnswerPair!) {
+  updateQuestionAnswerPair(id: $id, questionAnswerPair: $questionAnswerPair)
+}
+
+mutation UpdateQuestionAnswerPairOrder($QAPs: [UpdateQuestionAnswerPairOrder!]!)  {
+  updateQuestionAnswerPairOrder(QAPs: $QAPs)
+}
+
+mutation DeleteQuestionAnswerPair($ids: [String!]!) {
+  deleteQuestionAnswerPair(ids: $ids)
+}

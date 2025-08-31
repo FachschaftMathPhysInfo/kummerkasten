@@ -705,7 +705,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qA
 		}
 	}
 
-	result, err = r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
+	result, err := r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
 		Set(`"order" = ?`, int(qap.Order)).Where("id = ?", qap.ID).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to update QuestionAnswerPair order for ID %s: %v", qap.ID, err)
