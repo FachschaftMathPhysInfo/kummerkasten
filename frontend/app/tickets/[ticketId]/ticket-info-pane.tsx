@@ -42,9 +42,6 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
   useEffect(() => setTicketLabels(initialTicketLabels), [initialTicketLabels.length])
   useEffect(() => setTicketState(ticket?.state ?? TicketState.New), [ticket?.state]);
 
-  console.log('Initial: initialTicketLabels', initialTicketLabels)
-  console.log('ticketLabels:', ticketLabels)
-
   const copyCurrentUrl = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);

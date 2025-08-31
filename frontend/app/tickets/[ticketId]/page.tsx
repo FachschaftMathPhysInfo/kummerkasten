@@ -26,8 +26,7 @@ const client = getClient();
 
 export default function TicketPage() {
   const {ticketId} = useParams();
-
-  const {tickets, triggerTicketRefetch} = useTickets()
+  const {triggerTicketRefetch} = useTickets()
   const [searchTerm, setSearchTerm] = useState("");
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -82,7 +81,6 @@ export default function TicketPage() {
           className="flex-col hidden md:flex"
         >
           <TicketSidebar
-            tickets={tickets}
             searchTerm={searchTerm}
             setSearchTermAction={setSearchTerm}
             selectedTicketId={String(ticketId)}

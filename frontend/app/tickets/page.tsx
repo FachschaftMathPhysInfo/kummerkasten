@@ -5,15 +5,7 @@ import {ArrowDown, ArrowUp, Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
 import {getClient} from "@/lib/graph/client";
 import React, {useEffect, useState} from "react";
-import {
-  AllLabelsDocument,
-  AllLabelsQuery,
-  DeleteTicketDocument,
-  DeleteTicketMutation,
-  Label,
-  Ticket,
-  TicketState
-} from "@/lib/graph/generated/graphql";
+import {DeleteTicketDocument, DeleteTicketMutation, Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import {Input} from "@/components/ui/input";
 import Link from "next/link";
 import {toast} from "sonner";
@@ -26,6 +18,7 @@ import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
+import {useLabels} from "@/components/providers/label-provider";
 
 
 const client = getClient();
@@ -37,7 +30,7 @@ export type TicketDialogState = {
 
 export default function TicketPage() {
   const {tickets, triggerTicketRefetch} = useTickets();
-  const [labels, setLabels] = useState<(Label | null)[]>([]);
+  const {labels} = useLabels();
   const [searchTerm, setSearchTerm] = useState("");
   const [stateFilter, setStateFilter] = useState<string[]>([]);
   const [labelFilter, setLabelFilter] = useState<string[]>([]);
@@ -65,15 +58,6 @@ export default function TicketPage() {
   const resetDialogState = () => {
     setDialogState({mode: null, currentTicket: null})
   }
-
-  useEffect(() => {
-    const fetchAllLabels = async () => {
-      const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-      setLabels(data.labels ?? [])
-    }
-
-    void fetchAllLabels();
-  }, [tickets.length]);
 
   const filteredTickets = tickets.filter(ticket => {
     if (!ticket) return false;

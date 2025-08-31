@@ -1,6 +1,6 @@
 "use client"
 
-import {AllLabelsDocument, AllLabelsQuery, Label} from "@/lib/graph/generated/graphql";
+import {Label} from "@/lib/graph/generated/graphql";
 import {Badge} from "@/components/ui/badge";
 import React, {useEffect} from "react";
 import {calculateFontColor} from "@/lib/calculate-colors";
@@ -8,7 +8,7 @@ import {Check, Save, Settings} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/command";
 import {cn} from "@/lib/utils";
-import {getClient} from "@/lib/graph/client";
+import {useLabels} from "@/components/providers/label-provider";
 
 
 interface TicketLabelAreaProps {
@@ -18,7 +18,7 @@ interface TicketLabelAreaProps {
 
 export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: TicketLabelAreaProps) {
   const [editMode, setEditMode] = React.useState(false);
-  const [allLabels, setAllLabels] = React.useState<Label[]>([]);
+  const {labels} = useLabels();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selectedLabels, setSelectedLabels] = React.useState<Label[]>(ticketLabels);
 
@@ -27,17 +27,6 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
     setSelectedLabels(ticketLabels);
   }, [ticketLabels.length]);
 
-  // Fetch All Available Labels
-  useEffect(() => {
-    const fetchLabels = async () => {
-      const client = getClient();
-
-      const data = await client.request<AllLabelsQuery>(AllLabelsDocument)
-      setAllLabels(data.labels?.filter(label => !!label) ?? [])
-    }
-
-    void fetchLabels()
-  }, [])
 
   function handleSave() {
     setTicketLabelsAction(selectedLabels)
@@ -60,7 +49,7 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
         <Command>
           <CommandInput placeholder="Labels suchen..." onValueChange={setSearchTerm}/>
           <CommandGroup>
-            {allLabels
+            {labels
               .filter((label) => label && label.name.toLowerCase().includes(searchTerm.toLowerCase()))
               .map((label) => {
                 if (!label) return null;

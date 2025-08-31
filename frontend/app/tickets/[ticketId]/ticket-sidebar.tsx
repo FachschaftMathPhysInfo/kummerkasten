@@ -3,7 +3,7 @@
 import {Input} from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
-import {AllLabelsDocument, AllLabelsQuery, Label, Ticket, TicketState,} from "@/lib/graph/generated/graphql";
+import {TicketState,} from "@/lib/graph/generated/graphql";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,25 +26,26 @@ import {Button} from "@/components/ui/button";
 import {Check, Trash2} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {DateRangeFilter} from "@/components/date-range-filter";
-import React, {useCallback, useEffect, useState} from "react";
-import {getClient} from "@/lib/graph/client";
+import React, {useState} from "react";
 import {format} from "date-fns";
+import {useLabels} from "@/components/providers/label-provider";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 interface TicketSidebarProps {
-  tickets: Ticket[];
   searchTerm: string;
   setSearchTermAction: (term: string) => void;
   selectedTicketId?: string;
 }
 
 export default function TicketSidebar({
-                                        tickets,
                                         searchTerm,
                                         setSearchTermAction,
                                         selectedTicketId,
                                       }: TicketSidebarProps) {
+
   const router = useRouter();
-  const [labels, setLabels] = useState<(Label | null)[]>([]);
+  const {tickets} = useTickets()
+  const {labels} = useLabels()
   const [stateFilter, setStateFilter] = useState<string[]>([]);
   const [labelFilter, setLabelFilter] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -86,18 +87,6 @@ export default function TicketSidebar({
       matchesEndDate
     );
   });
-
-  const fetchAllLabels = useCallback(async () => {
-    const client = getClient();
-    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) {
-      setLabels(data.labels);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchAllLabels();
-  }, [fetchAllLabels]);
 
   const resetAllFilters = () => {
     setSearchTermAction("");

@@ -9,6 +9,7 @@ import {UserProvider} from "@/components/providers/user-provider";
 import {Footer} from "@/components/footer";
 import {ThemeProvider} from "@/components/providers/theme-provider";
 import {TicketsProvider} from "@/components/providers/ticket-provider";
+import {LabelProvider} from "@/components/providers/label-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,15 +40,17 @@ export default function UserLayout({
     <ThemeProvider attribute={'class'} defaultTheme={"system"}>
       <UserProvider>
         <TicketsProvider>
-          <SidebarProvider>
-            <UserSidebar/>
-            <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
-              <UserSidebarTrigger/>
-              {children}
-              <Footer/>
-            </main>
-            <Toaster richColors/>
-          </SidebarProvider>
+          <LabelProvider>
+            <SidebarProvider>
+              <UserSidebar/>
+              <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
+                <UserSidebarTrigger/>
+                {children}
+                <Footer/>
+              </main>
+              <Toaster richColors/>
+            </SidebarProvider>
+          </LabelProvider>
         </TicketsProvider>
       </UserProvider>
     </ThemeProvider>
