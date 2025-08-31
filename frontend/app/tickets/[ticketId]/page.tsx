@@ -100,7 +100,7 @@ export default function TicketPage() {
         <ResizablePanel defaultSize={50} className="flex justfiy-between">
           <TicketDetailView ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
           {!isMobile && (
-            <TicketStatusPane ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
+            <TicketStatusPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
           )}
         </ResizablePanel>
       </ResizablePanelGroup>

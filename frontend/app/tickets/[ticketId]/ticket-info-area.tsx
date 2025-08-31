@@ -1,8 +1,6 @@
 import {TicketState} from "@/lib/graph/generated/graphql";
-import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import React from "react";
-import {cn} from "@/lib/utils";
 
 interface TicketInfoAreaProps {
   state: TicketState,
@@ -10,30 +8,15 @@ interface TicketInfoAreaProps {
   lastModified: Date
 }
 
-export default function TicketInfoArea({state, createdAt, lastModified}: TicketInfoAreaProps) {
+export default function TicketInfoArea({createdAt, lastModified}: TicketInfoAreaProps) {
   return (
-    <div className="flex flex-col items-center w-full gap-1">
-      <div className="w-full flex justify-between items-center">
-        <span>Status:</span>
-        <Badge
-          className={cn(
-            'text-white rounded',
-            state === TicketState.New ? 'bg-ticketstate-new'
-              : state === TicketState.Open ? 'bg-ticketstate-open'
-              : 'bg-ticketstate-closed'
-          )}
-          data-cy="ticket-status-badge-detail"
-        >
-          {state.toLowerCase()}
-        </Badge>
-      </div>
-
-      <div className="w-full flex justify-between items-center">
+    <div className="flex flex-col items-center w-full gap-1 border-b border-b-accent/50 text-muted-foreground py-5">
+      <div className="w-full flex justify-between items-center px-10">
         <span>Erstellt:</span>
         <div>{format(createdAt, "dd.MM.yy")}</div>
       </div>
 
-      <div className="w-full flex justify-between items-center gap-12">
+      <div className="w-full flex justify-between items-center gap-12 px-10">
         <span>Geändert:</span>
         <div>{format(lastModified, "dd.MM.yy")}</div>
       </div>

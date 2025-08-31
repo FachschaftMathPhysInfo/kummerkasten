@@ -33,7 +33,7 @@ export default function TicketDetailView({ticket, ticketLabels, setDialogStateAc
             {ticket.title}
           </h1>
           {isMobile && (
-            <TicketStatusPane ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogStateAction} />
+            <TicketStatusPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogStateAction} />
           )}
         </span>
         <div className="flex flex-col grow">

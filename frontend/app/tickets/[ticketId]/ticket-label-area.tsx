@@ -1,0 +1,112 @@
+"use client"
+
+import {AllLabelsDocument, AllLabelsQuery, Label} from "@/lib/graph/generated/graphql";
+import {Badge} from "@/components/ui/badge";
+import React, {useEffect} from "react";
+import {calculateFontColor} from "@/lib/calculate-colors";
+import {Check, Save, Settings} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/command";
+import {cn} from "@/lib/utils";
+import {getClient} from "@/lib/graph/client";
+
+
+interface TicketLabelAreaProps {
+  ticketLabels: Label[]
+  setTicketLabelsAction: (labels: Label[]) => void;
+}
+
+export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: TicketLabelAreaProps) {
+  const [editMode, setEditMode] = React.useState(false);
+  const [allLabels, setAllLabels] = React.useState<Label[]>([]);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [selectedLabels, setSelectedLabels] = React.useState<Label[]>(ticketLabels);
+
+  // ticketLabels gets passed as [] on first mount
+  useEffect(() => {
+    setSelectedLabels(ticketLabels);
+  }, [ticketLabels.length]);
+
+  // Fetch All Available Labels
+  useEffect(() => {
+    const fetchLabels = async () => {
+      const client = getClient();
+
+      const data = await client.request<AllLabelsQuery>(AllLabelsDocument)
+      setAllLabels(data.labels?.filter(label => !!label) ?? [])
+    }
+
+    void fetchLabels()
+  }, [])
+
+  function handleSave() {
+    setTicketLabelsAction(selectedLabels)
+    setEditMode(false)
+  }
+
+  return (
+    <div className={'text-muted-foreground flex flex-col gap-2'}>
+      <div className={'w-full px-5'}>
+        <Button
+          variant={"ghost"}
+          onClick={() => setEditMode(!editMode)}
+          className="w-full flex items-center justify-between">
+          <p>Labels</p>
+          <Settings size={18} className={'stroke-muted-foreground'}/>
+        </Button>
+      </div>
+      {editMode ? (
+        // TODO: wait for #204 to merge
+        <Command>
+          <CommandInput placeholder="Labels suchen..." onValueChange={setSearchTerm}/>
+          <CommandGroup>
+            {allLabels
+              .filter((label) => label && label.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map((label) => {
+                if (!label) return null;
+                const isSelected = selectedLabels.map(l => l.id).includes(label.id);
+                return (
+                  <CommandItem
+                    key={label.id}
+                    onSelect={() => {
+                      setSelectedLabels(
+                        isSelected
+                          ? selectedLabels.filter((l) => l.id !== label.id)
+                          : [...(selectedLabels ?? []), label]
+                      );
+                    }}
+                    className={'data-[selected=true]:!bg-accent/50'}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        isSelected ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {label.name}
+                  </CommandItem>
+                );
+              })}
+          </CommandGroup>
+          <Button onClick={handleSave} variant={'secondary'}>
+            <Save className={'mr-2'}/>
+            Speichern
+          </Button>
+        </Command>
+      ) : (
+        <div className="flex flex-col gap-2 overflow-y-scroll grow items-end px-10">
+          {ticketLabels.map((label) => (
+            <Badge
+              key={label.id}
+              className="max-w-full px-1"
+              style={{backgroundColor: label.color, color: calculateFontColor(label.color)}}
+              data-cy={`ticket-label-${label.id}`}
+            >
+              <span className="truncate max-w-full px-1">{label.name}</span>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
