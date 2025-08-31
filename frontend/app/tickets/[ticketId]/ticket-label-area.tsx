@@ -22,9 +22,10 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selectedLabels, setSelectedLabels] = React.useState<Label[]>(ticketLabels);
 
-  // ticketLabels gets passed as [] on first mount
   useEffect(() => {
     setSelectedLabels(ticketLabels);
+    // This is for the inital ticketLabels mounting with [] and then updating. Length changes are sufficient here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketLabels.length]);
 
 

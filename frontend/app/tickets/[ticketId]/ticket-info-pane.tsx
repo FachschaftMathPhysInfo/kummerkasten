@@ -1,7 +1,7 @@
 "use client";
 
 import {Button} from "@/components/ui/button";
-import {Info, MoreVertical, Trash2} from "lucide-react";
+import {Info, Trash2} from "lucide-react";
 import {
   AddLabelsToTicketDocument,
   AddLabelsToTicketMutation,
@@ -39,6 +39,8 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
   const [ticketLabels, setTicketLabels] = React.useState<Label[]>(initialTicketLabels)
   const [ticketState, setTicketState] = React.useState<TicketState>(ticket?.state ?? TicketState.New);
 
+  // This is for the inital ticketLabels mounting with [] and then updating. Length changes are sufficient here.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setTicketLabels(initialTicketLabels), [initialTicketLabels.length])
   useEffect(() => setTicketState(ticket?.state ?? TicketState.New), [ticket?.state]);
 
@@ -108,6 +110,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
       toast.error("Fehler beim Aktualisieren des Ticketstatus")
       console.error(err);
     } finally {
+      triggerTicketRefetch()
       setTicketState(state)
     }
   }

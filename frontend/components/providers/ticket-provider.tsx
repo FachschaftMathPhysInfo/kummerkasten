@@ -19,9 +19,16 @@ export function TicketsProvider({children}: { children: ReactNode }) {
     const fetchTickets = async () => {
       const client = getClient()
       const data = await client.request(AllTicketsDocument)
-      setTickets(data.tickets?.filter(ticket => !!ticket) ?? [])
-    }
 
+      // React that little bitch does not notice a state change if we dont deep copy this
+      setTickets(
+        data.tickets?.filter(ticket => !!ticket)
+          .map(ticket => ({
+            ...ticket,
+            labels: ticket.labels?.map(label => ({...label})) ?? []
+          })) ?? []
+      );
+    }
     void fetchTickets();
   }, [refetchKey]);
 

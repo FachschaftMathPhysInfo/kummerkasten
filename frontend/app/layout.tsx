@@ -8,8 +8,6 @@ import {Toaster} from "@/components/ui/sonner";
 import {UserProvider} from "@/components/providers/user-provider";
 import {Footer} from "@/components/footer";
 import {ThemeProvider} from "@/components/providers/theme-provider";
-import {TicketsProvider} from "@/components/providers/ticket-provider";
-import {LabelProvider} from "@/components/providers/label-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
