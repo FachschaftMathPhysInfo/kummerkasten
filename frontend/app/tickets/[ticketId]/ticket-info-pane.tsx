@@ -9,7 +9,10 @@ import {
   LabelToTicketAssignment,
   RemoveLabelsFromTicketDocument,
   RemoveLabelsFromTicketMutation,
-  Ticket
+  Ticket,
+  TicketState,
+  UpdateTicketStateDocument,
+  UpdateTicketStateMutation
 } from "@/lib/graph/generated/graphql";
 import React, {useEffect} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
@@ -18,21 +21,24 @@ import {Sheet, SheetContent, SheetFooter, SheetTitle, SheetTrigger} from "@/comp
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import {useSidebar} from "@/components/ui/sidebar";
 import TicketLabelArea from "@/app/tickets/[ticketId]/ticket-label-area";
-import TicketInfoArea from "@/app/tickets/[ticketId]/ticket-info-area";
+import TicketMetaDataArea from "@/app/tickets/[ticketId]/ticket-metadata-area";
 import TicketActionsBar from "@/app/tickets/[ticketId]/ticket-action-bar";
 import {getClient} from "@/lib/graph/client";
+import TicketStatusArea from "@/app/tickets/[ticketId]/ticket-status-area";
 
-interface TicketStatusPaneProps {
+interface TicketInfoPaneProps {
   ticket: Ticket | null;
   initialTicketLabels: Label[];
   setDialogStateAction: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-export default function TicketStatusPane({ticket, initialTicketLabels, setDialogStateAction}: TicketStatusPaneProps) {
+export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateAction}: TicketInfoPaneProps) {
   const {isMobile} = useSidebar()
   const [ticketLabels, setTicketLabels] = React.useState<Label[]>(initialTicketLabels)
+  const [ticketState, setTicketState] = React.useState<TicketState>(ticket?.state ?? TicketState.New);
 
   useEffect(() => setTicketLabels(initialTicketLabels), [initialTicketLabels.length])
+  useEffect(() => setTicketState(ticket?.state ?? TicketState.New), [ticket?.state]);
 
   console.log('Initial: initialTicketLabels', initialTicketLabels)
   console.log('ticketLabels:', ticketLabels)
@@ -73,12 +79,11 @@ export default function TicketStatusPane({ticket, initialTicketLabels, setDialog
         )
       }
 
-      if(ticketsToRemove.length > 0) {
+      if (ticketsToRemove.length > 0) {
         await client.request<AddLabelsToTicketMutation>(AddLabelsToTicketDocument,
           {assignments: ticketsToAdd}
         )
       }
-
 
 
     } catch (err) {
@@ -86,6 +91,24 @@ export default function TicketStatusPane({ticket, initialTicketLabels, setDialog
       console.error(err);
     } finally {
       setTicketLabels(labels);
+    }
+  }
+
+  const handleStateChange = async (state: TicketState) => {
+    if(!ticket) return;
+
+    const client = getClient();
+
+    try {
+      await client.request<UpdateTicketStateMutation>(
+        UpdateTicketStateDocument,
+        {id: ticket.id, state: state}
+      )
+    } catch (err) {
+      toast.error("Fehler beim Aktualisieren des Ticketstatus")
+      console.error(err);
+    } finally {
+      setTicketState(state)
     }
   }
 
@@ -108,8 +131,8 @@ export default function TicketStatusPane({ticket, initialTicketLabels, setDialog
             setDialogStateAction={setDialogStateAction}
           />
 
-          <TicketInfoArea
-            state={ticket.state}
+          <TicketMetaDataArea
+            state={ticketState}
             createdAt={new Date(ticket.createdAt)}
             lastModified={new Date(ticket.lastModified)}
           />
@@ -122,7 +145,11 @@ export default function TicketStatusPane({ticket, initialTicketLabels, setDialog
     ) : (
       <div className={'flex flex-col w-[250px] py-5 gap-2 justify-between'}>
         <div className={'flex flex-col grow w-full gap-2'}>
-          <TicketInfoArea
+          <TicketStatusArea
+            state={ticketState}
+            setStatusAction={(state) => void handleStateChange(state)}/>
+
+          <TicketMetaDataArea
             state={ticket.state}
             createdAt={new Date(ticket.createdAt)}
             lastModified={new Date(ticket.lastModified)}

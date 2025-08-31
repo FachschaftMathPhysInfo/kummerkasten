@@ -16,7 +16,7 @@ import {
 } from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
-import TicketStatusPane from "@/app/tickets/[ticketId]/ticket-status-pane";
+import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
 import {TicketDialogState} from "@/app/tickets/page";
 import TicketDialog from "@/app/tickets/[ticketId]/ticket-dialog";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
@@ -100,7 +100,7 @@ export default function TicketPage() {
         <ResizablePanel defaultSize={50} className="flex justfiy-between">
           <TicketDetailView ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
           {!isMobile && (
-            <TicketStatusPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
+            <TicketInfoPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
           )}
         </ResizablePanel>
       </ResizablePanelGroup>

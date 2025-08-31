@@ -5,7 +5,7 @@ import {PageLoader} from "@/components/page-loader";
 import {useSidebar} from "@/components/ui/sidebar";
 import React, {Dispatch} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
-import TicketStatusPane from "@/app/tickets/[ticketId]/ticket-status-pane";
+import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
 
 interface TicketDetailViewProps {
   ticket: Ticket | null;
@@ -33,7 +33,7 @@ export default function TicketDetailView({ticket, ticketLabels, setDialogStateAc
             {ticket.title}
           </h1>
           {isMobile && (
-            <TicketStatusPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogStateAction} />
+            <TicketInfoPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogStateAction} />
           )}
         </span>
         <div className="flex flex-col grow">
