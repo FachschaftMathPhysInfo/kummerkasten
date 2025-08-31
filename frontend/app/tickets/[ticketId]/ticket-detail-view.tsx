@@ -56,7 +56,7 @@ export default function TicketDetailView({
   if (!ticket) {
     return (
       <div className="flex flex-grow items-center justify-center">
-        <PageLoader message="Bitte wählen Sie ein Ticket aus der Übersicht." loading={false}/>
+        <PageLoader message="Bitte wähle ein Ticket aus der Übersicht." loading={false}/>
       </div>
     )
   }
