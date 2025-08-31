@@ -25,6 +25,7 @@ import TicketMetaDataArea from "@/app/tickets/[ticketId]/ticket-metadata-area";
 import TicketActionsBar from "@/app/tickets/[ticketId]/ticket-action-bar";
 import {getClient} from "@/lib/graph/client";
 import TicketStatusArea from "@/app/tickets/[ticketId]/ticket-status-area";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 interface TicketInfoPaneProps {
   ticket: Ticket | null;
@@ -33,6 +34,7 @@ interface TicketInfoPaneProps {
 }
 
 export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateAction}: TicketInfoPaneProps) {
+  const {triggerTicketRefetch} = useTickets()
   const {isMobile} = useSidebar()
   const [ticketLabels, setTicketLabels] = React.useState<Label[]>(initialTicketLabels)
   const [ticketState, setTicketState] = React.useState<TicketState>(ticket?.state ?? TicketState.New);
@@ -90,6 +92,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
       toast.error("Fehler beim Aktualisieren der Labels")
       console.error(err);
     } finally {
+      triggerTicketRefetch()
       setTicketLabels(labels);
     }
   }

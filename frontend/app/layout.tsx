@@ -8,27 +8,28 @@ import {Toaster} from "@/components/ui/sonner";
 import {UserProvider} from "@/components/providers/user-provider";
 import {Footer} from "@/components/footer";
 import {ThemeProvider} from "@/components/providers/theme-provider";
+import {TicketsProvider} from "@/components/providers/ticket-provider";
 
 const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-    title: "Kummerkasten",
-    description: "Kummerkasten der Fachschaft",
-    keywords: ["kummerkasten", "fachschaft", "mathphysinfo", "uni heidelberg"]
+  title: "Kummerkasten",
+  description: "Kummerkasten der Fachschaft",
+  keywords: ["kummerkasten", "fachschaft", "mathphysinfo", "uni heidelberg"]
 };
 
 export default function UserLayout({
-                                       children,
+                                     children,
                                    }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="de" suppressHydrationWarning>
@@ -37,15 +38,17 @@ export default function UserLayout({
     >
     <ThemeProvider attribute={'class'} defaultTheme={"system"}>
       <UserProvider>
-        <SidebarProvider>
-          <UserSidebar/>
-           <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
-            <UserSidebarTrigger/>
-            {children}
-            <Footer/>
-          </main>
-          <Toaster richColors/>
-        </SidebarProvider>
+        <TicketsProvider>
+          <SidebarProvider>
+            <UserSidebar/>
+            <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
+              <UserSidebarTrigger/>
+              {children}
+              <Footer/>
+            </main>
+            <Toaster richColors/>
+          </SidebarProvider>
+        </TicketsProvider>
       </UserProvider>
     </ThemeProvider>
     </body>

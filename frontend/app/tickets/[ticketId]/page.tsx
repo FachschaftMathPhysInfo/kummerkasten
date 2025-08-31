@@ -5,8 +5,6 @@ import {useParams} from "next/navigation";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {getClient} from "@/lib/graph/client";
 import {
-  AllTicketsDocument,
-  AllTicketsQuery,
   DeleteTicketDocument,
   DeleteTicketMutation,
   Label,
@@ -22,27 +20,23 @@ import TicketDialog from "@/app/tickets/[ticketId]/ticket-dialog";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {toast} from "sonner";
 import {useSidebar} from "@/components/ui/sidebar";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 const client = getClient();
 
 export default function TicketPage() {
-  const { ticketId } = useParams();
+  const {ticketId} = useParams();
 
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const {tickets, triggerTicketRefetch} = useTickets()
   const [searchTerm, setSearchTerm] = useState("");
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
-  const { isMobile } = useSidebar()
+  const {isMobile} = useSidebar()
 
   const [dialogState, setDialogState] = useState<TicketDialogState>({
     mode: null,
     currentTicket: null
   });
-
-  const fetchTickets = useCallback(async () => {
-    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
-    if (data.tickets) setTickets(data.tickets.filter(Boolean) as Ticket[]);
-  }, []);
 
   const fetchTicketDetail = useCallback(async () => {
     if (!ticketId) return;
@@ -66,16 +60,14 @@ export default function TicketPage() {
       await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
       toast.success("Ticket wurde erfolgreich gelöscht")
       resetDialogState()
-      await fetchTickets();
+      triggerTicketRefetch()
       await fetchTicketDetail();
     } catch {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
 
-  useEffect(() => {
-    void fetchTickets();
-  }, [fetchTickets]);
+
   useEffect(() => {
     void fetchTicketDetail();
   }, [fetchTicketDetail, ticketId]);
@@ -115,7 +107,7 @@ export default function TicketPage() {
         ticket={dialogState.currentTicket}
         closeDialog={() => setDialogState({mode: null, currentTicket: null})}
         refreshData={async () => {
-          await fetchTickets();
+          triggerTicketRefetch()
           await fetchTicketDetail();
         }}
       />

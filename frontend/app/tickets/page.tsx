@@ -4,12 +4,10 @@ import {ManagementPageHeader} from "@/components/management-page-header";
 import {ArrowDown, ArrowUp, Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
 import {getClient} from "@/lib/graph/client";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
   AllLabelsDocument,
   AllLabelsQuery,
-  AllTicketsDocument,
-  AllTicketsQuery,
   DeleteTicketDocument,
   DeleteTicketMutation,
   Label,
@@ -27,6 +25,7 @@ import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 
 const client = getClient();
@@ -37,7 +36,7 @@ export type TicketDialogState = {
 }
 
 export default function TicketPage() {
-  const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
+  const {tickets, triggerTicketRefetch} = useTickets();
   const [labels, setLabels] = useState<(Label | null)[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [stateFilter, setStateFilter] = useState<string[]>([]);
@@ -67,24 +66,14 @@ export default function TicketPage() {
     setDialogState({mode: null, currentTicket: null})
   }
 
-  const fetchTickets = useCallback(async () => {
-    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
-    if (data.tickets) {
-      setTickets(data.tickets);
-    }
-  }, []);
-
-  const fetchAllLabels = useCallback(async () => {
-    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) {
-      setLabels(data.labels);
-    }
-  }, []);
-
   useEffect(() => {
-    void fetchTickets();
+    const fetchAllLabels = async () => {
+      const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
+      setLabels(data.labels ?? [])
+    }
+
     void fetchAllLabels();
-  }, [fetchTickets, fetchAllLabels]);
+  }, [tickets.length]);
 
   const filteredTickets = tickets.filter(ticket => {
     if (!ticket) return false;
@@ -149,9 +138,7 @@ export default function TicketPage() {
     try {
       await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
       toast.success("Ticket wurde erfolgreich gelöscht")
-      setTickets((prev) =>
-        prev.filter((t) => t?.id !== dialogState.currentTicket?.id)
-      );
+      triggerTicketRefetch()
       resetDialogState()
     } catch {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
