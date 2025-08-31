@@ -81,13 +81,13 @@ export default function TicketPage() {
   }, [fetchTicketDetail, ticketId]);
 
   return (
-    <div className="w-full h-full flex flex-col pt-2 grow">
+    <div className="w-full h-full flex flex-col pt-5 grow">
       <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow">
         <ResizablePanel
           defaultSize={30}
           minSize={20}
           maxSize={30}
-          className="border-r border-gray-500 flex-col hidden md:flex"
+          className="flex-col hidden md:flex"
         >
           <TicketSidebar
             tickets={tickets}
@@ -98,7 +98,12 @@ export default function TicketPage() {
         </ResizablePanel>
         <ResizableHandle/>
         <ResizablePanel defaultSize={50} className="flex justfiy-between">
-          <TicketDetailView ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
+          <TicketDetailView
+            ticket={ticket}
+            ticketLabels={ticketLabels}
+            setDialogStateAction={setDialogState}
+            refreshTicketAction={fetchTicketDetail}
+          />
           {!isMobile && (
             <TicketInfoPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
           )}

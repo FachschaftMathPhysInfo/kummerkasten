@@ -14,7 +14,7 @@ export default function TicketMetadataArea({createdAt, lastModified}: TicketMeta
     <div
       className={cn(
         "flex flex-col items-center w-full gap-1 py-5",
-        "border-b border-b-accent/50 text-muted-foreground border-t border-t-accent/50"
+        "border-gray-600 text-muted-foreground border-t-gray-600 border-b border-t"
       )}
     >
       <div className="w-full flex justify-between items-center px-10">

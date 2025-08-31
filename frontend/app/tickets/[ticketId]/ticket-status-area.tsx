@@ -11,7 +11,7 @@ interface TicketStatusAreaProps {
 
 export default function TicketStatusArea({state, setStatusAction}: TicketStatusAreaProps) {
   return (
-    <div className={'w-full px-5'}>
+    <div className={'w-full px-5 pb-2'}>
       <Select defaultValue={state} onValueChange={(val) => setStatusAction(val as TicketState)}>
         <SelectTrigger
           className={cn(
