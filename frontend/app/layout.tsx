@@ -39,8 +39,6 @@ export default function UserLayout({
     >
     <ThemeProvider attribute={'class'} defaultTheme={"system"}>
       <UserProvider>
-        <TicketsProvider>
-          <LabelProvider>
             <SidebarProvider>
               <UserSidebar/>
               <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
@@ -50,8 +48,6 @@ export default function UserLayout({
               </main>
               <Toaster richColors/>
             </SidebarProvider>
-          </LabelProvider>
-        </TicketsProvider>
       </UserProvider>
     </ThemeProvider>
     </body>
