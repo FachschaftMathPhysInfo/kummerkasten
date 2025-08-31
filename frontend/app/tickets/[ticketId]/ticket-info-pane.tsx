@@ -1,7 +1,7 @@
 "use client";
 
 import {Button} from "@/components/ui/button";
-import {MoreVertical, Trash2} from "lucide-react";
+import {Info, MoreVertical, Trash2} from "lucide-react";
 import {
   AddLabelsToTicketDocument,
   AddLabelsToTicketMutation,
@@ -118,7 +118,12 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
     (
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" data-cy="mobile-filter-button"><MoreVertical/></Button>
+          <button
+            data-cy="mobile-filter-button"
+            className={'h-10 aspect-square border rounded-lg flex justify-center items-center'}
+          >
+            <Info className={'stroke-muted-foreground'}/>
+          </button>
         </SheetTrigger>
         <SheetContent side="right" className="w-[85%] overflow-y-auto px-10 pt-15 gap-10 [&>button]:hidden">
           <VisuallyHidden>

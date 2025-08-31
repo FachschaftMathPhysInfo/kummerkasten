@@ -5,7 +5,6 @@ import {Clipboard, Edit2, Trash2} from "lucide-react";
 import React from "react";
 import {Ticket} from "@/lib/graph/generated/graphql";
 import {TicketDialogState} from "@/app/tickets/page";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 interface TicketActionsBarProps {
   copyCurrentUrl: () => Promise<void>;
@@ -16,8 +15,6 @@ interface TicketActionsBarProps {
 export default function TicketActionsBar(props: TicketActionsBarProps) {
   return (
     <div className="flex justify-between items-center">
-      <Tooltip>
-        <TooltipTrigger asChild>
           <Button
             variant="outline"
             onClick={() => props.setDialogStateAction({
@@ -28,12 +25,6 @@ export default function TicketActionsBar(props: TicketActionsBarProps) {
           >
             <Edit2/>
           </Button>
-        </TooltipTrigger>
-        <TooltipContent className={'mb-2'}>Bearbeite das Ticket</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
           <Button
             variant="outline"
             onClick={props.copyCurrentUrl}
@@ -41,15 +32,6 @@ export default function TicketActionsBar(props: TicketActionsBarProps) {
           >
             <Clipboard/>
           </Button>
-        </TooltipTrigger>
-        <TooltipContent className={'mb-2'}>
-          Kopiere Link des Tickets
-        </TooltipContent>
-      </Tooltip>
-
-
-      <Tooltip>
-        <TooltipTrigger asChild>
           <Button
             variant="destructive"
             onClick={() => props.setDialogStateAction({
@@ -60,11 +42,6 @@ export default function TicketActionsBar(props: TicketActionsBarProps) {
           >
             <Trash2/>
           </Button>
-        </TooltipTrigger>
-        <TooltipContent className={'bg-destructive mb-2'}>
-          Lösche Ticket
-        </TooltipContent>
-      </Tooltip>
     </div>
   )
 }

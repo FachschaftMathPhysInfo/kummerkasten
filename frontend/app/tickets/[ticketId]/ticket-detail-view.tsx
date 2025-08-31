@@ -64,29 +64,30 @@ export default function TicketDetailView({
   return (
     <div className="flex flex-col mx-6 grow pt-5 pb-4 overflow-y-scroll">
       <div className={'grow border rounded-lg p-5'}>
-        <div className={'w-full justify-between flex items-center gap-2'}>
-          {editMode ? (
-            <Input
-              autoFocus
-              onKeyDown={(e) =>
-                e.key === "Enter" && handleTitleChange()
-            }
-              type="text"
-              className={'bg-primary border-none !text-4xl !py-6'}
-              placeholder={ticket?.title}
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-            />
-          ) : (
-            <h1
-              className="text-4xl font-semibold text-wrap whitespace-nowrap"
-              title={"Original Titel: " + ticket.originalTitle}
-            >
-              {ticket.title}
-            </h1>
-          )}
+        {!isMobile ? (
+          <div className={'w-full justify-between flex items-center gap-2'}>
+            {editMode ? (
+              <Input
+                autoFocus
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleTitleChange()
+                }
+                type="text"
+                className={'bg-primary border-none !text-4xl !py-6'}
+                placeholder={ticket?.title}
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+              />
+            ) : (
+              <h1
+                className="text-4xl font-semibold text-wrap whitespace-nowrap"
+                title={"Original Titel: " + ticket.originalTitle}
+              >
+                {ticket.title}
+              </h1>
+            )}
 
-          <span>
+            <span>
             {editMode ? (
               <span className={'flex items-center gap-2'}>
                 <Button
@@ -108,17 +109,27 @@ export default function TicketDetailView({
             ) : (
               <Button variant={'secondary'} onClick={() => setEditMode(true)}>Edit</Button>
             )}
-            {isMobile && (
-              <TicketInfoPane
-                ticket={ticket}
-                initialTicketLabels={ticketLabels}
-                setDialogStateAction={setDialogStateAction}
-              />
-            )}
           </span>
 
-        </div>
+          </div>
+        ) : (
+          <span className="flex items-center justify-between gap-2">
+            <h1
+              className="text-2xl font-semibold text-wrap whitespace-nowrap"
+              title={"Original Titel: " + ticket.originalTitle}
+            >
+              {ticket.title}
+            </h1>
+            <TicketInfoPane
+              ticket={ticket}
+              initialTicketLabels={ticketLabels}
+              setDialogStateAction={setDialogStateAction}
+            />
+          </span>
+        )}
+
         <div className={'w-full my-4 h-[1px] bg-border'}></div>
+
         <div className="flex flex-col grow">
           {ticket.text}
         </div>
