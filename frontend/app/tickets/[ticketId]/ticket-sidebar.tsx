@@ -45,7 +45,7 @@ export default function TicketSidebar({
                                       }: TicketSidebarProps) {
     const router = useRouter();
     const [labels, setLabels] = useState<(Label | null)[]>([]);
-    const [stateFilter, setStateFilter] = useState<string[]>([]);
+    const [stateFilter, setStateFilter] = useState<TicketState[]>([]);
     const [labelFilter, setLabelFilter] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
@@ -54,6 +54,23 @@ export default function TicketSidebar({
     >("Erstellt");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [labelSearchTerm, setLabelSearchTerm] = useState("");
+    const [areFiltersSet, setAreFiltersSet] = useState(false)
+    const [isStateFilterSet, setIsStateFilterSet] = useState(false)
+
+    useEffect(() => {
+        const originalState = new Set([TicketState.Open, TicketState.New])
+        const currentState = new Set(stateFilter)
+        setIsStateFilterSet(originalState === currentState)
+    }, []);
+
+    useEffect(() =>
+      setAreFiltersSet(
+        isStateFilterSet ||
+        labelFilter.length > 0 ||
+        !!startDate ||
+        !!endDate
+      )
+    , [stateFilter.length, labelFilter.length, startDate, endDate])
 
     const filteredTickets = tickets.filter((ticket) => {
         if (!ticket) return false;
@@ -101,7 +118,7 @@ export default function TicketSidebar({
 
     const resetAllFilters = () => {
         setSearchTermAction("");
-        setStateFilter([]);
+        setStateFilter([TicketState.New, TicketState.Open]);
         setLabelFilter([]);
         setStartDate(null);
         setEndDate(null);
@@ -158,7 +175,11 @@ export default function TicketSidebar({
                 />
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="outline" data-cy="filter-button">
+                        <Button
+                          variant="outline"
+                          className={cn(areFiltersSet && '!border-accent')}
+                          data-cy="filter-button"
+                        >
                             Filter
                         </Button>
                     </SheetTrigger>
