@@ -52,6 +52,10 @@ interface QAPTableProps {
   refreshData: () => void;
 }
 
+type QAPColumnDef<TData> = ColumnDef<TData> & {
+  className?: string;
+};
+
 interface DragItem {
   id: string;
   index: number;
@@ -114,18 +118,18 @@ const DndTableRow = ({
       data-handler-id={handlerIdAttr}
       data-cy="qap-row"
     >
-      {row.getVisibleCells().map((cell: any) => (
+      {row.getVisibleCells().map((cell) => (
         <TableCell
-          key={cell.id}
-          className={`whitespace-normal break-words px-4 py-3 ${cell.column.columnDef.className ?? ""}`}
+        key={cell.id}
+        className={`whitespace-normal break-words px-4 py-3 ${((cell.column.columnDef as QAPColumnDef<QuestionAnswerPair>).className) ?? ""}`}
         >
-          {cell.column.id === "drag-handle" ? (
-            <div ref={dragHandleRef} className="cursor-grab">
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </div>
-          ) : (
-            flexRender(cell.column.columnDef.cell, cell.getContext())
-          )}
+        {cell.column.id === "drag-handle" ? (
+        <div ref={dragHandleRef} className="cursor-grab">
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </div>
+        ) : (
+        flexRender(cell.column.columnDef.cell, cell.getContext())
+        )}
         </TableCell>
       ))}
     </TableRow>
@@ -139,7 +143,6 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
   const [localData, setLocalData] = useState<QuestionAnswerPair[]>(() => [...data].sort((a, b) => a.order - b.order));
   useEffect(() => setLocalData([...data].sort((a, b) => a.order - b.order)), [data]);
 
-  // filter data based on question OR answer
   const filteredData = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return localData.filter((qap) => qap.question.toLowerCase().includes(term) || qap.answer.toLowerCase().includes(term));
@@ -148,7 +151,10 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-  const columns = useMemo<ColumnDef<QuestionAnswerPair>[]>(() => QAPColumns({ setDialogState }), [setDialogState]);
+  const columns = useMemo<QAPColumnDef<QuestionAnswerPair>[]>(
+    () => QAPColumns({ setDialogState }),
+    [setDialogState]
+  );
 
   const table = useReactTable({
     data: filteredData,

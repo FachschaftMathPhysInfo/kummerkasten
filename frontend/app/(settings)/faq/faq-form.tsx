@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import { FormProvider, useForm} from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { getClient } from "@/lib/graph/client";
@@ -37,7 +37,6 @@ const faqFormSchema = z.object({
 type FaqFormValues = z.infer<typeof faqFormSchema>;
 
 export default function FaqForm({ createMode, qap, closeDialog, refreshData, maxOrder }: FaqFormProps) {
-  const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FaqFormValues>({
@@ -51,17 +50,24 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
 
   useEffect(() => {
     form.setValue("order", createMode ? maxOrder + 1 : qap?.order ?? 0);
-  }, [createMode, qap, maxOrder]);
+  }, [form, createMode, qap, maxOrder]);
 
   useEffect(() => {
-    const handler = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         closeDialog();
       }
     };
-    window.addEventListener("keydown", handler as any);
-    return () => window.removeEventListener("keydown", handler as any);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [closeDialog]);
+
+  const submitLabel = loading
+  ? "Speichern..."
+  : createMode
+    ? "Erstellen"
+    : "Aktualisieren";
+
 
   const onValidSubmit = async (data: FaqFormValues) => {
     setLoading(true);
@@ -108,7 +114,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
+        onSubmit={form.handleSubmit(onValidSubmit)}
         className="space-y-4 w-full"
       >
         <FormField
@@ -173,8 +179,8 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
           <Button type="button" variant="outline" className="flex-1" onClick={closeDialog}>
             Abbrechen
           </Button>
-          <Button type="submit" className="flex-1">
-            {createMode ? "Erstellen" : "Aktualisieren"}
+          <Button type="submit" className="flex-1" disabled={loading}>
+          {submitLabel}
           </Button>
         </div>
       </form>
