@@ -1,6 +1,9 @@
-import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
-import {Edit2, PlusCircle} from "lucide-react";
-import {QuestionAnswerPair} from "@/lib/graph/generated/graphql";
+"use client";
+
+import React from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Edit2, PlusCircle } from "lucide-react";
+import { QuestionAnswerPair } from "@/lib/graph/generated/graphql";
 import QAPForm from "@/app/(settings)/faq/faq-form";
 
 interface QAPDialogProps {
@@ -9,14 +12,14 @@ interface QAPDialogProps {
   qap: QuestionAnswerPair | null;
   closeDialog: () => void;
   refreshData: () => void;
-  maxOrder: number
+  maxOrder: number;
 }
 
 export default function QAPDialog(props: QAPDialogProps) {
   return (
     <Dialog open={props.open}>
       <DialogContent className="[&>button]:hidden">
-        <DialogTitle className={'flex items-center gap-2'}>
+        <DialogTitle className="flex items-center gap-2">
           {props.createMode ? <PlusCircle/> : <Edit2 size={20}/>}
           {props.createMode ? "Frage erstellen" : "Frage bearbeiten"}
         </DialogTitle>
@@ -26,8 +29,8 @@ export default function QAPDialog(props: QAPDialogProps) {
           closeDialog={props.closeDialog}
           refreshData={props.refreshData}
           maxOrder={props.maxOrder}
-        />
+       />
       </DialogContent>
     </Dialog>
-  )
+  );
 }

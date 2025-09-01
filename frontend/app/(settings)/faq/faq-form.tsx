@@ -1,224 +1,183 @@
-"use client"
+"use client";
 
-import {z} from "zod";
-import {FormProvider, useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
-import {getClient} from "@/lib/graph/client";
+import { z } from "zod";
+import { FormProvider, useForm} from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useEffect } from "react";
+import { getClient } from "@/lib/graph/client";
 import {
-    CreateQuestionAnswerPairDocument,
-    CreateQuestionAnswerPairMutation,
-    QuestionAnswerPair,
-    NewQuestionAnswerPair,
-    UpdateQuestionAnswerPairDocument,
-    UpdateQuestionAnswerPairMutation,
-    UpdateQuestionAnswerPairOrderDocument,
-    UpdateQuestionAnswerPairOrderMutation,
+  CreateQuestionAnswerPairDocument,
+  CreateQuestionAnswerPairMutation,
+  UpdateQuestionAnswerPairDocument,
+  UpdateQuestionAnswerPairOrderDocument,
+  UpdateQuestionAnswerPairOrderMutation,
+  QuestionAnswerPair,
 } from "@/lib/graph/generated/graphql";
-import {toast} from "sonner";
-import {LoaderCircle, PlusCircle, Save} from "lucide-react";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import { toast } from "sonner";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
 
-interface QAPFormProps {
-    createMode: boolean;
-    qap: QuestionAnswerPair | null;
-    closeDialog: () => void
-    refreshData: () => void
-    maxOrder: number
+import {Textarea} from "@/components/ui/textarea";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+interface FaqFormProps {
+  createMode: boolean;
+  qap: QuestionAnswerPair | null;
+  closeDialog: () => void;
+  refreshData: () => void;
+  maxOrder: number;
 }
 
-const qapFormSchema = z.object({
-    question: z.string().min(1, {
-        message: "Bitte gib eine Frage ein.",
-    }),
-    answer: z.string().min(1, {
-        message: "Bitte gib eine Antwort ein.",
-    }),
-    order: z.number().int().min(0).optional(),
-})
+const faqFormSchema = z.object({
+  question: z.string().nonempty({ message: "Bitte gib eine Frage ein." }),
+  answer: z.string().nonempty({ message: "Bitte gib eine Antwort ein." }),
+  order: z.number().min(0),
+});
 
-export default function QAPForm(props: QAPFormProps) {
-    const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
-    const [loading, setLoading] = useState<boolean>(false)
+type FaqFormValues = z.infer<typeof faqFormSchema>;
 
-    const form = useForm<z.infer<typeof qapFormSchema>>({
-        resolver: zodResolver(qapFormSchema),
-        defaultValues: {
-            question: props.qap?.question ?? "",
-            answer: props.qap?.answer ?? "",
-            order: props.createMode ? props.maxOrder + 1 : (props.qap?.order ?? 0),
+export default function FaqForm({ createMode, qap, closeDialog, refreshData, maxOrder }: FaqFormProps) {
+  const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<FaqFormValues>({
+    resolver: zodResolver(faqFormSchema),
+    defaultValues: {
+      question: qap?.question ?? "",
+      answer: qap?.answer ?? "",
+      order: createMode ? maxOrder + 1 : qap?.order ?? 0,
+    },
+  });
+
+  useEffect(() => {
+    form.setValue("order", createMode ? maxOrder + 1 : qap?.order ?? 0);
+  }, [createMode, qap, maxOrder]);
+
+  useEffect(() => {
+    const handler = (e: React.KeyboardEvent<HTMLFormElement>) => {
+      if (e.key === "Escape") {
+        closeDialog();
+      }
+    };
+    window.addEventListener("keydown", handler as any);
+    return () => window.removeEventListener("keydown", handler as any);
+  }, [closeDialog]);
+
+  const onValidSubmit = async (data: FaqFormValues) => {
+    setLoading(true);
+
+    const client = getClient();
+    try {
+      if (createMode) {
+        const createResp = await client.request<CreateQuestionAnswerPairMutation>(
+          CreateQuestionAnswerPairDocument,
+          { questionAnswerPair: { question: data.question, answer: data.answer } }
+        );
+        const createdId = createResp.createQuestionAnswerPair?.id;
+        if (createdId) {
+          await client.request<UpdateQuestionAnswerPairOrderMutation>(
+            UpdateQuestionAnswerPairOrderDocument,
+            { QAPs: [{ id: createdId, order: data.order }] }
+          );
         }
-    })
-
-    async function onValidSubmit(data: z.infer<typeof qapFormSchema>) {
-        setLoading(true)
-
-        try {
-            if (props.createMode) {
-                await createQAP(data.question, data.answer)
-            } else {
-                if (!props.qap) return;
-                
-                const questionAnswerPair: NewQuestionAnswerPair = {
-                    question: data.question,
-                    answer: data.answer,
-                };
-                if (data.order !== props.qap.order) {
-                    await updateQAPOrder(props.qap.id, data.order!);
-                }
-                
-                await updateQAP(props.qap.id, questionAnswerPair);
-            }
-        } catch (error) {
-            toast.error("Ein Fehler ist aufgetreten")
-            console.error(error)
-        } finally {
-            setLoading(false)
+        toast.success("FAQ erfolgreich erstellt.");
+      } else if (qap) {
+        if (data.order !== qap.order) {
+          await client.request<UpdateQuestionAnswerPairOrderMutation>(
+            UpdateQuestionAnswerPairOrderDocument,
+            { QAPs: [{ id: qap.id, order: data.order }] }
+          );
         }
+        await client.request(UpdateQuestionAnswerPairDocument, {
+          id: qap.id,
+          questionAnswerPair: { question: data.question, answer: data.answer },
+        });
+        toast.success("FAQ erfolgreich aktualisiert.");
+      }
+
+      closeDialog();
+      await refreshData();
+    } catch (err) {
+      console.error(err);
+      toast.error("Fehler beim Speichern der FAQ.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    async function createQAP(question: string, answer: string) {
-        const client = getClient();
-        const qap: NewQuestionAnswerPair = {question, answer};
-
-        try {
-            await client.request<CreateQuestionAnswerPairMutation>(CreateQuestionAnswerPairDocument, {questionAnswerPair: qap})
-            toast.success("Frage und Antwort erstellt!")
-            props.refreshData()
-            props.closeDialog()
-        } catch (error) {
-            toast.error("Ein Fehler beim Erstellen ist aufgetreten")
-            console.error(error)
-        }
-    }
-
-    async function updateQAP(id: string, qap: NewQuestionAnswerPair) {
-        const client = getClient();
-        try {
-            await client.request<UpdateQuestionAnswerPairMutation>(UpdateQuestionAnswerPairDocument, {id: id, questionAnswerPair: qap})
-            toast.success("Frage und Antwort erfolgreich aktualisiert!")
-            props.refreshData()
-            props.closeDialog()
-        } catch (error) {
-            toast.error("Ein Fehler beim Aktualisieren ist aufgetreten")
-            console.error(error)
-        }
-    }
-
-    async function updateQAPOrder(id: string, order: number) {
-        const client = getClient();
-        try {
-            await client.request<UpdateQuestionAnswerPairOrderMutation>(
-                UpdateQuestionAnswerPairOrderDocument,
-                {
-                    QAPs: [{ id, order }],
-                }
-            );
-            toast.success("Reihenfolge erfolgreich aktualisiert!");
-        } catch (error) {
-            toast.error("Fehler beim Aktualisieren der Reihenfolge aufgetreten")
-            console.error(error);
-        }
-    }
-    
-    return (
-        <FormProvider {...form}>
-            <form
-                onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
-                className="space-y-4 w-full"
-            >
-                <FormField
-                    control={form.control}
-                    name="question"
-                    render={({field}) => (
-                        <FormItem className={"flex-grow"}>
-                            <FormLabel>Frage</FormLabel>
-                            <FormControl>
-                                <Input
-                                    data-cy={'qap-question-input'}
-                                    placeholder={props.qap?.question ?? "Gib eine Frage ein"}
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
+  return (
+    <FormProvider {...form}>
+      <form
+        onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
+        className="space-y-4 w-full"
+      >
+        <FormField
+          control={form.control}
+          name="question"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>Frage</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Frage"
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  className={[fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""].join(" ")}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-                <FormField
-                    control={form.control}
-                    name="answer"
-                    render={({field}) => (
-                        <FormItem className={"flex-grow"}>
-                            <FormLabel>Antwort</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    data-cy={'qap-answer-input'}
-                                    placeholder={props.qap?.answer ?? "Gib eine Antwort ein"}
-                                    className="resize-y min-h-[100px]"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
+        <FormField
+          control={form.control}
+          name="answer"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>Antwort</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Antwort"
+                  rows={7}
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  className={`resize-none ${fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""}`}
                 />
-                
-                <FormField
-                    control={form.control}
-                    name="order"
-                    render={({field}) => (
-                        <FormItem className={"flex-grow"}>
-                            <FormLabel>Position</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="number"
-                                    data-cy={'qap-order-input'}
-                                    min={0}
-                                    max={props.maxOrder +1}
-                                    value={field.value}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      const parsedValue = parseInt(value, 10);
-                                      field.onChange(isNaN(parsedValue) ? 0 : parsedValue);
-                                    }}
-                                />
-                            </FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="order"
+          render={({ field }) => (
+            <FormItem className="flex items-center gap-2">
+              <FormLabel className="text-lg w-2/3">Reihenfolge</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  min={0}
+                  max={createMode ? maxOrder + 1 : maxOrder}
+                  className="w-1/3"
                 />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
-                <div className={"flex justify-between items-center gap-x-12 mt-8"}>
-                    <Button
-                        data-cy={'close-dialog-button'}
-                        onClick={props.closeDialog}
-                        variant={"outline"}
-                        type={"button"}
-                        className={"flex-grow-[0.5]"}
-                    >
-                        Abbrechen
-                    </Button>
-
-                    <Button
-                        data-cy={'submit-button'}
-                        disabled={(!form.formState.isValid && hasTriedToSubmit) || loading}
-                        type="submit"
-                        className={"flex-grow"}
-                    >
-                        {loading ? (<LoaderCircle className="animate-spin" />) : props.createMode ?
-                            (
-                                <PlusCircle/>
-                            ) : (
-                                <Save/>
-                            )}
-                        {props.createMode ? "Erstellen" : "Speichern"}
-                    </Button>
-                </div>
-            </form>
-        </FormProvider>
-    )
+        <div className="flex justify-between gap-2 mt-4">
+          <Button type="button" variant="outline" className="flex-1" onClick={closeDialog}>
+            Abbrechen
+          </Button>
+          <Button type="submit" className="flex-1">
+            {createMode ? "Erstellen" : "Aktualisieren"}
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
+  );
 }

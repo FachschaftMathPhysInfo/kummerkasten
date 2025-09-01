@@ -175,7 +175,7 @@ export default function FormUi() {
             render={({field}) => (
              <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel>Titel</FormLabel>
+                  <FormLabel className="text-lg">Titel</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     titleWatch.length > 70 && "text-destructive"

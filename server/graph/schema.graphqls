@@ -76,7 +76,7 @@ type Query {
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     login(mail: String!, password: String!): Boolean!
     loginCheck(sid: String): User
-    questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]
+    questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]@hasRole(role: USER)
 }
 
 input NewTicket {
@@ -166,8 +166,8 @@ type Mutation {
     addLabelToTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
     removeLabelFromTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
 
-    createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
-    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
-    updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: ADMIN)
-    updateQuestionAnswerPairOrder(QAPs: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: ADMIN)
+    createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: USER)
+    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: USER)
+    updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: USER)
+    updateQuestionAnswerPairOrder(QAPs: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: USER)
 }
