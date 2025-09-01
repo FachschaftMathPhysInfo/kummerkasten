@@ -40,7 +40,7 @@ export default function TicketPage() {
   const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
   const [labels, setLabels] = useState<(Label | null)[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [stateFilter, setStateFilter] = useState<string[]>([TicketState.New, TicketState.Open]);
+  const [stateFilter, setStateFilter] = useState<TicketState[]>([TicketState.New, TicketState.Open]);
   const [labelFilter, setLabelFilter] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
@@ -120,7 +120,7 @@ export default function TicketPage() {
 
   const resetAllFilters = () => {
     setSearchTerm("");
-    setStateFilter([]);
+    setStateFilter([TicketState.New, TicketState.Open]);
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
