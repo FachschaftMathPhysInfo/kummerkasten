@@ -159,7 +159,7 @@ export default function TicketPage() {
   }
 
   return (
-    <div className="space-y-6 grow max-w-screen">
+    <div className="w-full h-full flex flex-col grow">
       <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
                             icon={<TicketIcon/>}/>
       <div className="px-8 flex gap-4">
