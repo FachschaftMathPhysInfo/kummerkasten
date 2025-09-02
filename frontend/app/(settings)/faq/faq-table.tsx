@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   VisibilityState,
@@ -25,7 +24,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DataTablePagination } from "@/components/table-utils/data-table-pagination";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 
 import { PlusCircle } from "lucide-react";

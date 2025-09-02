@@ -53,7 +53,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
 
   const schema = faqFormSchema(maxOrder, uniqueQuestion, qap?.question);
   const form = useForm<FaqFormValues>({
-      resolver: zodResolver(schema) as any,
+      resolver: zodResolver<FaqFormValues, string, FaqFormValues>(schema),
       defaultValues: {
       question: qap?.question ?? "",
       answer: qap?.answer ?? "",
@@ -125,7 +125,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
 
       closeDialog();
       await refreshData();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       toast.error("Fehler beim Speichern der FAQ.");
     } finally {
