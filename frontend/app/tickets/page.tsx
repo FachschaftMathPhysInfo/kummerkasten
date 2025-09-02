@@ -405,7 +405,7 @@ export default function TicketPage() {
                         : "Status"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
+                  <PopoverContent className="p-0 w-[170px]">
                     <Command>
                       <CommandInput placeholder="Status suchen..."/>
                       <CommandGroup>
@@ -449,8 +449,8 @@ export default function TicketPage() {
                         : "Labels"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
-                    <Command>
+                  <PopoverContent className="p-0 w-[200px] overflow-x-auto">
+                    <Command className="flex w-fit whitespace-nowrap">
                       <CommandInput placeholder="Labels suchen..."/>
                       <CommandGroup>
                         {labels
