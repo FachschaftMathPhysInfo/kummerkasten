@@ -13,6 +13,7 @@ interface QAPDialogProps {
   closeDialog: () => void;
   refreshData: () => void;
   maxOrder: number;
+  uniqueQuestion: string[];
 }
 
 export default function QAPDialog(props: QAPDialogProps) {
@@ -29,6 +30,7 @@ export default function QAPDialog(props: QAPDialogProps) {
           closeDialog={props.closeDialog}
           refreshData={props.refreshData}
           maxOrder={props.maxOrder}
+          uniqueQuestion={props.uniqueQuestion}
        />
       </DialogContent>
     </Dialog>

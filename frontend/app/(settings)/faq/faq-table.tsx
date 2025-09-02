@@ -114,7 +114,7 @@ const DndTableRow = ({
     <TableRow
       ref={dropRef}
       style={{ opacity: isDragging ? 0 : 1 }}
-      className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${isOver ? "bg-accent border-t-2 border-green-600" : ""}`}
+      className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${isOver ? "bg-accent/20 border-t-2 border-green-600" : ""}`}
       data-handler-id={handlerIdAttr}
       data-cy="qap-row"
     >
@@ -149,7 +149,6 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
   }, [localData, searchTerm]);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
   const columns = useMemo<QAPColumnDef<QuestionAnswerPair>[]>(
     () => QAPColumns({ setDialogState }),
@@ -159,12 +158,10 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
   const table = useReactTable({
     data: filteredData,
     columns,
-    state: { columnVisibility, pagination },
+    state: { columnVisibility },
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     columnResizeMode: "onChange",
   });
 
@@ -175,7 +172,6 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
   const deleteQAP = async (id: string) => {
     try {
       await client.request<DeleteQuestionAnswerPairMutation>(DeleteQuestionAnswerPairDocument, { ids: [id] });
-      toast.success("Frage erfolgreich gelöscht.");
       resetDialogState();
       await refreshData();
     } catch {
@@ -199,7 +195,6 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
       await client.request<UpdateQuestionAnswerPairOrderMutation>(UpdateQuestionAnswerPairOrderDocument, {
         QAPs: [{ id: draggedId, order: newOrder }],
       });
-      toast.success("FAQ-Reihenfolge erfolgreich aktualisiert.");
       await refreshData();
     } catch {
       toast.error("Fehler beim Sortieren der FAQ aufgetreten.");
@@ -251,15 +246,13 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Keine Ergebnisse gefunden.
+                    Keine FAQs gefunden.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
-
-        <DataTablePagination table={table} disableElementsPerPage={true}/>
 
         {(dialogState.mode === "create" || dialogState.mode === "update") && (
           <QAPDialog
@@ -269,6 +262,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
             closeDialog={resetDialogState}
             refreshData={refreshData}
             maxOrder={localData.length - 1}
+            uniqueQuestion={localData.map((q) => q.question)}
          />
         )}
 

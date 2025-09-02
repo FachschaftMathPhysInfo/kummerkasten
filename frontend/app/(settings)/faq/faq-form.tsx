@@ -26,31 +26,53 @@ interface FaqFormProps {
   closeDialog: () => void;
   refreshData: () => void;
   maxOrder: number;
+  uniqueQuestion: string[];
 }
 
-const faqFormSchema = z.object({
-  question: z.string().nonempty({ message: "Bitte gib eine Frage ein." }),
+const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuestion?: string) => z.object({
+  question: z.string().nonempty({ message: "Bitte gib eine Frage ein." }).refine(
+        (val) =>
+        !uniqueQuestion.includes(val) || val === currentQuestion,
+        { message: "Diese Frage existiert bereits." }),
   answer: z.string().nonempty({ message: "Bitte gib eine Antwort ein." }),
-  order: z.number().min(0),
+  order: z.number().int().min(1, "Position muss mindestens 1 sein.").max(maxOrder + 2, { message: `Position darf höchstens ${maxOrder + 2} sein.` }),
 });
 
-type FaqFormValues = z.infer<typeof faqFormSchema>;
+type FaqFormValues = z.infer<ReturnType<typeof faqFormSchema>>;
 
-export default function FaqForm({ createMode, qap, closeDialog, refreshData, maxOrder }: FaqFormProps) {
+export default function FaqForm({ createMode, qap, closeDialog, refreshData, maxOrder, uniqueQuestion }: FaqFormProps) {
   const [loading, setLoading] = useState(false);
+  
+  if (!maxOrder) {
+    maxOrder = 1;
+  }
+  
+  if (maxOrder < 1) {
+    maxOrder = 1;
+  }
 
+  const schema = faqFormSchema(maxOrder, uniqueQuestion, qap?.question);
   const form = useForm<FaqFormValues>({
-    resolver: zodResolver(faqFormSchema),
-    defaultValues: {
+      resolver: zodResolver(schema) as any,
+      defaultValues: {
       question: qap?.question ?? "",
       answer: qap?.answer ?? "",
-      order: createMode ? maxOrder + 1 : qap?.order ?? 0,
+      order: createMode ? maxOrder + 2 : ( qap?.order ?? 0)  + 1,
     },
   });
 
+
   useEffect(() => {
-    form.setValue("order", createMode ? maxOrder + 1 : qap?.order ?? 0);
+    form.setValue("order", createMode ? maxOrder + 1 :  ( qap?.order ?? 0)  + 1,);
   }, [form, createMode, qap, maxOrder]);
+
+   useEffect(() => {
+    form.reset({
+      question: qap?.question ?? "",
+      answer: qap?.answer ?? "",
+      order: createMode ? maxOrder + 2 :  ( qap?.order ?? 0)  + 1,
+    });
+  }, [createMode, qap, maxOrder, form]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -73,6 +95,8 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
     setLoading(true);
 
     const client = getClient();
+    const trueOrderValue = data.order - 1;
+
     try {
       if (createMode) {
         const createResp = await client.request<CreateQuestionAnswerPairMutation>(
@@ -83,27 +107,25 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
         if (createdId) {
           await client.request<UpdateQuestionAnswerPairOrderMutation>(
             UpdateQuestionAnswerPairOrderDocument,
-            { QAPs: [{ id: createdId, order: data.order }] }
+            { QAPs: [{ id: createdId, order: trueOrderValue }] }
           );
         }
-        toast.success("FAQ erfolgreich erstellt.");
       } else if (qap) {
-        if (data.order !== qap.order) {
+        if (trueOrderValue !== qap.order) {
           await client.request<UpdateQuestionAnswerPairOrderMutation>(
             UpdateQuestionAnswerPairOrderDocument,
-            { QAPs: [{ id: qap.id, order: data.order }] }
+            { QAPs: [{ id: qap.id, order: trueOrderValue }] }
           );
         }
         await client.request(UpdateQuestionAnswerPairDocument, {
           id: qap.id,
           questionAnswerPair: { question: data.question, answer: data.answer },
         });
-        toast.success("FAQ erfolgreich aktualisiert.");
       }
 
       closeDialog();
       await refreshData();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       toast.error("Fehler beim Speichern der FAQ.");
     } finally {
@@ -131,7 +153,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
                   className={[fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""].join(" ")}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage/>
             </FormItem>
           )}
         />
@@ -151,7 +173,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
                   className={`resize-none ${fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""}`}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage/>
             </FormItem>
           )}
         />
@@ -159,21 +181,25 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
         <FormField
           control={form.control}
           name="order"
-          render={({ field }) => (
-            <FormItem className="flex items-center gap-2">
-              <FormLabel className="text-lg w-2/3">Reihenfolge</FormLabel>
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>
+                Position
+              </FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  {...field}
-                  min={0}
-                  max={createMode ? maxOrder + 1 : maxOrder}
-                  className="w-1/3"
+                  value={Number(field.value ?? 1)}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  aria-invalid={fieldState.invalid}
+                  className={`${fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""}`}
                 />
               </FormControl>
+              <FormMessage className="w-full text-sm font-medium text-destructive"/>
             </FormItem>
           )}
         />
+
 
         <div className="flex justify-between gap-2 mt-4">
           <Button type="button" variant="outline" className="flex-1" onClick={closeDialog}>

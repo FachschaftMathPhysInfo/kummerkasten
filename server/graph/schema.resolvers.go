@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -553,7 +554,7 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 
 // CreateQuestionAnswerPair is the resolver for the createQuestionAnswerPair field.
 func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
-	var maxOrder int32
+	var maxOrder sql.NullInt32
 
 	err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
@@ -566,7 +567,11 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 		ID:       uuid.New().String(),
 		Question: questionAnswerPair.Question,
 		Answer:   questionAnswerPair.Answer,
-		Order:    maxOrder + 1,
+		Order:    maxOrder.Int32 + 1,
+	}
+
+	if !maxOrder.Valid {
+		createdQuestionAnswerPair.Order = 1
 	}
 
 	if _, err := r.DB.NewInsert().Model(createdQuestionAnswerPair).Exec(ctx); err != nil {
