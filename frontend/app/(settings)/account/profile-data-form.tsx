@@ -37,28 +37,19 @@ export default function AccountDataForm() {
     const form = useForm<z.infer<typeof accountDataSchema>>({
         resolver: zodResolver(accountDataSchema),
         defaultValues: {
-            firstname: "",
-            lastname: "",
-            mail: "",
+            firstname: user?.firstname,
+            lastname: user?.lastname,
+            mail: user?.mail,
         }
     })
 
     const fetchProfileData = useCallback(async () => {
         if (!user?.id) return;
-        const client = getClient();
-
         try {
-            const data = await client.request<UserAccountDataQuery>(UserAccountDataDocument, {id: user.id});
-            const userData = data?.users?.[0];
-            if (!userData) {
-                toast.error("Keine Benutzerdaten gefunden");
-                return;
-            }
-
             form.reset({
-                firstname: userData.firstname,
-                lastname: userData.lastname,
-                mail: userData.mail,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                mail: user.mail,
             });
             setIsLoading(false);
         } catch (error) {
