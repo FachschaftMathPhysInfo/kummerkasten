@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {UserRole} from "@/lib/graph/generated/graphql"
 import {ColumnDef} from "@tanstack/react-table";
-import {MoreHorizontal, Shield, Trash,} from "lucide-react";
+import {MoreHorizontal, RotateCcw, Shield, Trash, UserCheck, UserMinus,} from "lucide-react";
 import React from "react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {useUser} from "@/components/providers/user-provider";
@@ -105,6 +105,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
+                        <UserMinus className={'inline mr-2'} />
                         Admin entfernen
                       </DropdownMenuItem>
 
@@ -114,6 +115,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
+                        <RotateCcw className={'inline mr-2'} />
                         Password zurücksetzen
                       </DropdownMenuItem>
                     </>
@@ -125,6 +127,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
+                        <UserCheck className={'inline mr-2'} />
                         Admin machen
                       </DropdownMenuItem>
 
@@ -134,6 +137,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
+                        <RotateCcw className={'inline mr-2'}/>
                         Password zurücksetzen
                       </DropdownMenuItem>
 
