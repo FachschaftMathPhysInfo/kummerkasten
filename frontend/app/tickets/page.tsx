@@ -193,7 +193,7 @@ export default function TicketPage() {
   console.log("Sorting: ", sorting)
 
   return (
-    <div className="w-full h-full flex flex-col grow">
+    <div className="space-y-6 grow max-w-screen">
       <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
                             icon={<TicketIcon/>}/>
       <div className="px-8 flex gap-4">
@@ -525,7 +525,7 @@ export default function TicketPage() {
       </div>
       {sortedTickets.map((ticket) =>
           ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+            <div key={ticket.id} className="mx-8 my-2" data-cy={`ticket-card-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>
                 <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
               </Link>
