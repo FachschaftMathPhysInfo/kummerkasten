@@ -116,7 +116,6 @@ export default function PasswordDataForm() {
 
 
   return (
-
     <FormProvider {...passwordForm}>
       <form
         onSubmit={passwordForm.handleSubmit(onPasswordSubmit, () =>
@@ -124,7 +123,6 @@ export default function PasswordDataForm() {
         )}
         className="space-y-4 w-full"
       >
-
         <SettingsBlock icon={<ShieldUser/>} title={"Sicherheit"} hasTriedToSubmit={hasTriedPasswordSubmit}
                        isDirty={passwordForm.formState.isDirty}
                        isLoading={isItLoading}
