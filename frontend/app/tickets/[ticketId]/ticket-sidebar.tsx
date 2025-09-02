@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Check, Trash2} from "lucide-react";
-import {cn} from "@/lib/utils";
+import {cn, compareStringSets} from "@/lib/utils";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
@@ -45,7 +45,7 @@ export default function TicketSidebar({
                                       }: TicketSidebarProps) {
     const router = useRouter();
     const [labels, setLabels] = useState<(Label | null)[]>([]);
-    const [stateFilter, setStateFilter] = useState<TicketState[]>([]);
+    const [stateFilter, setStateFilter] = useState<TicketState[]>([TicketState.Open, TicketState.New]);
     const [labelFilter, setLabelFilter] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
@@ -60,8 +60,8 @@ export default function TicketSidebar({
     useEffect(() => {
         const originalState = new Set([TicketState.Open, TicketState.New])
         const currentState = new Set(stateFilter)
-        setIsStateFilterSet(originalState === currentState)
-    }, []);
+        setIsStateFilterSet(!compareStringSets(originalState, currentState))
+    }, [stateFilter.length]);
 
     useEffect(() =>
       setAreFiltersSet(
@@ -70,7 +70,7 @@ export default function TicketSidebar({
         !!startDate ||
         !!endDate
       )
-    , [stateFilter.length, labelFilter.length, startDate, endDate])
+    , [isStateFilterSet, labelFilter.length, startDate, endDate])
 
     const filteredTickets = tickets.filter((ticket) => {
         if (!ticket) return false;
@@ -216,9 +216,9 @@ export default function TicketSidebar({
                                                 isSelected ? "opacity-100" : "opacity-0"
                                             )}
                                         />
-                                        {state === "NEW"
+                                        {state === TicketState.New
                                             ? "New"
-                                            : state === "OPEN"
+                                            : state === TicketState.Open
                                                 ? "Open"
                                                 : "Closed"}
                                     </Button>
