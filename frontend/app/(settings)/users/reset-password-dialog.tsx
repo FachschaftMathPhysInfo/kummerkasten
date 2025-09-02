@@ -90,7 +90,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
           )}
         </div>
 
-        <DialogFooter className={'mt-8 w-full flex items-center justify-end'}>
+        <DialogFooter className={'mt-3 w-full flex items-center justify-end'}>
           <Button
             variant={'destructive'}
             onClick={handleSubmit}
