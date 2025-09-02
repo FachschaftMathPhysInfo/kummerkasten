@@ -61,6 +61,8 @@ export default function TicketSidebar({
     const originalState = new Set([TicketState.Open, TicketState.New])
     const currentState = new Set(stateFilter)
     setIsStateFilterSet(!compareStringSets(originalState, currentState))
+    // This will always change by one, thus .length is sufficient here
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateFilter.length]);
 
   useEffect(() =>
