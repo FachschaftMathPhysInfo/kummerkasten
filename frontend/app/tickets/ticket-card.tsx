@@ -12,6 +12,7 @@ import {toast} from "sonner";
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {cn} from "@/lib/utils";
+import {getTicketStateColor} from "@/lib/ticketstate-colour";
 
 
 type TicketProps = {
@@ -36,6 +37,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
   const isMobile = useIsMobile();
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
+  const [ticketStateColour, setTicketStateColour] = useState("#000");
 
   const fetchTicketData = useCallback(async () => {
     const data = await client.request<TicketsByIdsQuery>(TicketsByIdsDocument, {id: ticketID});
@@ -44,6 +46,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
     if (ticketData) {
       setTicket(ticketData);
       setTicketLabels(labels ?? []);
+      setTicketStateColour(getTicketStateColor(ticketData.state));
     }
   }, [ticketID]);
 
@@ -51,6 +54,11 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
     void fetchTicketData();
   }, [fetchTicketData]);
 
+  useEffect(() => {
+    if (ticket?.state) {
+      setTicketStateColour(getTicketStateColor(ticket.state));
+    }
+  }, [ticket?.state]);
 
   const copyTicketUrl = async () => {
     try {
@@ -62,17 +70,21 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
     }
   };
 
+  if (!ticket?.id) return null;
+
+
   return (
     <Card className="w-full p-3">
       <CardTitle className="flex flex-col ml-2 justify-between">
         <div className="flex justify-between items-center w-full">
           <Badge
             className={cn(
-              "absolute left-11 md:relative md:left-0 color: calculateFontColor(label.color)",
+              "absolute left-11 md:relative md:left-0",
               ticket?.state === TicketState.New && "bg-ticketstate-new",
               ticket?.state === TicketState.Open && "bg-ticketstate-open",
               ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
             )}
+            style={{ color: calculateFontColor(ticketStateColour)}}
           >
             {ticket?.state === TicketState.New
               ? "Neu"
