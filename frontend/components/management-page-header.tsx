@@ -18,7 +18,7 @@ export function ManagementPageHeader({title, description, icon, actionButton}: M
             : icon;
 
     return (
-        <div className="p-5 space-y-4">
+        <div className="my-8 mx-10 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-y-2">
                 <div className="flex items-center">
                     {sizedIcon && <div className="mr-1">{sizedIcon}</div>}

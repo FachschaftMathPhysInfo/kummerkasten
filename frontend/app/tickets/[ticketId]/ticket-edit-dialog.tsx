@@ -71,7 +71,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
         }
     }, [props.ticket, form]);
 
-
     useEffect(() => {
         async function fetchLabels() {
             const client = getClient();
@@ -169,10 +168,10 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
                                         {Object.values(TicketState).map((state) => (
                                             <SelectItem key={state} value={state}>
                                                 {state === "NEW"
-                                                    ? "New"
+                                                    ? "Neu"
                                                     : state === "OPEN"
-                                                        ? "Open"
-                                                        : "Closed"}
+                                                        ? "Offen"
+                                                        : "Fertig"}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

@@ -13,6 +13,8 @@ enum TicketState {
 
 Table tickets {
   id uuid [primary key]
+  title varchar [not null]
+  originalTitle varchar [not null]
   text varchar [not null]
   note varchar [note: "Used by admin note field"]
   state TicketState [not null, note: "le ampelsystem"]
@@ -33,7 +35,6 @@ Table labels {
 
 Table users {
   id uuid [primary key]
-  sid varchar
   mail varchar [not null, unique]
   firstname varchar [not null]
   lastname varchar [not null]
@@ -42,6 +43,12 @@ Table users {
   created_at timestamp [not null]
   last_modified timestamp [not null]
   last_login timestamp
+}
+
+Table Session {
+  id uuid [primary key]
+  user_id uuid [not null]
+  expires_at timestamp [not null]
 }
 
 Table settings {
