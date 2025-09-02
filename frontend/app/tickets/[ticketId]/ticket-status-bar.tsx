@@ -52,6 +52,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
     }
   };
 
+  console.log('Ticket State: ', ticket?.state)
 
   if (!ticket) return <div/>;
 
@@ -117,7 +118,11 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
                     )}
                     data-cy="ticket-status-badge-detail"
                   >
-                    {ticket.state.toLowerCase()}
+                      {ticket.state === TicketState.New ? "Neu"
+                        : ticket.state === TicketState.Open
+                          ? "Offen"
+                          : "Fertig"
+                      }
                   </Badge>
                 </div>
                 <div className="flex flex-row justify-between items-center">

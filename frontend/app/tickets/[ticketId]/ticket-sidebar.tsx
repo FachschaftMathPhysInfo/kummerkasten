@@ -70,7 +70,8 @@ export default function TicketSidebar({
       labelFilter.length > 0
         ? ticket.labels?.some((label) => labelFilter
           .filter(l => l.id)
-          .includes(label))
+          .map(l => l.name)
+          .includes(label.name))
         : true;
 
     const matchesStartDate = startDate
@@ -131,6 +132,8 @@ export default function TicketSidebar({
     if (valA > valB) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
+
+    console.log(labelFilter)
 
   return (
     <div className="px-4">
@@ -196,11 +199,11 @@ export default function TicketSidebar({
                         isSelected ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    {state === "NEW"
-                      ? "New"
-                      : state === "OPEN"
-                        ? "Open"
-                        : "Closed"}
+                    {state === TicketState.New
+                      ? "Neu"
+                      : state === TicketState.Open
+                        ? "Offen"
+                        : "Fertig"}
                   </Button>
                 );
               })}
