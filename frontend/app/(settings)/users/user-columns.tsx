@@ -98,14 +98,25 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {row.original.role === UserRole.Admin ? (
-                    <DropdownMenuItem
-                      onClick={() => props.setDialogState({
-                        mode: "demote",
-                        currentUser: row.original
-                      })}
-                    >
-                      Admin entfernen
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem
+                        onClick={() => props.setDialogState({
+                          mode: "demote",
+                          currentUser: row.original
+                        })}
+                      >
+                        Admin entfernen
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => props.setDialogState({
+                          mode: "resetPassword",
+                          currentUser: row.original
+                        })}
+                      >
+                        Password zurücksetzen
+                      </DropdownMenuItem>
+                    </>
                   ) : (
                     <>
                       <DropdownMenuItem
