@@ -17,6 +17,7 @@ import {useRouter} from "next/navigation"
 
 interface UserContextType {
   user: User | null;
+  triggerUserRefetch: () => void;
   login: (mail: string, password: string) => Promise<boolean>
   logout: () => Promise<void>;
 }
@@ -26,6 +27,7 @@ const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider({children}: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [sid, setSid] = useState<string | undefined>();
+  const [refetchKey, setRefetchKey] = useState<boolean>(false);
   const router = useRouter();
 
 
@@ -40,7 +42,11 @@ export function UserProvider({children}: { children: ReactNode }) {
     const client = getClient();
     const data = await client.request<LoginCheckQuery>(LoginCheckDocument, {sid: sid})
     if (!data.loginCheck) setUser(null)
-    else setUser({...defaultUser, ...data.loginCheck})
+    else setUser(prevState => ({
+      ...defaultUser,
+      ...prevState,
+      ...data.loginCheck
+    }))
   }, [sid])
 
   // fetch sid
@@ -51,7 +57,11 @@ export function UserProvider({children}: { children: ReactNode }) {
   // fetch user
   useEffect(() => {
     void fetchUser();
-  }, [sid, fetchUser]);
+  }, [sid, fetchUser, refetchKey]);
+
+  const triggerUserRefetch = () => {
+    setRefetchKey(!refetchKey)
+  }
 
   const login = async (mail: string, password: string): Promise<boolean> => {
     const client = getClient();
@@ -78,7 +88,7 @@ export function UserProvider({children}: { children: ReactNode }) {
   }
 
   return (
-    <UserContext.Provider value={{user, login, logout}}>
+    <UserContext.Provider value={{user, triggerUserRefetch, login, logout}}>
       {children}
     </UserContext.Provider>
   );
