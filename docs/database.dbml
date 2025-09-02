@@ -13,6 +13,8 @@ enum TicketState {
 
 Table tickets {
   id uuid [primary key]
+  title varchar [not null]
+  originalTitle varchar [not null]
   text varchar [not null]
   note varchar [note: "Used by admin note field"]
   state TicketState [not null, note: "le ampelsystem"]
