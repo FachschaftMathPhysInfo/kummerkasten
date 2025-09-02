@@ -244,7 +244,7 @@ export default function TicketPage() {
                               <Check
                                 className={cn("mr-2 h-4 w-4", isSelected ? "opacity-100" : "opacity-0")}
                               />
-                              {state === "NEW" ? "New" : state === "OPEN" ? "Open" : "Closed"}
+                              {state === TicketState.New ? "Neu" : state === TicketState.Open ? "Offen" : "Fertig"}
                             </Button>
                           );
                         })}
@@ -428,11 +428,11 @@ export default function TicketPage() {
                                   isSelected ? "opacity-100" : "opacity-0"
                                 )}
                               />
-                              {state === "NEW"
-                                ? "New"
-                                : state === "OPEN"
-                                  ? "Open"
-                                  : "Closed"}
+                              {state === TicketState.New
+                                ? "Neu"
+                                : state === TicketState.Open
+                                  ? "Offen"
+                                  : "Fertig"}
                             </CommandItem>
                           );
                         })}
@@ -523,17 +523,15 @@ export default function TicketPage() {
           )}
         </div>
       </div>
-      {
-        sortedTickets.map((ticket) =>
-            ticket?.id && (
-              <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
-                <Link href={`/tickets/${ticket.id}`} passHref>
-                  <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
-                </Link>
-              </div>
-            )
-        )
-      }
+      {sortedTickets.map((ticket) =>
+          ticket?.id && (
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+              <Link href={`/tickets/${ticket.id}`} passHref>
+                <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
+              </Link>
+            </div>
+          )
+      )}
 
       <ConfirmationDialog
         mode="confirmation"

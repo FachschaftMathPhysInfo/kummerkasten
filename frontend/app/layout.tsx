@@ -35,7 +35,12 @@ export default function UserLayout({
     <body
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-    <ThemeProvider attribute={'class'} defaultTheme={"system"}>
+    <ThemeProvider
+      attribute={'class'}
+      defaultTheme={"system"}
+      enableSystem
+      disableTransitionOnChange
+    >
       <UserProvider>
         <SidebarProvider>
           <UserSidebar/>
