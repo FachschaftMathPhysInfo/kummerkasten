@@ -11,11 +11,11 @@ export default function LabelBadge({label}: LabelBadgeProps) {
   return (
     <Badge
       key={label.id}
-      className="flex-shrink-0 justify-center px-3 py-1"
+      className="px-3 py-1 max-w-full"
       style={{backgroundColor: label.color, color: calculateFontColor(label.color)}}
       data-cy={`label-badge-${label.id}`}
     >
-      {label.name}
+      <span className={'block truncate'}>{label.name}</span>
     </Badge>
   )
 }

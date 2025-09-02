@@ -29,10 +29,12 @@ export default function LabelSelection({labels, selectedLabels, setLabels}: Labe
                         : [...selectedLabels, label]
                     )
                   }}
-                  className={'data-[selected=true]:!bg-accent/50'}
+                  className={'data-[selected=true]:!bg-accent/50 flex items-center'}
                 >
                   <Check className={cn("mr-2 h-4 w-4", isSelected ? "opacity-100" : "opacity-0")}/>
-                  <LabelBadge label={label}/>
+                  <div className={'flex-1 min-w-0'}>
+                    <LabelBadge label={label}/>
+                  </div>
                 </CommandItem>
               );
             })}

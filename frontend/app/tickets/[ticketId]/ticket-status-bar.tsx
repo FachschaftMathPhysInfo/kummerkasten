@@ -56,7 +56,6 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
   if (!ticket) return <div/>;
 
   return (
-    <>
       <Sheet>
         <SheetTrigger asChild>
           {isMobile ? <Button variant="outline" data-cy="mobile-filter-button">
@@ -148,6 +147,5 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
           </SheetFooter>
         </SheetContent>
       </Sheet>
-    </>
   );
 }
