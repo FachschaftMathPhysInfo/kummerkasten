@@ -1,7 +1,7 @@
 "use client"
 
 import {ManagementPageHeader} from "@/components/management-page-header";
-import {ArrowDown, ArrowUp, Check, TicketIcon, Trash2} from "lucide-react";
+import {Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
 import {getClient} from "@/lib/graph/client";
 import React, {useCallback, useEffect, useState} from "react";
@@ -29,32 +29,69 @@ import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/com
 import {useSidebar} from "@/components/ui/sidebar";
 import LabelSelection from "@/components/label-selection";
 import LabelBadge from "@/components/label-badge";
-
-
-const client = getClient();
+import SortingSelection from "@/app/tickets/sorting-selection";
 
 export type TicketDialogState = {
   mode: "update" | "delete" | null;
   currentTicket: Ticket | null
 }
 
+export type TicketSorting = {
+  field: TicketSortingField,
+  orderAscending: boolean
+}
+
+export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
+
 export default function TicketPage() {
-  const [tickets, setTickets] = useState<(Ticket | null)[]>([]);
-  const [labels, setLabels] = useState<(Label[])>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [labels, setLabels] = useState<Label[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [stateFilter, setStateFilter] = useState<string[]>([]);
   const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
-  const [sortField, setSortField] = useState<"Erstellt" | "Geändert" | "Titel">("Erstellt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sorting, setSorting] = useState<TicketSorting>({field: "Erstellt", orderAscending: true});
   const {isMobile} = useSidebar();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showMobileLabelFilter, setShowMobileLabelFilter] = useState(false);
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
   const [showMobileSort, setShowMobileSort] = useState(false);
   const [areFiltersSet, setAreFiltersSet] = useState(false);
+
+  const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
+  const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
+
+  const fetchTickets = useCallback(async () => {
+    const client = getClient();
+    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
+    if (data.tickets) setTickets(data.tickets.filter(ticket => !!ticket))
+  }, []);
+
+  const fetchAllLabels = useCallback(async () => {
+    const client = getClient();
+    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
+    if (data.labels) setLabels(data.labels.filter(label => !!label));
+  }, []);
+
+  useEffect(() => {
+    const newFilteredTickets = filterTickets(tickets);
+    setFilteredTickets(newFilteredTickets)
+
+    setSortedTickets(sortTickets([...newFilteredTickets]))
+  }, [tickets, stateFilter, labelFilter, searchTerm, startDate, endDate]);
+
+  useEffect(() => {
+    setSortedTickets(sortTickets([...filteredTickets]))
+  }, [sorting.field, sorting.orderAscending]);
+
+  useEffect(() => {
+    setSorting(prevState => ({
+      ...prevState,
+      orderAscending: true
+    }))
+  }, [sorting.field]);
 
   useEffect(() => {
     setAreFiltersSet(
@@ -69,43 +106,61 @@ export default function TicketPage() {
     setDialogState({mode: null, currentTicket: null})
   }
 
-  const fetchTickets = useCallback(async () => {
-    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
-    if (data.tickets) {
-      setTickets(data.tickets);
-    }
-  }, []);
-
-  const fetchAllLabels = useCallback(async () => {
-    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) setLabels(data.labels.filter(label => !!label))
-  }, [])
-
   useEffect(() => {
     void fetchTickets();
     void fetchAllLabels();
   }, [fetchTickets, fetchAllLabels]);
 
-  const filteredTickets = tickets.filter(ticket => {
-    if (!ticket) return false;
+  function sortTickets(tickets: Ticket[]) {
+    tickets.sort((a, b) => {
+      if (!a || !b) return 0;
+      let valA: string | number = "";
+      let valB: string | number = "";
 
-    const filterSearch = searchTerm.toLowerCase();
-    const matchesTitleOrText =
-      ticket.title.toLowerCase().includes(filterSearch) ||
-      ticket.text.toLowerCase().includes(filterSearch);
+      if (sorting.field === "Erstellt") {
+        valA = new Date(a.createdAt).getTime();
+        valB = new Date(b.createdAt).getTime();
+      } else if (sorting.field === "Geändert") {
+        valA = new Date(a.lastModified).getTime();
+        valB = new Date(b.lastModified).getTime();
+      } else if (sorting.field === "Titel") {
+        valA = a.title.toLowerCase();
+        valB = b.title.toLowerCase();
+      }
 
-    const matchesState =
-      stateFilter.length > 0 ? stateFilter.includes(ticket.state) : true;
+      if (valA < valB) return sorting.orderAscending ? -1 : 1;
+      if (valA > valB) return sorting.orderAscending ? 1 : -1;
+      return 0;
+    });
 
-    const matchesLabel = labelFilter.length > 0
-      ? ticket.labels?.some((label) => labelFilter.map(l => l.id).includes(label.id))
-      : true;
+    return tickets;
+  }
 
-    const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
-    const matchesEndDate = endDate ? new Date(ticket.createdAt) <= endDate : true
+  function filterTickets(tickets: Ticket[]) {
+    tickets.filter(ticket => {
+      if (!ticket) return false;
 
-    return matchesTitleOrText && matchesState && matchesLabel && matchesStartDate && matchesEndDate;
-  });
+      const filterSearch = searchTerm.toLowerCase();
+      const matchesTitleOrText =
+        ticket.title.toLowerCase().includes(filterSearch) ||
+        ticket.text.toLowerCase().includes(filterSearch);
+
+      const matchesState =
+        stateFilter.length > 0 ? stateFilter.includes(ticket.state) : true;
+
+      const matchesLabel =
+        labelFilter.length > 0
+          ? ticket.labels?.some((label) => labelFilter.map(l => l.id).includes(label.id))
+          : true;
+
+      const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
+      const matchesEndDate = endDate ? new Date(ticket.createdAt) <= endDate : true
+
+      return matchesTitleOrText && matchesState && matchesLabel && matchesStartDate && matchesEndDate;
+    });
+
+    return tickets
+  }
 
   const resetAllFilters = () => {
     setSearchTerm("");
@@ -113,31 +168,9 @@ export default function TicketPage() {
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
-    setSortField("Erstellt");
-    setSortOrder("asc");
+    setSorting({field: "Erstellt", orderAscending: true});
     setLabelSearchTerm("");
   };
-
-  const sortedTickets = [...filteredTickets].sort((a, b) => {
-    if (!a || !b) return 0;
-    let valA: string | number = "";
-    let valB: string | number = "";
-
-    if (sortField === "Erstellt") {
-      valA = new Date(a.createdAt).getTime();
-      valB = new Date(b.createdAt).getTime();
-    } else if (sortField === "Geändert") {
-      valA = new Date(a.lastModified).getTime();
-      valB = new Date(b.lastModified).getTime();
-    } else if (sortField === "Titel") {
-      valA = a.title.toLowerCase();
-      valB = b.title.toLowerCase();
-    }
-
-    if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-    if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
 
   async function handleDelete() {
     if (!dialogState.currentTicket) {
@@ -146,6 +179,7 @@ export default function TicketPage() {
     }
 
     try {
+      const client = getClient();
       await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
       toast.success("Ticket wurde erfolgreich gelöscht")
       setTickets((prev) =>
@@ -157,8 +191,10 @@ export default function TicketPage() {
     }
   }
 
+  console.log("Sorting: ", sorting)
+
   return (
-    <div className="space-y-6 grow max-w-screen">
+    <div className="w-full h-full flex flex-col grow">
       <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
                             icon={<TicketIcon/>}/>
       <div className="px-8 flex gap-4">
@@ -308,7 +344,7 @@ export default function TicketPage() {
                         className="w-fit justify-between text-sm"
                         onClick={() => setShowMobileSort((prev) => !prev)}
                       >
-                        {sortField} {sortOrder === "asc" ? "↑" : "↓"}
+                        {sorting.field} {sorting.orderAscending ? "↑" : "↓"}
                       </Button>
                     </div>
                     {showMobileSort && (
@@ -319,10 +355,13 @@ export default function TicketPage() {
                             {["Erstellt", "Geändert", "Titel"].map((field) => (
                               <Button
                                 key={field}
-                                variant={sortField === field ? "secondary" : "outline"}
+                                variant={sorting.field === field ? "secondary" : "outline"}
                                 size="sm"
                                 className="flex-1 text-xs"
-                                onClick={() => setSortField(field as typeof sortField)}
+                                onClick={() => setSorting(prevState => ({
+                                  ...prevState,
+                                  field: field as TicketSortingField
+                                }))}
                               >
                                 {field}
                               </Button>
@@ -331,18 +370,24 @@ export default function TicketPage() {
                           <div className="text-xs mt-1">Reihenfolge</div>
                           <div className="flex flex-row gap-1">
                             <Button
-                              variant={sortOrder === "asc" ? "secondary" : "outline"}
+                              variant={sorting.orderAscending ? "secondary" : "outline"}
                               size="sm"
                               className="flex-1 text-xs"
-                              onClick={() => setSortOrder("asc")}
+                              onClick={() => setSorting(prevState => ({
+                                ...prevState,
+                                orderAscending: true
+                              }))}
                             >
                               Aufsteigend
                             </Button>
                             <Button
-                              variant={sortOrder === "desc" ? "secondary" : "outline"}
+                              variant={sorting.orderAscending ? "outline" : "secondary"}
                               size="sm"
                               className="flex-1 text-xs"
-                              onClick={() => setSortOrder("desc")}
+                              onClick={() => setSorting(prevState => ({
+                                ...prevState,
+                                orderAscending: false
+                              }))}
                             >
                               Absteigend
                             </Button>
@@ -417,47 +462,15 @@ export default function TicketPage() {
                   </PopoverContent>
                 </Popover>
 
-
                 <DateRangeFilter
                   startDate={startDate}
                   setStartDate={setStartDate}
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="min-w-[170px] w-fit justify-between items-center"
-                            data-cy="sort-button">
-                                <span className="flex justify-center items-center"> Sortieren: {sortField}{" "}
-                                  {sortOrder === "asc" ? (
-                                    <ArrowUp className="inline h-4 w-4 ml-1"/>
-                                  ) : (
-                                    <ArrowDown className="inline h-4 w-4 ml-1"/>
-                                  )}
-                                </span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
-                    <Command>
-                      <CommandGroup heading="Feld">
-                        {["Erstellt", "Geändert", "Titel"].map((field) => (
-                          <CommandItem
-                            key={field}
-                            onSelect={() => setSortField(field as typeof sortField)}
-                          >
-                            {field}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                      <CommandGroup heading="Reihenfolge">
-                        <CommandItem onSelect={() => setSortOrder("asc")}
-                                     data-cy="sort-order-asc">Aufsteigend</CommandItem>
-                        <CommandItem onSelect={() => setSortOrder("desc")}
-                                     data-cy="sort-order-desc">Absteigend</CommandItem>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+
+                <SortingSelection setSorting={setSorting} sorting={sorting}/>
+
               </div>
             )}
           </div>

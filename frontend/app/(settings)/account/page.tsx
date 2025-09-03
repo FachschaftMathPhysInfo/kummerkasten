@@ -7,7 +7,7 @@ import PasswordDataForm from "@/app/(settings)/account/password-form";
 
 export default function Page() {
     return (
-        <div className="space-y-6 grow">
+        <div className="w-full h-full flex flex-col grow">
             <ManagementPageHeader
                 icon={<SettingsIcon/>}
                 title="Mein Account"
