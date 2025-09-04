@@ -10,3 +10,12 @@ const getEndpoint = () => {
 export const getClient = () => {
   return new GraphQLClient(getEndpoint());
 };
+
+export const getServerClient = () => {
+  // TODO: is this safe in docker networks?!
+  // may have to add a dev flag switch for https
+  const apiUrl = new URL("/api", 'http://localhost/')
+  apiUrl.port = '8080'
+  console.log('Server Client: ', apiUrl)
+  return new GraphQLClient(apiUrl.toString())
+}
