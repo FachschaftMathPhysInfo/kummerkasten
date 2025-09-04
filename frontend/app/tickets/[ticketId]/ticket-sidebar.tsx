@@ -5,22 +5,22 @@ import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
 import {AllLabelsDocument, AllLabelsQuery, Label, Ticket, TicketState,} from "@/lib/graph/generated/graphql";
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Check, Trash2} from "lucide-react";
@@ -29,6 +29,7 @@ import {DateRangeFilter} from "@/components/date-range-filter";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {format} from "date-fns";
+import LabelSelection from "@/components/label-selection";
 
 interface TicketSidebarProps {
   tickets: Ticket[];
@@ -44,16 +45,15 @@ export default function TicketSidebar({
                                         selectedTicketId,
                                       }: TicketSidebarProps) {
   const router = useRouter();
-  const [labels, setLabels] = useState<(Label | null)[]>([]);
+  const [labels, setLabels] = useState<(Label[])>([]);
   const [stateFilter, setStateFilter] = useState<string[]>([]);
-  const [labelFilter, setLabelFilter] = useState<string[]>([]);
+  const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [sortField, setSortField] = useState<
     "Erstellt" | "Geändert" | "Titel"
   >("Erstellt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [labelSearchTerm, setLabelSearchTerm] = useState("");
 
   const filteredTickets = tickets.filter((ticket) => {
     if (!ticket) return false;
@@ -68,7 +68,10 @@ export default function TicketSidebar({
 
     const matchesLabel =
       labelFilter.length > 0
-        ? ticket.labels?.some((label) => labelFilter.includes(label.id))
+        ? ticket.labels?.some((label) => labelFilter
+          .filter(l => l.id)
+          .map(l => l.name)
+          .includes(label.name))
         : true;
 
     const matchesStartDate = startDate
@@ -91,7 +94,7 @@ export default function TicketSidebar({
     const client = getClient();
     const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
     if (data.labels) {
-      setLabels(data.labels);
+      setLabels(data.labels.filter(label => !!label));
     }
   }, []);
 
@@ -107,7 +110,6 @@ export default function TicketSidebar({
     setEndDate(null);
     setSortField("Erstellt");
     setSortOrder("asc");
-    setLabelSearchTerm("");
   };
 
   const sortedTickets = [...filteredTickets].sort((a, b) => {
@@ -130,6 +132,8 @@ export default function TicketSidebar({
     if (valA > valB) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
+
+    console.log(labelFilter)
 
   return (
     <div className="px-4">
@@ -205,62 +209,15 @@ export default function TicketSidebar({
               })}
             </div>
 
-            <div className="flex flex-col mt-4 px-4">
-              <div className="font-semibold mb-2">Labels:</div>
-              <Input
-                placeholder="Label suchen..."
-                value={labelSearchTerm}
-                onChange={(e) => setLabelSearchTerm(e.target.value)}
-                className="mb-2"
+            <div className={'mt-4 px-4'}>
+              <LabelSelection
+                labels={labels}
+                selectedLabels={labelFilter}
+                setLabels={setLabelFilter}
               />
-              <div className="flex flex-col max-h-[120px] overflow-y-auto">
-                {labels
-                  .filter((label) =>
-                    label?.name
-                      .toLowerCase()
-                      .includes(labelSearchTerm.toLowerCase())
-                  )
-                  .map((label) => {
-                    const isSelected = label?.id
-                      ? labelFilter.includes(label.id)
-                      : false;
-                    return (
-                      <Button
-                        key={label?.id}
-                        variant={isSelected ? "secondary" : "outline"}
-                        className="w-full flex items-center justify-start gap-2 mb-1"
-                        onClick={() => {
-                          if (!label?.id) return;
-                          setLabelFilter((prev) =>
-                            isSelected
-                              ? prev.filter((l) => l !== label?.id)
-                              : [...prev, label.id]
-                          );
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            isSelected ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {label?.name}
-                      </Button>
-                    );
-                  })}
-              </div>
-              {labelFilter.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-center mt-2"
-                  onClick={() => setLabelFilter([])}
-                  data-cy="clear-labels"
-                >
-                  <Trash2 className="mr-2"/> Filter löschen
-                </Button>
-              )}
             </div>
+
+
             <div className="flex flex-col mt-4 px-4">
               <div className="font-semibold mb-2">Datum:</div>
               <DateRangeFilter

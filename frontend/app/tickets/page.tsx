@@ -27,8 +27,9 @@ import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
+import LabelSelection from "@/components/label-selection";
+import LabelBadge from "@/components/label-badge";
 import SortingSelection from "@/app/tickets/sorting-selection";
-
 
 export type TicketDialogState = {
   mode: "update" | "delete" | null;
@@ -47,7 +48,7 @@ export default function TicketPage() {
   const [labels, setLabels] = useState<Label[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [stateFilter, setStateFilter] = useState<string[]>([]);
-  const [labelFilter, setLabelFilter] = useState<string[]>([]);
+  const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
@@ -101,6 +102,10 @@ export default function TicketPage() {
     )
   }, [stateFilter.length, labelFilter.length, startDate, endDate]);
 
+  const resetDialogState = () => {
+    setDialogState({mode: null, currentTicket: null})
+  }
+
   useEffect(() => {
     void fetchTickets();
     void fetchAllLabels();
@@ -145,7 +150,7 @@ export default function TicketPage() {
 
       const matchesLabel =
         labelFilter.length > 0
-          ? ticket.labels?.some((label) => labelFilter.includes(label.id))
+          ? ticket.labels?.some((label) => labelFilter.map(l => l.id).includes(label.id))
           : true;
 
       const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
@@ -155,10 +160,6 @@ export default function TicketPage() {
     });
 
     return tickets
-  }
-
-  const resetDialogState = () => {
-    setDialogState({mode: null, currentTicket: null})
   }
 
   const resetAllFilters = () => {
@@ -266,31 +267,34 @@ export default function TicketPage() {
                     </div>
                     {showMobileLabelFilter && (
                       <div className="mt-2 px-4">
-                        <div
-                          className="overflow-hidden max-h-[150px] overflow-y-auto">
+                        <div className="overflow-hidden max-h-[150px] overflow-y-auto">
                           <Input
                             placeholder="Label suchen..."
                             value={labelSearchTerm}
                             onChange={(e) => setLabelSearchTerm(e.target.value)}
-                            className="w-full flex items-center justify-start gap-2"
+                            className="w-full mb-2"
                           />
                           {labels
                             .filter((label) =>
                               label?.name.toLowerCase().includes(labelSearchTerm.toLowerCase())
                             )
+                            // for some reason, using it with && in the upper filter does not work...
+                            .filter((label) => !!label)
                             .map((label) => {
-                              const isSelected = label?.id ? labelFilter.includes(label.id) : false;
+                              const isSelected = label.id
+                                ? labelFilter.map(l => l.id).includes(label.id)
+                                : false;
+
                               return (
                                 <Button
-                                  key={label?.id}
-                                  variant={isSelected ? "secondary" : "outline"}
+                                  key={label.id}
+                                  variant={"ghost"}
                                   className="w-full flex items-center justify-start gap-2"
                                   onClick={() => {
-                                    if (!label?.id) return;
                                     setLabelFilter((prev) =>
                                       isSelected
-                                        ? prev.filter((l) => l !== label?.id)
-                                        : [...prev, label.id]
+                                        ? prev.filter((l) => l.id !== label?.id)
+                                        : [...prev, label]
                                     )
                                   }}
                                 >
@@ -300,7 +304,7 @@ export default function TicketPage() {
                                       isSelected ? "opacity-100" : "opacity-0"
                                     )}
                                   />
-                                  {label?.name}
+                                  <LabelBadge label={label}/>
                                 </Button>
                               );
                             })}
@@ -371,7 +375,7 @@ export default function TicketPage() {
                               className="flex-1 text-xs"
                               onClick={() => setSorting(prevState => ({
                                 ...prevState,
-                                orderAscending:  true
+                                orderAscending: true
                               }))}
                             >
                               Aufsteigend
@@ -450,51 +454,11 @@ export default function TicketPage() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-[250px]">
-                    <Command>
-                      <CommandInput placeholder="Labels suchen..."/>
-                      <CommandGroup>
-                        {labels
-                          .filter((label) => label && label.name.toLowerCase().includes(labelSearchTerm.toLowerCase()))
-                          .map((label) => {
-                            if (!label) return null;
-                            const isSelected = labelFilter?.includes(label.id);
-                            return (
-                              <CommandItem
-                                key={label.id}
-                                onSelect={() => {
-                                  setLabelFilter((prev) =>
-                                    isSelected
-                                      ? prev?.filter((l) => l !== label.id)
-                                      : [...(prev ?? []), label.id]
-                                  );
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    isSelected ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {label.name}
-                              </CommandItem>
-                            );
-                          })}
-                      </CommandGroup>
-                      {labelFilter.length > 0 && (
-                        <div className="p-2 border-t">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full justify-center"
-                            onClick={() => setLabelFilter([])}
-                            data-cy="clear-labels"
-                          >
-                            <Trash2/>
-                            Filter löschen
-                          </Button>
-                        </div>
-                      )}
-                    </Command>
+                    <LabelSelection
+                      labels={labels}
+                      selectedLabels={labelFilter}
+                      setLabels={(labels) => setLabelFilter(labels)}
+                    />
                   </PopoverContent>
                 </Popover>
 
