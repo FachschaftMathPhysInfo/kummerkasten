@@ -37,7 +37,7 @@ export default function QAPManagementPage() {
         icon={<MessageCircleQuestionMark/>}
         title="FAQ-Verwaltung"
         description="Sortiere, erstelle und lösche Frequently Asked Questions."
-     />
+      />
       <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
         <QAPTable data={faqs} refreshData={fetchFaqs}/>
       </div>

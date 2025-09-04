@@ -5,6 +5,7 @@ import { QuestionAnswerPair } from "@/lib/graph/generated/graphql";
 import { Edit2, Grip, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QAPTableDialogState } from "@/app/(settings)/faq/faq-table";
+import React from "react";
 
 interface ActionColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<QAPTableDialogState>>;
@@ -32,7 +33,7 @@ export const QAPColumns = ({
     accessorKey: "question",
     header: "Frage",
     cell: ({ getValue }) => (
-      <div className="break-words" style={{ flex: 1 }}>
+      <div className="break-words">
         {getValue() as string}
       </div>
     ),
@@ -41,7 +42,7 @@ export const QAPColumns = ({
     accessorKey: "answer",
     header: "Antwort",
     cell: ({ getValue }) => (
-      <div className="break-words" style={{ flex: 2 }}>
+      <div className="break-words flex-2">
         {getValue() as string}
       </div>
     ),
@@ -50,8 +51,7 @@ export const QAPColumns = ({
     id: "actions",
     cell: ({ row }) => (
       <div
-        className="flex justify-end gap-x-2"
-        style={{flexShrink: 0 }}
+        className="flex justify-end gap-x-2 shrink-0"
       >
         <Button
           data-cy={`edit-button-${row.original.id}`}

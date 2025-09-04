@@ -16,7 +16,6 @@ import {
 import { toast } from "sonner";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-
 import {Textarea} from "@/components/ui/textarea";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
@@ -35,8 +34,33 @@ const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuesti
         !uniqueQuestion.includes(val) || val === currentQuestion,
         { message: "Diese Frage existiert bereits." }),
   answer: z.string().nonempty({ message: "Bitte gib eine Antwort ein." }),
-  order: z.number().int().min(1, "Position muss mindestens 1 sein.").max(maxOrder + 2, { message: `Position darf höchstens ${maxOrder + 2} sein.` }),
-});
+  order: z.union([z.string(), z.number()])
+          .transform((val, ctx) => {
+          if (val === "") {
+            ctx.addIssue({
+              code: "custom",
+              message: "Bitte gib eine Position ein.",
+            });
+            return z.NEVER;
+          }
+
+          const num = typeof val === "number" ? val : Number(val);
+
+          if (isNaN(num) || !Number.isInteger(num)) {
+            ctx.addIssue({
+              code: "custom",
+              message: `Bitte gib eine Position zwischen 1 und ${maxOrder + 2} ein.`,
+              });
+            return z.NEVER;
+          }
+
+          return num;
+          })
+      .pipe(
+        z.number().int().min(1, "Position muss mindestens 1 sein.").max(maxOrder + 2, {message: `Position darf höchstens ${maxOrder + 2} sein.`,})
+      ),
+    }
+  );
 
 type FaqFormValues = z.infer<ReturnType<typeof faqFormSchema>>;
 
@@ -53,7 +77,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
 
   const schema = faqFormSchema(maxOrder, uniqueQuestion, qap?.question);
   const form = useForm<FaqFormValues>({
-      resolver: zodResolver<FaqFormValues, string, FaqFormValues>(schema),
+      resolver: zodResolver(schema as any), // eslint-disable-line
       defaultValues: {
       question: qap?.question ?? "",
       answer: qap?.answer ?? "",
@@ -124,7 +148,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
       }
 
       closeDialog();
-      await refreshData();
+      refreshData();
     } catch (err) {
       console.error(err);
       toast.error("Fehler beim Speichern der FAQ.");
@@ -150,7 +174,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
                   placeholder="Frage"
                   {...field}
                   aria-invalid={fieldState.invalid}
-                  className={[fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""].join(" ")}
+                  className={[fieldState.invalid ? "border-destructive ring-1" : ""].join(" ")}
                 />
               </FormControl>
               <FormMessage/>
@@ -170,7 +194,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
                   rows={7}
                   {...field}
                   aria-invalid={fieldState.invalid}
-                  className={`resize-none ${fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""}`}
+                  className={`resize-none ${fieldState.invalid ? "border-destructive ring-1" : ""}`}
                 />
               </FormControl>
               <FormMessage/>
@@ -188,11 +212,13 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
               </FormLabel>
               <FormControl>
                 <Input
-                  type="number"
-                  value={Number(field.value ?? 1)}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  type="text"
+                  value={Number.isNaN(field.value as number) ? "": field.value ?? ""}
+                  onChange={(e) => {
+                    field.onChange(e.target.value)
+                  }}
                   aria-invalid={fieldState.invalid}
-                  className={`${fieldState.invalid ? "border-destructive ring-1 ring-destructive" : ""}`}
+                  className={`${fieldState.invalid ? "border-destructive ring-1" : ""}`}
                 />
               </FormControl>
               <FormMessage className="w-full text-sm font-medium text-destructive"/>

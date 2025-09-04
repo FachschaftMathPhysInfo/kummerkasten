@@ -106,7 +106,7 @@ const DndTableRow = ({
   preview(dropRef);
   drag(dragHandleRef);
 
-  const handlerIdAttr = typeof handlerId === "symbol" ? undefined : (handlerId ?? undefined);
+  const handlerIdAttr = (handlerId ?? undefined);
 
   return (
     <TableRow
@@ -171,7 +171,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
     try {
       await client.request<DeleteQuestionAnswerPairMutation>(DeleteQuestionAnswerPairDocument, { ids: [id] });
       resetDialogState();
-      await refreshData();
+      refreshData();
     } catch {
       toast.error("Fehler beim Löschen der Frage.");
     }
@@ -193,10 +193,10 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
       await client.request<UpdateQuestionAnswerPairOrderMutation>(UpdateQuestionAnswerPairOrderDocument, {
         QAPs: [{ id: draggedId, order: newOrder }],
       });
-      await refreshData();
+      refreshData();
     } catch {
       toast.error("Fehler beim Sortieren der FAQ aufgetreten.");
-      await refreshData();
+      refreshData();
     }
   }, [client, refreshData]);
 
