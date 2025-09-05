@@ -29,6 +29,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
   const [password, setPassword] = useState<string>("");
   const [isPasswordValid, setIsPasswordValid] = useState<boolean>(false);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   if (!props.user) return
 
@@ -57,6 +58,35 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
   function onPasswordChange(newPassword: string) {
     setPassword(newPassword)
     setIsPasswordValid(testPasswordFormat(newPassword))
+    if (testPasswordFormat(newPassword)) return
+
+    const hasLowercaseLetter = new RegExp(".*[a-z].*")
+    const hasUppercaseLetter = new RegExp(".*[A-Z].*")
+    const hasNumber = new RegExp(".*\\d.*")
+    const hasSymbol = new RegExp(".*[`~<>?,./!@#$%^&*()\\-_+=\"'|{}\\[\\];:\\\\].*")
+
+    switch (false) {
+      case newPassword.length >= 8: {
+        setErrorMessage("Das Passwort muss mindestens 8 Zeichen haben")
+        return
+      }
+      case hasLowercaseLetter.test(newPassword): {
+        setErrorMessage('Das Passwort muss mindestens einen Kleinbuchstaben enthalten')
+        return
+      }
+      case hasUppercaseLetter.test(newPassword): {
+        setErrorMessage('Das Passwort muss mindestens einen Großbuchstaben enthalten')
+        return
+      }
+      case hasNumber.test(newPassword): {
+        setErrorMessage('Das Passwort muss mindestens eine Nummer enthalten')
+        return
+      }
+      case hasSymbol.test(newPassword): {
+        setErrorMessage('Das Passwort muss mindestens ein Sonderzeichen enthalten')
+        return
+      }
+    }
   }
 
   return (
@@ -80,12 +110,13 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
         <div className={'flex flex-col gap-2 w-full'}>
           <PasswordInput
             value={password}
+            placeholder={'Neues Passwort'}
             onChange={(e) => onPasswordChange(e.target.value)}
             className={cn(!isPasswordValid && hasTriedToSubmit && 'border border-destructive')}
           />
           {!isPasswordValid && hasTriedToSubmit && (
             <p className={'text-destructive text-sm'}>
-              Das Passwort muss alle 4 Zeichenklassen und mindestend 8 Zeichen enthalten
+              {errorMessage}
             </p>
           )}
         </div>
