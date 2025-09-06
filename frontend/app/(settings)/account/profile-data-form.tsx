@@ -41,24 +41,19 @@ export default function AccountDataForm() {
     }
   })
 
-  const fetchProfileData = useCallback(async () => {
+  const fetchAccountData = useCallback(async () => {
     if (!user?.id) return;
-    try {
-      form.reset({
-        firstname: user.firstname,
-        lastname: user.lastname,
-        mail: user.mail,
-      });
-      setIsLoading(false);
-    } catch (error) {
-      toast.error("Fehler beim Laden der User Daten");
-      console.error(error);
-    }
-  }, [user, form]);
+    form.reset({
+      firstname: user.firstname,
+      lastname: user.lastname,
+      mail: user.mail,
+    });
+    setIsLoading(false);
+  }, [user?.firstname, user?.lastname, user?.mail, user?.id, form]);
 
   useEffect(() => {
-    void fetchProfileData();
-  }, [fetchProfileData]);
+    void fetchAccountData();
+  }, [fetchAccountData]);
 
   useEffect(() => {
     const subscription = form.watch((_value, {type}) => {
@@ -73,7 +68,7 @@ export default function AccountDataForm() {
     setIsSavingAccount(true);
     const client = getClient();
 
-    if (!user?.id) {
+    if (!user) {
       toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
       return;
     }
@@ -87,7 +82,6 @@ export default function AccountDataForm() {
           form.setError("mail", {
             message: "Diese E-Mail-Adresse wird bereits verwendet.",
           });
-          toast.error("Diese E-Mail-Adresse wird bereits verwendet.");
           setIsSavingAccount(false);
           return;
         }
@@ -115,8 +109,8 @@ export default function AccountDataForm() {
         lastname: userData.lastname,
         mail: userData.mail,
       });
-      toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt.");
       if (userData.mail !== user.mail) {
+        toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt.");
         await logout();
         return;
       }
