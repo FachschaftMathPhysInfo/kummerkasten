@@ -371,7 +371,7 @@ export default function TicketPage() {
                               className="flex-1 text-xs"
                               onClick={() => setSorting(prevState => ({
                                 ...prevState,
-                                orderAscending:  true
+                                orderAscending: true
                               }))}
                             >
                               Aufsteigend
@@ -449,8 +449,8 @@ export default function TicketPage() {
                         : "Labels"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[200px] overflow-x-auto">
-                    <Command className="flex w-fit whitespace-nowrap">
+                  <PopoverContent className="p-0 max-w-[200px]">
+                    <Command className="flex whitespace-nowrap">
                       <CommandInput placeholder="Labels suchen..."/>
                       <CommandGroup>
                         {labels
@@ -469,13 +469,15 @@ export default function TicketPage() {
                                   );
                                 }}
                               >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    isSelected ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {label.name}
+                                <div className="w-full flex">
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      isSelected ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  <div className="truncate" title={label.name}>{label.name}</div>
+                                </div>
                               </CommandItem>
                             );
                           })}
