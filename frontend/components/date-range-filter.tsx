@@ -6,6 +6,7 @@ import {format} from "date-fns"
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import * as React from "react"
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {cn} from "@/lib/utils";
 
 interface DateRangeFilterProps {
   startDate: Date | null
@@ -28,7 +29,10 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                 </SheetTitle>
               </SheetHeader>
               <SheetTrigger asChild>
-                <Button variant="outline" className="w-fit justify-between">
+                <Button
+                  variant="outline"
+                  className={"w-fit justify-between"}
+                >
                   {startDate ? format(startDate, "dd.MM.yy") : "Start"}
                 </Button>
               </SheetTrigger>
@@ -50,7 +54,10 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                 </SheetTitle>
               </SheetHeader>
               <SheetTrigger asChild>
-                <Button variant="outline" className="w-fit justify-between">
+                <Button
+                  variant="outline"
+                  className={"w-fit justify-between"}
+                >
                   {endDate ? format(endDate, "dd.MM.yy") : "Ende"}
                 </Button>
               </SheetTrigger>
@@ -89,9 +96,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
     <div className="flex gap-2">
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-          >
+          <Button variant="outline" className={cn(!!startDate && "border !border-accent")}>
             <CalendarIcon className="mr-1 h-4 w-4"/>
             {startDate ? format(startDate, "dd.MM.yy") : <span>Start</span>}
           </Button>
@@ -119,9 +124,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-          >
+          <Button variant="outline" className={cn(!!endDate && "border !border-accent")}>
             <CalendarIcon className="mr-1 h-4 w-4"/>
             {endDate ? format(endDate, "dd.MM.yy") : <span>Ende</span>}
           </Button>

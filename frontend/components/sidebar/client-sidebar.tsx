@@ -48,7 +48,7 @@ export function ClientSidebar() {
 
   return (
     <>
-      <SidebarContent className={'pr-10'}>
+      <SidebarContent>
         {!isMobile && (
           <SidebarTrigger
             data-cy="sidebar-trigger"
