@@ -58,9 +58,9 @@ export default function TicketPage() {
     const originalState = new Set([TicketState.New, TicketState.Open])
     const currentState = new Set(stateFilter)
     setStateFilterSet(!compareStringSets(originalState, currentState))
-  // We can't add the expected stateFilter as array dependency, as it will change size
-  // and thus throw an error
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // We can't add the expected stateFilter as array dependency, as it will change size
+    // and thus throw an error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateFilter.length]);
 
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
@@ -176,9 +176,12 @@ export default function TicketPage() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col grow">
-      <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
-                            icon={<TicketIcon/>}/>
+    <div className="space-y-6 grow max-w-screen">
+      <ManagementPageHeader
+        title="Tickets"
+        description="Bearbeite alle verfügbaren Tickets"
+        icon={<TicketIcon/>}
+      />
       <div className="px-8 flex gap-4">
         <div className="flex flex-col gap-2 w-full">
           <div className="flex gap-2">
@@ -391,7 +394,7 @@ export default function TicketPage() {
                       variant="outline"
                       className={cn(
                         'max-w-[200px] justify-between',
-                         stateFilterSet && 'border !border-accent'
+                        stateFilterSet && 'border !border-accent'
                       )}
                       data-cy="button-status"
                     >
