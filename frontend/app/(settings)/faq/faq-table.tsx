@@ -259,7 +259,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
             qap={dialogState.currentQAP}
             closeDialog={resetDialogState}
             refreshData={refreshData}
-            maxOrder={localData.length - 1}
+            maxOrder={localData.length > 0 ? Math.max(...localData.map(q => q.order)) : -1}
             uniqueQuestion={localData.map((q) => q.question)}
          />
         )}

@@ -555,8 +555,23 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 // CreateQuestionAnswerPair is the resolver for the createQuestionAnswerPair field.
 func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
 	var maxOrder sql.NullInt32
+	var questionExists bool
 
-	err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
+	questionExists, err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
+		Where("LOWER(question) = LOWER(?)", questionAnswerPair.Question).
+		Exists(ctx)
+
+	if err != nil {
+		log.Printf("Failed to get question strings for duplicate check: %v", err)
+		return nil, err
+	}
+
+	if questionExists {
+		log.Printf("This question already exists: %v", err)
+		return nil, err
+	}
+
+	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
 	if err != nil {
 		log.Printf("Failed to get max order for QuestionAnswerPair: %v", err)

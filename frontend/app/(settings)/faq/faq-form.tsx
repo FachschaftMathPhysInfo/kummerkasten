@@ -67,13 +67,11 @@ type FaqFormValues = z.infer<ReturnType<typeof faqFormSchema>>;
 export default function FaqForm({ createMode, qap, closeDialog, refreshData, maxOrder, uniqueQuestion }: FaqFormProps) {
   const [loading, setLoading] = useState(false);
   
-  if (!maxOrder) {
-    maxOrder = 1;
+  if (maxOrder < 0) {
+    maxOrder = 0
   }
-  
-  if (maxOrder < 1) {
-    maxOrder = 1;
-  }
+
+  const defaultOrder = createMode ? (maxOrder > 0 ? maxOrder + 2 : 1) : (qap?.order ?? 0) + 1;
 
   const schema = faqFormSchema(maxOrder, uniqueQuestion, qap?.question, createMode);
   const form = useForm<FaqFormValues>({
@@ -81,22 +79,21 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
       defaultValues: {
       question: qap?.question ?? "",
       answer: qap?.answer ?? "",
-      order: createMode ? maxOrder + 2 : ( qap?.order ?? 0)  + 1,
+      order: defaultOrder,
     },
   });
 
-
   useEffect(() => {
-    form.setValue("order", createMode ? maxOrder + 1 :  ( qap?.order ?? 0)  + 1,);
-  }, [form, createMode, qap, maxOrder]);
+    form.setValue("order", defaultOrder,);
+  }, [form, defaultOrder]);
 
    useEffect(() => {
     form.reset({
       question: qap?.question ?? "",
       answer: qap?.answer ?? "",
-      order: createMode ? maxOrder + 2 :  ( qap?.order ?? 0)  + 1,
+      order: defaultOrder,
     });
-  }, [createMode, qap, maxOrder, form]);
+  }, [qap, defaultOrder, form]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -131,14 +128,14 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
         if (createdId) {
           await client.request<UpdateQuestionAnswerPairOrderMutation>(
             UpdateQuestionAnswerPairOrderDocument,
-            { QAPs: [{ id: createdId, order: trueOrderValue }] }
+            { qaps: [{ id: createdId, order: trueOrderValue }] }
           );
         }
       } else if (qap) {
         if (trueOrderValue !== qap.order) {
           await client.request<UpdateQuestionAnswerPairOrderMutation>(
             UpdateQuestionAnswerPairOrderDocument,
-            { QAPs: [{ id: qap.id, order: trueOrderValue }] }
+            { qaps: [{ id: qap.id, order: trueOrderValue }] }
           );
         }
         await client.request(UpdateQuestionAnswerPairDocument, {
