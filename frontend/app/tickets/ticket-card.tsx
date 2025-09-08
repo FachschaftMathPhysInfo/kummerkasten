@@ -68,7 +68,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
         <div className="flex justify-between items-center w-full">
           <Badge
             className={cn(
-              "absolute left-11 md:relative md:left-0 color: calculateFontColor(label.color)",
+              "absolute left-11 md:relative md:left-0",
               ticket?.state === TicketState.New && "bg-ticketstate-new",
               ticket?.state === TicketState.Open && "bg-ticketstate-open",
               ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
