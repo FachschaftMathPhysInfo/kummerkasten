@@ -3,11 +3,12 @@ import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import React from "react";
 import {SidebarProvider} from "@/components/ui/sidebar";
-import {UserSidebar, UserSidebarTrigger} from "@/components/user-sidebar";
+import {ClientSidebarTrigger} from "@/components/sidebar/client-sidebar";
 import {Toaster} from "@/components/ui/sonner";
 import {UserProvider} from "@/components/providers/user-provider";
 import {Footer} from "@/components/footer";
 import {ThemeProvider} from "@/components/providers/theme-provider";
+import ServerSidebar from "@/components/sidebar/server-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,17 +36,22 @@ export default function UserLayout({
     <body
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-    <ThemeProvider attribute={'class'} defaultTheme={"system"}>
+    <ThemeProvider
+      attribute={'class'}
+      defaultTheme={"system"}
+      enableSystem
+      disableTransitionOnChange
+    >
       <UserProvider>
-            <SidebarProvider>
-              <UserSidebar/>
-              <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
-                <UserSidebarTrigger/>
-                {children}
-                <Footer/>
-              </main>
-              <Toaster richColors/>
-            </SidebarProvider>
+        <SidebarProvider>
+          <ServerSidebar/>
+          <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
+            <ClientSidebarTrigger/>
+            {children}
+            <Footer/>
+          </main>
+          <Toaster richColors/>
+        </SidebarProvider>
       </UserProvider>
     </ThemeProvider>
     </body>

@@ -62,7 +62,7 @@ export function SettingsBlock({
                         <PageLoader compact={true} message="Speichern..."/>
                     </div>
                 ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         {children}
                     </div>
                 )}
@@ -71,7 +71,6 @@ export function SettingsBlock({
                 <Button type={"submit"} disabled={!isDirty || !isValid && hasTriedToSubmit}
                         data-cy={dataCy}>Speichern</Button>
             </CardFooter>
-
         </Card>
     )
 }

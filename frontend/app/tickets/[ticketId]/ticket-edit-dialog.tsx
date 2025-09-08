@@ -20,11 +20,11 @@ import {useEffect, useState} from "react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {Check, LoaderCircle, PlusCircle} from "lucide-react";
+import {LoaderCircle, PlusCircle} from "lucide-react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/command";
-import {cn} from "@/lib/utils";
 import {useLabels} from "@/components/providers/label-provider";
+import LabelSelection from "@/components/label-selection";
+
 
 interface TicketEditDialogProps {
   ticket: Ticket | null;
@@ -155,10 +155,10 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
                     {Object.values(TicketState).map((state) => (
                       <SelectItem key={state} value={state}>
                         {state === "NEW"
-                          ? "New"
+                          ? "Neu"
                           : state === "OPEN"
-                            ? "Open"
-                            : "Closed"}
+                            ? "Offen"
+                            : "Fertig"}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -171,39 +171,20 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
         <FormField
           control={form.control}
           name="labels"
-          render={({field}) => (
+          render={() => (
             <FormItem className="flex-grow">
               <FormLabel>Labels</FormLabel>
               <FormControl>
-                <Command>
-                  <CommandInput placeholder="Labels suchen..."/>
-                  <CommandGroup className="max-h-48 overflow-y-auto">
-                    {labels.map((label) => {
-                      const isSelected = field.value?.includes(label.id);
-                      return (
-                        <CommandItem
-                          key={label.id}
-                          value={label.name}
-                          onSelect={() => {
-                            if (isSelected) {
-                              field.onChange(field.value.filter((l) => l !== label.id));
-                            } else {
-                              field.onChange([...(field.value || []), label.id]);
-                            }
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              isSelected ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {label.name}
-                        </CommandItem>
-                      );
-                    })}
-                  </CommandGroup>
-                </Command>
+                <LabelSelection
+                  labels={labels}
+                  selectedLabels={labels.filter(label =>
+                    form.getValues('labels').includes(label.id)
+                  )}
+                  setLabels={(labels) => {
+                    const labelIds = labels.map(label => label.id)
+                    form.setValue('labels', labelIds)
+                  }}
+                />
               </FormControl>
               <FormMessage/>
             </FormItem>

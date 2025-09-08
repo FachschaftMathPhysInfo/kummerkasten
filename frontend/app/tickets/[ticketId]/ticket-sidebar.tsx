@@ -3,7 +3,7 @@
 import {Input} from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
-import {TicketState,} from "@/lib/graph/generated/graphql";
+import {Label, TicketState,} from "@/lib/graph/generated/graphql";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -24,12 +24,13 @@ import {
 } from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Check, Trash2} from "lucide-react";
-import {cn} from "@/lib/utils";
+import {cn, compareStringSets} from "@/lib/utils";
 import {DateRangeFilter} from "@/components/date-range-filter";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {format} from "date-fns";
 import {useLabels} from "@/components/providers/label-provider";
 import {useTickets} from "@/components/providers/ticket-provider";
+import LabelSelection from "@/components/label-selection";
 
 interface TicketSidebarProps {
   searchTerm: string;
@@ -46,15 +47,33 @@ export default function TicketSidebar({
   const router = useRouter();
   const {tickets} = useTickets()
   const {labels} = useLabels()
-  const [stateFilter, setStateFilter] = useState<string[]>([]);
-  const [labelFilter, setLabelFilter] = useState<string[]>([]);
+  const [stateFilter, setStateFilter] = useState<TicketState[]>([TicketState.New, TicketState.Open]);
+  const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [sortField, setSortField] = useState<
     "Erstellt" | "Geändert" | "Titel"
   >("Erstellt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [labelSearchTerm, setLabelSearchTerm] = useState("");
+  const [areFiltersSet, setAreFiltersSet] = useState(false)
+  const [isStateFilterSet, setIsStateFilterSet] = useState(false)
+
+  useEffect(() => {
+    const originalState = new Set([TicketState.Open, TicketState.New])
+    const currentState = new Set(stateFilter)
+    setIsStateFilterSet(!compareStringSets(originalState, currentState))
+    // This will always change by one, thus .length is sufficient here
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateFilter.length]);
+
+  useEffect(() =>
+      setAreFiltersSet(
+        isStateFilterSet ||
+        labelFilter.length > 0 ||
+        !!startDate ||
+        !!endDate
+      )
+    , [isStateFilterSet, labelFilter.length, startDate, endDate])
 
   const filteredTickets = tickets.filter((ticket) => {
     if (!ticket) return false;
@@ -69,7 +88,10 @@ export default function TicketSidebar({
 
     const matchesLabel =
       labelFilter.length > 0
-        ? ticket.labels?.some((label) => labelFilter.includes(label.id))
+        ? ticket.labels?.some((label) => labelFilter
+          .filter(l => l.id)
+          .map(l => l.name)
+          .includes(label.name))
         : true;
 
     const matchesStartDate = startDate
@@ -90,13 +112,12 @@ export default function TicketSidebar({
 
   const resetAllFilters = () => {
     setSearchTermAction("");
-    setStateFilter([]);
+    setStateFilter([TicketState.Open, TicketState.New]);
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
     setSortField("Erstellt");
     setSortOrder("asc");
-    setLabelSearchTerm("");
   };
 
   const sortedTickets = [...filteredTickets].sort((a, b) => {
@@ -147,7 +168,11 @@ export default function TicketSidebar({
         />
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" data-cy="filter-button">
+            <Button
+              variant="outline"
+              className={cn(areFiltersSet && '!border-accent')}
+              data-cy="filter-button"
+            >
               Filter
             </Button>
           </SheetTrigger>
@@ -184,72 +209,24 @@ export default function TicketSidebar({
                         isSelected ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    {state === "NEW"
-                      ? "New"
-                      : state === "OPEN"
-                        ? "Open"
-                        : "Closed"}
+                    {state === TicketState.New
+                      ? "Neu"
+                      : state === TicketState.Open
+                        ? "Offen"
+                        : "Fertig"}
                   </Button>
                 );
               })}
             </div>
 
-            <div className="flex flex-col mt-4 px-4">
-              <div className="font-semibold mb-2">Labels:</div>
-              <Input
-                placeholder="Label suchen..."
-                value={labelSearchTerm}
-                onChange={(e) => setLabelSearchTerm(e.target.value)}
-                className="mb-2"
+            <div className={'mt-4 px-4'}>
+              <LabelSelection
+                labels={labels}
+                selectedLabels={labelFilter}
+                setLabels={setLabelFilter}
               />
-              <div className="flex flex-col max-h-[120px] overflow-y-auto">
-                {labels
-                  .filter((label) =>
-                    label?.name
-                      .toLowerCase()
-                      .includes(labelSearchTerm.toLowerCase())
-                  )
-                  .map((label) => {
-                    const isSelected = label?.id
-                      ? labelFilter.includes(label.id)
-                      : false;
-                    return (
-                      <Button
-                        key={label?.id}
-                        variant={isSelected ? "secondary" : "outline"}
-                        className="w-full flex items-center justify-start gap-2 mb-1"
-                        onClick={() => {
-                          if (!label?.id) return;
-                          setLabelFilter((prev) =>
-                            isSelected
-                              ? prev.filter((l) => l !== label?.id)
-                              : [...prev, label.id]
-                          );
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            isSelected ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {label?.name}
-                      </Button>
-                    );
-                  })}
-              </div>
-              {labelFilter.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-center mt-2"
-                  onClick={() => setLabelFilter([])}
-                  data-cy="clear-labels"
-                >
-                  <Trash2 className="mr-2"/> Filter löschen
-                </Button>
-              )}
             </div>
+
             <div className="flex flex-col mt-4 px-4">
               <div className="font-semibold mb-2">Datum:</div>
               <DateRangeFilter
