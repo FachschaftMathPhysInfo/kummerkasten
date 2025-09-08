@@ -19,6 +19,8 @@ interface TicketDetailViewProps {
   refreshTicketAction: () => void;
 }
 
+const MAX_TITLE_LENGTH = 70;
+
 export default function TicketDetailView({
                                            ticket,
                                            ticketLabels,
@@ -74,6 +76,7 @@ export default function TicketDetailView({
                 }
                 type="text"
                 className={'bg-primary border-none !text-4xl !py-6'}
+                maxLength={MAX_TITLE_LENGTH}
                 placeholder={ticket?.title}
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
