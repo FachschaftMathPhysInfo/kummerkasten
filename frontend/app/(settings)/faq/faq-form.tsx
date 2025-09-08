@@ -28,7 +28,7 @@ interface FaqFormProps {
   uniqueQuestion: string[];
 }
 
-const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuestion?: string) => z.object({
+const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuestion?: string, createMode?: boolean) => z.object({
   question: z.string().nonempty({ message: "Bitte gib eine Frage ein." }).refine(
         (val) =>
         !uniqueQuestion.includes(val) || val === currentQuestion,
@@ -49,7 +49,7 @@ const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuesti
           if (isNaN(num) || !Number.isInteger(num)) {
             ctx.addIssue({
               code: "custom",
-              message: `Bitte gib eine Position zwischen 1 und ${maxOrder + 2} ein.`,
+              message: `Bitte gib eine Position zwischen 1 und ${createMode ? maxOrder + 2 : maxOrder + 1} ein.`,
               });
             return z.NEVER;
           }
@@ -57,7 +57,7 @@ const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuesti
           return num;
           })
       .pipe(
-        z.number().int().min(1, "Position muss mindestens 1 sein.").max(maxOrder + 2, {message: `Position darf höchstens ${maxOrder + 2} sein.`,})
+        z.number().int().min(1, "Position muss mindestens 1 sein.").max(createMode ? maxOrder + 2 : maxOrder + 1, {message: `Position darf höchstens ${createMode ? maxOrder + 2 : maxOrder + 1} sein.`,})
       ),
     }
   );
@@ -75,7 +75,7 @@ export default function FaqForm({ createMode, qap, closeDialog, refreshData, max
     maxOrder = 1;
   }
 
-  const schema = faqFormSchema(maxOrder, uniqueQuestion, qap?.question);
+  const schema = faqFormSchema(maxOrder, uniqueQuestion, qap?.question, createMode);
   const form = useForm<FaqFormValues>({
       resolver: zodResolver(schema as any), // eslint-disable-line
       defaultValues: {

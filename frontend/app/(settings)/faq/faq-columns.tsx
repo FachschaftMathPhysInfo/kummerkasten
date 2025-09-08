@@ -61,7 +61,7 @@ export const QAPColumns = ({
           variant="ghost"
           size="icon"
         >
-          <Edit2 className="w-4 h-4"/>
+          <Edit2/>
         </Button>
         <Button
           data-cy={`delete-button-${row.original.id}`}
@@ -72,7 +72,7 @@ export const QAPColumns = ({
           size="icon"
           className="text-destructive"
         >
-          <Trash className="w-4 h-4"/>
+          <Trash/>
         </Button>
       </div>
     ),

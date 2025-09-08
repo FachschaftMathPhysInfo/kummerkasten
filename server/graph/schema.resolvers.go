@@ -571,7 +571,7 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 	}
 
 	if !maxOrder.Valid {
-		createdQuestionAnswerPair.Order = 1
+		createdQuestionAnswerPair.Order = 0
 	}
 
 	if _, err := r.DB.NewInsert().Model(createdQuestionAnswerPair).Exec(ctx); err != nil {
@@ -640,7 +640,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	questionAnswerPairs, err := r.Query().QuestionAnswerPairs(ctx, []string{id})
 
 	if err != nil || len(questionAnswerPairs) == 0 {
-		return "", fmt.Errorf("question_answer_pair with id %v not found", id)
+		return "", fmt.Errorf("QuestionAnswerPair with id %v not found", id)
 	}
 
 	qAP := questionAnswerPairs[0]
@@ -663,10 +663,10 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 }
 
 // UpdateQuestionAnswerPairOrder is the resolver for the UpdateQuestionAnswerPairOrder field.
-func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qAPs []*model.UpdateQuestionAnswerPairOrder) (int32, error) {
-	qap := qAPs[0]
+func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qaps []*model.UpdateQuestionAnswerPairOrder) (int32, error) {
+	qap := qaps[0]
 
-	var maxOrder int
+	var maxOrder int32
 	err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
 	if err != nil {
@@ -680,8 +680,8 @@ func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qA
 		return 0, err
 	}
 
-	if int(qap.Order) > maxOrder {
-		qap.Order = int32(maxOrder)
+	if qap.Order > maxOrder {
+		qap.Order = maxOrder
 	}
 
 	_, err = r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).

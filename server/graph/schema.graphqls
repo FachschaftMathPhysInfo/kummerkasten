@@ -169,5 +169,5 @@ type Mutation {
     createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
     deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: ADMIN)
-    updateQuestionAnswerPairOrder(QAPs: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: ADMIN)
+    updateQuestionAnswerPairOrder(qaps: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: ADMIN)
 }
