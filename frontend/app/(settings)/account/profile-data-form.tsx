@@ -55,15 +55,6 @@ export default function AccountDataForm() {
     void fetchAccountData();
   }, [fetchAccountData]);
 
-  useEffect(() => {
-    const subscription = form.watch((_value, {type}) => {
-      if (hasTriedToSubmit && type === "change") {
-        setHasTriedToSubmit(false);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form, hasTriedToSubmit]);
-
   async function onValidSubmit(userData: AccountDataFormData) {
     setIsSavingAccount(true);
     const client = getClient();
