@@ -14,13 +14,13 @@ import {
 } from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
-import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
 import {TicketDialogState} from "@/app/tickets/page";
 import TicketDialog from "@/app/tickets/[ticketId]/ticket-dialog";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {toast} from "sonner";
-import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
+import {useSidebar} from "@/components/ui/sidebar";
+import {cn} from "@/lib/utils";
 
 const client = getClient();
 
@@ -30,7 +30,7 @@ export default function TicketPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
-  const {isMobile} = useSidebar()
+  const {state} = useSidebar()
 
   const [dialogState, setDialogState] = useState<TicketDialogState>({
     mode: null,
@@ -72,7 +72,12 @@ export default function TicketPage() {
   }, [fetchTicketDetail, ticketId]);
 
   return (
-    <div className="w-full h-full flex flex-col pt-5 grow">
+    <div
+      className={cn(
+        "flex flex-col pt-5 grow",
+        state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]"
+      )}
+    >
       <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow">
         <ResizablePanel
           defaultSize={30}
@@ -87,16 +92,13 @@ export default function TicketPage() {
           />
         </ResizablePanel>
         <ResizableHandle/>
-        <ResizablePanel defaultSize={50} className="flex justfiy-between">
+        <ResizablePanel defaultSize={50}>
           <TicketDetailView
             ticket={ticket}
             ticketLabels={ticketLabels}
             setDialogStateAction={setDialogState}
             refreshTicketAction={fetchTicketDetail}
           />
-          {!isMobile && (
-            <TicketInfoPane ticket={ticket} initialTicketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
-          )}
         </ResizablePanel>
       </ResizablePanelGroup>
 

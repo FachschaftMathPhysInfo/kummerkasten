@@ -97,7 +97,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
   }
 
   const handleStateChange = async (state: TicketState) => {
-    if(!ticket) return;
+    if (!ticket) return;
 
     const client = getClient();
 
@@ -151,11 +151,26 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
         </SheetContent>
       </Sheet>
     ) : (
-      <div className={'flex flex-col w-[250px] py-5 gap-2 justify-between'}>
+      <div className={'h-full flex flex-col w-[200px] pb-5 gap-2 justify-between'}>
         <div className={'flex flex-col grow w-full gap-2'}>
-          <TicketStatusArea
-            state={ticketState}
-            setStatusAction={(state) => void handleStateChange(state)}/>
+          <span className={'flex items-center justify-between pb-2 px-5 gap-2'}>
+            <TicketStatusArea
+              state={ticketState}
+              setStatusAction={(state) => void handleStateChange(state)}
+            />
+
+            <Button
+              variant={"outline"}
+              className={'!border-destructive aspect-square'}
+              onClick={() => setDialogStateAction({
+                mode: "delete",
+                currentTicket: ticket
+              })}
+            >
+              <Trash2 className={'stroke-destructive'}/>
+            </Button>
+          </span>
+
 
           <TicketMetaDataArea
             state={ticket.state}
@@ -169,18 +184,6 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
               setTicketLabelsAction={(labels) => void handleLabelsChange(labels)}
             />
           }
-        </div>
-
-        <div className={'flex items-center justify-end w-full px-10'}>
-          <Button
-            variant={"outline"}
-            className={'!border-destructive aspect-square'}
-            onClick={() => setDialogStateAction({
-              mode: "delete",
-              currentTicket: ticket
-            })}>
-            <Trash2 className={'stroke-destructive'}/>
-          </Button>
         </div>
       </div>
     )

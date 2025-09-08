@@ -62,10 +62,10 @@ export default function TicketDetailView({
   }
 
   return (
-    <div className="flex flex-col mx-6 grow pt-5 pb-4 overflow-y-scroll">
-      <div className={'grow border rounded-lg p-5'}>
+    // 1.25 rem is the padding added by the parent node
+    <div className="mx-6 grow overflow-y-scroll min-h-[calc(100vh-1.25rem)] flex border rounded-lg p-5 flex-col">
         {!isMobile ? (
-          <div className={'w-full justify-between flex items-center gap-2'}>
+          <div className={'w-full justify-between flex items-center gap-4'}>
             {editMode ? (
               <Input
                 autoFocus
@@ -80,7 +80,7 @@ export default function TicketDetailView({
               />
             ) : (
               <h1
-                className="text-4xl font-semibold text-wrap whitespace-nowrap"
+                className="text-4xl font-semibold text-wrap whitespace-nowrap truncate"
                 title={"Original Titel: " + ticket.originalTitle}
               >
                 {ticket.title}
@@ -130,11 +130,16 @@ export default function TicketDetailView({
 
         <div className={'w-full my-4 h-[1px] bg-border'}></div>
 
-        <div className="flex flex-col grow">
-          {ticket.text}
+        <div className="flex justify-between h-full grow">
+          <p>{ticket.text}</p>
+          {!isMobile && (
+            <TicketInfoPane
+              ticket={ticket}
+              initialTicketLabels={ticketLabels}
+              setDialogStateAction={setDialogStateAction}
+            />
+          )}
         </div>
-      </div>
-
     </div>
   );
 }
