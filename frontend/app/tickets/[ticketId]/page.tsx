@@ -74,7 +74,7 @@ export default function TicketPage() {
   return (
     <div
       className={cn(
-        "flex flex-col pt-5 grow",
+        "flex flex-col py-5 grow",
         state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]"
       )}
     >

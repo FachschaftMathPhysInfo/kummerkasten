@@ -17,12 +17,12 @@ export default function TicketMetadataArea({createdAt, lastModified}: TicketMeta
         "border-gray-600 text-muted-foreground border-t-gray-600 border-b border-t"
       )}
     >
-      <div className="w-full flex justify-between items-center px-10">
+      <div className="w-full flex justify-between items-center px-5">
         <span>Erstellt:</span>
         <div>{format(createdAt, "dd.MM.yy")}</div>
       </div>
 
-      <div className="w-full flex justify-between items-center px-10">
+      <div className="w-full flex justify-between items-center px-5">
         <span>Geändert:</span>
         <div>{format(lastModified, "dd.MM.yy")}</div>
       </div>

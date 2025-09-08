@@ -62,8 +62,8 @@ export default function TicketDetailView({
   }
 
   return (
-    // 1.25 rem is the padding added by the parent node
-    <div className="mx-6 grow overflow-y-scroll min-h-[calc(100vh-1.25rem)] flex border rounded-lg p-5 flex-col">
+    // 2.5 rem is the padding added by the parent node
+    <div className="mx-6 grow overflow-y-scroll min-h-[calc(100vh-2.5rem)] flex border rounded-lg p-5 flex-col">
         {!isMobile ? (
           <div className={'w-full justify-between flex items-center gap-4'}>
             {editMode ? (
