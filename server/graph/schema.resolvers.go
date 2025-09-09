@@ -942,6 +942,22 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 	return settings, nil
 }
 
+// FooterSettings is the resolver for the footerSettings field.
+func (r *queryResolver) FooterSettings(ctx context.Context) ([]*model.Setting, error) {
+	const footerSettingsPrefix = "FOOTER_"
+	var footerSettings []*model.Setting
+
+	if err := r.DB.NewSelect().
+		Model(&footerSettings).
+		Where("key LIKE ?", footerSettingsPrefix+"%").
+		Scan(ctx); err != nil {
+		log.Printf("Failed to fetch footer settings: %v", err)
+		return nil, fmt.Errorf("failed to fetch footer settings")
+	}
+
+	return footerSettings, nil
+}
+
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
 	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)

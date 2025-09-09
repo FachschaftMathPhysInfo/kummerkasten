@@ -51,12 +51,6 @@ export function ClientSidebar() {
       icon: MessageCircleQuestionMark,
       cypress: "sidebar-faq",
     },
-    {
-      title: "App Einstellungen",
-      url: "/app-settings",
-      icon: SlidersVertical,
-      cypress: "sidebar-app-settings"
-    }
   ]
   const adminItems = [
     {
@@ -64,7 +58,13 @@ export function ClientSidebar() {
       url: "/users",
       icon: Users,
       cypress: "sidebar-users"
-    }
+    },
+    {
+      title: "App",
+      url: "/app-settings",
+      icon: SlidersVertical,
+      cypress: "sidebar-app-settings"
+    },
   ]
   if (!user) return null
 

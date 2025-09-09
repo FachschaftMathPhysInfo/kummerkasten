@@ -5,7 +5,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
-import {AllSettingsDocument, AllSettingsQuery, Setting, UpdateSettingDocument} from "@/lib/graph/generated/graphql";
+import {FooterSettingsDocument, Setting, UpdateSettingDocument} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
@@ -15,9 +15,8 @@ import {ExternalLink, Loader2, RotateCcw, Save} from "lucide-react";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {cn} from "@/lib/utils";
 
-const FOOTER_SETTINGS_PREFIX = "FOOTER_"
-const CONTACT_LINK_KEY = "FOOTER_CONTACT_LINK"
-const LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE_LINK"
+export const FOOTER_CONTACT_LINK_KEY = "FOOTER_CONTACT_LINK"
+export const FOOTER_LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE_LINK"
 
 const footerSettingsScheme = z.object({
   contactLink: z.url({error: 'Bitte gib eine gültige URL an'}),
@@ -45,18 +44,15 @@ export default function FooterForm() {
     const client = getClient();
 
     try {
-      const data = await client.request<AllSettingsQuery>(AllSettingsDocument);
-      if (!data.settings) {
+      const data = await client.request(FooterSettingsDocument);
+      if (!data.footerSettings) {
         toast.error('Fehler beim Laden der Einstellungen')
         return;
       }
-      const footerSettings = data.settings.filter(
-        s => !!s && s.key.includes(FOOTER_SETTINGS_PREFIX)
-      )
 
       form.reset({
-        contactLink: footerSettings.find(s => s?.key === CONTACT_LINK_KEY)?.value ?? "",
-        legalNoticeLink: footerSettings.find(s => s?.key === LEGAL_NOTICE_KEY)?.value ?? "",
+        contactLink: data.footerSettings.find(s => s?.key === FOOTER_CONTACT_LINK_KEY)?.value ?? "",
+        legalNoticeLink: data.footerSettings.find(s => s?.key === FOOTER_LEGAL_NOTICE_KEY)?.value ?? "",
       });
 
       setIsLoading(false);
@@ -80,8 +76,8 @@ export default function FooterForm() {
     }
 
     try {
-      const constactSetting: Setting = {key: CONTACT_LINK_KEY, value: data.contactLink}
-      const legalNoticeSetting: Setting = {key: LEGAL_NOTICE_KEY, value: data.legalNoticeLink}
+      const constactSetting: Setting = {key: FOOTER_CONTACT_LINK_KEY, value: data.contactLink}
+      const legalNoticeSetting: Setting = {key: FOOTER_LEGAL_NOTICE_KEY, value: data.legalNoticeLink}
       await client.request(UpdateSettingDocument, {setting: constactSetting})
       await client.request(UpdateSettingDocument, {setting: legalNoticeSetting})
 

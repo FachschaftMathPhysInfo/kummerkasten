@@ -74,6 +74,7 @@ type Query {
     formLabels(ids: [ID!]): [Label]
     users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
+    footerSettings: [Setting]
     login(mail: String!, password: String!): Boolean!
     loginCheck(sid: String): User
     questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair] @hasRole(role: USER)

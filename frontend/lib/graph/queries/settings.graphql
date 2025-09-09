@@ -4,3 +4,10 @@ query allSettings {
         value
     }
 }
+
+query footerSettings {
+    footerSettings {
+        key
+        value
+    }
+}
