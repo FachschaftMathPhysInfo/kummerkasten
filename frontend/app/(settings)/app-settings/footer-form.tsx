@@ -7,16 +7,17 @@ import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {AllSettingsDocument, AllSettingsQuery, Setting, UpdateSettingDocument} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {useUser} from "@/components/providers/user-provider";
-import {Form} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
-import {Save} from "lucide-react";
+import {ExternalLink, Loader2, RotateCcw, Save} from "lucide-react";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {cn} from "@/lib/utils";
 
 const FOOTER_SETTINGS_PREFIX = "FOOTER_"
 const CONTACT_LINK_KEY = "FOOTER_CONTACT_LINK"
-const LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE"
+const LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE_LINK"
 
 const footerSettingsScheme = z.object({
   contactLink: z.url({error: 'Bitte gib eine gültige URL an'}),
@@ -85,6 +86,7 @@ export default function FooterForm() {
       await client.request(UpdateSettingDocument, {setting: legalNoticeSetting})
 
       setIsSaving(false);
+      toast.success('Footer Links wurden erfolgreich aktualisiert')
       await fetchFooterSettings();
     } catch {
       toast.error('Ein Fehler beim Speichern der Einstellungen ist aufgetreten')
@@ -93,48 +95,83 @@ export default function FooterForm() {
     }
   }
 
-
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
-        className="space-y-4 w-full"
-      >
-          <FormField
-            control={form.control}
-            name="contactLink"
-            render={({field}) => (
-              <FormItem className={"flex-grow"}>
-                <FormLabel>Kontakt-Link</FormLabel>
-                <FormControl>
-                  <Input placeholder={"https://..."} {...field} data-cy={'footer-contact-input'}/>
-                </FormControl>
-                <FormMessage data-cy={'footer-contact-input-message'}/>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="legalNoticeLink"
-            render={({field}) => (
-              <FormItem className={"flex-grow"}>
-                <FormLabel>Nachname</FormLabel>
-                <FormControl>
-                  <Input placeholder={"https://..."} {...field} data-cy={'footer-legalnotice-input'}/>
-                </FormControl>
-                <FormMessage data-cy={'footer-legalnotice-input-message'}/>
-              </FormItem>
-            )}
-          />
-        <Button
-        type="submit"
-        disabled={!form.formState.isValid && hasTriedToSubmit || !form.formState.isDirty}
+    <Card className={'w-full'}>
+      <CardHeader className={'flex items-center gap-2'}>
+        <ExternalLink/> Footer
+      </CardHeader>
+      <CardContent className={'relative'}>
+        <div
+          className={cn(
+            'absolute top-0 left-0 w-full h-full flex flex-col gap-2 items-center justify-center bg-card',
+            !isLoading && "hidden"
+          )}
         >
-          <Save/>
-          Speichern
-        </Button>
-      </form>
-    </Form>
+          <Loader2 className={'animate-spin'}/>
+          Lade Einstellungen
+        </div>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
+            className="space-y-4 w-full"
+          >
+            <FormField
+              control={form.control}
+              name="contactLink"
+              render={({field}) => (
+                <FormItem className={"flex-grow"}>
+                  <FormLabel>Kontakt-Link</FormLabel>
+                  <FormControl>
+                    <Input placeholder={"https://..."} {...field} data-cy={'footer-contact-input'}/>
+                  </FormControl>
+                  <FormMessage data-cy={'footer-contact-input-message'}/>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="legalNoticeLink"
+              render={({field}) => (
+                <FormItem className={"flex-grow"}>
+                  <FormLabel>Nachname</FormLabel>
+                  <FormControl>
+                    <Input placeholder={"https://..."} {...field} data-cy={'footer-legalnotice-input'}/>
+                  </FormControl>
+                  <FormMessage data-cy={'footer-legalnotice-input-message'}/>
+                </FormItem>
+              )}
+            />
+
+            <div className={'w-full flex justify-end items-center gap-4'}>
+              <Button
+                variant={'secondary'}
+                type={'button'}
+                disabled={!form.formState.isDirty}
+                onClick={() => fetchFooterSettings()}
+              >
+                <RotateCcw/>
+                Abbrechen
+              </Button>
+
+              <Button
+                type="submit"
+                disabled={!form.formState.isValid && hasTriedToSubmit || !form.formState.isDirty}
+                className={cn(isLoading && 'hidden')}
+              >
+                {isSaving ? (
+                  <Loader2 className={'animate-spin'}/>
+                ) : (
+                  <>
+                    <Save/>
+                    Speichern
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   )
 }
