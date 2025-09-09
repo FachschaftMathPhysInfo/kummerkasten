@@ -203,7 +203,7 @@ export function UserTable(props: DataTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Es scheinen keine User zu existieren.. Bitte kontaktiere deinen Systemadministrator
+                  Keine Ergebnisse.
                 </TableCell>
               </TableRow>
             )}
