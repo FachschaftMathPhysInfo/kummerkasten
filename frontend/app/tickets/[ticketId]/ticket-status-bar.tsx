@@ -9,18 +9,19 @@ import {TicketDialogState} from "@/app/tickets/page";
 import {useRouter} from "next/navigation";
 import {toast} from "sonner";
 import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
 } from "@/components/ui/sheet";
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {cn} from "@/lib/utils";
+import LabelBadge from "@/components/label-badge";
 import {getTicketStateColor} from "@/lib/ticketstate-colour";
 
 interface TicketStatusBarProps {
@@ -58,7 +59,6 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
   if (!ticket) return <div/>;
 
   return (
-    <>
       <Sheet>
         <SheetTrigger asChild>
           {isMobile ? <Button variant="outline" data-cy="mobile-filter-button">
@@ -121,11 +121,11 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
                     style={{ color: calculateFontColor(getTicketStateColor(ticket?.state))}}
                     data-cy="ticket-status-badge-detail"
                   >
-                    {ticket.state === TicketState.New ? "Neu"
-                      : ticket.state === TicketState.Open
-                        ? "Offen"
-                        : "Fertig"
-                    }
+                      {ticket.state === TicketState.New ? "Neu"
+                        : ticket.state === TicketState.Open
+                          ? "Offen"
+                          : "Fertig"
+                      }
                   </Badge>
                 </div>
                 <div className="flex flex-row justify-between items-center">
@@ -143,15 +143,7 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
               <div
                 className="flex flex-col gap-2 overflow-x-auto max-w-full py-0 items-center overflow-y-auto max-h-[100px] md:max-h-[170px]">
                 {ticketLabels?.map((label) => (
-                  label?.id &&
-                  <Badge
-                    key={label.id}
-                    className="flex-shrink-0 justify-center px-3 py-1 md:w-full"
-                    style={{backgroundColor: label.color, color: calculateFontColor(label.color)}}
-                    data-cy={`ticket-label-${label.id}`}
-                  >
-                    {label.name}
-                  </Badge>
+                  label?.id && <LabelBadge key={label.id} label={label}/>
                 ))}
               </div>
             </div>
@@ -163,6 +155,5 @@ export default function TicketStatusBar({ticket, ticketLabels, setDialogStateAct
           </SheetFooter>
         </SheetContent>
       </Sheet>
-    </>
   );
 }

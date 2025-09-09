@@ -151,6 +151,7 @@ type Mutation {
     deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateUser(id: String!, user: UpdateUser!): String! @hasRole(role: USER) @onlySelf
     changeRole(id: String!, role: UserRole!): String! @hasRole(role: ADMIN)
+    resetPassword(id: String!, password: String!): Boolean @hasRole(role: ADMIN)
     logout(sid: String!): String! @hasRole(role: USER)
 
     createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)

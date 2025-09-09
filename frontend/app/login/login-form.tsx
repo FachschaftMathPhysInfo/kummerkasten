@@ -60,6 +60,7 @@ export default function LoginForm() {
     if (ok) {
       setHasTriedToSubmit(false)
       router.push("/tickets")
+      router.refresh()
     } else {
       setCorrectCredentials(false);
       setHasTriedToSubmit(true)

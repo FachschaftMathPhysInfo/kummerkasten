@@ -30,7 +30,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		label := &models.Label{}
 		err := r.DB.NewSelect().
 			Model(label).
-			Where("LOWER(name) = ?", strings.ToLower(string(labelName))).
+			Where("LOWER(name) = ?", strings.ToLower(labelName)).
 			Limit(1).
 			Scan(ctx)
 		if err != nil {
@@ -412,6 +412,31 @@ func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model
 	}
 
 	return updatedUser.ID, nil
+}
+
+// ResetPassword is the resolver for the resetPassword field.
+func (r *mutationResolver) ResetPassword(ctx context.Context, id string, password string) (*bool, error) {
+	var users []*models.User
+
+	if err := r.DB.NewSelect().Model(&users).Where("id = ?", id).Scan(ctx); err != nil {
+		log.Printf("Failed to fetch users for password reset: %v", err)
+		return nil, err
+	}
+
+	user := users[0]
+	newPassword, err := auth.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Password = newPassword
+
+	if _, err := r.DB.NewUpdate().Model(user).WherePK().Exec(ctx); err != nil {
+		log.Printf("Failed to update user for password reset: %v", err)
+		return nil, err
+	}
+
+	return nil, nil
 }
 
 // Logout is the resolver for the logout field.

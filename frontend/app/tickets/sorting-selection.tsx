@@ -19,7 +19,7 @@ export default function SortingSelection(props: SortingSelectionProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="w-[170px] justify-between items-center"
+          className="min-w-[170px] justify-between items-center"
           data-cy="sort-button"
         >
           <span className="flex justify-center items-center">
@@ -32,7 +32,7 @@ export default function SortingSelection(props: SortingSelectionProps) {
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[250px]">
+      <PopoverContent className="p-0 w-[170px]">
         <Command>
           <CommandGroup>
             {["Erstellt", "Geändert", "Titel"].map((field) => (
