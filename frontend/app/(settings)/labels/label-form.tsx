@@ -51,7 +51,7 @@ export default function LabelForm(props: LabelFormProps) {
     defaultValues: {
       name: props.label?.name ?? "",
       color: props.label?.color ?? color,
-      isFormLabel: false
+      isFormLabel: props.label?.formLabel ?? false
     }
   })
 
