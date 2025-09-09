@@ -270,12 +270,12 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 
 		if err := r.DB.NewSelect().Model(&labels).
 			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
-			Scan(ctx); err != nil {
+			Where("id != ?", dbLabel.ID).Scan(ctx); err != nil {
 			return "", err
 		}
 
 		if len(labels) != 0 {
-			return "", fmt.Errorf("unique constraint error: label with name %v does already exist", label.Name)
+			return "", fmt.Errorf("unique constraint error: label with name %v does already exist", *label.Name)
 		}
 
 		dbLabel.Name = *label.Name
