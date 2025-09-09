@@ -31,7 +31,7 @@ export function LabelProvider({children}: { children: ReactNode }) {
 
 
   return (
-    <LabelsContext.Provider value={{labels: labels, triggerLabelRefetch: triggerLabelRefetch}}>
+    <LabelsContext.Provider value={{labels, triggerLabelRefetch}}>
       {children}
     </LabelsContext.Provider>
   );

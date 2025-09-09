@@ -103,7 +103,7 @@ export default function TicketDetailView({
                   type={"submit"}
                   variant={'secondary'}
                   onClick={handleTitleChange}
-                  className={'bg-accent hover:bg-accent/80'}
+                  className={'bg-accent hover:bg-accent/60'}
                 >
                   <Save/>
                   Speichern
@@ -119,7 +119,7 @@ export default function TicketDetailView({
           <span className="flex items-center justify-between gap-2">
             <h1
               className="text-2xl font-semibold text-wrap whitespace-nowrap"
-              title={"Original Titel: " + ticket.originalTitle}
+              title={"Originaltitel: " + ticket.originalTitle}
             >
               {ticket.title}
             </h1>

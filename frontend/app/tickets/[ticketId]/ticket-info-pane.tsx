@@ -161,7 +161,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
 
             <Button
               variant={"outline"}
-              className={'!border-destructive aspect-square'}
+              className={'!border-destructive aspect-square hover:bg-destructive/10 dark:hover:bg-destructive/20'}
               onClick={() => setDialogStateAction({
                 mode: "delete",
                 currentTicket: ticket

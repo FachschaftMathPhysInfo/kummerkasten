@@ -17,10 +17,10 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
           className={cn(
             "w-full justify-center [&>svg]:hidden !relative",
             state === TicketState.New
-              ? "!bg-ticketstate-new"
+              ? "!bg-ticketstate-new hover:!bg-ticketstate-new/60"
               : state === TicketState.Open
-                ? "!bg-ticketstate-open"
-                : "!bg-ticketstate-closed"
+                ? "!bg-ticketstate-open hover:!bg-ticketstate-open/60"
+                : "!bg-ticketstate-closed hover:!bg-ticketstate-closed/60"
           )}
         >
           {state === TicketState.New

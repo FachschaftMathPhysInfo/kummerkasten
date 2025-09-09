@@ -45,7 +45,6 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
         </Button>
       </div>
       {editMode ? (
-        // TODO: wait for #204 to merge
         <Command>
           <CommandInput placeholder="Labels suchen..." onValueChange={setSearchTerm}/>
           <CommandGroup>

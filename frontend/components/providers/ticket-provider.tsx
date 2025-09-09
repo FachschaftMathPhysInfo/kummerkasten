@@ -20,7 +20,6 @@ export function TicketsProvider({children}: { children: ReactNode }) {
       const client = getClient()
       const data = await client.request(AllTicketsDocument)
 
-      // React that little bitch does not notice a state change if we dont deep copy this
       setTickets(
         data.tickets?.filter(ticket => !!ticket)
           .map(ticket => ({
