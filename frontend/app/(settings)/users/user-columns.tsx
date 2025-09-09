@@ -20,11 +20,11 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
     {
       id: "role",
       cell: ({row}) => (
-        <>
+        <div className="flex items-center justify-center h-full">
           {row.original.role === UserRole.Admin && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Shield data-cy={'admin-icon'}/>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -33,7 +33,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
               </Tooltip>
             </TooltipProvider>
           )}
-        </>
+        </div>
       ),
     },
     {
