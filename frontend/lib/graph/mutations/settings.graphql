@@ -1,0 +1,5 @@
+mutation updateSetting($setting: NewSetting!) {
+    updateSetting(setting: $setting) {
+        value
+    }
+}

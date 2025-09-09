@@ -1,5 +1,3 @@
-"use client";
-
 import {ManagementPageHeader} from "@/components/management-page-header";
 import {SettingsIcon} from "lucide-react";
 import AccountDataForm from "@/app/(settings)/account/profile-data-form";
