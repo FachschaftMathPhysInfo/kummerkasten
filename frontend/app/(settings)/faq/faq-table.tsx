@@ -112,7 +112,7 @@ const DndTableRow = ({
     <TableRow
       ref={dropRef}
       style={{ opacity: isDragging ? 0 : 1 }}
-      className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${isOver ? "bg-accent/20 border-t-2 border-green-600" : ""}`}
+      className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${isOver ? "bg-accent/20 border-t-2 border-b-2 border-primary" : ""}`}
       data-handler-id={handlerIdAttr}
       data-cy="qap-row"
     >
@@ -191,7 +191,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
   const saveOrder = useCallback(async (draggedId: string, newOrder: number) => {
     try {
       await client.request<UpdateQuestionAnswerPairOrderMutation>(UpdateQuestionAnswerPairOrderDocument, {
-        QAPs: [{ id: draggedId, order: newOrder }],
+        qaps: [{ id: draggedId, order: newOrder }],
       });
       refreshData();
     } catch {
