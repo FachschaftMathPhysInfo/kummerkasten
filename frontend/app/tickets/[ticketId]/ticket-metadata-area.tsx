@@ -1,4 +1,3 @@
-import {TicketState} from "@/lib/graph/generated/graphql";
 import {format} from "date-fns";
 import React from "react";
 import {cn} from "@/lib/utils";
