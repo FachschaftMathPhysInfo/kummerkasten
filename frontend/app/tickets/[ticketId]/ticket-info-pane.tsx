@@ -140,7 +140,6 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
           />
 
           <TicketMetaDataArea
-            state={ticketState}
             createdAt={new Date(ticket.createdAt)}
             lastModified={new Date(ticket.lastModified)}
           />
@@ -173,7 +172,6 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
 
 
           <TicketMetaDataArea
-            state={ticket.state}
             createdAt={new Date(ticket.createdAt)}
             lastModified={new Date(ticket.lastModified)}
           />
