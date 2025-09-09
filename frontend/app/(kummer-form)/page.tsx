@@ -12,7 +12,7 @@ export default function KummerkastenPage() {
       <div
         className="flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8 space-y-8">
         <ThemeSwitch
-          className={'absolute top-1 left-1 mt-2 ml-2 lg:mt-4 lg:mr-4'}
+          className={'absolute top-1 left-1 mt-2 ml-2 lg:mt-4 lg:ml-4'}
         />
 
         <div className="flex items-center">

@@ -21,7 +21,7 @@ export default function ThemeSwitch({className}: {className?: string}) {
   return (
     <Button
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className={cn('flex items-center aspect-square', className)}
+      className={cn('flex items-center aspect-square m-0', className)}
       data-cy={'theme-toggle'}
     >
       {theme === "light" ? (
