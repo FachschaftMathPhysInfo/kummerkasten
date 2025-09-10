@@ -59,6 +59,7 @@ type QuestionAnswerPair {
     id: String!
     question: String!
     answer: String!
+    order: Int!
 }
 
 type Session {
@@ -75,7 +76,7 @@ type Query {
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     login(mail: String!, password: String!): Boolean!
     loginCheck(sid: String): User
-    questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]
+    questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair] @hasRole(role: USER)
 }
 
 input NewTicket {
@@ -117,11 +118,6 @@ input UpdateLabel {
     formLabel: Boolean
 }
 
-input UpdateQuestionAnswerPair{
-    question: String
-    answer: String
-}
-
 input NewSetting {
     key: String!
     value: String!
@@ -135,6 +131,16 @@ input LabelToTicketAssignment {
 input NewQuestionAnswerPair{
     question: String!
     answer: String!
+}
+
+input UpdateQuestionAnswerPair{
+    question: String
+    answer: String
+}
+
+input UpdateQuestionAnswerPairOrder{
+    id: String!
+    order: Int!
 }
 
 type Mutation {
@@ -151,6 +157,7 @@ type Mutation {
     deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateUser(id: String!, user: UpdateUser!): String! @hasRole(role: USER) @onlySelf
     changeRole(id: String!, role: UserRole!): String! @hasRole(role: ADMIN)
+    resetPassword(id: String!, password: String!): Boolean @hasRole(role: ADMIN)
     logout(sid: String!): String! @hasRole(role: USER)
 
     createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
@@ -163,4 +170,5 @@ type Mutation {
     createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
     deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: ADMIN)
+    updateQuestionAnswerPairOrder(qaps: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: ADMIN)
 }

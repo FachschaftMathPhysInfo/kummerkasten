@@ -60,4 +60,5 @@ Table question_answer_pair {
   id uuid [primary key]
   question varchar [not null, unique]
   answer varchar [not null]
+  order int [not null, unique]
 }

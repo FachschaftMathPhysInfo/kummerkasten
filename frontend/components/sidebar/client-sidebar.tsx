@@ -10,7 +10,7 @@ import {
   SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar";
-import {LogOut, Moon, Settings, Sun, Tags, Tickets, Users} from "lucide-react";
+import {LogOut, Moon, Settings, Sun, Tags, Tickets, Users, MessageCircleQuestionMark} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
 import {UserRole} from "@/lib/graph/generated/graphql";
 import {useRouter} from "next/navigation";
@@ -35,6 +35,12 @@ export function ClientSidebar() {
       icon: Tags,
       cypress: "sidebar-labels"
     },
+    {
+    title: "FAQs",
+    url: "/faq",
+    icon: MessageCircleQuestionMark,
+    cypress: "sidebar-faq",
+  },
   ]
   const adminItems = [
     {
@@ -88,7 +94,7 @@ export function ClientSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <ThemeSwitch/>
+            <SidebarThemeSwitch/>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -122,7 +128,7 @@ export function ClientSidebarTrigger() {
   return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
 
-function ThemeSwitch() {
+function SidebarThemeSwitch() {
   const [mounted, setMounted] = useState(false)
   const {resolvedTheme, theme, setTheme} = useTheme()
   useEffect(() => {

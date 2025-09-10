@@ -52,5 +52,6 @@ export const config = {
     '/labels',
     '/profile',
     '/settings',
+    '/faq',
   ],
 }

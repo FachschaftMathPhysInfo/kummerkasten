@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {UserRole} from "@/lib/graph/generated/graphql"
 import {ColumnDef} from "@tanstack/react-table";
-import {MoreHorizontal, Shield, Trash,} from "lucide-react";
+import {MoreHorizontal, RotateCcw, Shield, Trash, UserCheck, UserMinus,} from "lucide-react";
 import React from "react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {useUser} from "@/components/providers/user-provider";
@@ -20,11 +20,11 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
     {
       id: "role",
       cell: ({row}) => (
-        <>
+        <div className="flex items-center justify-center h-full">
           {row.original.role === UserRole.Admin && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Shield data-cy={'admin-icon'}/>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -33,7 +33,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
               </Tooltip>
             </TooltipProvider>
           )}
-        </>
+        </div>
       ),
     },
     {
@@ -98,14 +98,27 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {row.original.role === UserRole.Admin ? (
-                    <DropdownMenuItem
-                      onClick={() => props.setDialogState({
-                        mode: "demote",
-                        currentUser: row.original
-                      })}
-                    >
-                      Admin entfernen
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem
+                        onClick={() => props.setDialogState({
+                          mode: "demote",
+                          currentUser: row.original
+                        })}
+                      >
+                        <UserMinus className={'inline mr-2'} />
+                        Admin entfernen
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => props.setDialogState({
+                          mode: "resetPassword",
+                          currentUser: row.original
+                        })}
+                      >
+                        <RotateCcw className={'inline mr-2'} />
+                        Password zurücksetzen
+                      </DropdownMenuItem>
+                    </>
                   ) : (
                     <>
                       <DropdownMenuItem
@@ -114,7 +127,18 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
+                        <UserCheck className={'inline mr-2'} />
                         Admin machen
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => props.setDialogState({
+                          mode: "resetPassword",
+                          currentUser: row.original
+                        })}
+                      >
+                        <RotateCcw className={'inline mr-2'}/>
+                        Password zurücksetzen
                       </DropdownMenuItem>
 
                       <DropdownMenuItem

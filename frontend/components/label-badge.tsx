@@ -15,7 +15,7 @@ export default function LabelBadge({label}: LabelBadgeProps) {
       style={{backgroundColor: label.color, color: calculateFontColor(label.color)}}
       data-cy={`label-badge-${label.id}`}
     >
-      <span className={'block truncate'}>{label.name}</span>
+      <span className={'block truncate'} title={label.name}>{label.name}</span>
     </Badge>
   )
 }

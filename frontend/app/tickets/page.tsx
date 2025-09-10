@@ -403,7 +403,7 @@ export default function TicketPage() {
                         : "Status"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
+                  <PopoverContent className="p-0 w-[170px]">
                     <Command>
                       <CommandInput placeholder="Status suchen..."/>
                       <CommandGroup>
@@ -452,7 +452,7 @@ export default function TicketPage() {
                         : "Labels"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
+                  <PopoverContent className="p-0 max-w-[200px]">
                     <LabelSelection
                       labels={labels}
                       selectedLabels={labelFilter}
@@ -460,16 +460,13 @@ export default function TicketPage() {
                     />
                   </PopoverContent>
                 </Popover>
-
                 <DateRangeFilter
                   startDate={startDate}
                   setStartDate={setStartDate}
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
-
                 <SortingSelection setSorting={setSorting} sorting={sorting}/>
-
               </div>
             )}
           </div>
