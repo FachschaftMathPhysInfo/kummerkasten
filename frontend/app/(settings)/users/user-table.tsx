@@ -27,6 +27,7 @@ import {UserColumns} from "@/app/(settings)/users/user-columns";
 import {Button} from "@/components/ui/button";
 import {PlusCircle} from "lucide-react";
 import UserDialog from "@/app/(settings)/users/user-dialog";
+import {ResetPasswordDialog} from "@/app/(settings)/users/reset-password-dialog";
 
 interface DataTableProps {
   data: TableUser[];
@@ -42,7 +43,7 @@ export type TableUser = {
 }
 
 export type UserTableDialogState = {
-  mode: "promote" | "demote" | "delete" | "add" | null;
+  mode: "promote" | "demote" | "delete" | "add" | "resetPassword" | null;
   currentUser: TableUser | null
 }
 
@@ -214,6 +215,12 @@ export function UserTable(props: DataTableProps) {
         open={dialogState.mode === "add"}
         closeDialog={resetDiallogState}
         refreshData={props.refreshData}
+      />
+
+      <ResetPasswordDialog
+        user={dialogState.currentUser}
+        closeDialog={resetDiallogState}
+        isOpen={dialogState.mode === "resetPassword"}
       />
 
       <ConfirmationDialog

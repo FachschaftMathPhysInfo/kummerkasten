@@ -5,42 +5,38 @@ import {useParams} from "next/navigation";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {getClient} from "@/lib/graph/client";
 import {
-    AllTicketsDocument,
-    AllTicketsQuery,
-    DeleteTicketDocument,
-    DeleteTicketMutation,
-    Label,
-    Ticket,
-    TicketsByIdsDocument,
-    TicketsByIdsQuery
+  DeleteTicketDocument,
+  DeleteTicketMutation,
+  Label,
+  Ticket,
+  TicketsByIdsDocument,
+  TicketsByIdsQuery
 } from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
-import TicketStatusBar from "@/app/tickets/[ticketId]/ticket-status-bar";
 import {TicketDialogState} from "@/app/tickets/page";
 import TicketDialog from "@/app/tickets/[ticketId]/ticket-dialog";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {toast} from "sonner";
+import {useTickets} from "@/components/providers/ticket-provider";
+import {useSidebar} from "@/components/ui/sidebar";
+import {cn} from "@/lib/utils";
 
 const client = getClient();
 
 export default function TicketPage() {
   const {ticketId} = useParams();
-
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const {triggerTicketRefetch} = useTickets()
+  const {isMobile} = useSidebar()
   const [searchTerm, setSearchTerm] = useState("");
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
+  const {state} = useSidebar()
 
   const [dialogState, setDialogState] = useState<TicketDialogState>({
     mode: null,
     currentTicket: null
   });
-
-  const fetchTickets = useCallback(async () => {
-    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
-    if (data.tickets) setTickets(data.tickets.filter(Boolean) as Ticket[]);
-  }, []);
 
   const fetchTicketDetail = useCallback(async () => {
     if (!ticketId) return;
@@ -64,46 +60,54 @@ export default function TicketPage() {
       await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
       toast.success("Ticket wurde erfolgreich gelöscht")
       resetDialogState()
-      await fetchTickets();
+      triggerTicketRefetch()
       await fetchTicketDetail();
     } catch {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
 
-  useEffect(() => {
-    void fetchTickets();
-  }, [fetchTickets]);
+
   useEffect(() => {
     void fetchTicketDetail();
   }, [fetchTicketDetail, ticketId]);
 
   return (
-    <div className="w-full h-full flex flex-col pt-2 grow">
+    <div
+      className={cn(
+        "flex flex-col py-5 grow",
+        isMobile ? "max-w-screen" : (state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]")
+      )}
+    >
       <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow">
-        <ResizablePanel defaultSize={30} minSize={20} maxSize={30}
-                        className="border-r border-gray-500 flex-col hidden md:flex">
+        <ResizablePanel
+          defaultSize={30}
+          minSize={20}
+          maxSize={30}
+          className="flex-col hidden md:flex"
+        >
           <TicketSidebar
-            tickets={tickets}
             searchTerm={searchTerm}
             setSearchTermAction={setSearchTerm}
             selectedTicketId={String(ticketId)}
           />
         </ResizablePanel>
         <ResizableHandle/>
-        <ResizablePanel defaultSize={50} className=" flex flex-row justfiy-between">
-          <TicketDetailView ticket={ticket}/>
-          <div className="flex grow justify-end mr-5">
-            <TicketStatusBar ticket={ticket} ticketLabels={ticketLabels} setDialogStateAction={setDialogState}/>
-          </div>
+        <ResizablePanel defaultSize={50}>
+          <TicketDetailView
+            ticket={ticket}
+            ticketLabels={ticketLabels}
+            setDialogStateAction={setDialogState}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
+
       <TicketDialog
         open={dialogState.mode === "update"}
         ticket={dialogState.currentTicket}
         closeDialog={() => setDialogState({mode: null, currentTicket: null})}
         refreshData={async () => {
-          await fetchTickets();
+          triggerTicketRefetch()
           await fetchTicketDetail();
         }}
       />

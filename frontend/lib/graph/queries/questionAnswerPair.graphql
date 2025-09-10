@@ -1,7 +1,8 @@
 query allQuestionAnswerPair{
- questionAnswerPairs{
-  question
-  answer
-  id
-}
+    questionAnswerPairs{
+        question
+        answer
+        id
+        order
+    }
 }

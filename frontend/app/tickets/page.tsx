@@ -4,29 +4,23 @@ import {ManagementPageHeader} from "@/components/management-page-header";
 import {Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
 import {getClient} from "@/lib/graph/client";
-import React, {useCallback, useEffect, useState} from "react";
-import {
-  AllLabelsDocument,
-  AllLabelsQuery,
-  AllTicketsDocument,
-  AllTicketsQuery,
-  DeleteTicketDocument,
-  DeleteTicketMutation,
-  Label,
-  Ticket,
-  TicketState
-} from "@/lib/graph/generated/graphql";
+import React, {useEffect, useState} from "react";
+import {DeleteTicketDocument, DeleteTicketMutation, Label, Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import {Input} from "@/components/ui/input";
 import Link from "next/link";
 import {toast} from "sonner";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/command";
-import {cn} from "@/lib/utils";
+import {cn, compareStringSets} from "@/lib/utils";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
+import {useTickets} from "@/components/providers/ticket-provider";
+import {useLabels} from "@/components/providers/label-provider";
+import LabelSelection from "@/components/label-selection";
+import LabelBadge from "@/components/label-badge";
 import SortingSelection from "@/app/tickets/sorting-selection";
 
 
@@ -43,11 +37,11 @@ export type TicketSorting = {
 export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
 
 export default function TicketPage() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [labels, setLabels] = useState<Label[]>([]);
+  const {tickets, triggerTicketRefetch} = useTickets();
+  const {labels} = useLabels();
   const [searchTerm, setSearchTerm] = useState("");
-  const [stateFilter, setStateFilter] = useState<string[]>([]);
-  const [labelFilter, setLabelFilter] = useState<string[]>([]);
+  const [stateFilter, setStateFilter] = useState<TicketState[]>([TicketState.New, TicketState.Open]);
+  const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
@@ -58,21 +52,19 @@ export default function TicketPage() {
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
   const [showMobileSort, setShowMobileSort] = useState(false);
   const [areFiltersSet, setAreFiltersSet] = useState(false);
+  const [stateFilterSet, setStateFilterSet] = useState(false);
+
+  useEffect(() => {
+    const originalState = new Set([TicketState.New, TicketState.Open])
+    const currentState = new Set(stateFilter)
+    setStateFilterSet(!compareStringSets(originalState, currentState))
+    // We can't add the expected stateFilter as array dependency, as it will change size
+    // and thus throw an error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateFilter.length]);
 
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
   const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
-
-  const fetchTickets = useCallback(async () => {
-    const client = getClient();
-    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
-    if (data.tickets) setTickets(data.tickets.filter(ticket => !!ticket))
-  }, []);
-
-  const fetchAllLabels = useCallback(async () => {
-    const client = getClient();
-    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) setLabels(data.labels.filter(label => !!label));
-  }, []);
 
   useEffect(() => {
     const newFilteredTickets = filterTickets(tickets);
@@ -94,17 +86,16 @@ export default function TicketPage() {
 
   useEffect(() => {
     setAreFiltersSet(
-      stateFilter.length > 0 ||
+      stateFilterSet ||
       labelFilter.length > 0 ||
       !!startDate ||
       !!endDate
     )
-  }, [stateFilter.length, labelFilter.length, startDate, endDate]);
+  }, [stateFilterSet, labelFilter.length, startDate, endDate]);
 
-  useEffect(() => {
-    void fetchTickets();
-    void fetchAllLabels();
-  }, [fetchTickets, fetchAllLabels]);
+  const resetDialogState = () => {
+    setDialogState({mode: null, currentTicket: null})
+  }
 
   function sortTickets(tickets: Ticket[]) {
     tickets.sort((a, b) => {
@@ -145,7 +136,7 @@ export default function TicketPage() {
 
       const matchesLabel =
         labelFilter.length > 0
-          ? ticket.labels?.some((label) => labelFilter.includes(label.id))
+          ? ticket.labels?.some((label) => labelFilter.map(l => l.id).includes(label.id))
           : true;
 
       const matchesStartDate = startDate ? new Date(ticket.createdAt) >= startDate : true
@@ -157,13 +148,9 @@ export default function TicketPage() {
     return tickets
   }
 
-  const resetDialogState = () => {
-    setDialogState({mode: null, currentTicket: null})
-  }
-
   const resetAllFilters = () => {
     setSearchTerm("");
-    setStateFilter([]);
+    setStateFilter([TicketState.New, TicketState.Open]);
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
@@ -181,21 +168,20 @@ export default function TicketPage() {
       const client = getClient();
       await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
       toast.success("Ticket wurde erfolgreich gelöscht")
-      setTickets((prev) =>
-        prev.filter((t) => t?.id !== dialogState.currentTicket?.id)
-      );
+      triggerTicketRefetch()
       resetDialogState()
     } catch {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
 
-  console.log("Sorting: ", sorting)
-
   return (
     <div className="space-y-6 grow max-w-screen">
-      <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
-                            icon={<TicketIcon/>}/>
+      <ManagementPageHeader
+        title="Tickets"
+        description="Bearbeite alle verfügbaren Tickets"
+        icon={<TicketIcon/>}
+      />
       <div className="px-8 flex gap-4">
         <div className="flex flex-col gap-2 w-full">
           <div className="flex gap-2">
@@ -208,7 +194,10 @@ export default function TicketPage() {
             {isMobile ? (
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" data-cy="mobile-filter-button">
+                  <Button
+                    variant="outline"
+                    className={cn(areFiltersSet && 'border !border-accent')}
+                    data-cy="mobile-filter-button">
                     Filter
                   </Button>
                 </SheetTrigger>
@@ -266,31 +255,34 @@ export default function TicketPage() {
                     </div>
                     {showMobileLabelFilter && (
                       <div className="mt-2 px-4">
-                        <div
-                          className="overflow-hidden max-h-[150px] overflow-y-auto">
+                        <div className="overflow-hidden max-h-[150px] overflow-y-auto">
                           <Input
                             placeholder="Label suchen..."
                             value={labelSearchTerm}
                             onChange={(e) => setLabelSearchTerm(e.target.value)}
-                            className="w-full flex items-center justify-start gap-2"
+                            className="w-full mb-2"
                           />
                           {labels
                             .filter((label) =>
                               label?.name.toLowerCase().includes(labelSearchTerm.toLowerCase())
                             )
+                            // for some reason, using it with && in the upper filter does not work...
+                            .filter((label) => !!label)
                             .map((label) => {
-                              const isSelected = label?.id ? labelFilter.includes(label.id) : false;
+                              const isSelected = label.id
+                                ? labelFilter.map(l => l.id).includes(label.id)
+                                : false;
+
                               return (
                                 <Button
-                                  key={label?.id}
-                                  variant={isSelected ? "secondary" : "outline"}
+                                  key={label.id}
+                                  variant={"ghost"}
                                   className="w-full flex items-center justify-start gap-2"
                                   onClick={() => {
-                                    if (!label?.id) return;
                                     setLabelFilter((prev) =>
                                       isSelected
-                                        ? prev.filter((l) => l !== label?.id)
-                                        : [...prev, label.id]
+                                        ? prev.filter((l) => l.id !== label?.id)
+                                        : [...prev, label]
                                     )
                                   }}
                                 >
@@ -300,7 +292,7 @@ export default function TicketPage() {
                                       isSelected ? "opacity-100" : "opacity-0"
                                     )}
                                   />
-                                  {label?.name}
+                                  <LabelBadge label={label}/>
                                 </Button>
                               );
                             })}
@@ -371,7 +363,7 @@ export default function TicketPage() {
                               className="flex-1 text-xs"
                               onClick={() => setSorting(prevState => ({
                                 ...prevState,
-                                orderAscending:  true
+                                orderAscending: true
                               }))}
                             >
                               Aufsteigend
@@ -398,14 +390,20 @@ export default function TicketPage() {
               <div className="flex gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="max-w-[200px] justify-between"
-                            data-cy="button-status">
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'max-w-[200px] justify-between',
+                        stateFilterSet && 'border !border-accent'
+                      )}
+                      data-cy="button-status"
+                    >
                       {stateFilter && stateFilter.length > 0
                         ? `${stateFilter.length} Status`
                         : "Status"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
+                  <PopoverContent className="p-0 w-[170px]">
                     <Command>
                       <CommandInput placeholder="Status suchen..."/>
                       <CommandGroup>
@@ -442,71 +440,33 @@ export default function TicketPage() {
                 </Popover>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="max-w-[200px] justify-between"
-                            data-cy="button-label">
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "max-w-[200px] justify-between",
+                        labelFilter.length > 0 && 'border !border-accent'
+                      )}
+                      data-cy="button-label">
                       {labelFilter && labelFilter.length > 0
                         ? `${labelFilter.length} Labels`
                         : "Labels"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
-                    <Command>
-                      <CommandInput placeholder="Labels suchen..."/>
-                      <CommandGroup>
-                        {labels
-                          .filter((label) => label && label.name.toLowerCase().includes(labelSearchTerm.toLowerCase()))
-                          .map((label) => {
-                            if (!label) return null;
-                            const isSelected = labelFilter?.includes(label.id);
-                            return (
-                              <CommandItem
-                                key={label.id}
-                                onSelect={() => {
-                                  setLabelFilter((prev) =>
-                                    isSelected
-                                      ? prev?.filter((l) => l !== label.id)
-                                      : [...(prev ?? []), label.id]
-                                  );
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    isSelected ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {label.name}
-                              </CommandItem>
-                            );
-                          })}
-                      </CommandGroup>
-                      {labelFilter.length > 0 && (
-                        <div className="p-2 border-t">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full justify-center"
-                            onClick={() => setLabelFilter([])}
-                            data-cy="clear-labels"
-                          >
-                            <Trash2/>
-                            Filter löschen
-                          </Button>
-                        </div>
-                      )}
-                    </Command>
+                  <PopoverContent className="p-0 max-w-[200px]">
+                    <LabelSelection
+                      labels={labels}
+                      selectedLabels={labelFilter}
+                      setLabels={(labels) => setLabelFilter(labels)}
+                    />
                   </PopoverContent>
                 </Popover>
-
                 <DateRangeFilter
                   startDate={startDate}
                   setStartDate={setStartDate}
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
-
                 <SortingSelection setSorting={setSorting} sorting={sorting}/>
-
               </div>
             )}
           </div>
@@ -525,7 +485,7 @@ export default function TicketPage() {
       </div>
       {sortedTickets.map((ticket) =>
           ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-2" data-cy={`ticket-card-${ticket.id}`}>
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>
                 <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
               </Link>

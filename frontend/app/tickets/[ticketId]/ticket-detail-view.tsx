@@ -1,30 +1,156 @@
 "use client";
 
-import {Ticket} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, UpdateTicketDocument, UpdateTicketMutation} from "@/lib/graph/generated/graphql";
 import {PageLoader} from "@/components/page-loader";
+import {useSidebar} from "@/components/ui/sidebar";
+import React, {Dispatch, useEffect} from "react";
+import {TicketDialogState} from "@/app/tickets/page";
+import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
+import {Button} from "@/components/ui/button";
+import {Save} from "lucide-react";
+import {getClient} from "@/lib/graph/client";
+import {toast} from "sonner";
+import {Input} from "@/components/ui/input";
+import {useTickets} from "@/components/providers/ticket-provider";
+import {cn} from "@/lib/utils";
 
 interface TicketDetailViewProps {
-    ticket: Ticket | null;
+  ticket: Ticket | null;
+  ticketLabels: Label[];
+  setDialogStateAction: Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-export default function TicketDetailView({ticket}: TicketDetailViewProps) {
-    if (!ticket) {
-        return (
-            <div className="flex flex-grow items-center justify-end">
-                <PageLoader message="Bitte wählen Sie ein Ticket aus der Übersicht." loading={false}/>
-            </div>
-        )
-    }
+const MAX_TITLE_LENGTH = 70;
 
+export default function TicketDetailView({
+                                           ticket,
+                                           ticketLabels,
+                                           setDialogStateAction,
+                                         }: TicketDetailViewProps) {
+  const {isMobile} = useSidebar()
+  const {triggerTicketRefetch} = useTickets()
+  const [editMode, setEditMode] = React.useState(false);
+  const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "")
+
+  useEffect(() => setNewTitle(ticket?.title ?? ""), [ticket?.title])
+
+  async function handleTitleChange() {
+    if (ticket?.title === newTitle || !ticket) return
+
+    const client = getClient()
+
+    try {
+      await client.request<UpdateTicketMutation>(
+        UpdateTicketDocument,
+        {
+          id: ticket.id,
+          ticket: {title: newTitle}
+        }
+      )
+
+      triggerTicketRefetch()
+      setEditMode(false)
+      ticket.title = newTitle
+    } catch (error) {
+      toast.error("Beim Aktualisieren des Titels ist ein Fehler aufgetreten")
+      console.error(error)
+    }
+  }
+
+  if (!ticket) {
     return (
-        <div className="flex mx-6">
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-semibold mb-4 max-w-[300px] md:max-w-[900px] overflow-x-auto whitespace-nowrap"
-                    title={"Original Titel: " + ticket.originalTitle}>{ticket.title}</h1>
-                <div className="flex flex-col grow">
-                    <div className="flex">{ticket.text}</div>
-                </div>
-            </div>
+      <div className="flex flex-grow items-center justify-center">
+        <PageLoader message="Bitte wähle ein Ticket aus der Übersicht." loading={false}/>
+      </div>
+    )
+  }
+
+  return (
+    // 2.5 rem is the padding added by the parent node
+    <div
+      className={cn(
+        "mx-6 grow overflow-y-scroll min-h-[calc(100vh-2.5rem)] flex border rounded-lg p-5 flex-col",
+        // 28px is the size of the toggle, only visible on mobile
+        isMobile && 'min-h-[calc(100vh-2.5rem-28px)]'
+      )}
+    >
+        {!isMobile ? (
+          <div className={'w-full justify-between flex items-center gap-4'}>
+            {editMode ? (
+              <Input
+                autoFocus
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleTitleChange()
+                }
+                type="text"
+                className={'bg-primary border-none !text-4xl !py-6'}
+                maxLength={MAX_TITLE_LENGTH}
+                placeholder={ticket?.title}
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+              />
+            ) : (
+              <h1
+                className="text-4xl font-semibold text-wrap whitespace-nowrap truncate"
+                title={"Original Titel: " + ticket.originalTitle}
+              >
+                {ticket.title}
+              </h1>
+            )}
+
+            <span>
+            {editMode ? (
+              <span className={'flex items-center gap-2'}>
+                <Button
+                  variant={'secondary'}
+                  onClick={() => setEditMode(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type={"submit"}
+                  variant={'secondary'}
+                  onClick={handleTitleChange}
+                  className={'bg-accent hover:bg-accent/60'}
+                >
+                  <Save/>
+                  Speichern
+                </Button>
+              </span>
+            ) : (
+              <Button variant={'secondary'} onClick={() => setEditMode(true)}>Edit</Button>
+            )}
+          </span>
+
+          </div>
+        ) : (
+          <span className="flex items-center justify-between gap-2">
+            <h1
+              className="text-2xl font-semibold text-wrap whitespace-nowrap"
+              title={"Originaltitel: " + ticket.originalTitle}
+            >
+              {ticket.title}
+            </h1>
+            <TicketInfoPane
+              ticket={ticket}
+              initialTicketLabels={ticketLabels}
+              setDialogStateAction={setDialogStateAction}
+            />
+          </span>
+        )}
+
+        <div className={'w-full my-4 h-[1px] bg-border'}></div>
+
+        <div className="flex justify-between h-full grow">
+          <p>{ticket.text}</p>
+          {!isMobile && (
+            <TicketInfoPane
+              ticket={ticket}
+              initialTicketLabels={ticketLabels}
+              setDialogStateAction={setDialogStateAction}
+            />
+          )}
         </div>
-    );
+    </div>
+  );
 }

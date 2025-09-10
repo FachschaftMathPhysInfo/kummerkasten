@@ -20,24 +20,22 @@ import {PlusCircle} from "lucide-react";
 import {LabelColumns} from "@/app/(settings)/labels/label-columns";
 import LabelDialog from "@/app/(settings)/labels/label-dialog";
 import {DataTablePagination} from "@/components/table-utils/data-table-pagination";
-
-interface DataTableProps {
-  data: Label[];
-  refreshData: () => void;
-}
+import {useLabels} from "@/components/providers/label-provider";
 
 export type LabelTableDialogState = {
   mode: "update" | "delete" | "add" | null;
   currentLabel: Label | null
 }
 
-export function LabelTable(props: DataTableProps) {
+export function LabelTable() {
+  const {labels, triggerLabelRefetch} = useLabels();
+
   const [dialogState, setDialogState] = useState<LabelTableDialogState>({mode: null, currentLabel: null});
   const columns = LabelColumns({setDialogState});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [sorting, setSorting] = React.useState([{id: "name", desc: false}]);
-  const data = props.data;
+  const data = labels;
   const table = useReactTable({
     data,
     columns,
@@ -54,8 +52,8 @@ export function LabelTable(props: DataTableProps) {
       sorting,
     },
   });
-  const searchKey = "name"
 
+  const searchKey = "name"
   const client = getClient();
 
   const resetDialogState = () => {
@@ -72,7 +70,7 @@ export function LabelTable(props: DataTableProps) {
       await client.request<DeleteLabelsMutation>(DeleteLabelsDocument, {ids: [dialogState.currentLabel.id]})
       toast.success("Label wurde erfolgreich gelöscht")
       resetDialogState()
-      props.refreshData()
+      triggerLabelRefetch()
     } catch {
       toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
     }
@@ -164,7 +162,7 @@ export function LabelTable(props: DataTableProps) {
         createMode={dialogState.mode === "add"}
         label={dialogState.currentLabel}
         closeDialog={resetDialogState}
-        refreshData={props.refreshData}
+        refreshData={triggerLabelRefetch}
       />
 
       <ConfirmationDialog

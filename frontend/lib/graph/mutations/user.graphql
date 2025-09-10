@@ -27,3 +27,7 @@ mutation updateUserSettings($id: String!, $user: UpdateUser!) {
 mutation updateUser($id: String!, $user: UpdateUser!){
     updateUser(id: $id, user: $user)
 }
+
+mutation resetPassword($id: String!, $password: String!) {
+    resetPassword(id: $id, password: $password)
+}
