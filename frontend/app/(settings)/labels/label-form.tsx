@@ -184,7 +184,7 @@ export default function LabelForm(props: LabelFormProps) {
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <div className={'flex items-center gap-4 mt-2'}>
-                <FormLabel>Form-Label</FormLabel>
+                <FormLabel>Öffentliche Label</FormLabel>
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -196,7 +196,7 @@ export default function LabelForm(props: LabelFormProps) {
                 </FormControl>
               </div>
               <FormDescription>
-                Ist ein Label als Form-Label markiert, können User es beim Erstellen eines Tickets auswählen
+                Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen
               </FormDescription>
             </FormItem>
           )}
