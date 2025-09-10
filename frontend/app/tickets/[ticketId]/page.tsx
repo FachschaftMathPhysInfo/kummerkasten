@@ -97,7 +97,6 @@ export default function TicketPage() {
             ticket={ticket}
             ticketLabels={ticketLabels}
             setDialogStateAction={setDialogState}
-            refreshTicketAction={fetchTicketDetail}
           />
         </ResizablePanel>
       </ResizablePanelGroup>

@@ -11,12 +11,12 @@ import {Save} from "lucide-react";
 import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 interface TicketDetailViewProps {
   ticket: Ticket | null;
   ticketLabels: Label[];
   setDialogStateAction: Dispatch<React.SetStateAction<TicketDialogState>>;
-  refreshTicketAction: () => void;
 }
 
 const MAX_TITLE_LENGTH = 70;
@@ -25,9 +25,9 @@ export default function TicketDetailView({
                                            ticket,
                                            ticketLabels,
                                            setDialogStateAction,
-                                           refreshTicketAction
                                          }: TicketDetailViewProps) {
   const {isMobile} = useSidebar()
+  const {triggerTicketRefetch} = useTickets()
   const [editMode, setEditMode] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "")
 
@@ -47,8 +47,9 @@ export default function TicketDetailView({
         }
       )
 
-      refreshTicketAction()
+      triggerTicketRefetch()
       setEditMode(false)
+      ticket.title = newTitle
     } catch (error) {
       toast.error("Beim Aktualisieren des Titels ist ein Fehler aufgetreten")
       console.error(error)
