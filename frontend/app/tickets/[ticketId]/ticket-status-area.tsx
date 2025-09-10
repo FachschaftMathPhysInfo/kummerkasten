@@ -3,6 +3,8 @@ import React from "react";
 import {Badge} from "@/components/ui/badge";
 import {cn} from "@/lib/utils";
 import {Select, SelectContent, SelectItem, SelectTrigger} from "@/components/ui/select";
+import {calculateFontColor} from "@/lib/calculate-colors";
+import {getTicketStateColor} from "@/lib/ticketstate-colour";
 
 interface TicketStatusAreaProps {
   state: TicketState;
@@ -22,6 +24,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
                 ? "!bg-ticketstate-open hover:!bg-ticketstate-open/60"
                 : "!bg-ticketstate-closed hover:!bg-ticketstate-closed/60"
           )}
+          style={{color: calculateFontColor(getTicketStateColor(state))}}
         >
           {state === TicketState.New
             ? "Neu"
