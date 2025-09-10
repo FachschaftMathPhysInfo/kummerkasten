@@ -27,6 +27,7 @@ const client = getClient();
 export default function TicketPage() {
   const {ticketId} = useParams();
   const {triggerTicketRefetch} = useTickets()
+  const {isMobile} = useSidebar()
   const [searchTerm, setSearchTerm] = useState("");
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -75,7 +76,7 @@ export default function TicketPage() {
     <div
       className={cn(
         "flex flex-col py-5 grow",
-        state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]"
+        isMobile ? "max-w-screen" : (state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]")
       )}
     >
       <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow">
