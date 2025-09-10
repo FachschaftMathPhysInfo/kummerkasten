@@ -12,6 +12,7 @@ import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
 import {useTickets} from "@/components/providers/ticket-provider";
+import {cn} from "@/lib/utils";
 
 interface TicketDetailViewProps {
   ticket: Ticket | null;
@@ -66,7 +67,13 @@ export default function TicketDetailView({
 
   return (
     // 2.5 rem is the padding added by the parent node
-    <div className="mx-6 grow overflow-y-scroll min-h-[calc(100vh-2.5rem)] flex border rounded-lg p-5 flex-col">
+    <div
+      className={cn(
+        "mx-6 grow overflow-y-scroll min-h-[calc(100vh-2.5rem)] flex border rounded-lg p-5 flex-col",
+        // 28px is the size of the toggle, only visible on mobile
+        isMobile && 'min-h-[calc(100vh-2.5rem-28px)]'
+      )}
+    >
         {!isMobile ? (
           <div className={'w-full justify-between flex items-center gap-4'}>
             {editMode ? (
