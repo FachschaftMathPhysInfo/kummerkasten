@@ -41,7 +41,7 @@ export default function AccountDataForm() {
     }
   })
 
-  const fetchAccountData = useCallback(async () => {
+  const resetFormWithUserData = useCallback(() => {
     if (!user?.id) return;
     form.reset({
       firstname: user.firstname,
@@ -52,8 +52,8 @@ export default function AccountDataForm() {
   }, [user?.firstname, user?.lastname, user?.mail, user?.id, form]);
 
   useEffect(() => {
-    void fetchAccountData();
-  }, [fetchAccountData]);
+    void resetFormWithUserData();
+  }, [resetFormWithUserData]);
 
   async function onValidSubmit(userData: AccountDataFormData) {
     setIsSavingAccount(true);
@@ -123,11 +123,15 @@ export default function AccountDataForm() {
         className="space-y-4 w-full"
       >
 
-        <SettingsBlock icon={<User/>} title={"Account"} hasTriedToSubmit={hasTriedToSubmit}
-                       isDirty={form.formState.isDirty}
-                       isSaving={isSavingAccount}
-                       isLoading={isLoading}
-                       dataCy="input-profile-save">
+        <SettingsBlock
+          icon={<User/>}
+          title={"Account"}
+          hasTriedToSubmit={hasTriedToSubmit}
+          isDirty={form.formState.isDirty}
+          isSaving={isSavingAccount}
+          isLoading={isLoading}
+          dataCy="input-profile-save"
+        >
           <FormField
             control={form.control}
             name="firstname"
