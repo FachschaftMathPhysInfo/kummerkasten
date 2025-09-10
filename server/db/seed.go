@@ -18,6 +18,9 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 	if err := createAdminUser(ctx, db); err != nil {
 		return err
 	}
+	if err := createSettings(ctx, db); err != nil {
+		return err
+	}
 
 	if os.Getenv("ENV") != "DEV" {
 		fmt.Printf("Skipping test data seeding (ENV != DEV)")
@@ -219,6 +222,49 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 
 	log.Printf("Admin user created with email: %s", mail)
 	log.Printf("Admin user created with password: %s", password)
+	return nil
+}
+
+// TODO: wait for issue#231 to merge, then just add special about-contents
+// current instance is only used for testing ability
+func createSettings(ctx context.Context, db *bun.DB) error {
+	const aboutSectionTextKey = "ABOUT_SECTION_TEXT"
+
+	settings := []*models.Setting{
+		{Key: aboutSectionTextKey, Value: "Hello World!"},
+	}
+
+	keys := []string{aboutSectionTextKey}
+	existing := make([]*models.Setting, 0)
+
+	if err := db.NewSelect().
+		Model(&existing).
+		Where("key IN (?)", bun.In(keys)).
+		Scan(ctx); err != nil {
+		return fmt.Errorf("failed to fetch settings: %w", err)
+	}
+
+	existingKeys := make(map[string]bool)
+	for _, s := range existing {
+		existingKeys[s.Key] = true
+	}
+
+	toInsert := make([]*models.Setting, 0)
+	for _, s := range settings {
+		if !existingKeys[s.Key] {
+			toInsert = append(toInsert, s)
+		} else {
+			log.Printf("Skipping seeding for existing setting: %s", s.Key)
+		}
+	}
+
+	if len(toInsert) > 0 {
+		if _, err := db.NewInsert().Model(&toInsert).Exec(ctx); err != nil {
+			return fmt.Errorf("failed to insert settings: %w", err)
+		}
+	}
+
+	log.Print("Test settings seeded successfully")
 	return nil
 }
 
