@@ -130,7 +130,7 @@ export default function FooterForm() {
               name="legalNoticeLink"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>Nachname</FormLabel>
+                  <FormLabel>Impressum-Link</FormLabel>
                   <FormControl>
                     <Input placeholder={"https://..."} {...field} data-cy={'footer-legalnotice-input'}/>
                   </FormControl>
@@ -139,8 +139,9 @@ export default function FooterForm() {
               )}
             />
 
-            <div className={'w-full flex justify-end items-center gap-4'}>
+            <div className={cn('w-full flex flex-col items-center gap-4 md:justify-end md:flex-row')}>
               <Button
+                className={'w-full md:w-fit'}
                 variant={'secondary'}
                 type={'button'}
                 disabled={!form.formState.isDirty}
@@ -153,7 +154,7 @@ export default function FooterForm() {
               <Button
                 type="submit"
                 disabled={!form.formState.isValid && hasTriedToSubmit || !form.formState.isDirty}
-                className={cn(isLoading && 'hidden')}
+                className={cn(isLoading && 'hidden', 'w-full md:w-fit')}
               >
                 {isSaving ? (
                   <Loader2 className={'animate-spin'}/>
