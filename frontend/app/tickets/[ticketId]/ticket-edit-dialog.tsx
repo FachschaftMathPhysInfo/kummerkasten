@@ -4,9 +4,6 @@ import {z} from "zod";
 import {
   AddLabelsToTicketDocument,
   AddLabelsToTicketMutation,
-  AllLabelsDocument,
-  AllLabelsQuery,
-  Label,
   RemoveLabelsFromTicketDocument,
   RemoveLabelsFromTicketMutation,
   Ticket,
@@ -25,7 +22,9 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {LoaderCircle, PlusCircle} from "lucide-react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {useLabels} from "@/components/providers/label-provider";
 import LabelSelection from "@/components/label-selection";
+
 
 interface TicketEditDialogProps {
   ticket: Ticket | null;
@@ -44,7 +43,7 @@ const ticketEditSchema = z.object({
 type TicketEditFormData = z.infer<typeof ticketEditSchema>
 
 export default function TicketEditDialog(props: TicketEditDialogProps) {
-  const [allLabels, setAllLabels] = useState<Label[]>([]);
+  const {labels} = useLabels()
   const form = useForm<TicketEditFormData>({
     resolver: zodResolver(ticketEditSchema),
     defaultValues: {
@@ -69,17 +68,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
       });
     }
   }, [props.ticket, form]);
-
-  useEffect(() => {
-    async function fetchLabels() {
-      const client = getClient();
-      const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-      setAllLabels((data.labels ?? []).filter((l) => !!l));
-    }
-
-    void fetchLabels();
-  }, []);
-
 
   async function onValidSubmit(data: TicketEditFormData) {
     if (!props.ticket?.id) return;
@@ -167,10 +155,10 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
                     {Object.values(TicketState).map((state) => (
                       <SelectItem key={state} value={state}>
                         {state === "NEW"
-                          ? "New"
+                          ? "Neu"
                           : state === "OPEN"
-                            ? "Open"
-                            : "Closed"}
+                            ? "Offen"
+                            : "Fertig"}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -188,8 +176,8 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
               <FormLabel>Labels</FormLabel>
               <FormControl>
                 <LabelSelection
-                  labels={allLabels}
-                  selectedLabels={allLabels.filter(label =>
+                  labels={labels}
+                  selectedLabels={labels.filter(label =>
                     form.getValues('labels').includes(label.id)
                   )}
                   setLabels={(labels) => {

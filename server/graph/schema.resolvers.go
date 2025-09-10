@@ -817,6 +817,22 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 	return settings, nil
 }
 
+// FooterSettings is the resolver for the footerSettings field.
+func (r *queryResolver) FooterSettings(ctx context.Context) ([]*model.Setting, error) {
+	const footerSettingsPrefix = "FOOTER_"
+	var footerSettings []*model.Setting
+
+	if err := r.DB.NewSelect().
+		Model(&footerSettings).
+		Where("key LIKE ?", footerSettingsPrefix+"%").
+		Scan(ctx); err != nil {
+		log.Printf("Failed to fetch footer settings: %v", err)
+		return nil, fmt.Errorf("failed to fetch footer settings")
+	}
+
+	return footerSettings, nil
+}
+
 // AboutSectionSettings is the resolver for the aboutSectionSettings field.
 func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Setting, error) {
 	const aboutKey = "ABOUT_"

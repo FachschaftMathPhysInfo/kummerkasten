@@ -1,7 +1,12 @@
-# TODO: wait for issue#231 to merge, then just add special about-contents
-# current instance is only used for testing ability
 query allSettings {
     settings {
+        key
+        value
+    }
+}
+
+query footerSettings {
+    footerSettings {
         key
         value
     }

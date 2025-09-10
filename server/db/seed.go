@@ -225,16 +225,18 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 	return nil
 }
 
-// TODO: wait for issue#231 to merge, then just add special about-contents
-// current instance is only used for testing ability
 func createSettings(ctx context.Context, db *bun.DB) error {
+	const contactLinkKey = "FOOTER_CONTACT_LINK"
+	const legalNoticeKey = "FOOTER_LEGAL_NOTICE_LINK"
 	const aboutSectionTextKey = "ABOUT_SECTION_TEXT"
 
 	settings := []*models.Setting{
+		{Key: contactLinkKey, Value: "https://mathphys.stura.uni-heidelberg.de/kontakt/"},
+		{Key: legalNoticeKey, Value: "https://mathphys.stura.uni-heidelberg.de/"},
 		{Key: aboutSectionTextKey, Value: "Hello World!"},
 	}
 
-	keys := []string{aboutSectionTextKey}
+	keys := []string{contactLinkKey, legalNoticeKey, aboutSectionTextKey}
 	existing := make([]*models.Setting, 0)
 
 	if err := db.NewSelect().
@@ -264,7 +266,6 @@ func createSettings(ctx context.Context, db *bun.DB) error {
 		}
 	}
 
-	log.Print("Test settings seeded successfully")
 	return nil
 }
 

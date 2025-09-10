@@ -3,7 +3,7 @@
 import {Input} from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
-import {AllLabelsDocument, AllLabelsQuery, Label, Ticket, TicketState,} from "@/lib/graph/generated/graphql";
+import {Label, TicketState,} from "@/lib/graph/generated/graphql";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,27 +26,28 @@ import {Button} from "@/components/ui/button";
 import {Check, Trash2} from "lucide-react";
 import {cn, compareStringSets} from "@/lib/utils";
 import {DateRangeFilter} from "@/components/date-range-filter";
-import React, {useCallback, useEffect, useState} from "react";
-import {getClient} from "@/lib/graph/client";
+import React, {useEffect, useState} from "react";
 import {format} from "date-fns";
+import {useLabels} from "@/components/providers/label-provider";
+import {useTickets} from "@/components/providers/ticket-provider";
 import LabelSelection from "@/components/label-selection";
 
 interface TicketSidebarProps {
-  tickets: Ticket[];
   searchTerm: string;
   setSearchTermAction: (term: string) => void;
   selectedTicketId?: string;
 }
 
 export default function TicketSidebar({
-                                        tickets,
                                         searchTerm,
                                         setSearchTermAction,
                                         selectedTicketId,
                                       }: TicketSidebarProps) {
+
   const router = useRouter();
-  const [labels, setLabels] = useState<(Label[])>([]);
-  const [stateFilter, setStateFilter] = useState<TicketState[]>([]);
+  const {tickets} = useTickets()
+  const {labels} = useLabels()
+  const [stateFilter, setStateFilter] = useState<TicketState[]>([TicketState.New, TicketState.Open]);
   const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -109,21 +110,9 @@ export default function TicketSidebar({
     );
   });
 
-  const fetchAllLabels = useCallback(async () => {
-    const client = getClient();
-    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) {
-      setLabels(data.labels.filter(label => !!label));
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchAllLabels();
-  }, [fetchAllLabels]);
-
   const resetAllFilters = () => {
     setSearchTermAction("");
-    setStateFilter([TicketState.New, TicketState.Open]);
+    setStateFilter([TicketState.Open, TicketState.New]);
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
@@ -151,8 +140,6 @@ export default function TicketSidebar({
     if (valA > valB) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
-
-    console.log(labelFilter)
 
   return (
     <div className="px-4">
@@ -240,7 +227,6 @@ export default function TicketSidebar({
               />
             </div>
 
-
             <div className="flex flex-col mt-4 px-4">
               <div className="font-semibold mb-2">Datum:</div>
               <DateRangeFilter
@@ -307,7 +293,7 @@ export default function TicketSidebar({
           <div
             key={t.id}
             className={`flex flex-row p-2 cursor-pointer rounded items-center ${
-              t.id === selectedTicketId ? "bg-accent" : "hover:bg-accent"
+              t.id === selectedTicketId ? "bg-accent/50" : "hover:bg-accent/40"
             }`}
             onClick={() => router.push(`/tickets/${t.id}`)}
             data-cy={`ticket-card-${t.id}`}

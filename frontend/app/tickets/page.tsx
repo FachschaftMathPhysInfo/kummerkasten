@@ -4,18 +4,8 @@ import {ManagementPageHeader} from "@/components/management-page-header";
 import {Check, TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
 import {getClient} from "@/lib/graph/client";
-import React, {useCallback, useEffect, useState} from "react";
-import {
-  AllLabelsDocument,
-  AllLabelsQuery,
-  AllTicketsDocument,
-  AllTicketsQuery,
-  DeleteTicketDocument,
-  DeleteTicketMutation,
-  Label,
-  Ticket,
-  TicketState
-} from "@/lib/graph/generated/graphql";
+import React, {useEffect, useState} from "react";
+import {DeleteTicketDocument, DeleteTicketMutation, Label, Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import {Input} from "@/components/ui/input";
 import Link from "next/link";
 import {toast} from "sonner";
@@ -27,9 +17,12 @@ import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useSidebar} from "@/components/ui/sidebar";
+import {useTickets} from "@/components/providers/ticket-provider";
+import {useLabels} from "@/components/providers/label-provider";
 import LabelSelection from "@/components/label-selection";
 import LabelBadge from "@/components/label-badge";
 import SortingSelection from "@/app/tickets/sorting-selection";
+
 
 export type TicketDialogState = {
   mode: "update" | "delete" | null;
@@ -44,8 +37,8 @@ export type TicketSorting = {
 export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
 
 export default function TicketPage() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [labels, setLabels] = useState<Label[]>([]);
+  const {tickets, triggerTicketRefetch} = useTickets();
+  const {labels} = useLabels();
   const [searchTerm, setSearchTerm] = useState("");
   const [stateFilter, setStateFilter] = useState<TicketState[]>([TicketState.New, TicketState.Open]);
   const [labelFilter, setLabelFilter] = useState<Label[]>([]);
@@ -72,18 +65,6 @@ export default function TicketPage() {
 
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
   const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
-
-  const fetchTickets = useCallback(async () => {
-    const client = getClient();
-    const data = await client.request<AllTicketsQuery>(AllTicketsDocument);
-    if (data.tickets) setTickets(data.tickets.filter(ticket => !!ticket))
-  }, []);
-
-  const fetchAllLabels = useCallback(async () => {
-    const client = getClient();
-    const data = await client.request<AllLabelsQuery>(AllLabelsDocument);
-    if (data.labels) setLabels(data.labels.filter(label => !!label));
-  }, []);
 
   useEffect(() => {
     const newFilteredTickets = filterTickets(tickets);
@@ -115,11 +96,6 @@ export default function TicketPage() {
   const resetDialogState = () => {
     setDialogState({mode: null, currentTicket: null})
   }
-
-  useEffect(() => {
-    void fetchTickets();
-    void fetchAllLabels();
-  }, [fetchTickets, fetchAllLabels]);
 
   function sortTickets(tickets: Ticket[]) {
     tickets.sort((a, b) => {
@@ -192,21 +168,20 @@ export default function TicketPage() {
       const client = getClient();
       await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
       toast.success("Ticket wurde erfolgreich gelöscht")
-      setTickets((prev) =>
-        prev.filter((t) => t?.id !== dialogState.currentTicket?.id)
-      );
+      triggerTicketRefetch()
       resetDialogState()
     } catch {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
 
-  console.log("Sorting: ", sorting)
-
   return (
-    <div className="w-full h-full flex flex-col grow">
-      <ManagementPageHeader title="Tickets" description="Bearbeite alle verfügbaren Tickets"
-                            icon={<TicketIcon/>}/>
+    <div className="space-y-6 grow max-w-screen">
+      <ManagementPageHeader
+        title="Tickets"
+        description="Bearbeite alle verfügbaren Tickets"
+        icon={<TicketIcon/>}
+      />
       <div className="px-8 flex gap-4">
         <div className="flex flex-col gap-2 w-full">
           <div className="flex gap-2">

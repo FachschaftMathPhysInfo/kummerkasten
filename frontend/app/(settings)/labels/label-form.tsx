@@ -15,9 +15,10 @@ import {
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {LoaderCircle, PlusCircle, Save} from "lucide-react";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
+import {Checkbox} from "@/components/ui/checkbox";
 
 const LabelMaxLength = 50;
 
@@ -37,6 +38,7 @@ const labelFormSchema = z.object({
   color: z.string().regex(
     new RegExp("^#([A-Fa-f0-9]{6})$"), "Bitte gültigen HEX-Code angeben"
   ),
+  isFormLabel: z.boolean(),
 })
 
 export default function LabelForm(props: LabelFormProps) {
@@ -49,6 +51,7 @@ export default function LabelForm(props: LabelFormProps) {
     defaultValues: {
       name: props.label?.name ?? "",
       color: props.label?.color ?? color,
+      isFormLabel: props.label?.formLabel ?? false
     }
   })
 
@@ -56,36 +59,36 @@ export default function LabelForm(props: LabelFormProps) {
     setLoading(true)
 
     if (props.createMode) {
-      await createLabel(data.name, data.color)
+      await createLabel(data.name, data.color, data.isFormLabel)
     } else {
       if (!props.label) return
-      await updateLabel(props.label?.id, data.name, data.color)
+      await updateLabel(props.label?.id, data.name, data.color, data.isFormLabel)
     }
 
     setLoading(false)
   }
 
-  async function createLabel(name: string, color: string) {
+  async function createLabel(name: string, color: string, isFormLabel: boolean) {
     const client = getClient();
-    const label: NewLabel = {name: name, color: color};
+    const label: NewLabel = {name: name, color: color, formLabel: isFormLabel};
 
     try {
       await client.request<CreateLabelMutation>(CreateLabelDocument, {label: label})
       toast.success("Label erstellt!")
       props.refreshData()
       props.closeDialog()
-    } catch (error){
+    } catch (error) {
       if (String(error).includes('unique constraint')) {
-        form.setError("name", { message: "Ein Label mit diesem Namen existiert bereits"})
+        form.setError("name", {message: "Ein Label mit diesem Namen existiert bereits"})
       } else {
         toast.error("Ein Fehler beim Erstellen des Labels ist aufgetreten")
       }
     }
   }
 
-  async function updateLabel(id: string, name: string, color: string) {
+  async function updateLabel(id: string, name: string, color: string, isFormLabel: boolean) {
     const client = getClient();
-    const label: NewLabel = {name: name, color: color};
+    const label: NewLabel = {name: name, color: color, formLabel: isFormLabel};
 
     try {
       await client.request<UpdateLabelMutation>(UpdateLabelDocument, {id: id, label: label})
@@ -94,7 +97,7 @@ export default function LabelForm(props: LabelFormProps) {
       props.closeDialog()
     } catch (error) {
       if (String(error).includes('unique constraint')) {
-        form.setError("name", { message: "Ein Label mit diesem Namen existiert bereits"})
+        form.setError("name", {message: "Ein Label mit diesem Namen existiert bereits"})
       } else {
         toast.error("Ein Fehler beim Aktualisieren des Labels ist aufgetreten")
       }
@@ -165,12 +168,36 @@ export default function LabelForm(props: LabelFormProps) {
                     onChange={(e) => {
                       field.onChange(e);
                       setColor(e.target.value.toUpperCase());
-                      if(hasTriedToSubmit) void form.trigger('color')
+                      if (hasTriedToSubmit) void form.trigger('color')
                     }}
                   />
                 </div>
               </FormControl>
               <FormMessage data-cy={'label-color-message'}/>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="isFormLabel"
+          render={({field}) => (
+            <FormItem className={"flex-grow"}>
+              <div className={'flex items-center gap-4 mt-2'}>
+                <FormLabel>Öffentliche Label</FormLabel>
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={checked =>
+                      form.setValue('isFormLabel', checked as boolean)
+                    }
+                    data-cy={'label-isFormLabel-checkbox'}
+                  />
+                </FormControl>
+              </div>
+              <FormDescription>
+                Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen
+              </FormDescription>
             </FormItem>
           )}
         />

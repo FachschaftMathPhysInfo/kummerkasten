@@ -1,8 +1,9 @@
 query allLabels {
     labels{
-        id,
-        color,
-        name,
+        id
+        color
+        name
+        formLabel
     }
 }
 

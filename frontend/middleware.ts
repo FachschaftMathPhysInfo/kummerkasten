@@ -53,5 +53,6 @@ export const config = {
     '/profile',
     '/settings',
     '/faq',
+    '/app-settings'
   ],
 }

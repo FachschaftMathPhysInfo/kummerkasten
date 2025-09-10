@@ -11,3 +11,7 @@ mutation updateTicket($id: String!, $ticket: UpdateTicket!){
 mutation deleteTicket($ids: [String!]!) {
     deleteTicket(ids: $ids)
 }
+
+mutation updateTicketState($id: String!, $state: TicketState!) {
+    updateTicketState(ids: [$id], state: $state)
+}
