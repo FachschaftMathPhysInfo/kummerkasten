@@ -52,7 +52,7 @@ export default function AccountDataForm() {
   }, [user?.firstname, user?.lastname, user?.mail, user?.id, form]);
 
   useEffect(() => {
-    void resetFormWithUserData();
+    resetFormWithUserData();
   }, [resetFormWithUserData]);
 
   async function onValidSubmit(userData: AccountDataFormData) {
