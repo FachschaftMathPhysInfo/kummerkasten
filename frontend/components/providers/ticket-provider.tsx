@@ -20,13 +20,15 @@ export function TicketsProvider({children}: { children: ReactNode }) {
       const client = getClient()
       const data = await client.request(AllTicketsDocument)
 
-      setTickets(
-        data.tickets?.filter(ticket => !!ticket)
-          .map(ticket => ({
-            ...ticket,
-            labels: ticket.labels?.map(label => ({...label})) ?? []
-          })) ?? []
-      );
+      const newTickets: Ticket[] = data.tickets?.filter(ticket => !!ticket).map(ticket => ({
+        ...ticket,
+        labels: ticket.labels?.map(label => ({...label})),
+        // DB returns a timestamp which ts cannot compare directly
+        createdAt: new Date(ticket.createdAt),
+        lastModified: new Date(ticket.lastModified),
+      })) ?? []
+
+      setTickets(newTickets);
     }
     void fetchTickets();
   }, [refetchKey]);
