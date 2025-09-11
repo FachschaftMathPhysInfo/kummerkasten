@@ -39,7 +39,7 @@ export default function QAPManagementPage() {
     <div className="w-full h-full flex flex-col grow">
       <ManagementPageHeader
         icon={<MessageCircleQuestionMark />}
-        title="Informationsverwaltung"
+        title="FAQs"
         description="Verwalte die Informationen zum Kummerkasten-Formular"
       />
       <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
