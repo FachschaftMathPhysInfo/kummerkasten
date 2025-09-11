@@ -92,7 +92,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                 ? "Offen"
                 : "Fertig"}
           </Badge>
-          <div className="flex-grow truncate text-md pl-[60px] md:absolute md:pl-[70px]"
+          <div className="flex-grow truncate pl-[60px] md:absolute md:pl-[70px] leading-normal"
                title={ticket?.title}>
             {ticket?.title}
           </div>
