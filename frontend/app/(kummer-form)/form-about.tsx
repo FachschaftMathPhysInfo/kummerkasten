@@ -19,14 +19,14 @@ export default function AboutSection() {
           )?.value ?? "Hello World!"
         );
       } catch {
-        setText("Fehler beim Laden der About-Section");
+        setText("Eine Beschreibung wurde nicht konfiguriert.");
       }
     };
     void fetchAbout();
   }, []);
 
   return (
-    <Card className="flex flex-col items-center justify-center bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg text-foreground rounded-lg shadow-lg max-w-4xl mx-auto p-6 my-4">
+    <Card className="flex flex-col items-center justify-center bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg text-foreground w-full rounded-lg shadow-lg max-w-4xl mx-auto p-6 my-4">
       <CardTitle className="text-3xl text-center font-semibold text-foreground mb-2">
         Was ist der Kummerkasten?
       </CardTitle>

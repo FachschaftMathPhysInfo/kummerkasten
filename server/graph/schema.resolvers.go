@@ -960,12 +960,12 @@ func (r *queryResolver) FooterSettings(ctx context.Context) ([]*model.Setting, e
 
 // AboutSectionSettings is the resolver for the aboutSectionSettings field.
 func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Setting, error) {
-	const aboutKey = "ABOUT_"
+	const aboutSettingsPrefix = "ABOUT_"
 	var aboutSetting []*model.Setting
 
 	if err := r.DB.NewSelect().
 		Model(&aboutSetting).
-		Where("key LIKE ?", aboutKey+"%").
+		Where("key LIKE ?", aboutSettingsPrefix+"%").
 		Scan(ctx); err != nil {
 		return nil, fmt.Errorf("failed to get about setting: %v", err)
 	}

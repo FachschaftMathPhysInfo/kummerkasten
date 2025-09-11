@@ -25,12 +25,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 export const ABOUT_SECTION_TEXT_KEY = "ABOUT_SECTION_TEXT";
+const MAX_ABOUT_TEXT_LENGTH = 2000;
 
 const aboutSectionSchema = z.object({
   aboutText: z
     .string()
     .min(1, "Bitte gib einen Text ein")
-    .max(2000, "Der Text darf maximal 2000 Zeichen lang sein."),
+    .max(MAX_ABOUT_TEXT_LENGTH, `Der Text darf maximal ${MAX_ABOUT_TEXT_LENGTH} Zeichen lang sein`),
 });
 
 type AboutSectionFormData = z.infer<typeof aboutSectionSchema>;
@@ -48,7 +49,6 @@ export default function AboutSectionForm() {
   });
 
   const fetchAboutSection = useCallback(async () => {
-    if (!user) return;
     const client = getClient();
 
     try {
@@ -141,10 +141,10 @@ export default function AboutSectionForm() {
                     <span
                       className={cn(
                         "text-sm text-muted-foreground",
-                        field.value.length > 2000 && "text-destructive"
+                        field.value.length > MAX_ABOUT_TEXT_LENGTH && "text-destructive"
                       )}
                     >
-                      {field.value.length} / 2000
+                      {field.value.length} / {MAX_ABOUT_TEXT_LENGTH}
                     </span>
                   </div>
 
@@ -152,7 +152,7 @@ export default function AboutSectionForm() {
                     <Textarea
                       placeholder="Gib eine Beschreibung für den Kummerkasten an"
                       rows={4}
-                      maxLength={2000}
+                      maxLength={MAX_ABOUT_TEXT_LENGTH}
                       className={cn(
                         "resize-none text-foreground flex min-h-[120px] bg-background text-sm"
                       )}
@@ -188,11 +188,10 @@ export default function AboutSectionForm() {
                 className="flex items-center gap-2"
               >
                 {isSaving ? (
-                  <Loader2 className="animate-spin w-4 h-4" />
+                  <Loader2 className="animate-spin" />
                 ) : (
                   <>
-                    <Save className="w-4 h-4" />
-                    Speichern
+                    <Save/> Speichern
                   </>
                 )}
               </Button>
