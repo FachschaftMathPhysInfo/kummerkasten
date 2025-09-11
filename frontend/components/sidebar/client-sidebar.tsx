@@ -76,7 +76,7 @@ export function ClientSidebar() {
             data-cy="sidebar-trigger"
             className={clsx(
               "absolute transition-all z-1 hover:dark:bg-sidebar-accent",
-              open ? "right-0 mr-4 mt-5 p-4.5" : "mt-5.5 p-4 -translate-x-1/2"
+              open ? "right-0 mr-4 mt-5 p-4.5" : "mt-5.5 p-4 left-1/2 -translate-x-1/2"
             )}
           />
         )}
