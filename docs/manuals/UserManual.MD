@@ -1,0 +1,59 @@
+# Benutzerhandbuch
+
+>Dieses Handbuch richtet sich an User ohne Admin Rechte.
+
+## Login
+Das Login-Interface findet ihr unter `domain.com/login` dort meldet man sich mit dem vom Administrator vergebenen E-Mail
+und Passwort an
+
+## Account-Einstellungen
+Sobald ihr euch eingeloggt habt, solltet ihr euer Passwort ändern. Navigiert dazu in die Account Einstellungen. Dies ist
+auf zwei Wegen möglich:
+- Ändert die URL zu `domain/account`
+- Klickt auf "Account" in der Sidebar
+
+## Tickets
+Unter `domain/tickets` findet ihr alle Tickets, die Filter unterstützen euch beim Suchen spezifischer Eingänge.
+
+### Ticket Detail View
+Sobald ihr auf ein Ticket klickt, werdet ihr in der sog. Ticket-Detail-View landen. Hier könnt ihr folgende Anpassungen vornehmen:
+
+- Den Status des Tickets ändern
+- Das Ticket löschen
+- Den Titel des Tickets ändern (Der Original-Titel ist immer noch verfügbar)
+- Labels an das Ticket anhängen und entfernen
+
+Über die Ticket-Sidebar auf der linken Seite kommt ihr zu anderen Tickets, beziehungsweise auch zurück zur Gesamtübersicht
+
+## Labels
+Unter `domain/labels` könnt ihr Labels verwalten.
+
+### Labels erstellen
+Labels können unabhängig von Groß- und Kleinschreibung nur einmal existieren, vesucht ihr ein Label nochmal zu erstellen,
+bzw. eine anderes zu aktualisieren. Wird ein Error erscheinen der euch davor warnt, dass ein Label mit diesem
+Namen schon existiert
+
+### Labels bearbeiten
+Labels können bearbeitet werden in dem man auf das Stift-Icon klickt
+
+### Labels löschen
+Intuitiverweise funktioniet dies über den Mülleimer Button. Eine bestätigung ist nötig
+
+## FAQ Verwalten
+Wie ihr wahrscheinlich auf der Root-Seite(`domain.com`) gesehen habt, gibt es eine FAQ-Sektion unter dem Formular und eine
+kleine Beschreibungsbox oben drüber. Beides kann unter `domain.com/faq` angepasst werden.
+
+### About-Sektion 
+Die Bearbeitung ist einfach über das Text-Feld möglich
+
+### FAQ
+Neben der gleichen bearbeitungsweise wie bei den Labels, steht euch hier auch eine Drag and Drop Funktionalität zur Verfügung.
+Dazu einfach eine FAQ aus der Tabelle an der linken Seite 'greifen' und verschieben.
+
+> Derzeit werden Änderungen in der FAQ Reihenfolge sofort gültig
+
+## Sonstiges
+
+### Bugs
+Solltet ihr als User einen Bug finden, würde es uns freuen, wenn ihr ihn unter https://github.com/Plebysnacc/kummerkasten/issues
+reported.
