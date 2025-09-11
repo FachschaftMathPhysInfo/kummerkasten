@@ -300,23 +300,25 @@ export default function TicketSidebar({
           >
             <Badge
               className={cn(
-                "text-white px-2 py-1 rounded mr-5 h-2",
-                t.state === "NEW" && "bg-ticketstate-new",
-                t.state === "OPEN" && "bg-ticketstate-open",
-                t.state === "CLOSED" && "bg-ticketstate-closed"
+                "text-white px-2 py-1 rounded mr-2 h-2",
+                t.state === TicketState.New && "bg-ticketstate-new",
+                t.state === TicketState.Open && "bg-ticketstate-open",
+                t.state === TicketState.Closed && "bg-ticketstate-closed"
               )}
               data-cy={`ticket-status-${t.id}`}
             />
-            <div className="flex flex-row justify-between w-full">
+            <div className="flex flex-row justify-between w-full gap-3 overflow-x-auto">
               <div
-                className="truncate max-w-[250px]"
+                className="truncate max-w-[250px] shrink-0"
                 title={t.title}
                 data-cy={`ticket-title-${t.id}`}
               >
                 {t.title}
               </div>
               <div
-                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
+                className="hidden md:flex text-xs items-center text-muted-foreground truncate shrink"
+                title={`Geändert: ${t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}`}
+              >
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
               </div>
             </div>
