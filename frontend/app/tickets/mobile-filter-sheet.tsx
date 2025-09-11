@@ -1,10 +1,10 @@
 import {Check, Trash2} from "lucide-react";
-import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "./ui/sheet";
+import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "../../components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {TicketState} from "@/lib/graph/generated/graphql";
 import {cn} from "@/lib/utils";
-import LabelBadge from "./label-badge";
-import {DateRangeFilter} from "./date-range-filter";
+import LabelBadge from "../../components/label-badge";
+import {DateRangeFilter} from "../../components/date-range-filter";
 import React, {useState} from "react";
 import {TicketFiltering, TicketSorting, TicketSortingField} from "@/app/tickets/page";
 import {Input} from "@/components/ui/input";

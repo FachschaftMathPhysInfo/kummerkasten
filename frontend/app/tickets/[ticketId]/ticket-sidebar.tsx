@@ -18,8 +18,10 @@ import {useTickets} from "@/components/providers/ticket-provider";
 import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
 import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
-import MobileFilterSheet from "@/components/mobile-filter-sheet";
 import {TicketState} from "@/lib/graph/generated/graphql";
+import {Button} from "@/components/ui/button";
+import FilterBar from "@/components/filter-bar";
+import {RotateCcw} from "lucide-react";
 
 interface TicketSidebarProps {
   searchTerm: string;
@@ -39,6 +41,7 @@ export default function TicketSidebar({
   const [sorting, setSorting] = useState<TicketSorting>(defaultTicketSorting)
   const [areFiltersSet, setAreFiltersSet] = useState(false)
   const [isStateFilterSet, setIsStateFilterSet] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     const originalState = new Set(defaultTicketFiltering.state)
@@ -62,8 +65,8 @@ export default function TicketSidebar({
 
 
   return (
-    <div className="px-4">
-      <Breadcrumb className="mb-4">
+    <div className="px-4 flex flex-col gap-4">
+      <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/tickets">Tickets</BreadcrumbLink>
@@ -78,22 +81,55 @@ export default function TicketSidebar({
           )}
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="flex flex-row gap-2">
-        <Input
-          placeholder="Suche nach Tickets..."
-          value={searchTerm}
-          onChange={(e) => setSearchTermAction(e.target.value)}
-          className="mb-4"
-          data-cy="search-ticket-detail"
-        />
+      <div className="flex flex-col">
+        <div className={'flex gap-2'}>
+          <Input
+            placeholder="Suche nach Tickets..."
+            value={searchTerm}
+            onChange={(e) => setSearchTermAction(e.target.value)}
+            className="mb-4"
+            data-cy="search-ticket-detail"
+          />
 
-        <MobileFilterSheet
-          filtering={filtering}
-          setFiltering={setFiltering}
-          sorting={sorting}
-          setSorting={setSorting}
-          areFiltersSet={areFiltersSet}
-        />
+          <Button
+            variant="outline"
+            className={cn(areFiltersSet && 'border !border-accent')}
+            onClick={() => setShowFilters(!showFilters)}
+            data-cy="mobile-filter-button"
+          >
+            Filter
+          </Button>
+        </div>
+
+        <div
+          className={cn(
+            'w-full border rounded-lg p-1',
+            !showFilters && !areFiltersSet && 'hidden'
+          )}
+        >
+          {showFilters && (
+            <FilterBar
+              filtering={filtering}
+              setFiltering={setFiltering}
+              sorting={sorting}
+              setSorting={setSorting}
+              stateFilterSet={isStateFilterSet}
+              scrollable
+            />
+          )}
+
+          {areFiltersSet && (
+            <Button
+              variant={"ghost"}
+              onClick={() => {
+                setFiltering(defaultTicketFiltering)
+                setShowFilters(false)
+              }}
+              className={'w-full'}
+            >
+              <RotateCcw/> Filter Zurücksetzen
+            </Button>
+          )}</div>
       </div>
 
       <div>

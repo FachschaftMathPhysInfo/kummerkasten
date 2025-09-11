@@ -14,8 +14,8 @@ import {compareStringSets} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
-import MobileFilterSheet from "@/components/mobile-filter-sheet";
-import FilterBar from "@/app/tickets/filter-bar";
+import MobileFilterSheet from "@/app/tickets/mobile-filter-sheet";
+import FilterBar from "@/components/filter-bar";
 import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
 
@@ -48,14 +48,14 @@ export default function TicketPage() {
   const [sorting, setSorting] = useState<TicketSorting>(defaultTicketSorting);
   const {isMobile} = useSidebar();
   const [areFiltersSet, setAreFiltersSet] = useState(false);
-  const [stateFilterSet, setStateFilterSet] = useState(false);
+  const [isStateFilterSet, setIsStateFilterSet] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
   const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
 
   useEffect(() => {
     const originalState = new Set([TicketState.New, TicketState.Open])
     const currentState = new Set(filtering.state)
-    setStateFilterSet(!compareStringSets(originalState, currentState))
+    setIsStateFilterSet(!compareStringSets(originalState, currentState))
     // We can't add the expected stateFilter as array dependency, as it will change size
     // and thus throw an error
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,12 +90,12 @@ export default function TicketPage() {
 
   useEffect(() => {
     setAreFiltersSet(
-      stateFilterSet ||
+      isStateFilterSet ||
       filtering.labels.length > 0 ||
       !!filtering.startDate ||
       !!filtering.endDate
     )
-  }, [stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
+  }, [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
 
   function resetDialogState() {
     setDialogState({mode: null, currentTicket: null})
@@ -152,7 +152,7 @@ export default function TicketPage() {
                 setFiltering={setFiltering}
                 sorting={sorting}
                 setSorting={setSorting}
-                stateFilterSet={stateFilterSet}
+                stateFilterSet={isStateFilterSet}
               />
             )}
           </div>

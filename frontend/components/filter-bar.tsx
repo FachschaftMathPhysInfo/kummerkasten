@@ -17,13 +17,16 @@ interface FilterBarProps {
   sorting: TicketSorting;
   setSorting: React.Dispatch<React.SetStateAction<TicketSorting>>;
   stateFilterSet: boolean;
+  scrollable?: boolean;
 }
 
-export default function FilterBar({filtering, setFiltering, sorting, setSorting, stateFilterSet}: FilterBarProps) {
+export default function FilterBar(
+  {filtering, setFiltering, sorting, setSorting, stateFilterSet, scrollable = false}: FilterBarProps)
+{
   const {labels} = useLabels()
 
   return (
-    <div className="flex gap-2">
+    <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
