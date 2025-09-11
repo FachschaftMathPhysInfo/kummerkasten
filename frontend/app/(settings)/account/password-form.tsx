@@ -1,13 +1,13 @@
 "use client"
 
 import {z} from "zod";
-import {FormProvider, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {LoginDocument, UpdateUserDocument} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import PasswordInput from "@/components/password-input";
@@ -15,23 +15,23 @@ import {ShieldUser} from "lucide-react";
 
 const passwordFormSchema = z
   .object({
-    oldPassword: z.string().nonempty("Bitte gib dein aktuelles Passwort ein."),
+    oldPassword: z.string().nonempty("Bitte gib dein aktuelles Passwort ein"),
     newPassword: z
       .string()
-      .min(8, {message: "Mindestens 8 Zeichen."})
-      .regex(/[A-Z]/, {message: "Mindestens ein Großbuchstabe."})
-      .regex(/\d/, {message: "Mindestens eine Zahl."})
+      .min(8, {message: "Mindestens 8 Zeichen"})
+      .regex(/[A-Z]/, {message: "Mindestens ein Großbuchstabe"})
+      .regex(/\d/, {message: "Mindestens eine Zahl"})
       .regex(/[!@#$%^&*(),.?":{}|<>]/, {
         message: "Mindestens ein Sonderzeichen.",
       }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwörter stimmen nicht überein.",
+    message: "Passwörter stimmen nicht überein",
     path: ["confirmPassword"],
   })
   .refine((data) => data.newPassword !== data.oldPassword, {
-    message: "Neues Passwort darf nicht dem alten entsprechen.",
+    message: "Neues Passwort darf nicht dem alten entsprechen",
     path: ["newPassword"],
   });
 
@@ -42,7 +42,7 @@ export default function PasswordDataForm() {
   const {user, logout} = useUser();
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const isItLoading = false;
-  const [hasTriedPasswordSubmit, setHasTriedPasswordSubmit] = useState(false);
+  const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
 
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordFormSchema),
@@ -58,45 +58,39 @@ export default function PasswordDataForm() {
   async function onPasswordSubmit(data: PasswordFormData) {
     setIsSavingPassword(true);
     if (!user) {
-      toast.error("Fehler beim Laden des Benutzers.");
+      toast.error("Fehler beim Laden des Benutzers");
       return;
     }
 
     const client = getClient();
 
-    let loginResponse;
     try {
-      loginResponse = await client.request(LoginDocument, {
+      const loginResponse = await client.request(LoginDocument, {
         mail: user.mail,
         password: data.oldPassword,
       });
+
       if (!loginResponse.login) {
-        passwordForm.reset({
-          oldPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
+        passwordForm.reset();
         passwordForm.setError("oldPassword", {
-          message: "Falsches aktuelles Passwort.",
+          message: "Falsches aktuelles Passwort",
         });
-        toast.error("Falsches aktuelles Passwort.");
         return;
       }
 
       await client.request(UpdateUserDocument, {
         id: user.id,
-        user: {
-          password: data.newPassword,
-        },
+        user: {password: data.newPassword},
       });
-      toast.success("Passwort aktualisiert. Du wirst jetzt ausgeloggt.");
+
+      toast.success("Passwort aktualisiert. Du wirst jetzt ausgeloggt");
       passwordForm.reset();
-      setHasTriedPasswordSubmit(false);
+      setHasTriedToSubmit(false);
       await logout();
 
     } catch (err) {
       console.error(err);
-      toast.error("Fehler beim Speichern.");
+      toast.error("Fehler beim Aktualisieren der Daten");
       return;
     } finally {
       setIsSavingPassword(false);
@@ -104,30 +98,24 @@ export default function PasswordDataForm() {
   }
 
 
-  useEffect(() => {
-    const subscription = passwordForm.watch((_, {type}) => {
-      if (hasTriedPasswordSubmit && type === "change") {
-        setHasTriedPasswordSubmit(false);
-        passwordForm.clearErrors();
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [passwordForm, hasTriedPasswordSubmit]);
-
-
   return (
-    <FormProvider {...passwordForm}>
+    <Form {...passwordForm}>
       <form
         onSubmit={passwordForm.handleSubmit(onPasswordSubmit, () =>
-          setHasTriedPasswordSubmit(true)
+          setHasTriedToSubmit(true)
         )}
         className="space-y-4 w-full"
       >
-        <SettingsBlock icon={<ShieldUser/>} title={"Sicherheit"} hasTriedToSubmit={hasTriedPasswordSubmit}
-                       isDirty={passwordForm.formState.isDirty}
-                       isLoading={isItLoading}
-                       isSaving={isSavingPassword}
-                       dataCy="input-settings-save">
+        <SettingsBlock
+          icon={<ShieldUser/>}
+          title={"Sicherheit"}
+          hasTriedToSubmit={hasTriedToSubmit}
+          isDirty={passwordForm.formState.isDirty}
+          isLoading={isItLoading}
+          isSaving={isSavingPassword}
+          dataCy="input-settings-save"
+        >
+
           <FormField
             control={passwordForm.control}
             name="oldPassword"
@@ -145,6 +133,7 @@ export default function PasswordDataForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={passwordForm.control}
             name="newPassword"
@@ -162,6 +151,7 @@ export default function PasswordDataForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={passwordForm.control}
             name="confirmPassword"
@@ -178,8 +168,9 @@ export default function PasswordDataForm() {
               </FormItem>
             )}
           />
+
         </SettingsBlock>
       </form>
-    </FormProvider>
+    </Form>
   )
 }

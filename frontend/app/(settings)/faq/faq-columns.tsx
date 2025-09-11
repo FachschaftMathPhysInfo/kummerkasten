@@ -1,10 +1,10 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { QuestionAnswerPair } from "@/lib/graph/generated/graphql";
-import { Edit2, Grip, Trash } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { QAPTableDialogState } from "@/app/(settings)/faq/faq-table";
+import {ColumnDef} from "@tanstack/react-table";
+import {QuestionAnswerPair} from "@/lib/graph/generated/graphql";
+import {Edit2, Grip, Trash} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {QAPTableDialogState} from "@/app/(settings)/faq/faq-table";
 import React from "react";
 
 interface ActionColumnProps {
@@ -12,12 +12,12 @@ interface ActionColumnProps {
 }
 
 export const QAPColumns = ({
-  setDialogState,
-}: ActionColumnProps): ColumnDef<QuestionAnswerPair>[] => [
+                             setDialogState,
+                           }: ActionColumnProps): ColumnDef<QuestionAnswerPair>[] => [
   {
     id: "drag-handle",
     header: () => null,
-    cell: ({ row }) => (
+    cell: ({row}) => (
       <div
         className="p-2 text-foreground hover:text-accent transition-colors flex items-center justify-center"
         data-cy={`drag-handle-${row.original.id}`}
@@ -32,7 +32,7 @@ export const QAPColumns = ({
   {
     accessorKey: "question",
     header: "Frage",
-    cell: ({ getValue }) => (
+    cell: ({getValue}) => (
       <div className="break-words">
         {getValue() as string}
       </div>
@@ -41,7 +41,7 @@ export const QAPColumns = ({
   {
     accessorKey: "answer",
     header: "Antwort",
-    cell: ({ getValue }) => (
+    cell: ({getValue}) => (
       <div className="break-words flex-2">
         {getValue() as string}
       </div>
@@ -49,14 +49,14 @@ export const QAPColumns = ({
   },
   {
     id: "actions",
-    cell: ({ row }) => (
+    cell: ({row}) => (
       <div
         className="flex justify-end gap-x-2 shrink-0"
       >
         <Button
           data-cy={`edit-button-${row.original.id}`}
           onClick={() =>
-            setDialogState({ mode: "update", currentQAP: row.original })
+            setDialogState({mode: "update", currentQAP: row.original})
           }
           variant="ghost"
           size="icon"
@@ -66,7 +66,7 @@ export const QAPColumns = ({
         <Button
           data-cy={`delete-button-${row.original.id}`}
           onClick={() =>
-            setDialogState({ mode: "delete", currentQAP: row.original })
+            setDialogState({mode: "delete", currentQAP: row.original})
           }
           variant="ghost"
           size="icon"

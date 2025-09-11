@@ -4,15 +4,15 @@ import AccountDataForm from "@/app/(settings)/account/profile-data-form";
 import PasswordDataForm from "@/app/(settings)/account/password-form";
 
 export default function Page() {
-    return (
-        <div className="w-full h-full">
-            <ManagementPageHeader
-                icon={<SettingsIcon/>}
-                title="Mein Account"
-                description="Bearbeite deine persönlichen Einstellungen"
-            />
-            <AccountDataForm/>
-            <PasswordDataForm/>
-        </div>
-    );
+  return (
+    <div className="w-full h-full">
+      <ManagementPageHeader
+        icon={<SettingsIcon/>}
+        title="Mein Account"
+        description="Bearbeite deine persönlichen Einstellungen"
+      />
+      <AccountDataForm/>
+      <PasswordDataForm/>
+    </div>
+  );
 }

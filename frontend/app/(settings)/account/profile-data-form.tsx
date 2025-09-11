@@ -1,7 +1,7 @@
 "use client"
 
 import {z} from "zod";
-import {FormProvider, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
@@ -12,15 +12,19 @@ import {
   UpdateUserSettingsMutationVariables
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
 
+const MAX_NAME_LENGTH = 50;
+
 const accountDataSchema = z.object({
-  firstname: z.string().min(1, "Vorname ist erforderlich").max(50, "Maximale Länge beträgt 50 Charaktere"),
-  lastname: z.string().min(1, "Nachname ist erforderlich").max(50, "Maximale Länge beträgt 50 Charaktere"),
+  firstname: z.string().nonempty("Vorname ist erforderlich")
+    .max(MAX_NAME_LENGTH, "Maximale Länge beträgt 50 Charaktere"),
+  lastname: z.string().nonempty("Nachname ist erforderlich")
+    .max(MAX_NAME_LENGTH, "Maximale Länge beträgt 50 Charaktere"),
   mail: z.email("Ungültige E-Mail-Adresse"),
 });
 
@@ -42,14 +46,14 @@ export default function AccountDataForm() {
   })
 
   const resetFormWithUserData = useCallback(() => {
-    if (!user?.id) return;
+    if (!user) return;
     form.reset({
       firstname: user.firstname,
       lastname: user.lastname,
       mail: user.mail,
     });
     setIsLoading(false);
-  }, [user?.firstname, user?.lastname, user?.mail, user?.id, form]);
+  }, [form, user]);
 
   useEffect(() => {
     resetFormWithUserData();
@@ -71,13 +75,13 @@ export default function AccountDataForm() {
 
         if (emailUsedByOtherUser) {
           form.setError("mail", {
-            message: "Diese E-Mail-Adresse wird bereits verwendet.",
+            message: "Diese E-Mail-Adresse wird bereits verwendet",
           });
           setIsSavingAccount(false);
           return;
         }
       } catch (error) {
-        toast.error("Fehler beim Überprüfen der E-Mail-Adresse.");
+        toast.error("Fehler beim Überprüfen der E-Mail-Adresse");
         console.error(error);
         setIsSavingAccount(false);
         return;
@@ -100,13 +104,15 @@ export default function AccountDataForm() {
         lastname: userData.lastname,
         mail: userData.mail,
       });
+
       if (userData.mail !== user.mail) {
-        toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt.");
+        toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt");
         await logout();
-        return;
       }
+
+      setHasTriedToSubmit(false);
     } catch (error) {
-      toast.error("Ein Fehler ist aufgetreten");
+      toast.error("Ein Fehler beim Aktualisieren der Daten ist aufgetreten");
       console.error(error);
     } finally {
       setIsSavingAccount(false);
@@ -115,7 +121,7 @@ export default function AccountDataForm() {
 
 
   return (
-    <FormProvider {...form}>
+    <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onValidSubmit, () =>
           setHasTriedToSubmit(true)
@@ -176,6 +182,6 @@ export default function AccountDataForm() {
           />
         </SettingsBlock>
       </form>
-    </FormProvider>
+    </Form>
   )
 }

@@ -84,7 +84,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
               ticket?.state === TicketState.Open && "bg-ticketstate-open",
               ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
             )}
-            style={{ color: calculateFontColor(ticketStateColour)}}
+            style={{color: calculateFontColor(ticketStateColour)}}
           >
             {ticket?.state === TicketState.New
               ? "Neu"

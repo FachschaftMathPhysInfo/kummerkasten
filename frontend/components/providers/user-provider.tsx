@@ -37,7 +37,7 @@ export function UserProvider({children}: { children: ReactNode }) {
   }, [])
 
   const fetchUser = useCallback(async () => {
-    if(!sid) return
+    if (!sid) return
 
     const client = getClient();
     const data = await client.request<LoginCheckQuery>(LoginCheckDocument, {sid: sid})

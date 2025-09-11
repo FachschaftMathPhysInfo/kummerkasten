@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Edit2, PlusCircle } from "lucide-react";
-import { QuestionAnswerPair } from "@/lib/graph/generated/graphql";
+import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
+import {Edit2, PlusCircle} from "lucide-react";
+import {QuestionAnswerPair} from "@/lib/graph/generated/graphql";
 import QAPForm from "@/app/(settings)/faq/faq-form";
 
 interface QAPDialogProps {
@@ -31,7 +31,7 @@ export default function QAPDialog(props: QAPDialogProps) {
           refreshData={props.refreshData}
           maxOrder={props.maxOrder}
           uniqueQuestion={props.uniqueQuestion}
-       />
+        />
       </DialogContent>
     </Dialog>
   );

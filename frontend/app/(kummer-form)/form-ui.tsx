@@ -23,13 +23,16 @@ import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
 import {defaultLabel} from "@/lib/graph/defaultTypes";
 
+const TITLE_MAX_LENGTH = 70
+const TEXT_MAX_LENGTH = 3000
+
 const formUiSchema = z.object({
   labels: z.array(z.string())
     .nonempty({error: "Bitte wähle mindestens ein Label aus."}),
   title: z.string().nonempty({error: "Die Zusammenfassung darf nicht leer sein."})
-    .max(70, "Die Zusammenfassung ist zu lang."),
+    .max(TITLE_MAX_LENGTH, "Die Zusammenfassung ist zu lang."),
   text: z.string().nonempty({error: "Die Nachricht darf nicht leer sein."})
-    .max(3000, "Die Nachricht ist zu lang"),
+    .max(TEXT_MAX_LENGTH, "Die Nachricht ist zu lang"),
 });
 
 export default function FormUi() {
@@ -64,7 +67,6 @@ export default function FormUi() {
         console.error("Failed to fetch form labels:", err);
         toast.error("Das Formular konnte nicht fertig geladen werden. Versuche es später erneut");
       } finally {
-
         setIsLabelsLoading(false);
       }
     };
@@ -172,16 +174,16 @@ export default function FormUi() {
                   <FormLabel className="text-lg">Titel</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
-                    field.value.length > 70 && "text-destructive"
+                    field.value.length > TITLE_MAX_LENGTH && "text-destructive"
                   )}>
-                    {field.value.length} / 70
+                    {field.value.length} / {TITLE_MAX_LENGTH}
                   </span>
                 </div>
                 <FormControl>
                   <Input
                     className={cn("bg-background text-foreground")}
                     placeholder="Vorlesung ..."
-                    maxLength={70}
+                    maxLength={TITLE_MAX_LENGTH}
                     {...field}
                   />
                 </FormControl>
@@ -198,15 +200,15 @@ export default function FormUi() {
                   <FormLabel className="text-lg">Feedback</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
-                    field.value.length > 3000 && "text-destructive"
+                    field.value.length > TEXT_MAX_LENGTH && "text-destructive"
                   )}>
-                    {field.value.length} / 3000
+                    {field.value.length} / {TEXT_MAX_LENGTH}
                   </span>
                 </div>
                 <FormControl>
                   <Textarea
                     placeholder="Deine anonyme Nachricht"
-                    maxLength={3000}
+                    maxLength={TEXT_MAX_LENGTH}
                     className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
                       "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
                       "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}

@@ -105,7 +105,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
-                        <UserMinus className={'inline mr-2'} />
+                        <UserMinus className={'inline mr-2'}/>
                         Admin entfernen
                       </DropdownMenuItem>
 
@@ -115,7 +115,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
-                        <RotateCcw className={'inline mr-2'} />
+                        <RotateCcw className={'inline mr-2'}/>
                         Password zurücksetzen
                       </DropdownMenuItem>
                     </>
@@ -127,7 +127,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                       >
-                        <UserCheck className={'inline mr-2'} />
+                        <UserCheck className={'inline mr-2'}/>
                         Admin machen
                       </DropdownMenuItem>
 

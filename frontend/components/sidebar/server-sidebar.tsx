@@ -8,10 +8,10 @@ export default async function ServerSidebar() {
   const sid = await getSID()
   if (!sid) return null;
 
-  const client  = getServerClient()
+  const client = getServerClient()
   const data = await client.request(LoginCheckDocument, {sid: sid})
 
-  if(!data.loginCheck) return null;
+  if (!data.loginCheck) return null;
 
   return (
     <Sidebar className={'fixed h-screen top-0 left-0'} collapsible={"icon"} data-cy={'sidebar'}>
