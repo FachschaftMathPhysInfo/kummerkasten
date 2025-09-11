@@ -316,7 +316,7 @@ export default function TicketSidebar({
                 {t.title}
               </div>
               <div
-                className="hidden md:flex text-xs items-center text-muted-foreground truncate shrink"
+                className="hidden md:flex text-xs items-center text-muted-foreground truncate"
                 title={`Geändert: ${t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}`}
               >
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
