@@ -202,7 +202,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="space-y-2" data-cy="qap-table">
+      <div className="space-y-2 mt-2" data-cy="qap-table">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <Button
             data-cy="qap-create-button"
@@ -222,7 +222,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
          />
         </div>
 
-        <div className="rounded-md border overflow-hidden">
+        <div className="rounded-md border overflow-hidden mb-8">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

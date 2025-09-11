@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { useUser } from "@/components/providers/user-provider";
 import { Button } from "@/components/ui/button";
-import { Loader2, Save, RotateCcw } from "lucide-react";
+import { Loader2, Save, RotateCcw, BookText } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
@@ -47,8 +47,6 @@ export default function AboutSectionForm() {
     mode: "onChange",
   });
 
-  const textWatch = form.watch("aboutText", "");
-
   const fetchAboutSection = useCallback(async () => {
     if (!user) return;
     const client = getClient();
@@ -63,8 +61,9 @@ export default function AboutSectionForm() {
 
       form.reset({
         aboutText:
-          data.aboutSectionSettings.find((s) => s?.key === ABOUT_SECTION_TEXT_KEY)
-            ?.value ?? "",
+          data.aboutSectionSettings.find(
+            (s) => s?.key === ABOUT_SECTION_TEXT_KEY
+          )?.value ?? "",
       });
 
       setIsLoading(false);
@@ -90,7 +89,10 @@ export default function AboutSectionForm() {
     }
 
     try {
-      const setting: Setting = { key: ABOUT_SECTION_TEXT_KEY, value: data.aboutText };
+      const setting: Setting = {
+        key: ABOUT_SECTION_TEXT_KEY,
+        value: data.aboutText,
+      };
       await client.request(UpdateSettingDocument, { setting });
 
       toast.success("About-Section erfolgreich aktualisiert");
@@ -104,79 +106,99 @@ export default function AboutSectionForm() {
   }
 
   return (
-    <div>
-        <div className="w-full rounded-lg p-4 my-3 border bg-background items-end float-end">
+    <div className="w-full rounded-lg p-4 mb-5 border bg-card items-end float-end relative">
+    <div
+      className={cn(
+        "absolute top-0 left-0 w-full h-full flex flex-col gap-2 items-center justify-center bg-card",
+        !isLoading && "hidden"
+      )}
+    >
+      <Loader2 className="animate-spin w-6 h-6" />
+      Lade About-Section...
+    </div>
         <FormProvider {...form}>
-            <form
-            onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
+          <form
+            onSubmit={form.handleSubmit(onValidSubmit, () =>
+              setHasTriedToSubmit(true)
+            )}
             className="space-y-4"
-            >
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <BookText />
+              <span className="text-lg font-semibold text-foreground-muted mb-2">
+                About-Text bearbeiten
+              </span>
+            </div>
             <FormField
-  control={form.control}
-  name="aboutText"
-  render={({ field }) => (
-    <FormItem>
-      <div className="flex justify-between items-center">
-        <FormLabel className="text-lg font-semibold text-foreground-muted mb-1 mt-2">About-Text bearbeiten</FormLabel>
-        <span
-          className={cn(
-            "text-sm text-muted-foreground",
-            textWatch.length > 2000 && "text-destructive"
-          )}
-        >
-          {textWatch.length} / 2000
-        </span>
-      </div>
+              control={form.control}
+              name="aboutText"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex justify-between items-center">
+                    <FormLabel className="text-sm font-semibold text-foreground-muted mb-1">
+                      About-Text
+                    </FormLabel>
+                    <span
+                      className={cn(
+                        "text-sm text-muted-foreground",
+                        field.value.length > 2000 && "text-destructive"
+                      )}
+                    >
+                      {field.value.length} / 2000
+                    </span>
+                  </div>
 
-      <FormControl>
-        <Textarea
-          placeholder="Beschreibe hier den Kummerkasten..."
-          rows={8}
-          maxLength={2000}
-          className={cn(
-            "resize-none text-foreground flex min-h-[180px] bg-background text-sm"
-          )}
-          {...field}
-          data-cy="about-section-input"
-        />
-      </FormControl>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Gib eine Beschreibung für den Kummerkasten an"
+                      rows={4}
+                      maxLength={2000}
+                      className={cn(
+                        "resize-none text-foreground flex min-h-[120px] bg-background text-sm"
+                      )}
+                      {...field}
+                      data-cy="about-section-input"
+                    />
+                  </FormControl>
 
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-
-            <div className="w-full flex justify-end items-center gap-4 pt-2">
-                <Button
+            <div className="w-full flex justify-end items-center gap-5 pt-2">
+              <Button
                 variant="secondary"
                 type="button"
                 disabled={!form.formState.isDirty}
                 onClick={() => fetchAboutSection()}
                 className="flex items-center gap-2"
-                >
+              >
                 <RotateCcw className="w-4 h-4" />
                 Abbrechen
-                </Button>
+              </Button>
 
-                <Button
+              <Button
                 type="submit"
-                disabled={(!form.formState.isValid && hasTriedToSubmit) || !form.formState.isDirty || isSaving}
+                disabled={
+                  (!form.formState.isValid && hasTriedToSubmit) ||
+                  !form.formState.isDirty ||
+                  isSaving
+                }
                 className="flex items-center gap-2"
-                >
+              >
                 {isSaving ? (
-                    <Loader2 className="animate-spin w-4 h-4" />
+                  <Loader2 className="animate-spin w-4 h-4" />
                 ) : (
-                    <>
+                  <>
                     <Save className="w-4 h-4" />
                     Speichern
-                    </>
+                  </>
                 )}
-                </Button>
+              </Button>
             </div>
-            </form>
+          </form>
         </FormProvider>
-        </div>
-    </div>
+      </div>
   );
 }
