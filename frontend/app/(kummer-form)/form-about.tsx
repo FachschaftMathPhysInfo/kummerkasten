@@ -26,12 +26,12 @@ export default function AboutSection() {
   }, []);
 
   return (
-    <Card className="flex flex-col items-center justify-center bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg text-foreground w-full rounded-lg shadow-lg max-w-4xl mx-auto p-6 my-4">
-      <CardTitle className="text-3xl text-center font-semibold text-foreground mb-2">
+    <Card className="flex flex-col bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg w-full rounded-lg shadow-lg max-w-4xl mx-auto p-6 my-4">
+      <CardTitle className="text-3xl items-center text-center font-semibold text-foreground mb-2">
         Was ist der Kummerkasten?
       </CardTitle>
-      <CardContent>
-        <p className="text-lg leading-relaxed text-muted-foreground">{text}</p>
+      <CardContent className="text-left">
+        <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">{text}</p>
       </CardContent>
     </Card>
   );

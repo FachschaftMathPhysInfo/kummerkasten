@@ -31,7 +31,10 @@ const aboutSectionSchema = z.object({
   aboutText: z
     .string()
     .min(1, "Bitte gib einen Text ein")
-    .max(MAX_ABOUT_TEXT_LENGTH, `Der Text darf maximal ${MAX_ABOUT_TEXT_LENGTH} Zeichen lang sein`),
+    .max(
+      MAX_ABOUT_TEXT_LENGTH,
+      `Der Text darf maximal ${MAX_ABOUT_TEXT_LENGTH} Zeichen lang sein`
+    ),
 });
 
 type AboutSectionFormData = z.infer<typeof aboutSectionSchema>;
@@ -106,98 +109,99 @@ export default function AboutSectionForm() {
   }
 
   return (
-    <div className="w-full rounded-lg p-4 mb-5 border bg-card items-end float-end relative">
-    <div
-      className={cn(
-        "absolute top-0 left-0 w-full h-full flex flex-col gap-2 items-center justify-center bg-card",
-        !isLoading && "hidden"
-      )}
-    >
-      <Loader2 className="animate-spin w-6 h-6" />
-      Lade About-Section...
-    </div>
-        <FormProvider {...form}>
-          <form
-            onSubmit={form.handleSubmit(onValidSubmit, () =>
-              setHasTriedToSubmit(true)
-            )}
-            className="space-y-4"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <BookText />
-              <span className="text-lg font-semibold text-foreground-muted mb-2">
-                About-Text bearbeiten
-              </span>
-            </div>
-            <FormField
-              control={form.control}
-              name="aboutText"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex justify-between items-center">
-                    <FormLabel className="text-sm font-semibold text-foreground-muted mb-1">
-                      About-Text
-                    </FormLabel>
-                    <span
-                      className={cn(
-                        "text-sm text-muted-foreground",
-                        field.value.length > MAX_ABOUT_TEXT_LENGTH && "text-destructive"
-                      )}
-                    >
-                      {field.value.length} / {MAX_ABOUT_TEXT_LENGTH}
-                    </span>
-                  </div>
-
-                  <FormControl>
-                    <Textarea
-                      placeholder="Gib eine Beschreibung für den Kummerkasten an"
-                      rows={4}
-                      maxLength={MAX_ABOUT_TEXT_LENGTH}
-                      className={cn(
-                        "resize-none text-foreground flex min-h-[120px] bg-background text-sm"
-                      )}
-                      {...field}
-                      data-cy="about-section-input"
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="w-full flex justify-end items-center gap-5 pt-2">
-              <Button
-                variant="secondary"
-                type="button"
-                disabled={!form.formState.isDirty}
-                onClick={() => fetchAboutSection()}
-                className="flex items-center gap-2"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Abbrechen
-              </Button>
-
-              <Button
-                type="submit"
-                disabled={
-                  (!form.formState.isValid && hasTriedToSubmit) ||
-                  !form.formState.isDirty ||
-                  isSaving
-                }
-                className="flex items-center gap-2"
-              >
-                {isSaving ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  <>
-                    <Save/> Speichern
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
+    <div className="w-full rounded-lg p-4 mb-5 py-3 border bg-card items-end float-end relative">
+      <div
+        className={cn(
+          "absolute top-0 left-0 w-full h-full flex flex-col gap-2 items-center justify-center bg-card",
+          !isLoading && "hidden"
+        )}
+      >
+        <Loader2 className="animate-spin w-6 h-6" />
+        Lade About-Section...
       </div>
+      <FormProvider {...form}>
+        <form
+          onSubmit={form.handleSubmit(onValidSubmit, () =>
+            setHasTriedToSubmit(true)
+          )}
+          className="space-y-2"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <BookText className="w-6 h-6 mx-1 my-1"/>
+            <span className="text-lg font-semibold text-foreground-muted">
+              About-Text
+            </span>
+          </div>
+          <FormField
+            control={form.control}
+            name="aboutText"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex justify-between items-center">
+                  <FormLabel className="text-sm font-semibold text-foreground-muted">
+                    Beschreibe, wofür der Kummerkasten da ist.
+                  </FormLabel>
+                  <span
+                    className={cn(
+                      "text-sm text-muted-foreground",
+                      field.value.length > MAX_ABOUT_TEXT_LENGTH &&
+                        "text-destructive"
+                    )}
+                  >
+                    {field.value.length} / {MAX_ABOUT_TEXT_LENGTH}
+                  </span>
+                </div>
+
+                <FormControl>
+                  <Textarea
+                    placeholder="Gib eine Beschreibung für den Kummerkasten an"
+                    rows={4}
+                    maxLength={MAX_ABOUT_TEXT_LENGTH}
+                    className={cn(
+                      "resize-none text-foreground flex min-h-[120px] bg-background text-sm"
+                    )}
+                    {...field}
+                    data-cy="about-section-input"
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="w-full flex justify-end items-center gap-5 pt-2">
+            <Button
+              variant="secondary"
+              type="button"
+              disabled={!form.formState.isDirty}
+              onClick={() => fetchAboutSection()}
+              className="flex items-center gap-2"
+            >
+              <RotateCcw/>
+              Abbrechen
+            </Button>
+
+            <Button
+              type="submit"
+              disabled={
+                (!form.formState.isValid && hasTriedToSubmit) ||
+                !form.formState.isDirty ||
+                isSaving
+              }
+              className="flex items-center gap-2"
+            >
+              {isSaving ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <>
+                  <Save /> Speichern
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
+    </div>
   );
 }
