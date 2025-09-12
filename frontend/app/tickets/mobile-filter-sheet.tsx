@@ -69,7 +69,7 @@ export default function MobileFilterSheet(
                     }
                   >
                     <Check
-                      className={cn("mr-2 h-4 w-4", isSelected ? "opacity-100" : "opacity-0")}
+                      className={cn("mr-2", isSelected ? "opacity-100" : "opacity-0")}
                     />
                     {state === TicketState.New ? "Neu" : state === TicketState.Open ? "Offen" : "Fertig"}
                   </Button>
@@ -148,7 +148,7 @@ export default function MobileFilterSheet(
                     }
                     data-cy="clear-labels"
                   >
-                    <Trash2 className="mr-2"/> Filter löschen
+                    <Trash2 className="mr-2 text-destructive"/> Filter löschen
                   </Button>
                 )}
               </div>
