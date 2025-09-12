@@ -460,7 +460,7 @@ export default function TicketPage() {
         </div>
       </div>
 
-      <div className={'w-full px-10 flex gap-4 items-center'}>
+      <div className={'w-full px-10 flex gap-4 items-center mt-2'}>
         <span className={'grow h-0.5 bg-muted-foreground'}/>
         <p className={'text-muted-foreground'}>Dieses Semester</p>
         <span className={'grow h-0.5 bg-muted-foreground'}/>
@@ -476,7 +476,7 @@ export default function TicketPage() {
           )
       )}
 
-      <div className={'w-full px-10 flex gap-4 items-center'}>
+      <div className={'w-full px-10 flex gap-4 items-center mt-2'}>
         <span className={'grow h-0.5 bg-muted-foreground'}/>
         <p className={'text-muted-foreground'}>Frühere Semester</p>
         <span className={'grow h-0.5 bg-muted-foreground'}/>
