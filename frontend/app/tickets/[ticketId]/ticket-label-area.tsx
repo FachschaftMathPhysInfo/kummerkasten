@@ -47,7 +47,7 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
       {editMode ? (
         <Command>
           <CommandInput placeholder="Labels suchen..." onValueChange={setSearchTerm}/>
-          <CommandGroup>
+          <CommandGroup className={'max-h-[300px] overflow-y-auto'}>
             {labels
               .filter((label) => label && label.name.toLowerCase().includes(searchTerm.toLowerCase()))
               .map((label) => {

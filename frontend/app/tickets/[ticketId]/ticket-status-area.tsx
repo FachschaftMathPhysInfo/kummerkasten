@@ -11,7 +11,10 @@ interface TicketStatusAreaProps {
   setStatusAction: (state: TicketState) => void;
 }
 
+
 export default function TicketStatusArea({state, setStatusAction}: TicketStatusAreaProps) {
+  const badgeStyle = {color: calculateFontColor(getTicketStateColor(state))}
+
   return (
     <div className={'w-full'}>
       <Select defaultValue={state} onValueChange={(val) => setStatusAction(val as TicketState)}>
@@ -34,13 +37,13 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="NEW">
-            <Badge className="w-full bg-ticketstate-new">Neu</Badge>
+            <Badge className="w-full bg-ticketstate-new" style={badgeStyle}>Neu</Badge>
           </SelectItem>
           <SelectItem value="OPEN">
-            <Badge className="w-full bg-ticketstate-open">Offen</Badge>
+            <Badge className="w-full bg-ticketstate-open" style={badgeStyle}>Offen</Badge>
           </SelectItem>
           <SelectItem value="CLOSED">
-            <Badge className="w-full bg-ticketstate-closed">Fertig</Badge>
+            <Badge className="w-full bg-ticketstate-closed" style={badgeStyle}>Fertig</Badge>
           </SelectItem>
         </SelectContent>
       </Select>
