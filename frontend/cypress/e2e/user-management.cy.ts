@@ -1,5 +1,6 @@
 import users from "../fixtures/users.json"
-import * as page from "../pages/users.po"
+import * as page from "../pages/users/user-management.po"
+import * as creationDialog from "../pages/users/user-dialog.po"
 
 describe('User Management Page Tests', () => {
   beforeEach(() => {
@@ -7,25 +8,183 @@ describe('User Management Page Tests', () => {
     cy.visit("/users")
   })
 
-  it('should have a create user button', () => {
-    page.getCreateUserButton().click()
-  });
-
-  it('should have a searchbar', () => {
+  it('shows a searchbar', () => {
     page.getSearchbar().should('be.visible')
   });
 
-  context('User Table', () => {
-    it('should exist', () => {
+  it('shows a create user button', () => {
+    page.getCreateUserButton().should('be.visible')
+  });
+
+  context('Create User Dialog', () => {
+    beforeEach(() => {
+      page.getCreateUserButton().click()
+    })
+    it('opens dialog on click', () => {
+      creationDialog.getDialog().should('be.visible')
+    });
+
+    it('closes on clicking cancel', () => {
+      creationDialog.cancel()
+      creationDialog.getDialog().should('not.exist')
+    });
+
+    it('disables no buttons', () => {
+      creationDialog.getCancelButton().should('not.be.disabled')
+      creationDialog.getSubmitButton().should('not.be.disabled')
+    });
+
+    context('Create User Form', () => {
+      it('shows the complete form', () => {
+        creationDialog.getFirstNameInput().should('be.visible')
+        creationDialog.getLastNameInput().should('be.visible')
+        creationDialog.getEmailInput().should('be.visible')
+        creationDialog.getPasswordInput().should('be.visible')
+        creationDialog.getConfirmPasswordInput().should('be.visible')
+        creationDialog.getCancelButton().should('be.visible')
+        creationDialog.getSubmitButton().should('be.visible')
+      })
+
+      it('shows no error on empty form - no submit', () => {
+        creationDialog.getFirstnameInputMessage().should('not.exist')
+        creationDialog.getLastnameInputMessage().should('not.exist')
+        creationDialog.getEmailInputMessage().should('not.exist')
+        creationDialog.getPasswordInputMessage().should('not.exist')
+        creationDialog.getConfirmPasswordInputMessage().should('not.exist')
+      });
+
+      it('shows error and disables submit on invalid submit - empty form', () => {
+        creationDialog.submit()
+
+        creationDialog.getFirstnameInputMessage().should('be.visible').and('have.length.above', 0)
+        creationDialog.getLastnameInputMessage().should('be.visible').and('have.length.above', 0)
+        creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
+        creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+        // TODO: this is being discussed
+        // creationDialog.getConfirmPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+
+        creationDialog.getSubmitButton().should('be.disabled')
+      });
+
+      it('shows error and disables submit on invalid submit - short firstname', () => {
+        creationDialog.fillOutForm({firstName: "a"})
+        creationDialog.submit()
+
+        creationDialog.getFirstnameInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('shows error and disables submit on invalid submit - short lastname', () => {
+        creationDialog.fillOutForm({lastName: "a"})
+        creationDialog.submit()
+
+        creationDialog.getLastnameInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      // FIXME: #267
+      it('shows error and disables submit on invalid submit - invalid mail format', () => {
+        creationDialog.fillOutForm({mail: "a"})
+        creationDialog.submit()
+
+        creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      // FIXME: #266
+      it('shows error and disables submit on invalid submit - mail taken', () => {
+        creationDialog.fillOutForm({mail: users.admin.mail})
+        creationDialog.submit()
+
+        creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('shows error and disables submit on invalid submit - password short', () => {
+        creationDialog.fillOutForm({password: "a"})
+        creationDialog.submit()
+
+        creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('shows error and disables submit on invalid submit - password no number', () => {
+        creationDialog.fillOutForm({password: "aaaaaaaaaAaaaaaaaa!"})
+        creationDialog.submit()
+
+        creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('shows error and disables submit on invalid submit - password no capital letter', () => {
+        creationDialog.fillOutForm({password: "aaaaaaaaa2aaaaaaaa!"})
+        creationDialog.submit()
+
+        creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('shows error and disables submit on invalid submit - password no symbol', () => {
+        creationDialog.fillOutForm({password: "aaaaaaaaa2aaaaaaaaA"})
+        creationDialog.submit()
+
+        creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('shows error and disables submit on invalid submit - password no lower letter', () => {
+        creationDialog.fillOutForm({password: "AAAAAAAAAAA!123AAAAAA"})
+        creationDialog.submit()
+
+        creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('shows error and disables submit on invalid submit - confirm password not same', () => {
+        creationDialog.fillOutForm({password: "ThisIsForTesting123!", confirmPassword: "ThisIsForTesting!123"})
+        creationDialog.submit()
+
+        creationDialog.getConfirmPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+      });
+
+      it('creates no user on cancel', () => {
+        const mail = "newly.created@wowie.example"
+        creationDialog.fillOutForm({
+          firstName: "Newly",
+          lastName: "Created",
+          mail: mail,
+          password: "ThisIsForTesting123!",
+          confirmPassword: "ThisIsForTesting123!",
+        })
+        creationDialog.cancel()
+
+        creationDialog.getDialog().should('not.exist')
+        page.getUserRows().contains('td', mail).should('not.exist')
+      });
+
+      it('closes and creates user on valid submision', () => {
+        const mail = "newly.created@wowie.example"
+        creationDialog.fillOutForm({
+          firstName: "Newly",
+          lastName: "Created",
+          mail: mail,
+          password: "ThisIsForTesting123!",
+          confirmPassword: "ThisIsForTesting123!",
+        })
+        creationDialog.submit()
+
+        creationDialog.getDialog().should('not.exist')
+        page.getUserRows().contains('td', mail).should('be.visible')
+      });
+
+      after(() => {
+        // TODO: Delete use afterwards
+      })
+    })
+  })
+
+  context('User Table - Visual Tests', () => {
+    it('exists', () => {
       page.getUserTable().should('be.visible')
     });
 
-    it('should have user rows', () => {
-      // This is the amount of users provided by the dev seed
-      page.getUserRows().should('have.length', 6)
+    it('has user rows', () => {
+      const AMOUNT_USERS_IN_SEEDED_DB = 7
+      page.getUserRows().should('have.length', AMOUNT_USERS_IN_SEEDED_DB)
     });
 
-    it('should show search results if they exist', () => {
+    it('shows search results if they exist', () => {
       const query = "kummer"
       page.search(query)
       // There is only one user with last name containing kummer in our seeds
@@ -35,20 +194,20 @@ describe('User Management Page Tests', () => {
       })
     });
 
-    it('should show a message if no entries could be found', () => {
+    it('shows a message if no entries could be found', () => {
       const query = "invalid query"
       page.search(query)
       page.getUserRows().should('have.length', 0)
       page.getNoResultsMessage().should('be.visible')
     });
 
-    it('should not allow editing on self', () => {
+    it('does not allow editing on self', () => {
       page.getActionsOfUsers(users.admin.mail).should('not.exist')
     });
   })
 
-  context('User Table Sorting', () => {
-    it('should sort lastnames ascending by default', () => {
+  context('User Table - Sorting', () => {
+    it('sorts lastnames ascending by default', () => {
       let names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getLastnameCells()
@@ -59,7 +218,7 @@ describe('User Management Page Tests', () => {
         })
     })
 
-    it('should sort lastnames descending', () => {
+    it('sorts lastnames descending', () => {
       let names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getLastnameHeader().click()
@@ -71,7 +230,7 @@ describe('User Management Page Tests', () => {
         })
     })
 
-    it('should sort firstnames ascending', () => {
+    it('sorts firstnames ascending', () => {
       let names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getFirstnameHeader().click()
@@ -83,7 +242,7 @@ describe('User Management Page Tests', () => {
         })
     })
 
-    it('should sort firstnames descending', () => {
+    it('sorts firstnames descending', () => {
       let names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getFirstnameHeader().click()
@@ -96,7 +255,7 @@ describe('User Management Page Tests', () => {
         })
     })
 
-    it('should sort mails ascending', () => {
+    it('sorts mails ascending', () => {
       let names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getMailHeader().click()
@@ -108,7 +267,7 @@ describe('User Management Page Tests', () => {
         })
     })
 
-    it('should sort mails descending', () => {
+    it('sorts mails descending', () => {
       let names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getMailHeader().click()
