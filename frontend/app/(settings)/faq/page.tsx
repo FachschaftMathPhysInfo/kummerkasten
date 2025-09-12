@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { MessageCircleQuestionMark } from "lucide-react";
-import { getClient } from "@/lib/graph/client";
-import { toast } from "sonner";
-import { AllQuestionAnswerPairDocument, QuestionAnswerPair } from "@/lib/graph/generated/graphql";
-import { QAPTable } from "@/app/(settings)/faq/faq-table";
-import { ManagementPageHeader } from "@/components/management-page-header";
+import {useCallback, useEffect, useState} from "react";
+import {MessageCircleQuestionMark} from "lucide-react";
+import {getClient} from "@/lib/graph/client";
+import {toast} from "sonner";
+import {AllQuestionAnswerPairDocument, QuestionAnswerPair} from "@/lib/graph/generated/graphql";
+import {QAPTable} from "@/app/(settings)/faq/faq-table";
+import {ManagementPageHeader} from "@/components/management-page-header";
 
 export default function QAPManagementPage() {
   const [faqs, setFaqs] = useState<QuestionAnswerPair[]>([]);

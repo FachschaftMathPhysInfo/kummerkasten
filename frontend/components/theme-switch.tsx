@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import {Moon, Sun} from "lucide-react";
 import {cn} from "@/lib/utils";
 
-export default function ThemeSwitch({className}: {className?: string}) {
+export default function ThemeSwitch({className}: { className?: string }) {
   const [mounted, setMounted] = useState(false)
   const {resolvedTheme, theme, setTheme} = useTheme()
 

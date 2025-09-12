@@ -176,8 +176,8 @@ export default function UserForm(props: UserFormProps) {
             className={"flex-grow"}
           >
             {loading ? (
-              <LoaderCircle />
-              ) : (
+              <LoaderCircle/>
+            ) : (
               <PlusCircle/>
             )}
             Erstellen

@@ -77,7 +77,7 @@ export function LabelTable() {
   }
 
   return (
-    <div className="space-y-2"  data-cy={'label-table'}>
+    <div className="space-y-2" data-cy={'label-table'}>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
         <Button
           data-cy={'create-label-button'}

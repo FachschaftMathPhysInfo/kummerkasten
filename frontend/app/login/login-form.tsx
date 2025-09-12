@@ -127,7 +127,7 @@ export default function LoginForm() {
             data-cy={'submit'}
           >
             {isLoading ? (
-              <LoaderCircle />
+              <LoaderCircle/>
             ) : (
               <LogIn/>
             )}

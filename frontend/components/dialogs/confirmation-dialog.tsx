@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import {Button} from '@/components/ui/button';
 import React from 'react';
-import { cn } from '@/lib/utils';
+import {cn} from '@/lib/utils';
 
 interface ConfirmationDialogUnconditionalProps {
   description: string;
@@ -32,7 +32,7 @@ type ConfirmationDialogProps = ConfirmationDialogUnconditionalProps &
   ConfirmationDialogConditionalProps;
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
-  const { description, isOpen, closeDialog } = props;
+  const {description, isOpen, closeDialog} = props;
   return (
     <Dialog open={isOpen}>
       <DialogContent className="[&>button:last-child]:hidden">

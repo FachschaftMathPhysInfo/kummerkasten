@@ -151,16 +151,18 @@ export default function TicketSidebar({
               )}
               data-cy={`ticket-status-${t.id}`}
             />
-            <div className="flex flex-row justify-between w-full">
+            <div className="flex flex-row justify-between w-full gap-3 overflow-x-auto">
               <div
-                className="truncate max-w-[250px]"
+                className="truncate max-w-[250px] shrink-0"
                 title={t.title}
                 data-cy={`ticket-title-${t.id}`}
               >
                 {t.title}
               </div>
               <div
-                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
+                className="hidden md:flex text-xs items-center text-muted-foreground truncate"
+                title={`Geändert: ${t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}`}
+              >
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
               </div>
             </div>

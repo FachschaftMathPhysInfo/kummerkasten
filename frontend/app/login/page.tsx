@@ -13,7 +13,7 @@ export default function LoginPage() {
           <CardTitle className={'w-full flex justify-center'}>
             Anmelden
           </CardTitle>
-          <LoginForm />
+          <LoginForm/>
         </CardContent>
       </Card>
     </div>

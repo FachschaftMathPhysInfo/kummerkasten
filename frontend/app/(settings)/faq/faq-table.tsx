@@ -1,44 +1,37 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  type Row as TanStackRow,
   useReactTable,
   VisibilityState,
-  type ColumnDef,
-  type Row as TanStackRow,
 } from "@tanstack/react-table";
 
-import { QAPColumns } from "@/app/(settings)/faq/faq-columns";
+import {QAPColumns} from "@/app/(settings)/faq/faq-columns";
 import QAPDialog from "@/app/(settings)/faq/faq-dialog";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 
-import { PlusCircle } from "lucide-react";
-import { getClient } from "@/lib/graph/client";
+import {PlusCircle} from "lucide-react";
+import {getClient} from "@/lib/graph/client";
 import {
-  QuestionAnswerPair,
   DeleteQuestionAnswerPairDocument,
   DeleteQuestionAnswerPairMutation,
+  QuestionAnswerPair,
   UpdateQuestionAnswerPairOrderDocument,
   UpdateQuestionAnswerPairOrderMutation,
 } from "@/lib/graph/generated/graphql";
-import { toast } from "sonner";
+import {toast} from "sonner";
 
-import { useDrag, useDrop, DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import {DndProvider, useDrag, useDrop} from "react-dnd";
+import {HTML5Backend} from "react-dnd-html5-backend";
 
 export interface QAPTableDialogState {
   mode: "create" | "update" | "delete" | null;
@@ -60,19 +53,19 @@ interface DragItem {
 }
 
 const DndTableRow = ({
-  row,
-  moveRow,
-  saveOrder,
-}: {
+                       row,
+                       moveRow,
+                       saveOrder,
+                     }: {
   row: TanStackRow<QuestionAnswerPair>;
   moveRow: (draggedId: string, toIndex: number) => void;
   saveOrder: (draggedId: string, newIndex: number) => void;
 }) => {
-  const { original } = row;
+  const {original} = row;
   const dropRef = useRef<HTMLTableRowElement | null>(null);
   const dragHandleRef = useRef<HTMLDivElement | null>(null);
 
-  const [{ handlerId, isOver }, drop] = useDrop<DragItem, void, { handlerId: string | symbol | null; isOver: boolean }>({
+  const [{handlerId, isOver}, drop] = useDrop<DragItem, void, { handlerId: string | symbol | null; isOver: boolean }>({
     accept: "row",
     collect(monitor) {
       return {
@@ -90,9 +83,9 @@ const DndTableRow = ({
     },
   });
 
-  const [{ isDragging }, drag, preview] = useDrag({
+  const [{isDragging}, drag, preview] = useDrag({
     type: "row",
-    item: () => ({ id: original.id, index: row.index }),
+    item: () => ({id: original.id, index: row.index}),
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -111,31 +104,31 @@ const DndTableRow = ({
   return (
     <TableRow
       ref={dropRef}
-      style={{ opacity: isDragging ? 0 : 1 }}
+      style={{opacity: isDragging ? 0 : 1}}
       className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${isOver ? "bg-accent/20 border-t-2 border-b-2 border-primary" : ""}`}
       data-handler-id={handlerIdAttr}
       data-cy="qap-row"
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell
-        key={cell.id}
-        className={`whitespace-normal break-words px-4 py-3 ${((cell.column.columnDef as QAPColumnDef<QuestionAnswerPair>).className) ?? ""}`}
+          key={cell.id}
+          className={`whitespace-normal break-words px-4 py-3 ${((cell.column.columnDef as QAPColumnDef<QuestionAnswerPair>).className) ?? ""}`}
         >
-        {cell.column.id === "drag-handle" ? (
-        <div ref={dragHandleRef} className="cursor-grab">
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </div>
-        ) : (
-        flexRender(cell.column.columnDef.cell, cell.getContext())
-        )}
+          {cell.column.id === "drag-handle" ? (
+            <div ref={dragHandleRef} className="cursor-grab">
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </div>
+          ) : (
+            flexRender(cell.column.columnDef.cell, cell.getContext())
+          )}
         </TableCell>
       ))}
     </TableRow>
   );
 };
 
-export function QAPTable({ data, refreshData }: QAPTableProps) {
-  const [dialogState, setDialogState] = useState<QAPTableDialogState>({ mode: null, currentQAP: null });
+export function QAPTable({data, refreshData}: QAPTableProps) {
+  const [dialogState, setDialogState] = useState<QAPTableDialogState>({mode: null, currentQAP: null});
   const [searchTerm, setSearchTerm] = useState("");
 
   const [localData, setLocalData] = useState<QuestionAnswerPair[]>(() => [...data].sort((a, b) => a.order - b.order));
@@ -149,14 +142,14 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const columns = useMemo<QAPColumnDef<QuestionAnswerPair>[]>(
-    () => QAPColumns({ setDialogState }),
+    () => QAPColumns({setDialogState}),
     [setDialogState]
   );
 
   const table = useReactTable({
     data: filteredData,
     columns,
-    state: { columnVisibility },
+    state: {columnVisibility},
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -165,11 +158,11 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
 
   const client = getClient();
 
-  const resetDialogState = () => setDialogState({ mode: null, currentQAP: null });
+  const resetDialogState = () => setDialogState({mode: null, currentQAP: null});
 
   const deleteQAP = async (id: string) => {
     try {
-      await client.request<DeleteQuestionAnswerPairMutation>(DeleteQuestionAnswerPairDocument, { ids: [id] });
+      await client.request<DeleteQuestionAnswerPairMutation>(DeleteQuestionAnswerPairDocument, {ids: [id]});
       resetDialogState();
       refreshData();
     } catch {
@@ -184,14 +177,14 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
       if (oldIndex === -1) return old;
       const [moved] = newTableData.splice(oldIndex, 1);
       newTableData.splice(newIndex, 0, moved);
-      return newTableData.map((r, idx) => ({ ...r, order: idx }));
+      return newTableData.map((r, idx) => ({...r, order: idx}));
     });
   }, []);
 
   const saveOrder = useCallback(async (draggedId: string, newOrder: number) => {
     try {
       await client.request<UpdateQuestionAnswerPairOrderMutation>(UpdateQuestionAnswerPairOrderDocument, {
-        qaps: [{ id: draggedId, order: newOrder }],
+        qaps: [{id: draggedId, order: newOrder}],
       });
       refreshData();
     } catch {
@@ -206,7 +199,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <Button
             data-cy="qap-create-button"
-            onClick={() => setDialogState({ mode: "create", currentQAP: null })}
+            onClick={() => setDialogState({mode: "create", currentQAP: null})}
             className="flex gap-2"
           >
             <PlusCircle/>
@@ -219,7 +212,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
-         />
+          />
         </div>
 
         <div className="rounded-md border overflow-hidden">
@@ -261,7 +254,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
             refreshData={refreshData}
             maxOrder={localData.length > 0 ? Math.max(...localData.map(q => q.order)) : -1}
             uniqueQuestion={localData.map((q) => q.question)}
-         />
+          />
         )}
 
         {dialogState.mode === "delete" && dialogState.currentQAP && (
@@ -271,7 +264,7 @@ export function QAPTable({ data, refreshData }: QAPTableProps) {
             onConfirm={() => deleteQAP(dialogState.currentQAP!.id)}
             isOpen={true}
             closeDialog={resetDialogState}
-         />
+          />
         )}
       </div>
     </DndProvider>

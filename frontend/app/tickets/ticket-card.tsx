@@ -85,7 +85,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
               ticket?.state === TicketState.Open && "bg-ticketstate-open",
               ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
             )}
-            style={{ color: calculateFontColor(ticketStateColour)}}
+            style={{color: calculateFontColor(ticketStateColour)}}
           >
             {ticket?.state === TicketState.New
               ? "Neu"
@@ -93,7 +93,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                 ? "Offen"
                 : "Fertig"}
           </Badge>
-          <div className="flex-grow truncate text-md pl-[60px] md:absolute md:pl-[70px]"
+          <div className="flex-grow truncate pl-[60px] md:absolute md:pl-[70px] leading-normal"
                title={ticket?.title}>
             {ticket?.title}
           </div>
