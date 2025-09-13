@@ -152,7 +152,7 @@ type Mutation {
 
     createLabel(label: NewLabel!): Label! @hasRole(role: USER)
     deleteLabel(ids: [String!]!): Int! @hasRole(role: ADMIN)
-    updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
+    updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: USER)
 
     createUser(user: NewUser!): User! @hasRole(role: ADMIN)
     deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
