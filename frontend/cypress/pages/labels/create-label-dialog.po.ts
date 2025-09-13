@@ -36,8 +36,11 @@ export function getSubmitButton() {
 
 export function fillOutForm(name?: string, color?: string, isPublic = false) {
   if (name) getNameInput().type(name)
-  if (color) getColorInput().type(color)
-  if (isPublic) getIsPublicCheckbox().check()
+  if (color) {
+    getColorInput().clear()
+    getColorInput().type(color)
+  }
+  if (isPublic) getIsPublicCheckbox().click()
 }
 
 export function cancel() {

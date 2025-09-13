@@ -43,7 +43,6 @@ describe('Label Management Page Tests', () => {
       creationDialog.getColorInputMessage().should('not.exist')
     })
 
-    // FIXME: #279
     it('shows error on already taken name', () => {
       creationDialog.fillOutForm(labels.soziales.name, labels.soziales.color, labels.soziales.public)
       creationDialog.submit()
@@ -65,7 +64,6 @@ describe('Label Management Page Tests', () => {
       page.getLabelRows().contains('Test Label 1').should('not.exist')
     });
 
-    // FIXME: #280
     it('creates label on valid submit', () => {
       creationDialog.fillOutForm(labels.test1.name, labels.test1.color, labels.test1.public)
       creationDialog.submit()
@@ -77,7 +75,7 @@ describe('Label Management Page Tests', () => {
     after(() => page.deleteLabelsAPI([labels.test1.name, labels.test2.name]))
   })
 
-  context.only('Delete Labels', () => {
+  context('Delete Labels', () => {
     it('opens a confirmation dialog before deleting', () => {
       page.getDeleteButtonsOfLabels(labels.soziales.name).eq(0).click()
 
@@ -112,6 +110,64 @@ describe('Label Management Page Tests', () => {
     after(() => {
       page.createLabelAPI(labels.soziales)
       page.createLabelAPI(labels.fachschaft)
+    })
+  })
+
+  context('Edit Labels', () => {
+    const newName = 'selaizos'
+    const newColorHex = '#FF0000'
+    const newColorRGB = 'rgb(255, 0, 0)'
+
+    it('edits name', () => {
+      page.openEditOfLabel(labels.soziales.name)
+      creationDialog.getNameInput().type(newName)
+      creationDialog.submit()
+
+      creationDialog.getDialog().should('not.exist')
+      page.getLabelRows().contains(newName).should('be.visible')
+    });
+
+    it('edits color', () => {
+      page.openEditOfLabel(newName)
+      creationDialog.getColorInput().clear()
+      creationDialog.getColorInput().type(newColorHex)
+      creationDialog.submit()
+
+      creationDialog.getDialog().should('not.exist')
+      page.getLabelRows()
+        .contains(newName)
+        .invoke('css','background-color').should('equal', newColorRGB)
+    });
+
+    it('makes label public', () => {
+      page.openEditOfLabel(newName)
+      creationDialog.getIsPublicCheckbox().click()
+      creationDialog.submit()
+      cy.visit("/")
+
+      kummerform.getLabels().contains(newName).should('be.visible')
+    });
+
+    it('makes labels private', () => {
+      page.openEditOfLabel(newName)
+      creationDialog.getIsPublicCheckbox().click()
+      creationDialog.submit()
+      cy.visit("/")
+
+      kummerform.getLabels().contains(newName).should('not.exist')
+    });
+
+    it('does not allow edit of already taken name', () => {
+      page.openEditOfLabel(newName)
+      creationDialog.getNameInput().type(labels.fachschaft.name)
+      creationDialog.submit()
+
+      creationDialog.getNameInputMessage().should('be.visible')
+    });
+
+    after(() => {
+      page.deleteLabelsAPI([newName])
+      page.createLabelAPI(labels.soziales)
     })
   })
 
