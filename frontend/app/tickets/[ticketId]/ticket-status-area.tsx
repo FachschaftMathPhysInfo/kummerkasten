@@ -13,8 +13,6 @@ interface TicketStatusAreaProps {
 
 
 export default function TicketStatusArea({state, setStatusAction}: TicketStatusAreaProps) {
-  const badgeStyle = {color: calculateFontColor(getTicketStateColor(state))}
-
   return (
     <div className={'w-full'}>
       <Select defaultValue={state} onValueChange={(val) => setStatusAction(val as TicketState)}>
@@ -37,13 +35,28 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="NEW">
-            <Badge className="w-full bg-ticketstate-new" style={badgeStyle}>Neu</Badge>
+            <Badge
+              className="w-full bg-ticketstate-new"
+              style={{color: calculateFontColor(getTicketStateColor(TicketState.New))}}
+            >
+              Neu
+            </Badge>
           </SelectItem>
           <SelectItem value="OPEN">
-            <Badge className="w-full bg-ticketstate-open" style={badgeStyle}>Offen</Badge>
+            <Badge
+              className="w-full bg-ticketstate-open"
+              style={{color: calculateFontColor(getTicketStateColor(TicketState.Open))}}
+            >
+              Offen
+            </Badge>
           </SelectItem>
           <SelectItem value="CLOSED">
-            <Badge className="w-full bg-ticketstate-closed" style={badgeStyle}>Fertig</Badge>
+            <Badge
+              className="w-full bg-ticketstate-closed"
+              style={{color: calculateFontColor(getTicketStateColor(TicketState.Closed))}}
+            >
+              Fertig
+            </Badge>
           </SelectItem>
         </SelectContent>
       </Select>
