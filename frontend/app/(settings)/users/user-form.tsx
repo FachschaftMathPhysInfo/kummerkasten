@@ -62,7 +62,7 @@ export default function UserForm(props: UserFormProps) {
     setLoading(true)
 
     if (await testIfMailExists(data.mail)) {
-      form.setError('mail', {message: 'Diese E-Mail ist schon in Gebrauch'})
+      form.setError('mail', {message: 'Diese E-Mail-Adresse wird bereits verwendet'})
       return
     }
 
