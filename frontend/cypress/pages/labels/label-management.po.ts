@@ -1,5 +1,18 @@
 import {getClient} from "../../../lib/graph/client";
-import {AllLabelsDocument, DeleteLabelsDocument} from "../../../lib/graph/generated/graphql";
+import {
+  AllLabelsDocument,
+  CreateLabelDocument,
+  DeleteLabelsDocument,
+  Label,
+  NewLabel
+} from "../../../lib/graph/generated/graphql";
+import * as confirmationDialog from "../confirmation-dialog.po"
+
+export type LabelDialogData = {
+  name: string,
+  color: string,
+  public: boolean,
+}
 
 export function getCreateLabelButton() {
   return cy.get("[data-cy=create-label-button]")
@@ -45,6 +58,11 @@ export function getDeleteButtonsOfLabels(name?: string) {
   }
 }
 
+export function deleteLabel(name: string) {
+  getDeleteButtonsOfLabels(name).eq(0).click()
+  confirmationDialog.confirm();
+}
+
 export function getEditButtonsOfLabels(name?: string) {
   if (name) {
     return getLabelRows().filter((_, row) => {
@@ -57,7 +75,17 @@ export function getEditButtonsOfLabels(name?: string) {
   }
 }
 
-export async function deleteLabels(names: string[]) {
+export function openEditOfLabel(name: string) {
+  getEditButtonsOfLabels(name).eq(0).click()
+}
+
+export async function createLabelAPI(data: LabelDialogData) {
+  const client = getClient()
+  const dbLabel: NewLabel = {name: data.name, color: data.color, formLabel: data.public}
+  await client.request(CreateLabelDocument, {label: dbLabel})
+}
+
+export async function deleteLabelsAPI(names: string[]) {
   const client = getClient()
   const data = await client.request(AllLabelsDocument)
   const labelsToDelete = data.labels?.filter(l => !!l &&names.includes(l.name))

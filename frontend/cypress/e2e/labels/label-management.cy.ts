@@ -2,6 +2,8 @@ import users from "../../fixtures/users.json"
 import labels from "../../fixtures/labels.json"
 import * as page from "../../pages/labels/label-management.po"
 import * as creationDialog from "../../pages/labels/create-label-dialog.po"
+import * as confirmationDialog from "../../pages/confirmation-dialog.po"
+import * as kummerform from "../../pages/kummerform.po"
 
 describe('Label Management Page Tests', () => {
   beforeEach(() => {
@@ -13,7 +15,7 @@ describe('Label Management Page Tests', () => {
     page.getCreateLabelButton().should('be.visible')
   });
 
-  context.only('Create Labels', () => {
+  context('Create Labels', () => {
     beforeEach(() => {
       page.getCreateLabelButton().click()
     })
@@ -72,7 +74,45 @@ describe('Label Management Page Tests', () => {
       page.getLabelRows().contains(labels.test1.name).should('be.visible')
     })
 
-    after(() => page.deleteLabels([labels.test1.name, labels.test2.name]))
+    after(() => page.deleteLabelsAPI([labels.test1.name, labels.test2.name]))
+  })
+
+  context.only('Delete Labels', () => {
+    it('opens a confirmation dialog before deleting', () => {
+      page.getDeleteButtonsOfLabels(labels.soziales.name).eq(0).click()
+
+      confirmationDialog.getDialog().should('be.visible')
+      confirmationDialog.getTitleText().should('have.length.above', 0)
+      confirmationDialog.getDescriptionText().should('contain', labels.soziales.name)
+      confirmationDialog.getCancelButton().should('be.visible')
+      confirmationDialog.getConfirmButton().should('be.visible')
+    });
+
+    it('does not delete on cancel', () => {
+      page.getDeleteButtonsOfLabels(labels.soziales.name).eq(0).click()
+      confirmationDialog.cancel()
+
+      page.getLabelRows().contains(labels.soziales.name).should('be.visible')
+    });
+
+    it('deletes private labels', () => {
+      page.deleteLabel(labels.soziales.name)
+
+      page.getLabelRows().contains(labels.soziales.name).should('not.exist')
+    });
+
+    it('deletes public labels', () => {
+      page.deleteLabel(labels.fachschaft.name)
+
+      page.getLabelRows().contains(labels.fachschaft.name).should('not.exist')
+      cy.visit("/")
+      kummerform.getLabels().contains(labels.fachschaft.name).should('not.exist')
+    })
+
+    after(() => {
+      page.createLabelAPI(labels.soziales)
+      page.createLabelAPI(labels.fachschaft)
+    })
   })
 
   context('Label Table', () => {
