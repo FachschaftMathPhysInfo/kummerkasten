@@ -1,5 +1,6 @@
 import users from "../fixtures/users.json"
 import * as page from "../pages/users/user-management.po"
+import * as actions from "../pages/users/user-actions.po"
 import * as creationDialog from "../pages/users/user-dialog.po"
 
 describe('User Management Page Tests', () => {
@@ -53,6 +54,7 @@ describe('User Management Page Tests', () => {
         creationDialog.getConfirmPasswordInputMessage().should('not.exist')
       });
 
+      // FIXME: #268
       it('shows error and disables submit on invalid submit - empty form', () => {
         creationDialog.submit()
 
@@ -60,8 +62,7 @@ describe('User Management Page Tests', () => {
         creationDialog.getLastnameInputMessage().should('be.visible').and('have.length.above', 0)
         creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
         creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
-        // TODO: this is being discussed
-        // creationDialog.getConfirmPasswordInputMessage().should('be.visible').and('have.length.above', 0)
+        creationDialog.getConfirmPasswordInputMessage().should('be.visible').and('have.length.above', 0)
 
         creationDialog.getSubmitButton().should('be.disabled')
       });
