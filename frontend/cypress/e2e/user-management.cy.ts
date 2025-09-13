@@ -68,14 +68,14 @@ describe('User Management Page Tests', () => {
       });
 
       it('shows error and disables submit on invalid submit - short firstname', () => {
-        creationDialog.fillOutForm({firstName: "a"})
+        creationDialog.fillOutForm({firstname: "a"})
         creationDialog.submit()
 
         creationDialog.getFirstnameInputMessage().should('be.visible').and('have.length.above', 0)
       });
 
       it('shows error and disables submit on invalid submit - short lastname', () => {
-        creationDialog.fillOutForm({lastName: "a"})
+        creationDialog.fillOutForm({lastname: "a"})
         creationDialog.submit()
 
         creationDialog.getLastnameInputMessage().should('be.visible').and('have.length.above', 0)
@@ -140,37 +140,23 @@ describe('User Management Page Tests', () => {
       });
 
       it('creates no user on cancel', () => {
-        const mail = "newly.created@wowie.example"
-        creationDialog.fillOutForm({
-          firstName: "Newly",
-          lastName: "Created",
-          mail: mail,
-          password: "ThisIsForTesting123!",
-          confirmPassword: "ThisIsForTesting123!",
-        })
+        creationDialog.fillOutForm({...users.temp, confirmPassword: users.temp.password})
         creationDialog.cancel()
 
         creationDialog.getDialog().should('not.exist')
-        page.getUserRows().contains('td', mail).should('not.exist')
+        page.getUserRows().contains('td', users.temp.mail).should('not.exist')
       });
 
       it('closes and creates user on valid submision', () => {
-        const mail = "newly.created@wowie.example"
-        creationDialog.fillOutForm({
-          firstName: "Newly",
-          lastName: "Created",
-          mail: mail,
-          password: "ThisIsForTesting123!",
-          confirmPassword: "ThisIsForTesting123!",
-        })
+        creationDialog.fillOutForm({...users.temp, confirmPassword: users.temp.password})
         creationDialog.submit()
 
         creationDialog.getDialog().should('not.exist')
-        page.getUserRows().contains('td', mail).should('be.visible')
+        page.getUserRows().contains('td', users.temp.mail).should('be.visible')
       });
 
       after(() => {
-        // TODO: Delete use afterwards
+        actions.deleteUserAPI(users.temp.mail)
       })
     })
   })

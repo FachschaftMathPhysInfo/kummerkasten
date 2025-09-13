@@ -1,6 +1,6 @@
 export type UserCreationDialogData = {
-  firstName?: string,
-  lastName?: string,
+  firstname?: string,
+  lastname?: string,
   mail?: string,
   password?: string,
   confirmPassword?: string,
@@ -59,8 +59,8 @@ export function getSubmitButton() {
 }
 
 export function fillOutForm(data: UserCreationDialogData) {
-  if (data.firstName) getFirstNameInput().type(data.firstName)
-  if (data.lastName) getLastNameInput().type(data.lastName)
+  if (data.firstname) getFirstNameInput().type(data.firstname)
+  if (data.lastname) getLastNameInput().type(data.lastname)
   if (data.mail) getEmailInput().type(data.mail)
   if (data.password) getPasswordInput().type(data.password)
   if (data.confirmPassword) getConfirmPasswordInput().type(data.confirmPassword)

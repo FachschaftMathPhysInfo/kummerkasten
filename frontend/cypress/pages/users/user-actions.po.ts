@@ -1,5 +1,7 @@
 import * as dialog from "../confirmation-dialog.po"
 import * as page from "./user-management.po"
+import {getClient} from "../../../lib/graph/client";
+import {DeleteUsersDocument, GetUserIdByMailDocument} from "../../../lib/graph/generated/graphql";
 
 export function getDeleteButton() {
   return cy.get('[data-cy="delete-button"]');
@@ -33,5 +35,12 @@ export function demoteUser(mail: string) {
   page.getActionsOfUsers(mail).click()
   getDemoteButton().click();
   dialog.confirm()
+}
+
+export async function deleteUserAPI(mail: string) {
+  const client = getClient();
+  const data = await client.request(GetUserIdByMailDocument, {mail: [mail]})
+  const id = data.users?.find(u => !!u)?.id
+  if (id) await client.request(DeleteUsersDocument, {ids: [id]})
 }
 
