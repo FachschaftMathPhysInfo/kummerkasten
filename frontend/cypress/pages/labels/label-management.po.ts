@@ -3,10 +3,11 @@ import {
   AllLabelsDocument,
   CreateLabelDocument,
   DeleteLabelsDocument,
-  Label,
+  LoginDocument,
   NewLabel
 } from "../../../lib/graph/generated/graphql";
 import * as confirmationDialog from "../confirmation-dialog.po"
+import * as users from "../../fixtures/users.json"
 
 export type LabelDialogData = {
   name: string,
@@ -87,7 +88,9 @@ export async function createLabelAPI(data: LabelDialogData) {
 
 export async function deleteLabelsAPI(names: string[]) {
   const client = getClient()
+  await client.request(LoginDocument, {mail: users.cypress.mail, password: users.cypress.password})
   const data = await client.request(AllLabelsDocument)
+
   const labelsToDelete = data.labels?.filter(l => !!l &&names.includes(l.name))
   if (labelsToDelete) {
     const idsToDelete = labelsToDelete.filter(l => !!l).map(l => l.id)
