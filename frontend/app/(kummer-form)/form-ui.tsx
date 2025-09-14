@@ -162,7 +162,7 @@ export default function FormUi() {
                     ))}
                   </div>
                 )}
-                <FormMessage/>
+                <FormMessage data-cy={'kummerform-labels-message'}/>
               </FormItem>
             )}
           />
@@ -186,11 +186,11 @@ export default function FormUi() {
                     className={cn("bg-background text-foreground")}
                     placeholder="Vorlesung ..."
                     maxLength={TITLE_MAX_LENGTH}
-                    data-cy="kummerform-title-input"
+                    data-cy={'kummerform-title-input'}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage/>
+                <FormMessage data-cy={'kummerform-title-message'}/>
               </FormItem>
             )}
           />
@@ -212,13 +212,13 @@ export default function FormUi() {
                   <Textarea
                     placeholder="Deine anonyme Nachricht"
                     maxLength={TEXT_MAX_LENGTH}
-                    data-cy="kummerform-text-input"
                     className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
                       "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
                       "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}
+                    data-cy="kummerform-text-input"
                     {...field} />
                 </FormControl>
-                <FormMessage/>
+                <FormMessage data-cy={'kummerform-text-message'}/>
               </FormItem>
             )}
           />

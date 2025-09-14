@@ -53,7 +53,7 @@ export default function FaqSection() {
           ))}
         </Accordion>
       ) : (
-        <div className="text-center text-foreground py-8" data-cy="kummerform-faq-empty">
+        <div className="text-center text-foreground py-8" data-cy={'kummerform-faq-empty'}>
           Keine FAQs verfügbar.
         </div>
       )}
