@@ -2,7 +2,8 @@
 
 // Add this to cypress/support/commands.js
 import * as sidebar from "../pages/sidebar.po"
-import {UpdateUser} from "@/lib/graph/generated/graphql";
+import {TicketState, UpdateUser} from "../../lib/graph/generated/graphql";
+
 
 Cypress.Commands.add('login', (mail: string, password: string) => {
     cy.session([mail, password], () => {
@@ -157,6 +158,39 @@ Cypress.Commands.add("getAllLabels", (): Cypress.Chainable<any> => {
     }).its("body.data.labels");
 });
 
+Cypress.Commands.add("getTicketsByStateNewOrOpen", (): Cypress.Chainable<any[]> => {
+    const query = `
+        query allTickets {
+            tickets {
+                id
+                originalTitle
+                title
+                text
+                note
+                state
+                createdAt
+                lastModified
+                labels {
+                    id
+                    name
+                    color
+                }
+            }
+        }
+    `;
+
+    return cy.request({
+        method: "POST",
+        url: "/api",
+        headers: { "Content-Type": "application/json" },
+        body: { query, operationName: "allTickets" },
+    }).then((response) => {
+        const tickets = response.body.data.tickets;
+        return tickets.filter((t: any) => t.state === TicketState.New || t.state === TicketState.Open);
+    });
+});
+
+
 
 
 declare global {
@@ -175,6 +209,8 @@ declare global {
             getAllTickets(): Chainable<any>;
 
             getAllLabels(): Chainable<any>;
+
+            getTicketsByStateNewOrOpen(): Chainable<any>;
         }
     }
 }

@@ -1,6 +1,6 @@
 import {TicketSortingField} from "@/app/tickets/page";
 
-export function getSearchTextInput() {
+export function getDesktopSearchTextInput() {
   return cy.get('[data-cy="ticket-overview-search-field"]')
 }
 
