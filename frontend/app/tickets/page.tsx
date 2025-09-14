@@ -390,7 +390,7 @@ export default function TicketPage() {
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-[170px]">
                     <Command>
-                      <CommandInput placeholder="Status suchen..."/>
+                      <CommandInput placeholder="Status suchen..." data-cy="desktop-overview-status-search"/>
                       <CommandGroup>
                         {Object.values(TicketState).map((state) => {
                           const isSelected = stateFilter?.includes(state);

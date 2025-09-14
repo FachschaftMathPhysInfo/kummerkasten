@@ -13,15 +13,15 @@ export function getMobileOverviewStatusButton() {
 }
 
 export function getMobileOverviewStatusButtonNew() {
-  return cy.get('[data-cy="mobile-overview-status-New"]')
+  return cy.get('[data-cy="mobile-overview-status-NEW"]')
 }
 
 export function getMobileOverviewStatusButtonOpen() {
-  return cy.get('[data-cy="mobile-overview-status-Open"]')
+  return cy.get('[data-cy="mobile-overview-status-OPEN"]')
 }
 
 export function getMobileOverviewStatusButtonClosed() {
-  return cy.get('[data-cy="mobile-overview-status-Closed"]')
+  return cy.get('[data-cy="mobile-overview-status-CLOSED"]')
 }
 
 export function getMobileOverviewLabelButton() {
@@ -62,15 +62,19 @@ export function getDesktopOverviewStateFilterButton() {
 }
 
 export function getDesktopOverviewStatusButtonNew() {
-  return cy.get('[data-cy="desktop-overview-button-New"]')
+  return cy.get('[data-cy="desktop-overview-status-NEW"]')
 }
 
 export function getDesktopOverviewStatusButtonOpen() {
-  return cy.get('[data-cy="desktop-overview-button-Open"]')
+  return cy.get('[data-cy="desktop-overview-status-OPEN"]')
 }
 
 export function getDesktopOverviewStatusButtonClosed() {
-  return cy.get('[data-cy="desktop-overview-button-Closed"]')
+  return cy.get('[data-cy="desktop-overview-status-CLOSED"]')
+}
+
+export function getDesktopOverviewStatusFilterSearch(){
+  return cy.get('[data-cy="desktop-overview-status-search"]')
 }
 
 export function getDesktopOverviewLabelFilterButton() {
@@ -106,7 +110,7 @@ export function getSortingSelectionSortField(field: TicketSortingField) {
 }
 
 export function getDesktopOverviewResetFilters() {
-  return cy.get('[data-cy="desktop-overview-reset-filter"]')
+  return cy.get('[data-cy="desktop-overview-reset-filters"]')
 }
 
 export function getTicketCard(id: string) {
