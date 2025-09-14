@@ -157,6 +157,44 @@ Cypress.Commands.add("getAllLabels", (): Cypress.Chainable<any> => {
     }).its("body.data.labels");
 });
 
+Cypress.Commands.add("getFormLabels", (): Cypress.Chainable<any> => {
+    const query = `
+        query formLabels {
+            formLabels {
+            id
+            name
+            formLabel
+            }
+        }
+    `;
+
+    return cy.request({
+        method: "POST",
+        url: "/api",
+        headers: { "Content-Type": "application/json" },
+        body: { query, operationName: "formLabels" },
+    }).its("body.data.formLabels");
+});
+
+Cypress.Commands.add("getAllQAPs", (): Cypress.Chainable<any> => {
+    const query = `
+        query allQuestionAnswerPair{
+            questionAnswerPairs{
+                question
+                answer
+                id
+                order
+            }
+        }
+    `;
+    return cy.request({
+        method: "POST",
+        url: "/api",
+        headers: { "Content-Type": "application/json" },
+        body: { query, operationName: "allQuestionAnswerPair" },
+    }).its("body.data.questionAnswerPairs");
+});
+
 
 
 declare global {
@@ -175,6 +213,10 @@ declare global {
             getAllTickets(): Chainable<any>;
 
             getAllLabels(): Chainable<any>;
+            
+            getFormLabels(): Chainable<any>;
+
+            getAllQAPs(): Chainable<any>;
         }
     }
 }

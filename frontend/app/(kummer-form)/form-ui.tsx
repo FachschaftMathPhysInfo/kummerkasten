@@ -119,7 +119,7 @@ export default function FormUi() {
                     <LoaderCircle className="animate-spin"/>
                   </div>}
                 {!isLabelsLoading && formLabels.length > 0 && (
-                  <div className="flex flex-row flex-wrap">
+                  <div className="flex flex-row flex-wrap" data-cy="kummerform-labels">
                     {formLabels.map((label) => (
                       <FormField
                         key={label.id}
@@ -131,9 +131,10 @@ export default function FormUi() {
                               key={label.id}
                             >
                               <FormControl>
-                                <div className={'flex items-center gap-2 mx-2'}>
+                                <div className="flex items-center gap-2 mx-2" data-cy={`kummerform-label-${label.id}`}>
                                   <Checkbox
                                     className={cn("h-4 w-4 shrink-0 rounded-sm ring-offset-background focus-visible:outline-none focus-visible:border-2")}
+                                    data-cy={`kummerform-label-checkbox-${label.id}`}
                                     checked={field.value?.includes(label.name)}
                                     onCheckedChange={(checked) => {
                                       return checked
@@ -148,6 +149,7 @@ export default function FormUi() {
                                       'capitalize',
                                       hasTriedToSubmit && form.formState.errors.labels && 'text-destructive'
                                     )}
+                                    data-cy={`kummerform-label-name-${label.id}`}
                                   >
                                     {label.name}
                                   </span>
@@ -184,6 +186,7 @@ export default function FormUi() {
                     className={cn("bg-background text-foreground")}
                     placeholder="Vorlesung ..."
                     maxLength={TITLE_MAX_LENGTH}
+                    data-cy="kummerform-title-input"
                     {...field}
                   />
                 </FormControl>
@@ -209,6 +212,7 @@ export default function FormUi() {
                   <Textarea
                     placeholder="Deine anonyme Nachricht"
                     maxLength={TEXT_MAX_LENGTH}
+                    data-cy="kummerform-text-input"
                     className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
                       "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
                       "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}
@@ -222,6 +226,7 @@ export default function FormUi() {
             disabled={!form.formState.isValid && hasTriedToSubmit || loading}
             type="submit"
             className="w-full flex justify-center items-center gap-2"
+            data-cy="kummerform-send"
           >
             {loading ? (
               <LoaderCircle className="animate-spin"/>
