@@ -20,7 +20,7 @@ export default function SortingSelection(props: SortingSelectionProps) {
         <Button
           variant="outline"
           className="min-w-[170px] justify-between items-center"
-          data-cy="sort-button"
+          data-cy="sorting-selection-sort-button"
         >
           <span className="flex justify-center items-center">
             Sortieren: {props.sorting.field}{" "}
@@ -47,6 +47,7 @@ export default function SortingSelection(props: SortingSelectionProps) {
                   field: field as TicketSortingField,
                   orderAscending: !prevState.orderAscending
                 }))}
+                data-cy={`sorting-selection-sort-${field}`}
               >
                 {field}
               </CommandItem>

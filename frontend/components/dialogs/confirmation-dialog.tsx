@@ -54,6 +54,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
             <Button
               onClick={() => closeDialog()}
               variant={props.mode === 'confirmation' ? 'outline' : 'default'}
+              data-cy="confirmation-cancel"
             >
               {props.mode === 'confirmation' ? 'Abbrechen' : 'Verstanden'}
             </Button>
@@ -64,6 +65,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
                   closeDialog();
                 }}
                 variant={'destructive'}
+                data-cy="confirmation-delete"
               >
                 Bestätigen
               </Button>

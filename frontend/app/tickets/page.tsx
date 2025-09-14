@@ -165,7 +165,7 @@ export default function TicketPage() {
               placeholder="Suche nach Inhalt..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              data-cy="search-title"
+              data-cy="ticket-overview-search-field"
             />
             {isMobile ? (
               <Sheet>
@@ -185,7 +185,8 @@ export default function TicketPage() {
                     <div className="flex flex-row gap-2 justify-between">
                       <div className="font-semibold">Status:</div>
                       <Button variant="outline" className="w-fit justify-between"
-                              onClick={() => setShowMobileFilters((prev) => !prev)}>
+                              onClick={() => setShowMobileFilters((prev) => !prev)}
+                              data-cy="mobile-overview-status-button">
                         {stateFilter.length > 0 ? `${stateFilter.length} ausgewählt` : "Status filtern"}
                       </Button>
                     </div>
@@ -198,6 +199,7 @@ export default function TicketPage() {
                               key={state}
                               variant={isSelected ? "secondary" : "outline"}
                               className="w-full flex items-center justify-start gap-2"
+                              data-cy={`mobile-overview-status-${state}`}
                               onClick={() =>
                                 setStateFilter((prev) =>
                                   isSelected
@@ -223,6 +225,7 @@ export default function TicketPage() {
                         variant="outline"
                         className="w-fit justify-between"
                         onClick={() => setShowMobileLabelFilter((prev) => !prev)}
+                        data-cy={`mobile-overview-label-button`}
                       >
                         {labelFilter.length > 0
                           ? `${labelFilter.length} ausgewählt`
@@ -237,6 +240,7 @@ export default function TicketPage() {
                             value={labelSearchTerm}
                             onChange={(e) => setLabelSearchTerm(e.target.value)}
                             className="w-full mb-2"
+                            data-cy={`mobile-overview-label-search`}
                           />
                           {labels
                             .filter((label) =>
@@ -261,6 +265,7 @@ export default function TicketPage() {
                                         : [...prev, label]
                                     )
                                   }}
+                                  data-cy={`mobile-overview-label-${label.id}`}
                                 >
                                   <Check
                                     className={cn(
@@ -278,7 +283,7 @@ export default function TicketPage() {
                               size="sm"
                               className="w-full justify-center mt-2"
                               onClick={() => setLabelFilter([])}
-                              data-cy="clear-labels"
+                              data-cy="mobile-overview-clear-labels"
                             >
                               <Trash2 className="mr-2"/> Filter löschen
                             </Button>
@@ -307,6 +312,7 @@ export default function TicketPage() {
                         size="sm"
                         className="w-fit justify-between text-sm"
                         onClick={() => setShowMobileSort((prev) => !prev)}
+                        data-cy="mobile-overview-sort-button"
                       >
                         {sorting.field} {sorting.orderAscending ? "↑" : "↓"}
                       </Button>
@@ -326,6 +332,7 @@ export default function TicketPage() {
                                   ...prevState,
                                   field: field as TicketSortingField
                                 }))}
+                                data-cy={`mobile-overview-sorting-${sorting.field}`}
                               >
                                 {field}
                               </Button>
@@ -341,6 +348,7 @@ export default function TicketPage() {
                                 ...prevState,
                                 orderAscending: true
                               }))}
+                              data-cy="mobile-overview-sorting-ascending"
                             >
                               Aufsteigend
                             </Button>
@@ -352,6 +360,7 @@ export default function TicketPage() {
                                 ...prevState,
                                 orderAscending: false
                               }))}
+                              data-cy="mobile-overview-sorting-descending"
                             >
                               Absteigend
                             </Button>
@@ -372,7 +381,7 @@ export default function TicketPage() {
                         'max-w-[200px] justify-between',
                         stateFilterSet && 'border !border-accent'
                       )}
-                      data-cy="button-status"
+                      data-cy="desktop-overview-button-status"
                     >
                       {stateFilter && stateFilter.length > 0
                         ? `${stateFilter.length} Status`
@@ -395,6 +404,7 @@ export default function TicketPage() {
                                     : [...(prev ?? []), state]
                                 );
                               }}
+                              data-cy={`desktop-overview-status-${state}`}
                             >
                               <Check
                                 className={cn(
@@ -422,7 +432,7 @@ export default function TicketPage() {
                         "max-w-[200px] justify-between",
                         labelFilter.length > 0 && 'border !border-accent'
                       )}
-                      data-cy="button-label">
+                      data-cy="desktop-overview-button-label">
                       {labelFilter && labelFilter.length > 0
                         ? `${labelFilter.length} Labels`
                         : "Labels"}
@@ -451,7 +461,7 @@ export default function TicketPage() {
               variant="outline"
               className="whitespace-nowrap"
               onClick={resetAllFilters}
-              data-cy="reset-filters"
+              data-cy="desktop-overview-reset-filters"
             >
               <Trash2 className="text-destructive"/>
               Filter zurücksetzen
@@ -497,8 +507,6 @@ export default function TicketPage() {
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDialogState}
-        data-cy-confirm="confirm-delete"
-        data-cy-cancel="cancel-delete"
       />
     </div>
   )

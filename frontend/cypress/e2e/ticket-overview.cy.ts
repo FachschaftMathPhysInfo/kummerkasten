@@ -37,8 +37,8 @@ describe('Ticket Overview Page', () => {
         });
 
         it('should display state and label filter buttons', () => {
-            ticketPage.getStateFilterButton().should('exist');
-            ticketPage.getLabelFilterButton().should('exist');
+            ticketPage.getDesktopOverviewStateFilterButton().should('exist');
+            ticketPage.getDesktopOverviewLabelFilterButton().should('exist');
         });
 
         it('should display sort options', () => {
@@ -68,7 +68,7 @@ describe('Ticket Overview Page', () => {
         it('should filter tickets by status', () => {
             const state = tickets[0]?.state;
             if (state) {
-                ticketPage.getStateFilterButton().click();
+                ticketPage.getDesktopOverviewStateFilterButton().click();
                 cy.contains(state).click();
                 ticketPage.getTicketCard(tickets[0].id).should('exist');
             }
@@ -77,7 +77,7 @@ describe('Ticket Overview Page', () => {
         it('should filter tickets by label', () => {
             const label = tickets[0]?.labels?.[0]?.name;
             if (label) {
-                ticketPage.getLabelFilterButton().click();
+                ticketPage.getDesktopOverviewLabelFilterButton().click();
                 cy.contains(label)
                     .should('be.visible')
                     .click();
