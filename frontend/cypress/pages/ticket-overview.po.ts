@@ -1,4 +1,5 @@
 import {TicketSortingField} from "@/app/tickets/page";
+import {TicketState} from "@/lib/graph/generated/graphql";
 
 export function getDesktopSearchTextInput() {
   return cy.get('[data-cy="ticket-overview-search-field"]')
@@ -119,6 +120,26 @@ export function getDesktopOverviewResetFilters() {
 
 export function getTicketCard(id: string) {
   return cy.get(`[data-cy="ticket-card-${id}"]`)
+}
+
+export function getTicketCardState(state: TicketState){
+  return cy.get(`[data-cy="ticket-card-${state}"]`)
+}
+
+export function getTicketCardLabel(name: string){
+  return cy.get(`[data-cy="ticket-card-${name}"]`)
+}
+
+export function getTicketCardChanged(name: string){
+  return cy.get(`[data-cy="ticket-card-${name}"]`)
+}
+
+export function getTicketCardCopyButton(id: string) {
+  return cy.get(`[data-cy="ticket-card-copy-${id}"]`);
+}
+
+export function getTicketCardDeleteButton(id: string) {
+  return cy.get(`[data-cy="ticket-card-delete-${id}"]`);
 }
 
 export function getTicketDeleteCancel() {

@@ -94,6 +94,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
               ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
             )}
             style={{color: calculateFontColor(ticketStateColour)}}
+            data-cy={`ticket-card-state-${ticket.state}`}
           >
             {ticket?.state === TicketState.New
               ? "Neu"
@@ -114,11 +115,13 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                          style={{
                            backgroundColor: label.color,
                            color: calculateFontColor(label.color)
-                         }}>{label.name}</Badge>
+                         }}
+                         data-cy={`ticket-card-label-${label.name}`}>{label.name}</Badge>
                 ))}
               </div>
               <div
-                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
+                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground"
+                data-cy={`ticket-card-changed-${ticket.lastModified}`}>
                 Geändert: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
               </div>
               <DropdownMenu>
@@ -138,6 +141,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                       e.preventDefault();
                       void copyTicketUrl();
                     }}
+                    data-cy={`ticket-card-copy-${ticket.id}`}
                   >
                     <Link/> Link kopieren
                   </DropdownMenuItem>
@@ -150,6 +154,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                         setDialogStateAction({mode: "delete", currentTicket: ticket});
                       }}
                       className="text-destructive"
+                      data-cy={`ticket-card-delete-${ticket.id}`}
                     >
                       <Trash2 className="text-destructive"/> Löschen
                     </DropdownMenuItem>
