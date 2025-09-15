@@ -6,6 +6,10 @@ export function getNameInput() {
   return cy.get("[data-cy=name-input]")
 }
 
+export function typeName(text: string) {
+  getNameInput().should('be.visible').clear().type(text)
+}
+
 export function getNameInputMessage() {
   return cy.get("[data-cy=name-input-message]")
 }
@@ -16,6 +20,10 @@ export function getColorPicker() {
 
 export function getColorInput() {
   return cy.get("[data-cy=color-input]")
+}
+
+export function typeColor(color: string) {
+  getColorInput().should('be.visible').clear().type(color)
 }
 
 export function getColorInputMessage() {
@@ -35,10 +43,9 @@ export function getSubmitButton() {
 }
 
 export function fillOutForm(name?: string, color?: string, isPublic = false) {
-  if (name) getNameInput().type(name)
+  if (name) typeName(name)
   if (color) {
-    getColorInput().clear()
-    getColorInput().type(color)
+    typeColor(color)
   }
   if (isPublic) getIsPublicCheckbox().click()
 }

@@ -7,8 +7,13 @@ import {UserRole} from "../../../lib/graph/generated/graphql";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
+
 roles.forEach((role) => {
   describe('Label Management Page Tests', () => {
+    before(() => {
+      cy.clearAllSessionStorage()
+    })
+
     context(`${role} Tests`, () => {
       beforeEach(() => {
         cy.loginAsRole(role)
@@ -48,7 +53,7 @@ roles.forEach((role) => {
         })
 
         it('shows error on already taken name', () => {
-          creationDialog.fillOutForm(labels.soziales.name, labels.soziales.color, labels.soziales.public)
+          creationDialog.fillOutForm(labels.lineare_algebra.name, labels.lineare_algebra.color, labels.lineare_algebra.public)
           creationDialog.submit()
 
           creationDialog.getNameInputMessage().should('be.visible')
@@ -76,32 +81,32 @@ roles.forEach((role) => {
           page.getLabelRows().contains(labels.test1.name).should('be.visible')
         })
 
-        after(() => page.deleteLabelsAPI([labels.test1.name, labels.test2.name]))
+        after(() => cy.deleteLabels([labels.test1.name, labels.test2.name]))
       })
 
       context('Delete Labels', () => {
         if (role === UserRole.Admin) {
           it('opens a confirmation dialog before deleting', () => {
-            page.getDeleteButtonsOfLabels(labels.soziales.name).eq(0).click()
+            page.getDeleteButtonsOfLabels(labels.lineare_algebra.name).eq(0).click()
 
             confirmationDialog.getDialog().should('be.visible')
             confirmationDialog.getTitleText().should('have.length.above', 0)
-            confirmationDialog.getDescriptionText().should('contain', labels.soziales.name)
+            confirmationDialog.getDescriptionText().should('contain', labels.lineare_algebra.name)
             confirmationDialog.getCancelButton().should('be.visible')
             confirmationDialog.getConfirmButton().should('be.visible')
           });
 
           it('does not delete on cancel', () => {
-            page.getDeleteButtonsOfLabels(labels.soziales.name).eq(0).click()
+            page.getDeleteButtonsOfLabels(labels.lineare_algebra.name).eq(0).click()
             confirmationDialog.cancel()
 
-            page.getLabelRows().contains(labels.soziales.name).should('be.visible')
+            page.getLabelRows().contains(labels.lineare_algebra.name).should('be.visible')
           });
 
           it('deletes private labels', () => {
-            page.deleteLabel(labels.soziales.name)
+            page.deleteLabel(labels.lineare_algebra.name)
 
-            page.getLabelRows().contains(labels.soziales.name).should('not.exist')
+            page.getLabelRows().contains(labels.lineare_algebra.name).should('not.exist')
           });
 
           it('deletes public labels', () => {
@@ -113,8 +118,8 @@ roles.forEach((role) => {
           })
 
           after(() => {
-            page.createLabelAPI(labels.soziales)
-            page.createLabelAPI(labels.fachschaft)
+            cy.deleteLabels([labels.lineare_algebra.name])
+            cy.createLabel(labels.lineare_algebra)
           })
         } else {
           it('does not show the delete action', () => {
@@ -123,62 +128,67 @@ roles.forEach((role) => {
         }
       })
 
-      // FIXME: #284
-      context('Edit Labels', () => {
-        const newName = 'selaizos'
+      context.only('Edit Labels', () => {
+        const newName = 'nicht lineare algebra'
         const newColorHex = '#FF0000'
         const newColorRGB = 'rgb(255, 0, 0)'
 
         it('edits name', () => {
-          page.openEditOfLabel(labels.soziales.name)
-          creationDialog.getNameInput().type(newName)
+          page.openEditOfLabel(labels.lineare_algebra.name)
+          creationDialog.typeName(newName)
           creationDialog.submit()
 
           creationDialog.getDialog().should('not.exist')
           page.getLabelRows().contains(newName).should('be.visible')
+
+          // CLEANUP
+          cy.deleteLabels([newName])
         });
 
         it('edits color', () => {
-          page.openEditOfLabel(newName)
-          creationDialog.getColorInput().clear()
-          creationDialog.getColorInput().type(newColorHex)
+          page.openEditOfLabel(labels.lineare_algebra.name)
+          creationDialog.typeColor(newColorHex)
           creationDialog.submit()
 
           creationDialog.getDialog().should('not.exist')
           page.getLabelRows()
-            .contains(newName)
-            .invoke('css', 'background-color').should('equal', newColorRGB)
+            .contains(labels.lineare_algebra.name)
+            .should('have.css', 'background-color', newColorRGB)
         });
 
         it('makes label public', () => {
-          page.openEditOfLabel(newName)
+          page.openEditOfLabel(labels.lineare_algebra.name)
           creationDialog.getIsPublicCheckbox().click()
           creationDialog.submit()
           cy.visit("/")
 
-          kummerform.getLabels().contains(newName).should('be.visible')
+          kummerform.getLabels().contains(labels.lineare_algebra.name).should('be.visible')
         });
 
         it('makes labels private', () => {
-          page.openEditOfLabel(newName)
+          page.openEditOfLabel(labels.fachschaft.name)
           creationDialog.getIsPublicCheckbox().click()
           creationDialog.submit()
           cy.visit("/")
 
-          kummerform.getLabels().contains(newName).should('not.exist')
+          kummerform.getLabels().contains(labels.fachschaft.name).should('not.exist')
+
+          // CLEANUP
+          cy.deleteLabels([labels.fachschaft.name])
+          cy.createLabel(labels.fachschaft)
         });
 
         it('does not allow edit of already taken name', () => {
-          page.openEditOfLabel(newName)
-          creationDialog.getNameInput().type(labels.fachschaft.name)
+          page.openEditOfLabel(labels.lineare_algebra.name)
+          creationDialog.typeName(labels.fachschaft.name)
           creationDialog.submit()
 
           creationDialog.getNameInputMessage().should('be.visible')
         });
 
         afterEach(() => {
-          page.deleteLabelsAPI([newName])
-          page.createLabelAPI(labels.soziales)
+          cy.deleteLabels([labels.lineare_algebra.name])
+          cy.createLabel(labels.lineare_algebra)
         })
       })
 
@@ -197,11 +207,11 @@ roles.forEach((role) => {
         });
 
         it('shows search results if they exist', () => {
-          page.search(labels.soziales.name)
+          page.search(labels.lineare_algebra.name)
           // Seeds only contain one label 'soziales'
           page.getLabelRows().should('have.length', 1)
           page.getLabelRows().each(($el) => {
-            cy.wrap($el).find('td').should('contain.text', labels.soziales.name)
+            cy.wrap($el).find('td').should('contain.text', labels.lineare_algebra.name)
           })
         });
 
