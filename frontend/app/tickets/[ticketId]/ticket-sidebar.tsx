@@ -18,22 +18,16 @@ import {useTickets} from "@/components/providers/ticket-provider";
 import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
 import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
-import {TicketState} from "@/lib/graph/generated/graphql";
+import {Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import {Button} from "@/components/ui/button";
 import FilterBar from "@/components/filter-bar";
 import {RotateCcw} from "lucide-react";
 
 interface TicketSidebarProps {
-  searchTerm: string;
-  setSearchTermAction: (term: string) => void;
   selectedTicketId?: string;
 }
 
-export default function TicketSidebar({
-                                        searchTerm,
-                                        setSearchTermAction,
-                                        selectedTicketId,
-                                      }: TicketSidebarProps) {
+export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
 
   const router = useRouter();
   const {tickets} = useTickets()
@@ -42,6 +36,8 @@ export default function TicketSidebar({
   const [areFiltersSet, setAreFiltersSet] = useState(false)
   const [isStateFilterSet, setIsStateFilterSet] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [filteredTickets, setFilteredTickets] = useState<Ticket[]>(getFilteredTickets(filtering, tickets))
+  const [sortedTickets, setSortedTickets] = useState<Ticket[]>(getSortedTickets(sorting, filteredTickets))
 
   useEffect(() => {
     const originalState = new Set(defaultTicketFiltering.state)
@@ -51,18 +47,24 @@ export default function TicketSidebar({
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtering.state.length]);
 
-  useEffect(() =>
-      setAreFiltersSet(
-        isStateFilterSet ||
-        filtering.labels.length > 0 ||
-        !!filtering.startDate ||
-        !!filtering.endDate
-      )
-    , [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm])
+  useEffect(() => {
+    setAreFiltersSet(
+      isStateFilterSet ||
+      filtering.labels.length > 0 ||
+      !!filtering.startDate ||
+      !!filtering.endDate
+    )
 
-  const filteredTickets = getFilteredTickets(filtering, tickets)
-  const sortedTickets = getSortedTickets(sorting, filteredTickets)
+    const newFilteredTickets = getFilteredTickets(filtering, tickets)
+    setFilteredTickets(newFilteredTickets)
+    setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
+  }, [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm])
 
+  useEffect(() => {
+    const newFilteredTickets = getFilteredTickets(filtering, tickets)
+    setFilteredTickets(newFilteredTickets)
+    setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
+  }, [tickets])
 
   return (
     <div className="px-4 flex flex-col gap-4">
@@ -85,8 +87,12 @@ export default function TicketSidebar({
         <div className={'flex gap-2'}>
           <Input
             placeholder="Suche nach Tickets..."
-            value={searchTerm}
-            onChange={(e) => setSearchTermAction(e.target.value)}
+            value={filtering.searchTerm}
+            onChange={(e) => setFiltering(prevState => ({
+                ...prevState,
+                searchTerm: e.target.value
+              })
+            )}
             className="mb-4"
             data-cy="search-ticket-detail"
           />
