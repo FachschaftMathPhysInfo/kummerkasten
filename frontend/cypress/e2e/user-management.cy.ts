@@ -89,7 +89,6 @@ describe('User Management Page Tests', () => {
         creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
       });
 
-      // FIXME: #266
       it('shows error and disables submit on invalid submit - mail taken', () => {
         creationDialog.fillOutForm({mail: users.admin.mail})
         creationDialog.submit()
@@ -153,6 +152,11 @@ describe('User Management Page Tests', () => {
 
         creationDialog.getDialog().should('not.exist')
         page.getUserRows().contains('td', users.temp.mail).should('be.visible')
+
+        cy.logout()
+        cy.login(users.temp.mail, users.temp.password)
+        cy.visit('/tickets')
+        cy.url().should('contain', '/tickets')
       });
 
       after(() => {
