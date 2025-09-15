@@ -4,7 +4,8 @@
     "lastname": "Cypress",
     "mail": "admin@cypress.kummer",
     "password": "OriginalPassword1!",
-    "id": "123456"
+    "id": "123456",
+    "role": "ADMIN"
   },
   "admin": {
     "firstname": "Admin",
@@ -16,7 +17,8 @@
     "firstname": "Fachschaft",
     "lastname": "Eins",
     "mail": "fsles1@kummerkasten.local",
-    "password": "fachschaft"
+    "password": "fachschaft",
+    "role": "USER"
   },
   "chef": {
     "firstname": "Chef",

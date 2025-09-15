@@ -108,6 +108,8 @@ export default function AccountDataForm() {
       if (userData.mail !== user.mail) {
         toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt");
         await logout();
+      } else {
+        toast.success("Dein Account wurde erfolgreich aktualisiert")
       }
 
       setHasTriedToSubmit(false);
