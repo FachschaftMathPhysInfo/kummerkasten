@@ -51,7 +51,7 @@ export const config = {
     '/users',
     '/labels',
     '/profile',
-    '/settings',
+    '/account',
     '/faq',
     '/app-settings'
   ],

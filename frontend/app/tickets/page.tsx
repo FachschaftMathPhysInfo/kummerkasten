@@ -22,6 +22,7 @@ import {useLabels} from "@/components/providers/label-provider";
 import LabelSelection from "@/components/label-selection";
 import LabelBadge from "@/components/label-badge";
 import SortingSelection from "@/app/tickets/sorting-selection";
+import {getCurrentSemesterTickets, getOlderSemesterTickets, sortTickets} from "@/lib/sort-tickets";
 
 
 export type TicketDialogState = {
@@ -70,11 +71,11 @@ export default function TicketPage() {
     const newFilteredTickets = filterTickets(tickets);
     setFilteredTickets(newFilteredTickets)
 
-    setSortedTickets(sortTickets([...newFilteredTickets]))
+    setSortedTickets(sortTickets(sorting, [...newFilteredTickets]))
   }, [tickets, stateFilter, labelFilter, searchTerm, startDate, endDate]);
 
   useEffect(() => {
-    setSortedTickets(sortTickets([...filteredTickets]))
+    setSortedTickets(sortTickets(sorting, [...filteredTickets]))
   }, [sorting.field, sorting.orderAscending]);
 
   useEffect(() => {
@@ -95,31 +96,6 @@ export default function TicketPage() {
 
   const resetDialogState = () => {
     setDialogState({mode: null, currentTicket: null})
-  }
-
-  function sortTickets(tickets: Ticket[]) {
-    tickets.sort((a, b) => {
-      if (!a || !b) return 0;
-      let valA: string | number = "";
-      let valB: string | number = "";
-
-      if (sorting.field === "Erstellt") {
-        valA = new Date(a.createdAt).getTime();
-        valB = new Date(b.createdAt).getTime();
-      } else if (sorting.field === "Geändert") {
-        valA = new Date(a.lastModified).getTime();
-        valB = new Date(b.lastModified).getTime();
-      } else if (sorting.field === "Titel") {
-        valA = a.title.toLowerCase();
-        valB = b.title.toLowerCase();
-      }
-
-      if (valA < valB) return sorting.orderAscending ? -1 : 1;
-      if (valA > valB) return sorting.orderAscending ? 1 : -1;
-      return 0;
-    });
-
-    return tickets;
   }
 
   function filterTickets(tickets: Ticket[]) {
@@ -483,7 +459,29 @@ export default function TicketPage() {
           )}
         </div>
       </div>
-      {sortedTickets.map((ticket) =>
+
+      <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+        <p className={'text-muted-foreground'}>Dieses Semester</p>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+      </div>
+
+      {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
+          ticket?.id && (
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+              <Link href={`/tickets/${ticket.id}`} passHref>
+                <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
+              </Link>
+            </div>
+          )
+      )}
+
+      <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+        <p className={'text-muted-foreground'}>Frühere Semester</p>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+      </div>
+      {getOlderSemesterTickets(sortedTickets).map((ticket) =>
           ticket?.id && (
             <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>

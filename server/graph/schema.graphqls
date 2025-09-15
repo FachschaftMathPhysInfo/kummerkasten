@@ -75,6 +75,7 @@ type Query {
     users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     footerSettings: [Setting]
+    aboutSectionSettings: [Setting]
     login(mail: String!, password: String!): Boolean!
     loginCheck(sid: String): User
     questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]
@@ -152,7 +153,7 @@ type Mutation {
 
     createLabel(label: NewLabel!): Label! @hasRole(role: USER)
     deleteLabel(ids: [String!]!): Int! @hasRole(role: ADMIN)
-    updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
+    updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: USER)
 
     createUser(user: NewUser!): User! @hasRole(role: ADMIN)
     deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
@@ -168,8 +169,8 @@ type Mutation {
     addLabelToTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
     removeLabelFromTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
 
-    createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
-    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
-    updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: ADMIN)
-    updateQuestionAnswerPairOrder(qaps: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: ADMIN)
+    createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: USER)
+    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: USER)
+    updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: USER)
+    updateQuestionAnswerPairOrder(qaps: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: USER)
 }

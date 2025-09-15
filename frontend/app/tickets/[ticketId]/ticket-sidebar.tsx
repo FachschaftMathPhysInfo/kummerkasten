@@ -31,6 +31,7 @@ import {format} from "date-fns";
 import {useLabels} from "@/components/providers/label-provider";
 import {useTickets} from "@/components/providers/ticket-provider";
 import LabelSelection from "@/components/label-selection";
+import {getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/sort-tickets";
 
 interface TicketSidebarProps {
   searchTerm: string;
@@ -289,7 +290,13 @@ export default function TicketSidebar({
       </div>
 
       <div>
-        {sortedTickets.map((t) => (
+        <div className={'w-full flex gap-4 items-center my-2'}>
+          <span className={'grow h-0.5 bg-muted-foreground'}/>
+          <p className={'text-muted-foreground'}>Dieses Semester</p>
+          <span className={'grow h-0.5 bg-muted-foreground'}/>
+        </div>
+
+        {getCurrentSemesterTickets(sortedTickets).map((t) => (
           <div
             key={t.id}
             className={`flex flex-row p-2 cursor-pointer rounded items-center ${
@@ -324,6 +331,47 @@ export default function TicketSidebar({
             </div>
           </div>
         ))}
+
+        <div className={'w-full flex gap-4 items-center my-2'}>
+          <span className={'grow h-0.5 bg-muted-foreground'}/>
+          <p className={'text-muted-foreground'}>Frühere Semester</p>
+          <span className={'grow h-0.5 bg-muted-foreground'}/>
+        </div>
+
+        {getOlderSemesterTickets(sortedTickets).map((t) => (
+          <div
+            key={t.id}
+            className={`flex flex-row p-2 cursor-pointer rounded items-center ${
+              t.id === selectedTicketId ? "bg-accent/50" : "hover:bg-accent/40"
+            }`}
+            onClick={() => router.push(`/tickets/${t.id}`)}
+            data-cy={`ticket-card-${t.id}`}
+          >
+            <Badge
+              className={cn(
+                "text-white px-2 py-1 rounded mr-5 h-2",
+                t.state === "NEW" && "bg-ticketstate-new",
+                t.state === "OPEN" && "bg-ticketstate-open",
+                t.state === "CLOSED" && "bg-ticketstate-closed"
+              )}
+              data-cy={`ticket-status-${t.id}`}
+            />
+            <div className="flex flex-row justify-between w-full">
+              <div
+                className="truncate max-w-[250px]"
+                title={t.title}
+                data-cy={`ticket-title-${t.id}`}
+              >
+                {t.title}
+              </div>
+              <div
+                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
+                Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
+              </div>
+            </div>
+          </div>
+        ))}
+
       </div>
     </div>
   );

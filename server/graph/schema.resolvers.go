@@ -958,6 +958,21 @@ func (r *queryResolver) FooterSettings(ctx context.Context) ([]*model.Setting, e
 	return footerSettings, nil
 }
 
+// AboutSectionSettings is the resolver for the aboutSectionSettings field.
+func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Setting, error) {
+	const aboutSettingsPrefix = "ABOUT_"
+	var aboutSetting []*model.Setting
+
+	if err := r.DB.NewSelect().
+		Model(&aboutSetting).
+		Where("key LIKE ?", aboutSettingsPrefix+"%").
+		Scan(ctx); err != nil {
+		return nil, fmt.Errorf("failed to get about setting: %v", err)
+	}
+
+	return aboutSetting, nil
+}
+
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
 	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
