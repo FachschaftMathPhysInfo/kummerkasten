@@ -128,7 +128,7 @@ roles.forEach((role) => {
         }
       })
 
-      context.only('Edit Labels', () => {
+      context('Edit Labels', () => {
         const newName = 'nicht lineare algebra'
         const newColorHex = '#FF0000'
         const newColorRGB = 'rgb(255, 0, 0)'
