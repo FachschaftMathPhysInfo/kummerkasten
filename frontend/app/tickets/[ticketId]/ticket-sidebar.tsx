@@ -58,7 +58,7 @@ export default function TicketSidebar({
         !!filtering.startDate ||
         !!filtering.endDate
       )
-    , [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate])
+    , [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm])
 
   const filteredTickets = getFilteredTickets(filtering, tickets)
   const sortedTickets = getSortedTickets(sorting, filteredTickets)
@@ -103,7 +103,7 @@ export default function TicketSidebar({
 
         <div
           className={cn(
-            'w-full border rounded-lg p-1',
+            'w-full border rounded-lg p-2',
             !showFilters && !areFiltersSet && 'hidden'
           )}
         >
@@ -127,7 +127,7 @@ export default function TicketSidebar({
               }}
               className={'w-full'}
             >
-              <RotateCcw/> Filter Zurücksetzen
+              <RotateCcw/> Filter zurücksetzen
             </Button>
           )}</div>
       </div>

@@ -148,7 +148,7 @@ export default function MobileFilterSheet(
                     }
                     data-cy="clear-labels"
                   >
-                    <Trash2 className="mr-2 text-destructive"/> Filter löschen
+                    <Trash2 className="mr-2 text-destructive"/> Filter zurücksetzen
                   </Button>
                 )}
               </div>
