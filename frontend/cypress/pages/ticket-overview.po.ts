@@ -82,7 +82,11 @@ export function getDesktopOverviewLabelFilterButton() {
 }
 
 export function getDesktopOverviewLabel(labelId: string) {
-  return cy.get(`[data-cy="desktop-overview-label-${labelId}"]`)
+  return cy.get(`[data-cy="label-badge-${labelId}"]`)
+}
+
+export function getDesktopOverviewLabelSearch() {
+  return cy.get('[data-cy="label-search"]')
 }
 
 export function getMobileCalendarStartButton() {
@@ -106,7 +110,7 @@ export function getSortingSelectionSortButton() {
 }
 
 export function getSortingSelectionSortField(field: TicketSortingField) {
-  return cy.get('[data-cy="sorting-selection-sort-${field}"]')
+  return cy.get(`[data-cy="sorting-selection-sort-${field}"]`)
 }
 
 export function getDesktopOverviewResetFilters() {
@@ -123,4 +127,16 @@ export function getTicketDeleteCancel() {
 
 export function getTicketDeleteConfirm() {
   return cy.get('[data-cy="confirmation-delete')
+}
+
+export function getClearLabels(){
+  return cy.get('[data-cy="clear-labels"]')
+}
+
+export function getStartCalendarReset(){
+  return cy.get('[data-cy="start-calendar-reset"]')
+}
+
+export function getEndCalendarReset(){
+  return cy.get('[data-cy="end-calendar-reset"]')
 }

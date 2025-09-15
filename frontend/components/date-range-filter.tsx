@@ -117,6 +117,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               disabled={!startDate}
               onClick={() => setStartDate(null)}
               className={'w-full justify-center items-center gap-2'}
+              data-cy={'start-calendar-reset'}
             >
               <RotateCcw/>
               Zurücksetzen
@@ -145,6 +146,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               disabled={!endDate}
               onClick={() => setEndDate(null)}
               className={'w-full justify-center items-center gap-2'}
+              data-cy={'end-calendar-reset'}
             >
               <RotateCcw/>
               Zurücksetzen

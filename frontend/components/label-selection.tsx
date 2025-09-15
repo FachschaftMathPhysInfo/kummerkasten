@@ -15,7 +15,7 @@ interface LabelSelectionProps {
 export default function LabelSelection({labels, selectedLabels, setLabels}: LabelSelectionProps) {
   return (
     <Command>
-      <CommandInput placeholder="Labels suchen..."/>
+      <CommandInput placeholder="Labels suchen..." data-cy={'label-search'}/>
       <CommandGroup className={'max-h-[300px] overflow-y-auto'}>
         {labels.map((label) => {
           const isSelected = selectedLabels.map(l => l.id).includes(label.id);
