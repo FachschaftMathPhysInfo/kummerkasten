@@ -163,21 +163,21 @@ describe('Ticket Overview Page Tests:', () => {
           })
 
           it('labels field should be filterable', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible')
           })
 
           it('labels field should show selected amount in button', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
             ticketPage.getDesktopOverviewLabelFilterButton().contains('1 Labels')
           })
           it('labels field should have a reset button', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -185,7 +185,7 @@ describe('Ticket Overview Page Tests:', () => {
           })
 
           it('labels field should reset to no labels selected', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -196,7 +196,7 @@ describe('Ticket Overview Page Tests:', () => {
 
           //TODO FIX
           it('filtering by label should only show tickets with that label', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -375,10 +375,33 @@ describe('Ticket Overview Page Tests:', () => {
             });
           })
         })
+        context('general filtering', () => {
+          it('should reset all filters when clicked', () => {
+            ticketPage.getDesktopSearchTextInput().type('Test');
+            ticketPage.getDesktopOverviewStateFilterButton().click();
+            ticketPage.getDesktopOverviewStatusButtonClosed().click();
+            ticketPage.getDesktopOverviewLabelFilterButton().click();
+            ticketPage.getDesktopOverviewLabel(labels[0].id).parent().click();
+            ticketPage.getDesktopCalendarStartButton().click();
+            cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
+            ticketPage.getDesktopCalendarEndButton().click();
+            cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
+
+            ticketPage.getDesktopOverviewResetFilters().should('be.visible').click();
+
+            ticketPage.getDesktopSearchTextInput().should('have.value', '');
+            ticketPage.getDesktopOverviewStateFilterButton().contains('2');
+            ticketPage.getDesktopOverviewLabelFilterButton().contains('Labels');
+            ticketPage.getDesktopCalendarStartButton().contains('Start');
+            ticketPage.getDesktopCalendarEndButton().contains('Ende');
+
+            cy.get('[data-cy^="ticket-card-"]').should('have.length', tickets.length);
+          });
+        })
       })
     });
   })
-  context('As User', ()=>{
+  context('As User', () => {
     currentCorrectMail = users.fsles1.mail;
     currentCorrectPassword = users.fsles1.password;
     context('On Desktop', () => {
@@ -521,21 +544,21 @@ describe('Ticket Overview Page Tests:', () => {
           })
 
           it('labels field should be filterable', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible')
           })
 
           it('labels field should show selected amount in button', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
             ticketPage.getDesktopOverviewLabelFilterButton().contains('1 Labels')
           })
           it('labels field should have a reset button', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -543,7 +566,7 @@ describe('Ticket Overview Page Tests:', () => {
           })
 
           it('labels field should reset to no labels selected', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -554,7 +577,7 @@ describe('Ticket Overview Page Tests:', () => {
 
           //TODO FIX
           it('filtering by label should only show tickets with that label', () => {
-            const label= labels[0]
+            const label = labels[0]
             ticketPage.getDesktopOverviewLabelFilterButton().click();
             ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
             ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -733,8 +756,30 @@ describe('Ticket Overview Page Tests:', () => {
             });
           })
         })
-      })
+        context('general filtering', () => {
+          it('should reset all filters when clicked', () => {
+            ticketPage.getDesktopSearchTextInput().type('Test');
+            ticketPage.getDesktopOverviewStateFilterButton().click();
+            ticketPage.getDesktopOverviewStatusButtonClosed().click();
+            ticketPage.getDesktopOverviewLabelFilterButton().click();
+            ticketPage.getDesktopOverviewLabel(labels[0].id).parent().click();
+            ticketPage.getDesktopCalendarStartButton().click();
+            cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
+            ticketPage.getDesktopCalendarEndButton().click();
+            cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
+
+            ticketPage.getDesktopOverviewResetFilters().should('be.visible').click();
+
+            ticketPage.getDesktopSearchTextInput().should('have.value', '');
+            ticketPage.getDesktopOverviewStateFilterButton().contains('2');
+            ticketPage.getDesktopOverviewLabelFilterButton().contains('Labels');
+            ticketPage.getDesktopCalendarStartButton().contains('Start');
+            ticketPage.getDesktopCalendarEndButton().contains('Ende');
+
+            cy.get('[data-cy^="ticket-card-"]').should('have.length', tickets.length);
+          });
+        });
+      });
     });
-  })
-})
-;
+  });
+});
