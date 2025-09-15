@@ -497,6 +497,33 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 	return updateSetting, nil
 }
 
+// UpdateAboutSectionText is the resolver for the updateAboutSectionText field.
+func (r *mutationResolver) UpdateAboutSectionText(ctx context.Context, text string) (string, error) {
+	const maxLengthAboutSectionText = 3000
+
+	if len(text) > maxLengthAboutSectionText || len(text) == 0 {
+		log.Printf("failed updating about section text: message too long or too short")
+		return "", fmt.Errorf("text cannot be empty, or longer than %v", maxLengthAboutSectionText)
+	}
+
+	var settings []*model.Setting
+
+	settings, _ = r.Query().AboutSectionSettings(ctx)
+
+	setting := *settings[0]
+
+	setting.Value = text
+
+	_, err := r.DB.NewUpdate().Model(&setting).Where("key = ?", setting.Key).Exec(ctx)
+
+	if err != nil {
+		log.Printf("Failed to update setting: %v", err)
+		return "", fmt.Errorf("internal server error")
+	}
+
+	return setting.Value, nil
+}
+
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
 func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*model.LabelToTicketAssignment) (int32, error) {
 	var labelsToTicketsEntries []*models.LabelsToTickets

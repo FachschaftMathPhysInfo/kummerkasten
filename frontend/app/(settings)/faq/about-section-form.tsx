@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { getClient } from "@/lib/graph/client";
 import {
   AboutSectionSettingsDocument,
-  Setting,
+  Setting, UpdateAboutSectionTextDocument,
   UpdateSettingDocument,
 } from "@/lib/graph/generated/graphql";
 import { toast } from "sonner";
@@ -75,7 +75,7 @@ export default function AboutSectionForm() {
       console.error(error);
       setIsLoading(false);
     }
-  }, [form, user]);
+  }, [form]);
 
   useEffect(() => {
     void fetchAboutSection();
@@ -92,11 +92,7 @@ export default function AboutSectionForm() {
     }
 
     try {
-      const setting: Setting = {
-        key: ABOUT_SECTION_TEXT_KEY,
-        value: data.aboutText,
-      };
-      await client.request(UpdateSettingDocument, { setting });
+      await client.request(UpdateAboutSectionTextDocument, {text: data.aboutText});
 
       toast.success("About-Section erfolgreich aktualisiert");
       await fetchAboutSection();

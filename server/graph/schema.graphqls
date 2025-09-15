@@ -165,6 +165,7 @@ type Mutation {
     createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
     deleteSetting(keys: [String!]!): Int! @hasRole(role: ADMIN)
     updateSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
+    updateAboutSectionText(text: String!): String! @hasRole(role: USER)
 
     addLabelToTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
     removeLabelFromTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
