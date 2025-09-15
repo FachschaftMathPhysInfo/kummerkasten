@@ -19,11 +19,11 @@ export default function SortingSelection(props: SortingSelectionProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="min-w-[170px] justify-between items-center"
+          className="justify-between items-center"
           data-cy="sort-button"
         >
           <span className="flex justify-center items-center">
-            Sortieren: {props.sorting.field}{" "}
+            {props.sorting.field}{" "}
             {props.sorting.orderAscending ? (
               <ArrowUp className="inline h-4 w-4 ml-1"/>
             ) : (
