@@ -102,7 +102,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                 : "Fertig"}
           </Badge>
           <div className="flex-grow truncate pl-[60px] md:absolute md:pl-[70px] leading-normal"
-               data-cy={`kummerform-titlecheck-${ticket.title}`}
+               data-cy={`ticket-card-title-${ticket.title}`}
                title={ticket?.title}>
             {ticket?.title}
           </div>
@@ -128,7 +128,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                     {isMobile ? (
                       <MoreHorizontal className="w-6 h-6"/>
                     ) : (
-                      <MoreVertical className="w-6 h-6" data-cy={`kummerform-expandTicket-${ticket.id}`}/>
+                      <MoreVertical className="w-6 h-6"/>
                     )}
                   </div>
                 </DropdownMenuTrigger>
@@ -152,7 +152,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                       }}
                       className="text-destructive"
                     >
-                      <Trash2 className="text-destructive" data-cy={`kummerform-deleteTicket-${ticket.id}`}/> Löschen
+                      <Trash2 className="text-destructive"/> Löschen
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>

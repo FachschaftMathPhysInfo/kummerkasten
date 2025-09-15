@@ -20,7 +20,6 @@ describe("Kummerform Page", () => {
 
   context("page elements", () => {
     it("should load the kummerform page correctly", () => {
-      cy.url().should("include", "/");
       kummerform.getAboutText().should("exist");
       if (formLabels.length > 0) {
         kummerform.getFormLabel(formLabels[0].id).should("exist");
@@ -48,9 +47,6 @@ describe("Kummerform Page", () => {
   });
 
   context("send kummerform", () => {
-    beforeEach(() => {
-      cy.reload();
-    });
 
     it("shows the complete form", () => {
       it("shows all formLabels correctly", () => {
@@ -82,12 +78,9 @@ describe("Kummerform Page", () => {
     it("shows error and disables submit on invalid submit - empty form", () => {
       kummerform.submit();
 
-      kummerform.getLabelsMessage().should("exist")
-        .and("have.length.above", 0).and("contain", "Bitte wähle mindestens ein Label aus.");
-      kummerform.getTitleMessage().should("exist").and("have.length.above", 0)
-        .and("contain", "Die Zusammenfassung darf nicht leer sein.");
-      kummerform.getTextMessage().should("exist").and("have.length.above", 0)
-        .and("contain", "Die Nachricht darf nicht leer sein.");
+      kummerform.getLabelsMessage().should("exist").and("contain", "Bitte wähle mindestens ein Label aus.");
+      kummerform.getTitleMessage().should("exist").and("contain", "Die Zusammenfassung darf nicht leer sein.");
+      kummerform.getTextMessage().should("exist").and("contain", "Die Nachricht darf nicht leer sein.");
       kummerform.getSendButton().should("be.disabled");
     });
 
@@ -95,8 +88,7 @@ describe("Kummerform Page", () => {
       kummerform.fillOutForm({ title: "testtitle", text: "testtext" });
       kummerform.submit();
 
-      kummerform.getLabelsMessage().should("exist").and("have.length.above", 0)
-        .and("contain", "Bitte wähle mindestens ein Label aus.");
+      kummerform.getLabelsMessage().should("exist").and("contain", "Bitte wähle mindestens ein Label aus.");
       kummerform.getTitleMessage().should("not.exist");
       kummerform.getTextMessage().should("not.exist");
       kummerform.getSendButton().should("be.disabled");
@@ -107,7 +99,7 @@ describe("Kummerform Page", () => {
         formLabelVal: [true, false, false, false],
         formLabelArray: formLabels,
         text: "testtext",
-      }); //we have 4 formLabels in our seed data
+      });
       kummerform.submit();
 
       kummerform.getLabelsMessage().should("not.exist");
@@ -138,14 +130,6 @@ describe("Kummerform Page", () => {
       kummerform.getSendButton().should("not.be.disabled");
     });
 
-    /* commented out because it's annoying to wait for the first 3200 characters of the shrek movie script to be typed, and I did not find any option to simply paste the string
-    also: not a nice way of testing, but should be covered ig
-    it ('does not allow text input size over 3000', () => {
-            kummerform.fillOutForm({text : kummerformstrings.maxlength.text})
-            kummerform.getTitleInputLength().should('have.length', 3000);
-            kummerform.getSendButton().should('not.be.disabled');
-        })*/
-
     it("should have sent a form with valid inputs", () => {
       kummerform.fillOutForm({
         formLabelVal: [true, false, true, false],
@@ -162,7 +146,7 @@ describe("Kummerform Page", () => {
 
     after(() => {
       cy.visit("/tickets");
-      kummerform.deleteTicketsAPI(kummerformstrings.maxlength.testtitle);
+      cy.deleteFormTickets(kummerformstrings.maxlength.testtitle);
       kummerform.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("not.exist");
     });
   });

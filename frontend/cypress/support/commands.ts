@@ -195,6 +195,41 @@ Cypress.Commands.add("getAllQAPs", (): Cypress.Chainable<any> => {
     }).its("body.data.questionAnswerPairs");
 });
 
+Cypress.Commands.add("deleteFormTickets", (title: string): Cypress.Chainable<Cypress.Response<any>> => {
+    const mutation = `
+      mutation deleteTicket($ids: [String!]!) {
+        deleteTicket(ids: $ids)
+      }
+    `;
+
+    return cy.getAllTickets().then((tickets: any[]) => {
+        const ticketsToDelete = tickets.filter((t) => t.originalTitle === title);
+
+        if (ticketsToDelete.length === 0) {
+            return cy.wrap({
+                status: 200,
+                statusText: "OK",
+                body: { data: { deleteTicket: 0 } },
+                headers: {},
+                duration: 0,
+            } as Cypress.Response<any>);
+        }
+
+        const idsToDelete = ticketsToDelete.map((t) => t.id);
+
+        return cy.request({
+            method: "POST",
+            url: "http://localhost:8080/api",
+            headers: { "Content-Type": "application/json" },
+            body: {
+            query: mutation,
+            variables: { ids: idsToDelete },
+            operationName: "deleteTicket",
+            },
+        });
+    });
+  }
+);
 
 
 declare global {
@@ -217,6 +252,8 @@ declare global {
             getFormLabels(): Chainable<any>;
 
             getAllQAPs(): Chainable<any>;
+
+            deleteFormTickets(title: string): Chainable<Response<any>>;
         }
     }
 }
