@@ -4,7 +4,6 @@ import {Badge} from "@/components/ui/badge";
 import {cn} from "@/lib/utils";
 import {Select, SelectContent, SelectItem, SelectTrigger} from "@/components/ui/select";
 import {calculateFontColor} from "@/lib/calculate-colors";
-
 import {getTicketStateColor} from "@/lib/ticket-operations";
 
 interface TicketStatusAreaProps {

@@ -18,7 +18,7 @@ import MobileFilterSheet from "@/app/tickets/mobile-filter-sheet";
 import FilterBar from "@/components/filter-bar";
 import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
-import {getCurrentSemesterTickets, getOlderSemesterTickets, sortTickets} from "@/lib/sort-tickets";
+import {getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
 
 
 export type TicketDialogState = {
@@ -79,7 +79,7 @@ export default function TicketPage() {
   );
 
   useEffect(() => {
-    setSortedTickets(sortTickets(sorting, [...filteredTickets]))
+    setSortedTickets(getSortedTickets(sorting, [...filteredTickets]))
   }, [sorting.field, sorting.orderAscending]);
 
   useEffect(() => {

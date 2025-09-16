@@ -22,7 +22,7 @@ import {Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import {Button} from "@/components/ui/button";
 import FilterBar from "@/components/filter-bar";
 import {RotateCcw} from "lucide-react";
-import {getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/sort-tickets";
+import {getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
 
 interface TicketSidebarProps {
   selectedTicketId?: string;

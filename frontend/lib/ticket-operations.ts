@@ -72,6 +72,28 @@ export function getSortedTickets(sorting: TicketSorting, tickets: Ticket[]) {
   return tickets;
 }
 
+export function getCurrentSemesterTickets(tickets: Ticket[]) {
+  const now = new Date();
+  const year = now.getFullYear();
+  let startOfThisSemester: Date;
+
+  if (now.getMonth() + 1 >= 10) {
+    startOfThisSemester = new Date(year, 9, 1);
+  } else if (now.getMonth() + 1 >= 4) {
+    startOfThisSemester = new Date(year, 3, 1);
+  } else {
+    startOfThisSemester = new Date(year - 1, 9, 1);
+  }
+
+  return tickets.filter(ticket => ticket.createdAt >= startOfThisSemester)
+}
+
+export function getOlderSemesterTickets(tickets: Ticket[]) {
+  const currentSemesterTickets = getCurrentSemesterTickets(tickets);
+  return tickets.filter(ticket => !currentSemesterTickets.includes(ticket));
+}
+
+
 function rgbToHex(rgb: string): string {
   const result = rgb
     .match(/\d+/g)
