@@ -17,12 +17,16 @@ import {format} from "date-fns";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
-import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
+import {
+  getCurrentSemesterTickets,
+  getFilteredTickets,
+  getOlderSemesterTickets,
+  getSortedTickets
+} from "@/lib/ticket-operations";
 import {Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import {Button} from "@/components/ui/button";
 import FilterBar from "@/components/filter-bar";
 import {RotateCcw} from "lucide-react";
-import {getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
 
 interface TicketSidebarProps {
   selectedTicketId?: string;
@@ -61,14 +65,14 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
     setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
   }, [
     isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm,
-    sorting.field, sorting.orderAscending
+    sorting.field, sorting.orderAscending, filtering, sorting, tickets
   ])
 
   useEffect(() => {
     const newFilteredTickets = getFilteredTickets(filtering, tickets)
     setFilteredTickets(newFilteredTickets)
     setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
-  }, [tickets])
+  }, [tickets, filtering, sorting])
 
   return (
     <div className="px-4 flex flex-col gap-4">

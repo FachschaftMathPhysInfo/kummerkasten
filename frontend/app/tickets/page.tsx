@@ -74,13 +74,15 @@ export default function TicketPage() {
       filtering.labels.length,
       filtering.searchTerm,
       filtering.startDate,
-      filtering.endDate
+      filtering.endDate,
+      filtering,
+      sorting
     ]
   );
 
   useEffect(() => {
     setSortedTickets(getSortedTickets(sorting, [...filteredTickets]))
-  }, [sorting.field, sorting.orderAscending]);
+  }, [sorting.field, sorting.orderAscending, filteredTickets, sorting]);
 
   useEffect(() => {
     setSorting(prevState => ({
