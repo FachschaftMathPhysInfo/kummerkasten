@@ -293,6 +293,19 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	}
 
 	if label.FormLabel != nil {
+		if dbLabel.FormLabel && !*label.FormLabel {
+			var allFormLabels []*models.Label
+			if err := r.DB.NewSelect().
+				Model(&allFormLabels).
+				Where("form_label = ?", true).
+				Scan(ctx); err != nil {
+				log.Printf("Failed to find all form labels for update on labels: %v", err)
+				return "", fmt.Errorf("internal server error")
+			}
+			if len(allFormLabels) == 1 {
+				return "", fmt.Errorf("there must always be at least one formLabel existent")
+			}
+		}
 		dbLabel.FormLabel = *label.FormLabel
 	}
 
