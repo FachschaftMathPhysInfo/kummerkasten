@@ -5,12 +5,13 @@ import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
 import {getClient} from "@/lib/graph/client";
-import {CreateUserDocument, CreateUserMutation, NewUser} from "@/lib/graph/generated/graphql";
+import {CreateUserDocument, CreateUserMutation, GetUserIdByMailDocument, NewUser} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {LoaderCircle, PlusCircle} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
 
 interface UserFormProps {
   closeDialog: () => void
@@ -59,6 +60,12 @@ export default function UserForm(props: UserFormProps) {
 
   async function onValidSubmit(data: z.infer<typeof userFormSchema>) {
     setLoading(true)
+
+    if (await testIfMailExists(data.mail)) {
+      form.setError('mail', {message: 'Diese E-Mail-Adresse wird bereits verwendet'})
+      return
+    }
+
     const client = getClient();
 
     const newUser: NewUser = {
@@ -79,6 +86,14 @@ export default function UserForm(props: UserFormProps) {
       console.error(error)
     }
     setLoading(false)
+  }
+
+  async function testIfMailExists(mail: string): Promise<boolean> {
+    const client = getClient();
+    const data = await client.request(GetUserIdByMailDocument, {mail: [mail]})
+    const id = data.users?.find(u => !!u)?.id
+
+    return !!id
   }
 
 
@@ -126,7 +141,7 @@ export default function UserForm(props: UserFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>E-Mail</FormLabel>
               <FormControl>
-                <Input placeholder={"maxi.musterperson@mail.de"} type={"email"} {...field} />
+                <Input placeholder={"maxi.musterperson@mail.de"} {...field} />
               </FormControl>
               <FormMessage/>
             </FormItem>
@@ -153,7 +168,12 @@ export default function UserForm(props: UserFormProps) {
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <FormControl>
-                <Input placeholder={"Passwort bestätigen"} type={"password"} {...field} />
+                <Input
+                  placeholder={"Passwort bestätigen"}
+                  type={"password"}
+                  {...field}
+                  className={cn(form.getFieldState('password').invalid && 'border-destructive')}
+                />
               </FormControl>
               <FormMessage/>
             </FormItem>

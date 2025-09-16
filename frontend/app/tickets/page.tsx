@@ -18,6 +18,7 @@ import MobileFilterSheet from "@/app/tickets/mobile-filter-sheet";
 import FilterBar from "@/components/filter-bar";
 import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
+import {getCurrentSemesterTickets, getOlderSemesterTickets, sortTickets} from "@/lib/sort-tickets";
 
 
 export type TicketDialogState = {
@@ -78,7 +79,7 @@ export default function TicketPage() {
   );
 
   useEffect(() => {
-    setSortedTickets(getSortedTickets(sorting, [...filteredTickets]))
+    setSortedTickets(sortTickets(sorting, [...filteredTickets]))
   }, [sorting.field, sorting.orderAscending]);
 
   useEffect(() => {
@@ -169,7 +170,29 @@ export default function TicketPage() {
           )}
         </div>
       </div>
-      {sortedTickets.map((ticket) =>
+
+      <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+        <p className={'text-muted-foreground'}>Dieses Semester</p>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+      </div>
+
+      {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
+          ticket?.id && (
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+              <Link href={`/tickets/${ticket.id}`} passHref>
+                <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
+              </Link>
+            </div>
+          )
+      )}
+
+      <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+        <p className={'text-muted-foreground'}>Frühere Semester</p>
+        <span className={'grow h-0.5 bg-muted-foreground'}/>
+      </div>
+      {getOlderSemesterTickets(sortedTickets).map((ticket) =>
           ticket?.id && (
             <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>

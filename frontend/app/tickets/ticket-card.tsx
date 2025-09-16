@@ -2,7 +2,14 @@
 
 import React, {useCallback, useEffect, useState} from "react";
 import {Card, CardTitle} from "@/components/ui/card";
-import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery, TicketState} from "@/lib/graph/generated/graphql";
+import {
+  Label,
+  Ticket,
+  TicketsByIdsDocument,
+  TicketsByIdsQuery,
+  TicketState,
+  UserRole
+} from "@/lib/graph/generated/graphql";
 import {Link, MoreHorizontal, MoreVertical, Trash2} from "lucide-react";
 import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
@@ -12,7 +19,7 @@ import {toast} from "sonner";
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {cn} from "@/lib/utils";
-
+import {useUser} from "@/components/providers/user-provider";
 import {getTicketStateColor} from "@/lib/ticket-operations";
 
 
@@ -36,6 +43,7 @@ const client = getClient();
 
 export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
   const isMobile = useIsMobile();
+  const {user} = useUser();
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
   const [ticketStateColour, setTicketStateColour] = useState("#000");
@@ -133,17 +141,19 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
                   >
                     <Link/> Link kopieren
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      if (!ticket) return;
-                      setDialogStateAction({mode: "delete", currentTicket: ticket});
-                    }}
-                    className="text-destructive"
-                  >
-                    <Trash2 className="text-destructive"/> Löschen
-                  </DropdownMenuItem>
+                  {user?.role === UserRole.Admin && (
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (!ticket) return;
+                        setDialogStateAction({mode: "delete", currentTicket: ticket});
+                      }}
+                      className="text-destructive"
+                    >
+                      <Trash2 className="text-destructive"/> Löschen
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

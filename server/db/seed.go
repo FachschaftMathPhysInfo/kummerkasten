@@ -228,13 +228,15 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 func createSettings(ctx context.Context, db *bun.DB) error {
 	const contactLinkKey = "FOOTER_CONTACT_LINK"
 	const legalNoticeKey = "FOOTER_LEGAL_NOTICE_LINK"
+	const aboutSectionTextKey = "ABOUT_SECTION_TEXT"
 
 	settings := []*models.Setting{
 		{Key: contactLinkKey, Value: "https://mathphys.stura.uni-heidelberg.de/kontakt/"},
 		{Key: legalNoticeKey, Value: "https://mathphys.stura.uni-heidelberg.de/"},
+		{Key: aboutSectionTextKey, Value: "Der Kummerkasten ist das Feedbacksammlungssystem der Fachschaft. Er hilft bei Problemen in Vorlesungen (und bei Problemen mit anderen Institutionen, denen Studenten im Unialltag begegnen). \nDen Digitalen Kummerkasten findest du hier. Der analoge Kummerkasten steht im Gang vor dem Fachschaftsraum (bei den Flyern vor der Teeküche)."},
 	}
 
-	keys := []string{contactLinkKey, legalNoticeKey}
+	keys := []string{contactLinkKey, legalNoticeKey, aboutSectionTextKey}
 	existing := make([]*models.Setting, 0)
 
 	if err := db.NewSelect().

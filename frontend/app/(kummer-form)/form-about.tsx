@@ -1,26 +1,38 @@
 "use client";
 
-import React from 'react';
-import {Card, CardContent, CardTitle} from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { getClient } from "@/lib/graph/client";
+import { AboutSectionSettingsDocument } from "@/lib/graph/generated/graphql";
 
 export default function AboutSection() {
+  const [text, setText] = useState<string>("");
+
+  useEffect(() => {
+    const fetchAbout = async () => {
+      const client = getClient();
+      try {
+        const textData = await client.request(AboutSectionSettingsDocument);
+        setText(
+          textData.aboutSectionSettings?.find(
+            (s) => s?.key === "ABOUT_SECTION_TEXT"
+          )?.value ?? "Hello World!"
+        );
+      } catch {
+        setText("Eine Beschreibung wurde nicht konfiguriert.");
+      }
+    };
+    void fetchAbout();
+  }, []);
+
   return (
-    <Card
-      className="flex flex-col items-center justify-center bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg text-foreground rounded-lg shadow-lg max-w-4xl mx-auto p-6 my-4">
-      <CardTitle className='text-3xl text-center font-semibold text-foreground mb-2'>Was ist der
-        Kummerkasten?</CardTitle>
-      <CardContent>
-        <p className="text-lg leading-relaxed text-muted-foreground">
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-          eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-          At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-          no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
-          consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-          dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
-          dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
-          Lorem ipsum dolor sit amet.
-        </p>
+    <Card className="flex flex-col bg-kummerkasten-highlight-bg border-kummerkasten-highlight-bg w-full rounded-lg shadow-lg max-w-4xl mx-auto p-6 my-4">
+      <CardTitle className="text-3xl items-center text-center font-semibold text-foreground mb-2">
+        Was ist der Kummerkasten?
+      </CardTitle>
+      <CardContent className="text-left">
+        <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">{text}</p>
       </CardContent>
     </Card>
   );
-};
+}

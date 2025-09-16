@@ -11,3 +11,10 @@ query footerSettings {
         value
     }
 }
+
+query aboutSectionSettings {
+    aboutSectionSettings {
+        key
+        value
+    }
+}

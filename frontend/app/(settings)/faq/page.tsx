@@ -1,12 +1,16 @@
 "use client";
 
-import {useCallback, useEffect, useState} from "react";
-import {MessageCircleQuestionMark} from "lucide-react";
-import {getClient} from "@/lib/graph/client";
-import {toast} from "sonner";
-import {AllQuestionAnswerPairDocument, QuestionAnswerPair} from "@/lib/graph/generated/graphql";
-import {QAPTable} from "@/app/(settings)/faq/faq-table";
-import {ManagementPageHeader} from "@/components/management-page-header";
+import { useCallback, useEffect, useState } from "react";
+import { MessageCircleQuestionMark } from "lucide-react";
+import { getClient } from "@/lib/graph/client";
+import { toast } from "sonner";
+import {
+  AllQuestionAnswerPairDocument,
+  QuestionAnswerPair,
+} from "@/lib/graph/generated/graphql";
+import { QAPTable } from "@/app/(settings)/faq/faq-table";
+import { ManagementPageHeader } from "@/components/management-page-header";
+import AboutSectionForm from "@/app/(settings)/faq/about-section-form";
 
 export default function QAPManagementPage() {
   const [faqs, setFaqs] = useState<QuestionAnswerPair[]>([]);
@@ -14,9 +18,9 @@ export default function QAPManagementPage() {
   const fetchFaqs = useCallback(async () => {
     const client = getClient();
     try {
-      const response = await client.request<{ questionAnswerPairs: QuestionAnswerPair[] }>(
-        AllQuestionAnswerPairDocument
-      );
+      const response = await client.request<{
+        questionAnswerPairs: QuestionAnswerPair[];
+      }>(AllQuestionAnswerPairDocument);
       if (!response.questionAnswerPairs) {
         setFaqs([]);
         return;
@@ -34,12 +38,13 @@ export default function QAPManagementPage() {
   return (
     <div className="w-full h-full flex flex-col grow">
       <ManagementPageHeader
-        icon={<MessageCircleQuestionMark/>}
-        title="FAQ-Verwaltung"
-        description="Sortiere, erstelle und lösche Frequently Asked Questions."
+        icon={<MessageCircleQuestionMark />}
+        title="FAQs"
+        description="Verwalte die Informationen zum Kummerkasten-Formular"
       />
       <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
-        <QAPTable data={faqs} refreshData={fetchFaqs}/>
+        <AboutSectionForm />
+        <QAPTable data={faqs} refreshData={fetchFaqs} />
       </div>
     </div>
   );
