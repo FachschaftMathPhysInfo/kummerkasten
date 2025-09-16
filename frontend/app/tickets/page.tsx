@@ -179,7 +179,7 @@ export default function TicketPage() {
 
       {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
           ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>
                 <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
               </Link>
@@ -194,7 +194,7 @@ export default function TicketPage() {
       </div>
       {getOlderSemesterTickets(sortedTickets).map((ticket) =>
           ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>
                 <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
               </Link>

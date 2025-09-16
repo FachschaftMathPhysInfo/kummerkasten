@@ -11,7 +11,7 @@ export function getSearchTicketDetail(){
 }
 
 export function getTicketCardById(id: string) {
-    return cy.get(`[data-cy="ticket-card-${id}"]`);
+    return cy.get(`[data-cy="ticket-card-id-${id}"]`);
 }
 
 export function getTicketStatusBadge(id: string) {

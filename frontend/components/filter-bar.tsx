@@ -35,7 +35,7 @@ export default function FilterBar(
               'max-w-[200px] justify-between',
               stateFilterSet && 'border !border-accent'
             )}
-            data-cy="button-status"
+            data-cy="desktop-overview-button-status"
           >
             {filtering.state.length > 0
               ? `${filtering.state.length} Status`
@@ -44,7 +44,7 @@ export default function FilterBar(
         </PopoverTrigger>
         <PopoverContent className="p-0 w-[170px]">
           <Command>
-            <CommandInput placeholder="Status suchen..."/>
+            <CommandInput placeholder="Status suchen..." data-cy={'desktop-overview-status-search'}/>
             <CommandGroup>
               {Object.values(TicketState).map((state) => {
                 const isSelected = filtering.state.includes(state);
@@ -59,6 +59,7 @@ export default function FilterBar(
                           : [...(prev.state), state]
                       }))
                     }}
+                    data-cy={`desktop-overview-button-${state}`}
                   >
                     <Check
                       className={cn(
@@ -86,7 +87,7 @@ export default function FilterBar(
               "max-w-[200px] justify-between",
               filtering.labels.length > 0 && 'border !border-accent'
             )}
-            data-cy="button-label">
+            data-cy="desktop-overview-button-label">
             {filtering.labels.length > 0
               ? `${filtering.labels.length} Labels`
               : "Labels"}

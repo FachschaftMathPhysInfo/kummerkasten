@@ -63,15 +63,15 @@ export function getDesktopOverviewStateFilterButton() {
 }
 
 export function getDesktopOverviewStatusButtonNew() {
-  return cy.get('[data-cy="desktop-overview-status-NEW"]')
+  return cy.get('[data-cy="desktop-overview-button-NEW"]')
 }
 
 export function getDesktopOverviewStatusButtonOpen() {
-  return cy.get('[data-cy="desktop-overview-status-OPEN"]')
+  return cy.get('[data-cy="desktop-overview-button-OPEN"]')
 }
 
 export function getDesktopOverviewStatusButtonClosed() {
-  return cy.get('[data-cy="desktop-overview-status-CLOSED"]')
+  return cy.get('[data-cy="desktop-overview-button-CLOSED"]')
 }
 
 export function getDesktopOverviewStatusFilterSearch(){
@@ -119,7 +119,7 @@ export function getDesktopOverviewResetFilters() {
 }
 
 export function getTicketCard(id: string) {
-  return cy.get(`[data-cy="ticket-card-${id}"]`)
+  return cy.get(`[data-cy="ticket-card-id-${id}"]`)
 }
 
 export function getTicketCardState(state: TicketState){

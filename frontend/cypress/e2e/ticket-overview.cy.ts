@@ -1,5 +1,5 @@
 import * as ticketPage from "../pages/ticket-overview.po";
-import {Label, Ticket, UserRole} from "../../lib/graph/generated/graphql";
+import {Label, Ticket, TicketState, UserRole} from "../../lib/graph/generated/graphql";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
@@ -20,6 +20,7 @@ roles.forEach(role => {
           cy.visit("/tickets");
         });
       });
+
       context('On Desktop', () => {
         context('Loading', () => {
           it('loads the page', () => {
@@ -54,33 +55,44 @@ roles.forEach(role => {
             it('search field should be interactable', () => {
               ticketPage.getDesktopSearchTextInput().should('not.be.disabled')
             })
+
             it('show all tickets (with states new and open) if no text entered', () => {
               ticketPage.getDesktopSearchTextInput().clear()
-              tickets.forEach((ticket: any) => {
+              const visibleTickets = tickets.filter(
+                (t) => t.state === TicketState.New || t.state === TicketState.Open
+              );
+              const closedTickets = tickets.filter(
+                (t) => t.state === TicketState.Closed
+              );
+              visibleTickets.forEach((ticket) => {
                 ticketPage.getTicketCard(ticket.id).should('exist').and('be.visible');
               });
-              cy.get('[data-cy^="ticket-card-"]').should('have.length', tickets.length);
+              closedTickets.forEach((ticket) => {
+                ticketPage.getTicketCard(ticket.id).should('not.exist');
+              });
+              cy.get('[data-cy^="ticket-card-id"]').should('have.length', visibleTickets.length);
             })
-            //TODO FIX
+
             it('show all tickets with searchterm in title or text', () => {
               const ticket = tickets[0]
               ticketPage.getDesktopSearchTextInput().clear().type(ticket.text);
               ticketPage.getTicketCard(ticket.id).should('exist');
-              cy.get('[data-cy^="ticket-card-"]').should('have.length', 1);
+              cy.get('[data-cy^="ticket-card-id"]').should('have.length', 1);
             })
+
             it('show no tickets for non-existent searchterm', () => {
               ticketPage.getDesktopSearchTextInput().clear().type('NO_SUCH_TICKET');
-              cy.get('[data-cy^="ticket-card-"]').should('have.length', 0);
+              cy.get('[data-cy^="ticket-card-id"]').should('have.length', 0);
             })
           })
+
           context('Status Field', () => {
-            //TODO FIX
             it('show tickets with states new or open as default', () => {
               cy.getTicketsByStateNewOrOpen().then((tickets) => {
                 tickets.forEach((ticket: any) => {
                   ticketPage.getTicketCard(ticket.id).should('exist').and('be.visible');
                 });
-                cy.get('[data-cy^="ticket-card-"]').should('have.length', tickets.length);
+                cy.get('[data-cy^="ticket-card-id"]').should('have.length', tickets.length);
               });
             });
 
@@ -173,6 +185,7 @@ roles.forEach(role => {
               ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
               ticketPage.getDesktopOverviewLabelFilterButton().contains('1 Labels')
             })
+
             it('labels field should have a reset button', () => {
               const label = labels[0]
               ticketPage.getDesktopOverviewLabelFilterButton().click();
@@ -191,7 +204,6 @@ roles.forEach(role => {
               ticketPage.getDesktopOverviewLabelFilterButton().contains('Labels')
             })
 
-            //TODO FIX
             it('filtering by label should only show tickets with that label', () => {
               const label = labels[0]
               ticketPage.getDesktopOverviewLabelFilterButton().click();
@@ -207,18 +219,22 @@ roles.forEach(role => {
               });
             })
           })
+
           context('Start Calendar', () => {
             it('start calendar should have no date selected as default', () => {
               ticketPage.getDesktopCalendarStartButton().contains('Start')
             })
+
             it('start calendar should be interactable', () => {
               ticketPage.getDesktopCalendarStartButton().click()
             })
+
             it('start calendar should show selected date in button', () => {
               ticketPage.getDesktopCalendarStartButton().click()
               cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
               ticketPage.getDesktopCalendarStartButton().contains('17.09.25')
             })
+
             it('start calendar should have a reset button', () => {
               ticketPage.getDesktopCalendarStartButton().click()
               cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
@@ -227,7 +243,6 @@ roles.forEach(role => {
               ticketPage.getDesktopCalendarStartButton().contains('Start')
             })
 
-            //TODO FIX
             it('show tickets created after start date if start date selected', () => {
               const startDate = new Date('2025-09-17T00:00:00.000Z');
               ticketPage.getDesktopCalendarStartButton().click()
@@ -243,18 +258,22 @@ roles.forEach(role => {
               });
             })
           })
+
           context('End Calendar', () => {
             it('end calendar should have no date selected as default', () => {
               ticketPage.getDesktopCalendarEndButton().contains('Ende')
             })
+
             it('end calendar should be interactable', () => {
               ticketPage.getDesktopCalendarEndButton().click()
             })
+
             it('end calendar should show selected date in button', () => {
               ticketPage.getDesktopCalendarEndButton().click()
               cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
               ticketPage.getDesktopCalendarEndButton().contains('17.09.25')
             })
+
             it('end calendar should have a reset button', () => {
               ticketPage.getDesktopCalendarEndButton().click()
               cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
@@ -262,7 +281,7 @@ roles.forEach(role => {
               ticketPage.getEndCalendarReset().click()
               ticketPage.getDesktopCalendarEndButton().contains('Ende')
             })
-            //TODO FIX
+
             it('show tickets created before end date if end date selected', () => {
               const endDate = new Date('2025-09-10T00:00:00.000Z');
               ticketPage.getDesktopCalendarEndButton().click()
@@ -278,44 +297,50 @@ roles.forEach(role => {
               });
             })
           })
+
           context('Sorting', () => {
             it('sorting button should be interactable', () => {
               ticketPage.getSortingSelectionSortButton().click()
             })
+
             it('sorting button should have 3 sorting values', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Erstellt').should('exist');
               ticketPage.getSortingSelectionSortField('Geändert').should('exist');
               ticketPage.getSortingSelectionSortField('Titel').should('exist');
             })
+
             it('selecting a sorting order should show tickets in that order', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Erstellt').click()
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime());
                 expect(dates).to.deep.equal(sortedDates);
               });
             })
+
             it('clicking on the same button again should reverse the order', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Erstellt').click()
               ticketPage.getSortingSelectionSortField('Erstellt').click()
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => b.getTime() - a.getTime());
                 expect(dates).to.deep.equal(sortedDates);
               });
             })
+
             it('show sorting type and order in button', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Erstellt').click()
               ticketPage.getSortingSelectionSortButton().contains('Erstellt');
             })
+
             it('sort tickets by create date ascending', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Erstellt').click()
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime());
                 expect(dates).to.deep.equal(sortedDates);
@@ -326,7 +351,7 @@ roles.forEach(role => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Erstellt').click()
               ticketPage.getSortingSelectionSortField('Erstellt').click()
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => b.getTime() - a.getTime());
                 expect(dates).to.deep.equal(sortedDates);
@@ -336,42 +361,46 @@ roles.forEach(role => {
             it('sort tickets by modified date ascending', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Geändert').click()
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.lastModified!));
                 const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime());
                 expect(dates).to.deep.equal(sortedDates);
               });
             })
+
             it('sort tickets by modified date descending', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Geändert').click()
               ticketPage.getSortingSelectionSortField('Geändert').click()
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.lastModified!));
                 const sortedDates = [...dates].sort((a, b) => b.getTime() - a.getTime());
                 expect(dates).to.deep.equal(sortedDates);
               });
             })
+
             it('sort tickets by title ascending', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Titel').click();
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const titles = [...$cards].map(c => c.dataset.title!);
                 const sortedTitles = [...titles].sort();
                 expect(titles).to.deep.equal(sortedTitles);
               });
             })
+
             it('sort tickets by title descending', () => {
               ticketPage.getSortingSelectionSortButton().click()
               ticketPage.getSortingSelectionSortField('Titel').click();
               ticketPage.getSortingSelectionSortField('Titel').click();
-              cy.get('[data-cy^="ticket-card-"]').then($cards => {
+              cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const titles = [...$cards].map(c => c.dataset.title!);
                 const sortedTitles = [...titles].sort().reverse();
                 expect(titles).to.deep.equal(sortedTitles);
               });
             })
           })
+
           context('general filtering', () => {
             it('should reset all filters when clicked', () => {
               ticketPage.getDesktopSearchTextInput().type('Test');
@@ -385,6 +414,9 @@ roles.forEach(role => {
               cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
 
               ticketPage.getDesktopOverviewResetFilters().should('be.visible').click();
+              const visibleTickets = tickets.filter(
+                (t) => t.state === TicketState.New || t.state === TicketState.Open
+              );
 
               ticketPage.getDesktopSearchTextInput().should('have.value', '');
               ticketPage.getDesktopOverviewStateFilterButton().contains('2');
@@ -392,21 +424,23 @@ roles.forEach(role => {
               ticketPage.getDesktopCalendarStartButton().contains('Start');
               ticketPage.getDesktopCalendarEndButton().contains('Ende');
 
-              cy.get('[data-cy^="ticket-card-"]').should('have.length', tickets.length);
+              cy.get('[data-cy^="ticket-card-id"]').should('have.length', visibleTickets.length);
             });
           });
-          context.only('interaction with ticket card', () => {
+
+          context('interaction with ticket card', () => {
             it('loads ticketstate for ticketcard', () => {
               ticketPage.getTicketCard(tickets[0].id).should('exist').and('be.visible')
               ticketPage.getTicketCardState(tickets[0].state).should('exist').and('be.visible')
             });
+
             it('loads labels for ticketcard', () => {
               ticketPage.getTicketCard(tickets[0].id).should('exist').and('be.visible')
               tickets[0].labels?.forEach(l => {
                 ticketPage.getTicketCardLabel(l.name).should('exist').and('be.visible');
               });
-
             });
+
             it('dropdown menu button exists and is interactable', () => {
               ticketPage.getTicketCardDropdown(tickets[0].id)
                 .should('exist')
@@ -414,6 +448,7 @@ roles.forEach(role => {
                 .and('not.be.disabled')
                 .click();
             });
+
             it('dropdown menu has copy option', () => {
               ticketPage.getTicketCardDropdown(tickets[0].id).click();
               ticketPage.getTicketCardCopyButton(tickets[0].id).should('exist');
@@ -422,7 +457,7 @@ roles.forEach(role => {
             it('dropdown menu copy works', () => {
               cy.window().then((win) => {
                 if (!win.navigator.clipboard) {
-                  win.navigator.clipboard = { writeText: cy.stub().as('clipboardWrite') };
+                  win.navigator.clipboard = {writeText: cy.stub().as('clipboardWrite')};
                 } else {
                   cy.stub(win.navigator.clipboard, 'writeText').as('clipboardWrite');
                 }
@@ -433,13 +468,14 @@ roles.forEach(role => {
               cy.get('@clipboardWrite').should('have.been.calledOnce');
               cy.get('@clipboardWrite').should('be.calledWith', `${window.location.origin}/tickets/${ticketID}`);
               cy.contains('Link kopiert!').should('be.visible');
-
             });
+
             if (role === UserRole.Admin) {
               it('dropdown menu has delete option', () => {
                 ticketPage.getTicketCardDropdown(tickets[0].id).click();
                 ticketPage.getTicketCardDeleteButton(tickets[0].id).should('exist');
               });
+
               it('dropwdown menu delete works', () => {
                 const ticketID = tickets[0].id;
                 ticketPage.getTicketCardDropdown(ticketID).click();

@@ -156,7 +156,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
               t.id === selectedTicketId ? "bg-accent/50" : "hover:bg-accent/40"
             }`}
             onClick={() => router.push(`/tickets/${t.id}`)}
-            data-cy={`ticket-card-${t.id}`}
+            data-cy={`ticket-card-id-${t.id}`}
           >
             <Badge
               className={cn(
@@ -198,7 +198,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
               t.id === selectedTicketId ? "bg-accent/50" : "hover:bg-accent/40"
             }`}
             onClick={() => router.push(`/tickets/${t.id}`)}
-            data-cy={`ticket-card-${t.id}`}
+            data-cy={`ticket-card-id-${t.id}`}
           >
             <Badge
               className={cn(
