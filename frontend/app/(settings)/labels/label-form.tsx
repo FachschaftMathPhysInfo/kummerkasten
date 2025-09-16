@@ -3,7 +3,7 @@
 import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
   CreateLabelDocument,
@@ -19,6 +19,7 @@ import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessag
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
+import {cn} from "@/lib/utils";
 
 const LabelMaxLength = 50;
 
@@ -45,6 +46,17 @@ export default function LabelForm(props: LabelFormProps) {
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
   const [loading, setLoading] = useState<boolean>(false)
+  const [isLastFormLabel, setIsLastFormLabel] = useState(false)
+
+  useEffect(() => {
+    const checkIfIsLastFormLabel = async () => {
+      const client = getClient();
+      const data = await client.request(FormLabelsDocument)
+      setIsLastFormLabel(data.formLabels?.length === 1)
+    }
+
+    void checkIfIsLastFormLabel()
+  }, [props.originalLabel])
 
   const form = useForm<z.infer<typeof labelFormSchema>>({
     resolver: zodResolver(labelFormSchema),
@@ -89,14 +101,6 @@ export default function LabelForm(props: LabelFormProps) {
   async function updateLabel(id: string, name: string, color: string, isFormLabel: boolean) {
     const client = getClient();
     const label: NewLabel = {name: name, color: color, formLabel: isFormLabel};
-
-    if (props.originalLabel?.formLabel && !isFormLabel) {
-      const data = await client.request(FormLabelsDocument)
-      if (data.formLabels?.length === 1) {
-        form.setError("isFormLabel", {message: "Es muss immer mindestens ein öffentliches Label geben"})
-        return
-      }
-    }
 
     try {
       await client.request<UpdateLabelMutation>(UpdateLabelDocument, {id: id, label: label})
@@ -192,9 +196,10 @@ export default function LabelForm(props: LabelFormProps) {
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <div className={'flex items-center gap-4 mt-2'}>
-                <FormLabel>Öffentliche Label</FormLabel>
+                <FormLabel className={cn(isLastFormLabel && 'text-muted-foreground')}>Öffentliche Label</FormLabel>
                 <FormControl>
                   <Checkbox
+                    disabled={isLastFormLabel}
                     checked={field.value}
                     onCheckedChange={checked =>
                       form.setValue('isFormLabel', checked as boolean)
@@ -205,7 +210,11 @@ export default function LabelForm(props: LabelFormProps) {
               </div>
               <FormMessage className={'-mt-1'}/>
               <FormDescription>
-                Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen
+                {isLastFormLabel ? (
+                  "Dieses Label ist das letzte öffentliche Label. Wenn es privat gemacht werden soll, muss erst mindestens ein anderes Label öffentlich gemacht werden"
+                ) : (
+                  "Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen"
+                )}
               </FormDescription>
             </FormItem>
           )}
