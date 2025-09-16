@@ -73,6 +73,7 @@ type Query {
     labels(ids: [ID!]): [Label] @hasRole(role: USER)
     formLabels(ids: [ID!]): [Label]
     users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
+    isMailInUse(mail: String!): Boolean! @hasRole(role: USER)
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     footerSettings: [Setting]
     aboutSectionSettings: [Setting]

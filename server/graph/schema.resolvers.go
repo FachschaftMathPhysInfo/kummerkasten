@@ -924,6 +924,17 @@ func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, r
 	return users, nil
 }
 
+// IsMailInUse is the resolver for the isMailInUse field.
+func (r *queryResolver) IsMailInUse(ctx context.Context, mail string) (bool, error) {
+	exists, err := r.DB.NewSelect().Model((*model.User)(nil)).Where("mail = ?", mail).Exists(ctx)
+	if err != nil {
+		log.Printf("Failed to fetch users for isMailInUse check: %v", err)
+		return false, fmt.Errorf("internal server error")
+	}
+
+	return exists, nil
+}
+
 // Settings is the resolver for the settings field.
 func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.Setting, error) {
 	var settings []*model.Setting
