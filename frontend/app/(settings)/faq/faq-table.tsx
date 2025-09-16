@@ -11,7 +11,6 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import {QAPColumns} from "@/app/(settings)/faq/faq-columns";
 import QAPDialog from "@/app/(settings)/faq/faq-dialog";
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
@@ -32,6 +31,7 @@ import {toast} from "sonner";
 
 import {DndProvider, useDrag, useDrop} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
+import QAPColumns from "@/app/(settings)/faq/faq-columns";
 
 export interface QAPTableDialogState {
   mode: "create" | "update" | "delete" | null;
@@ -141,10 +141,7 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  const columns = useMemo<QAPColumnDef<QuestionAnswerPair>[]>(
-    () => QAPColumns({setDialogState}),
-    [setDialogState]
-  );
+  const columns = QAPColumns({setDialogState})
 
   const table = useReactTable({
     data: filteredData,
