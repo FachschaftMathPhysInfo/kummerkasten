@@ -54,6 +54,10 @@ export default function TicketPage() {
   const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
 
   useEffect(() => {
+    triggerTicketRefetch()
+  }, []);
+
+  useEffect(() => {
     const originalState = new Set([TicketState.New, TicketState.Open])
     const currentState = new Set(filtering.state)
     setIsStateFilterSet(!compareStringSets(originalState, currentState))
