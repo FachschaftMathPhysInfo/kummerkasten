@@ -126,7 +126,12 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <div className="cursor-pointer flex items-center justify-center">
+                  <div className="cursor-pointer flex items-center justify-center"
+                       data-cy={`ticket-card-dropdown-${ticket.id}`}
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         e.preventDefault();
+                       }}>
                     {isMobile ? (
                       <MoreHorizontal className="w-6 h-6"/>
                     ) : (

@@ -123,11 +123,15 @@ export function getTicketCard(id: string) {
 }
 
 export function getTicketCardState(state: TicketState){
-  return cy.get(`[data-cy="ticket-card-${state}"]`)
+  return cy.get(`[data-cy="ticket-card-state-${state}"]`)
 }
 
 export function getTicketCardLabel(name: string){
-  return cy.get(`[data-cy="ticket-card-${name}"]`)
+  return cy.get(`[data-cy="ticket-card-label-${name}"]`)
+}
+
+export function getTicketCardDropdown(id: string){
+  return cy.get(`[data-cy="ticket-card-dropdown-${id}"]`)
 }
 
 export function getTicketCardChanged(name: string){
@@ -143,11 +147,11 @@ export function getTicketCardDeleteButton(id: string) {
 }
 
 export function getTicketDeleteCancel() {
-  return cy.get('[data-cy="confirmation-cancel')
+  return cy.get('[data-cy="confirmation-cancel"]')
 }
 
 export function getTicketDeleteConfirm() {
-  return cy.get('[data-cy="confirmation-delete')
+  return cy.get('[data-cy="confirmation-delete"]')
 }
 
 export function getClearLabels(){

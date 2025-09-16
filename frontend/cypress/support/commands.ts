@@ -2,7 +2,8 @@
 
 // Add this to cypress/support/commands.js
 import * as sidebar from "../pages/sidebar.po"
-import {TicketState, UpdateUser} from "../../lib/graph/generated/graphql";
+import {TicketState, UpdateUser, UserRole} from "../../lib/graph/generated/graphql";
+import * as users from "../fixtures/users.json"
 
 
 Cypress.Commands.add('login', (mail: string, password: string) => {
@@ -26,6 +27,11 @@ Cypress.Commands.add('login', (mail: string, password: string) => {
         });
     })
 });
+
+Cypress.Commands.add('loginAsRole', (role: UserRole) => {
+    if (role === UserRole.Admin) cy.login(users.cypress.mail, users.cypress.password)
+    else cy.login(users.fsles1.mail, users.fsles1.password)
+})
 
 Cypress.Commands.add('logout', () => {
     sidebar.getLogout().click();
@@ -197,6 +203,8 @@ declare global {
     namespace Cypress {
         interface Chainable {
             login(mail: string, password: string): Chainable<Response<any>>;
+
+            loginAsRole(role: UserRole): Chainable<Response<any>>
 
             logout(): Chainable<Response<any>>
 
