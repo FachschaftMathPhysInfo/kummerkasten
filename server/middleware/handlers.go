@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"net/http"
 )
@@ -11,6 +12,12 @@ func Auth(db *bun.DB) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			sid, err := r.Cookie("sid")
 			if err != nil || sid.Value == "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			_, err = uuid.Parse(sid.Value)
+			if err != nil {
 				next.ServeHTTP(w, r)
 				return
 			}

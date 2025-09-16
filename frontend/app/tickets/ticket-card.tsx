@@ -19,8 +19,8 @@ import {toast} from "sonner";
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {cn} from "@/lib/utils";
-import {getTicketStateColor} from "@/lib/ticketstate-colour";
 import {useUser} from "@/components/providers/user-provider";
+import {getTicketStateColor} from "@/lib/ticket-operations";
 
 
 type TicketProps = {
