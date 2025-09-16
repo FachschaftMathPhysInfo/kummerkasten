@@ -149,7 +149,7 @@ export default function FormUi() {
                                       'capitalize',
                                       hasTriedToSubmit && form.formState.errors.labels && 'text-destructive'
                                     )}
-                                    data-cy={`label-title`}
+                                    data-cy={`label-name`}
                                   >
                                     {label.name}
                                   </span>

@@ -165,13 +165,14 @@ Cypress.Commands.add("getAllLabels", (): Cypress.Chainable<any> => {
 });
 
 Cypress.Commands.add("deleteLabels", (names: string[]) => {
+  cy.loginAsRole(UserRole.Admin)
   return cy.getAllLabels().then((labels: Array<{ id: string; name: string }>) => {
     const idsToDelete = labels
       .filter(label => names.includes(label.name))
       .map(l => l.id);
 
     if (!idsToDelete.length) {
-      return cy.wrap([]);
+      return
     }
 
     const mutation = `

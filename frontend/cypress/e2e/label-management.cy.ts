@@ -1,11 +1,12 @@
-import labels from "../../fixtures/labels.json"
-import * as page from "../../pages/labels/label-management.po"
-import * as creationDialog from "../../pages/labels/create-label-dialog.po"
-import * as confirmationDialog from "../../pages/confirmation-dialog.po"
-import * as kummerform from "../../pages/kummerform.po"
-import {UserRole} from "../../../lib/graph/generated/graphql";
+import labels from "../fixtures/labels.json"
+import * as page from "../pages/labels/label-management.po"
+import * as creationDialog from "../pages/labels/create-label-dialog.po"
+import * as confirmationDialog from "../pages/confirmation-dialog.po"
+import * as kummerform from "../pages/kummerform.po"
+import {UserRole} from "../../lib/graph/generated/graphql";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
+const LABELS_IN_DB_SEED = 8
 
 
 roles.forEach((role) => {
@@ -84,8 +85,8 @@ roles.forEach((role) => {
         after(() => cy.deleteLabels([labels.test1.name, labels.test2.name]))
       })
 
-      context('Delete Labels', () => {
-        if (role === UserRole.Admin) {
+      if(role === UserRole.Admin) {
+        context('Delete Labels', () => {
           it('opens a confirmation dialog before deleting', () => {
             page.getDeleteButtonsOfLabels(labels.lineare_algebra.name).eq(0).click()
 
@@ -115,25 +116,24 @@ roles.forEach((role) => {
             page.getLabelRows().contains(labels.fachschaft.name).should('not.exist')
             cy.visit("/")
             kummerform.getLabels().contains(labels.fachschaft.name).should('not.exist')
+
+            // CLEANUP
+            cy.createLabel(labels.fachschaft)
           })
 
           after(() => {
             cy.deleteLabels([labels.lineare_algebra.name])
             cy.createLabel(labels.lineare_algebra)
           })
-        } else {
-          it('does not show the delete action', () => {
-            page.getDeleteButtonsOfLabels().should('not.exist')
-          });
-        }
-      })
+        })
+      }
 
       context('Edit Labels', () => {
-        const newName = 'nicht lineare algebra'
         const newColorHex = '#FF0000'
         const newColorRGB = 'rgb(255, 0, 0)'
 
         it('edits name', () => {
+          const newName = 'nicht lineare algebra'
           page.openEditOfLabel(labels.lineare_algebra.name)
           creationDialog.typeName(newName)
           creationDialog.submit()
@@ -202,7 +202,6 @@ roles.forEach((role) => {
         });
 
         it('has label rows', () => {
-          const LABELS_IN_DB_SEED = 8
           page.getLabelRows().should('have.length', LABELS_IN_DB_SEED)
         });
 
@@ -223,12 +222,18 @@ roles.forEach((role) => {
         });
 
         it('has an edit button for every label', () => {
-          page.getEditButtonsOfLabels().should('have.length', 8)
+          page.getEditButtonsOfLabels().should('have.length', LABELS_IN_DB_SEED)
         });
 
-        it('has a delete button for every label', () => {
-          page.getDeleteButtonsOfLabels().should('have.length', 8)
-        });
+        if(role === UserRole.Admin) {
+          it('has a delete button for every label', () => {
+            page.getDeleteButtonsOfLabels().should('have.length', LABELS_IN_DB_SEED)
+          });
+        } else {
+          it('shows no delete actions', () => {
+            page.getDeleteButtonsOfLabels().should('not.exist')
+          });
+        }
 
         context('Sorting', () => {
           it('sorts names ascending by default', () => {
