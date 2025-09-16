@@ -7,7 +7,7 @@ import {useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
   CreateLabelDocument,
-  CreateLabelMutation,
+  CreateLabelMutation, FormLabelsDocument,
   Label,
   NewLabel,
   UpdateLabelDocument,
@@ -24,7 +24,7 @@ const LabelMaxLength = 50;
 
 interface LabelFormProps {
   createMode: boolean;
-  label: Label | null;
+  originalLabel: Label | null;
   closeDialog: () => void
   refreshData: () => void
 }
@@ -43,15 +43,15 @@ const labelFormSchema = z.object({
 
 export default function LabelForm(props: LabelFormProps) {
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
-  const [color, setColor] = useState(props.label?.color ?? "#7A7777")
+  const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
   const [loading, setLoading] = useState<boolean>(false)
 
   const form = useForm<z.infer<typeof labelFormSchema>>({
     resolver: zodResolver(labelFormSchema),
     defaultValues: {
-      name: props.label?.name ?? "",
-      color: props.label?.color ?? color,
-      isFormLabel: props.label?.formLabel ?? false
+      name: props.originalLabel?.name ?? "",
+      color: props.originalLabel?.color ?? color,
+      isFormLabel: props.originalLabel?.formLabel ?? false
     }
   })
 
@@ -61,8 +61,8 @@ export default function LabelForm(props: LabelFormProps) {
     if (props.createMode) {
       await createLabel(data.name, data.color, data.isFormLabel)
     } else {
-      if (!props.label) return
-      await updateLabel(props.label?.id, data.name, data.color, data.isFormLabel)
+      if (!props.originalLabel) return
+      await updateLabel(props.originalLabel?.id, data.name, data.color, data.isFormLabel)
     }
 
     setLoading(false)
@@ -89,6 +89,14 @@ export default function LabelForm(props: LabelFormProps) {
   async function updateLabel(id: string, name: string, color: string, isFormLabel: boolean) {
     const client = getClient();
     const label: NewLabel = {name: name, color: color, formLabel: isFormLabel};
+
+    if (props.originalLabel?.formLabel && !isFormLabel) {
+      const data = await client.request(FormLabelsDocument)
+      if (data.formLabels?.length === 1) {
+        form.setError("isFormLabel", {message: "Es muss immer mindestens ein öffentliches Label geben"})
+        return
+      }
+    }
 
     try {
       await client.request<UpdateLabelMutation>(UpdateLabelDocument, {id: id, label: label})
@@ -120,7 +128,7 @@ export default function LabelForm(props: LabelFormProps) {
               <FormControl>
                 <Input
                   data-cy={'label-name-input'}
-                  placeholder={props.label?.name ?? ""}
+                  placeholder={props.originalLabel?.name ?? ""}
                   maxLength={50}
                   {...field}
                   onChange={e => field.onChange(e.target.value)}
@@ -195,6 +203,7 @@ export default function LabelForm(props: LabelFormProps) {
                   />
                 </FormControl>
               </div>
+              <FormMessage className={'-mt-1'}/>
               <FormDescription>
                 Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen
               </FormDescription>
