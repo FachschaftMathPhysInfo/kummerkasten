@@ -81,7 +81,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                   <div className="flex md:max-w-[300px] overflow-x-auto whitespace-nowrap gap-1">
                     {ticketLabels.length <= 2 ? (
                       ticketLabels?.map((label) => (
-                        label?.id && <LabelBadge label={label}/>
+                        label?.id && <LabelBadge key={label.id} label={label}/>
                       ))
                     ) : (
                       <div className={'flex gap-2 items-center'}>
