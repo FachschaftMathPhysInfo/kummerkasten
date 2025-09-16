@@ -75,7 +75,7 @@ export default function AboutSectionForm() {
       console.error(error);
       setIsLoading(false);
     }
-  }, [form, user]);
+  }, [form]);
 
   useEffect(() => {
     void fetchAboutSection();

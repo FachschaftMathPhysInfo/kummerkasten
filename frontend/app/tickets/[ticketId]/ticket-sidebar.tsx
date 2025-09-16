@@ -59,7 +59,10 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
     const newFilteredTickets = getFilteredTickets(filtering, tickets)
     setFilteredTickets(newFilteredTickets)
     setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
-  }, [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm])
+  }, [
+    isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm,
+    sorting.field, sorting.orderAscending
+  ])
 
   useEffect(() => {
     const newFilteredTickets = getFilteredTickets(filtering, tickets)
