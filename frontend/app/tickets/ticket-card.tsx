@@ -22,6 +22,7 @@ import {cn} from "@/lib/utils";
 import {useUser} from "@/components/providers/user-provider";
 import {getTicketStateColor} from "@/lib/ticket-operations";
 import LabelBadge from "@/components/label-badge";
+import {useSidebar} from "@/components/ui/sidebar";
 
 
 type TicketProps = {
@@ -29,21 +30,10 @@ type TicketProps = {
   setDialogStateAction: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-function useIsMobile(breakpoint = 380) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const update = () => setIsMobile(window.innerWidth < breakpoint);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [breakpoint]);
-  return isMobile;
-}
-
 const client = getClient();
 
 export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
-  const isMobile = useIsMobile();
+  const {isMobile} = useSidebar()
   const {user} = useUser();
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -108,23 +98,32 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
           </div>
           <div className="flex flex-col items-end">
             <div className=" md:flex md:mr-1">
-              <div className="flex md:max-w-[300px] overflow-x-auto whitespace-nowrap gap-1">
-                {ticketLabels.length <= 2 ? (
-                  ticketLabels?.map((label) => (
-                    label?.id && <LabelBadge label={label} />
-                  ))
-                ) : (
-                  <div className={'flex gap-2 items-center'}>
-                    <LabelBadge label={ticketLabels[0]}/>
-                    <LabelBadge label={ticketLabels[1]}/>
-                    <p className={'text-muted-foreground text-xs px-2 py-1 border border-muted-foreground rounded-lg'}>+ {ticketLabels.length - 2}</p>
+              {!isMobile && (
+                <>
+                  <div className="flex md:max-w-[300px] overflow-x-auto whitespace-nowrap gap-1">
+                    {ticketLabels.length <= 2 ? (
+                      ticketLabels?.map((label) => (
+                        label?.id && <LabelBadge label={label}/>
+                      ))
+                    ) : (
+                      <div className={'flex gap-2 items-center'}>
+                        <LabelBadge label={ticketLabels[0]}/>
+                        <LabelBadge label={ticketLabels[1]}/>
+                        <p
+                          className={'text-muted-foreground text-xs px-2 py-1 border border-muted-foreground rounded-md'}
+                        >
+                          + {ticketLabels.length - 2}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div
-                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
-                Geändert: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
-              </div>
+                  <div
+                    className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
+                    Geändert: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
+                  </div>
+                </>
+              )}
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="cursor-pointer flex items-center justify-center">
