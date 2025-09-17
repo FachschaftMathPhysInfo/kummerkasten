@@ -192,7 +192,7 @@ roles.forEach((role) => {
         })
       })
 
-      context('Label Table', () => {
+      context.only('Label Table', () => {
         it('exists', () => {
           page.getLabelTable().should('be.visible')
         });
@@ -200,6 +200,10 @@ roles.forEach((role) => {
         it('has a searchbar', () => {
           page.getSearchbar().should('be.visible')
         });
+
+        it('has name sorting button in header', () => {
+          page.getSortByNamesButton().should('be.visible')
+        })
 
         it('has label rows', () => {
           page.getLabelRows().should('have.length', LABELS_IN_DB_SEED)

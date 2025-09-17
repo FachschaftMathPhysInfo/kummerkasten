@@ -18,6 +18,10 @@ export function search(query: string) {
   getSearchbar().type(query)
 }
 
+export function getSortByNamesButton() {
+  return cy.get("[data-cy=table-header-button]")
+}
+
 export function getNoResultsMessage() {
   return cy.get("[data-cy=no-results-message]")
 }
