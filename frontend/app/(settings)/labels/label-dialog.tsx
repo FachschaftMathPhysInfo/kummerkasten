@@ -22,7 +22,7 @@ export default function LabelDialog(props: LabelDialogProps) {
         </DialogTitle>
         <LabelForm
           createMode={props.createMode}
-          label={props.label}
+          originalLabel={props.label}
           closeDialog={props.closeDialog}
           refreshData={props.refreshData}
         />

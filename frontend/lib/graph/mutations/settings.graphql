@@ -3,3 +3,7 @@ mutation updateSetting($setting: NewSetting!) {
         value
     }
 }
+
+mutation updateAboutSectionText($text: String!) {
+    updateAboutSectionText(text: $text)
+}

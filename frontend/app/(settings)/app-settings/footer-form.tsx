@@ -146,6 +146,7 @@ export default function FooterForm() {
                 type={'button'}
                 disabled={!form.formState.isDirty}
                 onClick={() => fetchFooterSettings()}
+                data-cy={'footer-cancel-button'}
               >
                 <RotateCcw/>
                 Abbrechen
@@ -155,6 +156,7 @@ export default function FooterForm() {
                 type="submit"
                 disabled={!form.formState.isValid && hasTriedToSubmit || !form.formState.isDirty}
                 className={cn(isLoading && 'hidden', 'w-full md:w-fit')}
+                data-cy={'footer-save-button'}
               >
                 {isSaving ? (
                   <Loader2 className={'animate-spin'}/>

@@ -164,6 +164,30 @@ Cypress.Commands.add("getAllLabels", (): Cypress.Chainable<any> => {
   }).its("body.data.labels");
 });
 
+Cypress.Commands.add("getFooterSettings", (): Cypress.Chainable<Record<string, string>> => {
+  const query = `
+        query footerSettings {
+            footerSettings {
+                key
+                value
+            }
+        }
+    `;
+
+  return cy.request({
+    method: "POST",
+    url: "/api",
+    headers: {"Content-Type": "application/json"},
+    body: {query, operationName: "footerSettings"},
+  }).then((res) => {
+    const data = res.body.data.footerSettings;
+    const settings: Record<string, string> = {};
+    data.forEach((s: any) => {
+      settings[s.key] = s.value;
+    });
+    return settings;
+  });
+});
 Cypress.Commands.add("deleteLabels", (names: string[]) => {
   cy.loginAsRole(UserRole.Admin)
   return cy.getAllLabels().then((labels: Array<{ id: string; name: string }>) => {
@@ -240,6 +264,8 @@ declare global {
       getAllTickets(): Chainable<any>;
 
       getAllLabels(): Chainable<any>;
+
+      getFooterSettings(): Chainable<any>;
 
       deleteLabels(name: string[]): Chainable<any>
 
