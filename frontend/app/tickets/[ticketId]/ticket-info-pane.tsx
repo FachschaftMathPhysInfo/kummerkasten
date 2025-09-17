@@ -12,7 +12,8 @@ import {
   Ticket,
   TicketState,
   UpdateTicketStateDocument,
-  UpdateTicketStateMutation
+  UpdateTicketStateMutation,
+  UserRole
 } from "@/lib/graph/generated/graphql";
 import React, {useEffect} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
@@ -26,6 +27,7 @@ import TicketActionsBar from "@/app/tickets/[ticketId]/ticket-action-bar";
 import {getClient} from "@/lib/graph/client";
 import TicketStatusArea from "@/app/tickets/[ticketId]/ticket-status-area";
 import {useTickets} from "@/components/providers/ticket-provider";
+import {useUser} from "@/components/providers/user-provider";
 
 interface TicketInfoPaneProps {
   ticket: Ticket | null;
@@ -34,6 +36,7 @@ interface TicketInfoPaneProps {
 }
 
 export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateAction}: TicketInfoPaneProps) {
+  const {user} = useUser()
   const {triggerTicketRefetch} = useTickets()
   const {isMobile} = useSidebar()
   const [ticketLabels, setTicketLabels] = React.useState<Label[]>(initialTicketLabels)
@@ -74,13 +77,13 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
 
     try {
       const client = getClient();
-      if (ticketsToAdd.length > 0) {
+      if (ticketsToRemove.length > 0) {
         await client.request<RemoveLabelsFromTicketMutation>(RemoveLabelsFromTicketDocument,
           {assignments: ticketsToRemove}
         )
       }
 
-      if (ticketsToRemove.length > 0) {
+      if (ticketsToAdd.length > 0) {
         await client.request<AddLabelsToTicketMutation>(AddLabelsToTicketDocument,
           {assignments: ticketsToAdd}
         )
@@ -158,16 +161,18 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
               setStatusAction={(state) => void handleStateChange(state)}
             />
 
-            <Button
-              variant={"outline"}
-              className={'!border-destructive aspect-square hover:bg-destructive/10 dark:hover:bg-destructive/20'}
-              onClick={() => setDialogStateAction({
-                mode: "delete",
-                currentTicket: ticket
-              })}
-            >
-              <Trash2 className={'stroke-destructive'}/>
-            </Button>
+            {user?.role === UserRole.Admin && (
+              <Button
+                variant={"outline"}
+                className={'!border-destructive aspect-square hover:bg-destructive/10 dark:hover:bg-destructive/20'}
+                onClick={() => setDialogStateAction({
+                  mode: "delete",
+                  currentTicket: ticket
+                })}
+              >
+                <Trash2 className={'stroke-destructive'}/>
+              </Button>
+            )}
           </span>
 
 

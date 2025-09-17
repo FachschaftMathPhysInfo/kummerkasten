@@ -64,7 +64,18 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 
 	if _, err := r.DB.NewInsert().Model(dbTicket).Exec(ctx); err != nil {
 		log.Printf("Failed to create Ticket: %v", err)
-		return nil, err
+		return nil, ErrInternal
+	}
+
+	gqlTicket := &model.Ticket{
+		ID:            dbTicket.ID,
+		OriginalTitle: dbTicket.Title,
+		Title:         dbTicket.Title,
+		Text:          dbTicket.Text,
+		State:         dbTicket.State,
+		CreatedAt:     dbTicket.CreatedAt,
+		LastModified:  dbTicket.LastModified,
+		Labels:        nil,
 	}
 
 	if len(labels) > 0 {
@@ -77,6 +88,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		}
 		if _, err := r.DB.NewInsert().Model(&labelsToTickets).Exec(ctx); err != nil {
 			log.Printf("Failed to link labels to ticket: %v", err)
+			return gqlTicket, fmt.Errorf("the ticket was created but adding labels failed")
 		}
 	}
 
@@ -90,16 +102,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		})
 	}
 
-	gqlTicket := &model.Ticket{
-		ID:            dbTicket.ID,
-		OriginalTitle: dbTicket.Title,
-		Title:         dbTicket.Title,
-		Text:          dbTicket.Text,
-		State:         dbTicket.State,
-		CreatedAt:     dbTicket.CreatedAt,
-		LastModified:  dbTicket.LastModified,
-		Labels:        gqlLabels,
-	}
+	gqlTicket.Labels = gqlLabels
 
 	return gqlTicket, nil
 }
@@ -109,13 +112,13 @@ func (r *mutationResolver) DeleteTicket(ctx context.Context, ids []string) (int3
 	result, err := r.DB.NewDelete().Model((*model.Ticket)(nil)).Where("id IN (?)", bun.In(ids)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete tickets : %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("the tickets were deleted, but counting them failed")
 	}
 
 	return int32(rowsAffected), nil
@@ -154,7 +157,7 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 		WherePK().
 		Exec(ctx); err != nil {
 		log.Printf("Failed to update ticket %s: %v", id, err)
-		return "", err
+		return "", ErrInternal
 	}
 
 	return dbTicket.ID, nil
@@ -168,13 +171,13 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 	if err != nil {
 		log.Printf("Failed to update setting state: %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("the ticket states were updated, but counting them failed")
 	}
 
 	return int32(rowsAffected), nil
@@ -193,7 +196,8 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	if err := r.DB.NewSelect().Model(&labels).
 		Where("LOWER(name) = ?", strings.ToLower(label.Name)).
 		Scan(ctx); err != nil {
-		return nil, err
+		fmt.Printf("failed creating tickets, comparisong to existing label names failed: %v", err)
+		return nil, ErrInternal
 	}
 
 	if len(labels) != 0 {
@@ -222,7 +226,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 
 	if _, err := r.DB.NewInsert().Model(newLabel).Exec(ctx); err != nil {
 		log.Printf("Failed to create label: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	return &model.Label{
@@ -239,13 +243,13 @@ func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []string) (int32
 	result, err := r.DB.NewDelete().Model((*model.Label)(nil)).Where("id IN (?)", bun.In(ids)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete label: %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("the labels were deleted, but counting them failed")
 	}
 
 	return int32(rowsAffected), nil
@@ -272,7 +276,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 		if err := r.DB.NewSelect().Model(&labels).
 			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
 			Where("id != ?", dbLabel.ID).Scan(ctx); err != nil {
-			return "", err
+			return "", ErrInternal
 		}
 
 		if len(labels) != 0 {
@@ -293,12 +297,25 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	}
 
 	if label.FormLabel != nil {
+		if dbLabel.FormLabel && !*label.FormLabel {
+			var allFormLabels []*models.Label
+			if err := r.DB.NewSelect().
+				Model(&allFormLabels).
+				Where("form_label = ?", true).
+				Scan(ctx); err != nil {
+				log.Printf("Failed to find all form labels for update on labels: %v", err)
+				return "", fmt.Errorf("internal server error")
+			}
+			if len(allFormLabels) == 1 {
+				return "", fmt.Errorf("there must always be at least one formLabel existent")
+			}
+		}
 		dbLabel.FormLabel = *label.FormLabel
 	}
 
 	if _, err := r.DB.NewUpdate().Model(dbLabel).WherePK().Exec(ctx); err != nil {
 		log.Printf("Failed to update label %s: %v", id, err)
-		return "", err
+		return "", ErrInternal
 	}
 
 	return dbLabel.ID, nil
@@ -327,7 +344,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 
 	if _, err := r.DB.NewInsert().Model(newUser).Exec(ctx); err != nil {
 		log.Printf("Failed to create user: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	return newUser, nil
@@ -343,7 +360,7 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, ids []string) (int32,
 
 	if err != nil {
 		log.Printf("Failed to delete user: %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	rowsAffected, _ := result.RowsAffected()
@@ -355,6 +372,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
 
 	if err != nil || len(users) == 0 {
+		log.Printf("Failed to find user with id %v: %v", id, err)
 		return "", fmt.Errorf("user with id %v not found", id)
 	}
 
@@ -374,7 +392,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 
 		if err != nil {
 			log.Printf("Failed to create user: %v", err)
-			return "", err
+			return "", ErrInternal
 		}
 
 		updatedUser.Password = hashedPassword
@@ -386,7 +404,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 		Where("id = ?", id).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to update user: %v", err)
-		return "", err
+		return "", ErrInternal
 	}
 
 	return updatedUser.ID, nil
@@ -409,7 +427,7 @@ func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model
 		Where("id = ?", id).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to update user role: %v", err)
-		return "", err
+		return "", ErrInternal
 	}
 
 	return updatedUser.ID, nil
@@ -421,20 +439,20 @@ func (r *mutationResolver) ResetPassword(ctx context.Context, id string, passwor
 
 	if err := r.DB.NewSelect().Model(&users).Where("id = ?", id).Scan(ctx); err != nil {
 		log.Printf("Failed to fetch users for password reset: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	user := users[0]
 	newPassword, err := auth.HashPassword(password)
 	if err != nil {
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	user.Password = newPassword
 
 	if _, err := r.DB.NewUpdate().Model(user).WherePK().Exec(ctx); err != nil {
 		log.Printf("Failed to update user for password reset: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	return nil, nil
@@ -446,7 +464,7 @@ func (r *mutationResolver) Logout(ctx context.Context, sid string) (string, erro
 		Where("id = ?", sid).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to logout user: %v", err)
-		return "", err
+		return "", ErrInternal
 	}
 
 	return "", nil
@@ -461,7 +479,7 @@ func (r *mutationResolver) CreateSetting(ctx context.Context, setting model.NewS
 
 	if _, err := r.DB.NewInsert().Model(insertedSetting).Exec(ctx); err != nil {
 		log.Printf("Failed to create setting: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	return insertedSetting, nil
@@ -476,7 +494,7 @@ func (r *mutationResolver) DeleteSetting(ctx context.Context, keys []string) (in
 	_, err = r.DB.NewDelete().Model((*model.Setting)(nil)).Where("key IN (?)", bun.In(keys)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete settings : %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	return int32(count), nil
@@ -491,10 +509,37 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 
 	if _, err := r.DB.NewUpdate().Model(updateSetting).Where("key = ?", setting.Key).Exec(ctx); err != nil {
 		log.Printf("Failed to update setting %s: %v", setting.Key, err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	return updateSetting, nil
+}
+
+// UpdateAboutSectionText is the resolver for the updateAboutSectionText field.
+func (r *mutationResolver) UpdateAboutSectionText(ctx context.Context, text string) (string, error) {
+	const maxLengthAboutSectionText = 3000
+
+	if len(text) > maxLengthAboutSectionText || len(text) == 0 {
+		log.Printf("failed updating about section text: message too long or too short")
+		return "", fmt.Errorf("text cannot be empty, or longer than %v", maxLengthAboutSectionText)
+	}
+
+	var settings []*model.Setting
+
+	settings, _ = r.Query().AboutSectionSettings(ctx)
+
+	setting := *settings[0]
+
+	setting.Value = text
+
+	_, err := r.DB.NewUpdate().Model(&setting).Where("key = ?", setting.Key).Exec(ctx)
+
+	if err != nil {
+		log.Printf("Failed to update setting: %v", err)
+		return "", fmt.Errorf("internal server error")
+	}
+
+	return setting.Value, nil
 }
 
 // AddLabelToTicket is the resolver for the addLabelToTicket field.
@@ -523,15 +568,16 @@ func (r *mutationResolver) AddLabelToTicket(ctx context.Context, assignments []*
 	}
 
 	result, err := r.DB.NewInsert().Model(&labelsToTicketsEntries).Exec(ctx)
+
 	if err != nil {
 		log.Printf("Failed to add labels to tickets: %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("the labels were added to the tickets, but counting them failed")
 	}
 
 	return int32(rowsAffected), nil
@@ -548,11 +594,13 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 		}
 
 		result, err := r.DB.NewDelete().Model(&models.LabelsToTickets{}).
-			Where("ticket_id = ?", assignment.TicketID).Where("label_id = ?", assignment.LabelID).Exec(ctx)
+			Where("ticket_id = ?", assignment.TicketID).
+			Where("label_id = ?", assignment.LabelID).
+			Exec(ctx)
 
 		if err != nil {
 			log.Printf("Failed to remove label '%s' from ticket '%s': %v", assignment.LabelID, assignment.TicketID, err)
-			return int32(rowsAffected), err
+			return int32(rowsAffected), ErrInternal
 		}
 
 		removalRowsAffected, err := result.RowsAffected()
@@ -564,13 +612,13 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 		rowsAffected = removalRowsAffected + rowsAffected
 
 		updatedTickets[assignment.TicketID] = struct{}{}
-
 	}
 
 	for ticketID := range updatedTickets {
 		_, err := r.UpdateTicket(ctx, ticketID, model.UpdateTicket{})
 		if err != nil {
 			log.Printf("Failed to update LastModified: %v", err)
+			return 0, ErrInternal
 		}
 	}
 
@@ -588,19 +636,19 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 
 	if err != nil {
 		log.Printf("Failed to get question strings for duplicate check: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	if questionExists {
 		log.Printf("This question already exists: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("this question already exists")
 	}
 
 	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
 	if err != nil {
 		log.Printf("Failed to get max order for QuestionAnswerPair: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	createdQuestionAnswerPair := &model.QuestionAnswerPair{
@@ -616,7 +664,7 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 
 	if _, err := r.DB.NewInsert().Model(createdQuestionAnswerPair).Exec(ctx); err != nil {
 		log.Printf("Failed to create QuestionAnswerPair: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	return createdQuestionAnswerPair, nil
@@ -629,14 +677,14 @@ func (r *mutationResolver) DeleteQuestionAnswerPair(ctx context.Context, ids []s
 		Column("order").Where("id IN (?)", bun.In(ids)).Scan(ctx, &orders)
 	if err != nil {
 		log.Printf("Failed to fetch order: %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	result, err := r.DB.NewDelete().Model((*model.QuestionAnswerPair)(nil)).
 		Where("id IN (?)", bun.In(ids)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete QuestionAnswerPair : %v", err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	minDeletedOrder := orders[0]
@@ -654,7 +702,7 @@ func (r *mutationResolver) DeleteQuestionAnswerPair(ctx context.Context, ids []s
 	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
 	if err != nil {
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	for i := minDeletedOrder + 1; i <= maxOrder+1; i++ {
@@ -662,14 +710,14 @@ func (r *mutationResolver) DeleteQuestionAnswerPair(ctx context.Context, ids []s
 			Set(`"order" = ?`, i-1).Where(`"order" = ?`, i).Exec(ctx)
 		if err != nil {
 			log.Printf("Failed to shift QuestionAnswerPair order %d -> %d: %v", i, i-1, err)
-			return 0, err
+			return 0, ErrInternal
 		}
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("the faqs were deleted, but counting them failed")
 	}
 
 	return int32(rowsAffected), nil
@@ -696,7 +744,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 		Where("id = ?", id).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to update QuestionAnswerPair: %v", err)
-		return "", err
+		return "", ErrInternal
 	}
 
 	return qAP.ID, nil
@@ -710,14 +758,14 @@ func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qa
 	err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
 	if err != nil {
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	var currentOrder int
 	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		Column("order").Where("id = ?", qap.ID).Scan(ctx, &currentOrder)
 	if err != nil {
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	if qap.Order > maxOrder {
@@ -727,7 +775,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qa
 	_, err = r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
 		Set(`"order" = ?`, -1).Where("id = ?", qap.ID).Exec(ctx)
 	if err != nil {
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	if qap.Order < int32(currentOrder) {
@@ -736,7 +784,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qa
 				Set(`"order" = ?`, i+1).Where(`"order" = ?`, i).Exec(ctx)
 			if err != nil {
 				log.Printf("Failed to shift QuestionAnswerPairs order up %d -> %d: %v", i, i+1, err)
-				return 0, err
+				return 0, ErrInternal
 			}
 		}
 	} else if qap.Order > int32(currentOrder) {
@@ -745,7 +793,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qa
 				Set(`"order" = ?`, i-1).Where(`"order" = ?`, i).Exec(ctx)
 			if err != nil {
 				log.Printf("Failed to shift QuestionAnswerPairs order down %d -> %d: %v", i, i-1, err)
-				return 0, err
+				return 0, ErrInternal
 			}
 		}
 	}
@@ -754,13 +802,13 @@ func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qa
 		Set(`"order" = ?`, int(qap.Order)).Where("id = ?", qap.ID).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to update QuestionAnswerPair order for ID %s: %v", qap.ID, err)
-		return 0, err
+		return 0, ErrInternal
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("update was successful, but counting failed")
 	}
 
 	return int32(rowsAffected), nil
@@ -782,7 +830,7 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get tickets: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch tickets")
 	}
 
 	var gqlTickets []*model.Ticket
@@ -826,7 +874,7 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get labels: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch labels")
 	}
 
 	var gqlLabels []*model.Label
@@ -870,7 +918,7 @@ func (r *queryResolver) FormLabels(ctx context.Context, ids []string) ([]*model.
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get form labels: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch form labels")
 	}
 
 	var gqlLabels []*model.Label
@@ -918,10 +966,21 @@ func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, r
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to fetch users: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch footer users")
 	}
 
 	return users, nil
+}
+
+// IsMailInUse is the resolver for the isMailInUse field.
+func (r *queryResolver) IsMailInUse(ctx context.Context, mail string) (bool, error) {
+	exists, err := r.DB.NewSelect().Model((*model.User)(nil)).Where("mail = ?", mail).Exists(ctx)
+	if err != nil {
+		log.Printf("Failed to fetch users for isMailInUse check: %v", err)
+		return false, fmt.Errorf("internal server error")
+	}
+
+	return exists, nil
 }
 
 // Settings is the resolver for the settings field.
@@ -936,7 +995,7 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get settings: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch settings")
 	}
 
 	return settings, nil
@@ -958,12 +1017,27 @@ func (r *queryResolver) FooterSettings(ctx context.Context) ([]*model.Setting, e
 	return footerSettings, nil
 }
 
+// AboutSectionSettings is the resolver for the aboutSectionSettings field.
+func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Setting, error) {
+	const aboutSettingsPrefix = "ABOUT_"
+	var aboutSetting []*model.Setting
+
+	if err := r.DB.NewSelect().
+		Model(&aboutSetting).
+		Where("key LIKE ?", aboutSettingsPrefix+"%").
+		Scan(ctx); err != nil {
+		return nil, fmt.Errorf("failed to fetch about setting: %v", err)
+	}
+
+	return aboutSetting, nil
+}
+
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
 	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
 	if err != nil || len(users) == 0 {
 		log.Printf("Failed to fetch user for login: %v", err)
-		return false, err
+		return false, ErrInternal
 	}
 
 	user := users[0]
@@ -971,7 +1045,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
 		log.Printf("Password is incorrect for %v is incorrect", user.Mail)
-		return false, nil
+		return false, fmt.Errorf("incorrect credentials")
 	}
 
 	newSid := uuid.New().String()
@@ -987,12 +1061,12 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	if _, err := r.DB.NewInsert().Model(newSession).Exec(ctx); err != nil {
 		log.Printf("Failed to create new session: %v", err)
-		return false, err
+		return false, ErrInternal
 	}
 
 	if _, err := r.DB.NewUpdate().Model(user).Where("mail = ?", mail).Exec(ctx); err != nil {
 		log.Printf("Failed to update sid: %v", err)
-		return false, err
+		return false, ErrInternal
 	}
 
 	httpResponseWriter := ctx.Value(middleware.WriterKey).(http.ResponseWriter)
@@ -1013,7 +1087,8 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		Where("user_id = ?", user.ID).
 		Order("expires_at DESC").
 		Exec(ctx); err != nil {
-		return false, err
+		log.Printf("Failed to fetch user sessions: %v", err)
+		return false, ErrInternal
 	}
 
 	const MaxSessionsPerUser = 20
@@ -1021,7 +1096,8 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		sessionsToDelete := userSessions[:MaxSessionsPerUser]
 
 		if _, err := r.DB.NewDelete().Model(&sessionsToDelete).Exec(ctx); err != nil {
-			return false, err
+			log.Printf("Failed to delete sessions: %v", err)
+			return false, ErrInternal
 		}
 	}
 
@@ -1037,7 +1113,7 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	var sessions []*model.Session
 
 	if err := r.DB.NewSelect().Model(&sessions).Where("id = ?", sid).Scan(ctx); err != nil {
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	if sessions == nil {
@@ -1049,7 +1125,7 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	if err := r.DB.NewSelect().Model(&users).
 		Where("id = ?", sessions[0].UserID).
 		Scan(ctx); err != nil {
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	if users == nil || len(users) > 1 {
@@ -1073,7 +1149,7 @@ func (r *queryResolver) QuestionAnswerPairs(ctx context.Context, ids []string) (
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get QuestionAnswerPairs: %v", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	return questionAnswerPairs, nil

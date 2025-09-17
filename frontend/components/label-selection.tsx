@@ -16,7 +16,7 @@ export default function LabelSelection({labels, selectedLabels, setLabels}: Labe
   return (
     <Command>
       <CommandInput placeholder="Labels suchen..."/>
-      <CommandGroup>
+      <CommandGroup className={'max-h-[300px] overflow-y-auto'}>
         {labels.map((label) => {
           const isSelected = selectedLabels.map(l => l.id).includes(label.id);
           return (

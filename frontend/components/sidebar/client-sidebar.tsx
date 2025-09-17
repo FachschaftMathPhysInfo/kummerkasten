@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   SidebarContent,
   SidebarFooter,
@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-  useSidebar
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   CircleUserRound,
@@ -19,31 +19,31 @@ import {
   Sun,
   Tags,
   Tickets,
-  Users
+  Users,
 } from "lucide-react";
-import {useUser} from "@/components/providers/user-provider";
-import {UserRole} from "@/lib/graph/generated/graphql";
-import {useRouter} from "next/navigation";
-import {useTheme} from "next-themes";
-import {useEffect, useState} from "react";
-import {clsx} from "clsx";
+import { useUser } from "@/components/providers/user-provider";
+import { UserRole } from "@/lib/graph/generated/graphql";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { clsx } from "clsx";
 
 export function ClientSidebar() {
-  const {user, logout} = useUser()
-  const router = useRouter()
-  const {open, isMobile} = useSidebar()
+  const { user, logout } = useUser();
+  const router = useRouter();
+  const { open, isMobile } = useSidebar();
   const userItems = [
     {
       title: "Tickets",
       url: "/tickets",
       icon: Tickets,
-      cypress: "sidebar-tickets"
+      cypress: "sidebar-tickets",
     },
     {
       title: "Labels",
       url: "/labels",
       icon: Tags,
-      cypress: "sidebar-labels"
+      cypress: "sidebar-labels",
     },
     {
       title: "FAQs",
@@ -51,22 +51,22 @@ export function ClientSidebar() {
       icon: MessageCircleQuestionMark,
       cypress: "sidebar-faq",
     },
-  ]
+  ];
   const adminItems = [
     {
       title: "Users",
       url: "/users",
       icon: Users,
-      cypress: "sidebar-users"
+      cypress: "sidebar-users",
     },
     {
       title: "App",
       url: "/app-settings",
       icon: SlidersVertical,
-      cypress: "sidebar-app-settings"
+      cypress: "sidebar-app-settings",
     },
-  ]
-  if (!user) return null
+  ];
+  if (!user) return null;
 
   return (
     <>
@@ -75,34 +75,35 @@ export function ClientSidebar() {
           <SidebarTrigger
             data-cy="sidebar-trigger"
             className={clsx(
-              "absolute top-0 mt-5 transition-all",
-              open ? "right-0 mr-5" : "left-1/2 -translate-x-1/2"
+              "absolute transition-all z-1 hover:dark:bg-sidebar-accent",
+              open ? "right-0 mr-4 mt-5 p-4.5" : "mt-5.5 p-4 left-1/2 -translate-x-1/2"
             )}
           />
         )}
-        <SidebarGroup className={'h-full justify-center'}>
+        <SidebarGroup className={"h-full justify-center"}>
           <SidebarGroupContent>
             <SidebarMenu>
               {userItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url} data-cy={item.cypress}>
-                      <item.icon/>
+                      <item.icon />
                       <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              {user?.role === UserRole.Admin && adminItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} data-cy={item.cypress}>
-                      <item.icon/>
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {user?.role === UserRole.Admin &&
+                adminItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url} data-cy={item.cypress}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -110,60 +111,66 @@ export function ClientSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarThemeSwitch/>
+            <SidebarThemeSwitch />
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              data-cy={'sidebar-settings'}
+              data-cy={"sidebar-settings"}
               onClick={() => router.push("/account")}
-              className={'flex items-center'}
+              className={"flex items-center"}
             >
-              <CircleUserRound/> Account
+              <CircleUserRound /> Account
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              data-cy={'sidebar-logout'}
+              data-cy={"sidebar-logout"}
               onClick={() => logout()}
-              className={'flex items-center text-destructive'}
+              className={"flex items-center text-destructive"}
             >
-              <LogOut className={'stroke-destructive'}/> Logout
+              <LogOut className={"stroke-destructive"} /> Logout
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </>
   );
-
 }
 
 export function ClientSidebarTrigger() {
-  const {user} = useUser();
-  const {isMobile} = useSidebar()
+  const { user } = useUser();
+  const { isMobile } = useSidebar();
   if (!user || !isMobile) return null;
-  return <SidebarTrigger data-cy={'sidebar-trigger'}/>
+
+  return <SidebarTrigger data-cy={"sidebar-trigger"} />;
 }
 
 function SidebarThemeSwitch() {
-  const [mounted, setMounted] = useState(false)
-  const {resolvedTheme, theme, setTheme} = useTheme()
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, theme, setTheme } = useTheme();
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
   if (!mounted) {
-    return null
+    return null;
   }
   return (
     <SidebarMenuButton
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className={'flex items-center'}
-      data-cy={'sidebar-theme-toggle'}
+      className={"flex items-center"}
+      data-cy={"sidebar-theme-toggle"}
     >
       {theme === "light" ? (
-        <><Sun/>Hell</>
+        <>
+          <Sun />
+          Hell
+        </>
       ) : (
-        <><Moon/>Dunkel</>
+        <>
+          <Moon />
+          Dunkel
+        </>
       )}
     </SidebarMenuButton>
-  )
+  );
 }

@@ -1,4 +1,5 @@
-import {Label, User, UserRole} from "@/lib/graph/generated/graphql";
+import {Label, TicketState, User, UserRole} from "@/lib/graph/generated/graphql";
+import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
 
 const now = new Date()
 
@@ -18,4 +19,17 @@ export const defaultLabel: Label = {
   id: "invalid ID",
   name: "default name",
   color: "#7a7777"
+}
+
+export const defaultTicketFiltering: TicketFiltering = {
+  searchTerm: "",
+  state: [TicketState.New, TicketState.Open],
+  labels: [],
+  startDate: null,
+  endDate: null,
+}
+
+export const defaultTicketSorting: TicketSorting = {
+  field: "Erstellt",
+  orderAscending: true,
 }

@@ -3,8 +3,9 @@
 import {Button} from "@/components/ui/button";
 import {Clipboard, Edit2, Trash} from "lucide-react";
 import React from "react";
-import {Ticket} from "@/lib/graph/generated/graphql";
+import {Ticket, UserRole} from "@/lib/graph/generated/graphql";
 import {TicketDialogState} from "@/app/tickets/page";
+import {useUser} from "@/components/providers/user-provider";
 
 interface TicketActionsBarProps {
   copyCurrentUrl: () => Promise<void>;
@@ -13,6 +14,8 @@ interface TicketActionsBarProps {
 }
 
 export default function TicketActionsBar(props: TicketActionsBarProps) {
+  const {user} = useUser()
+
   return (
     <div className="flex justify-between items-center">
       <Button
@@ -32,16 +35,18 @@ export default function TicketActionsBar(props: TicketActionsBarProps) {
       >
         <Clipboard/>
       </Button>
-      <Button
-        variant="destructive"
-        onClick={() => props.setDialogStateAction({
-          mode: "delete",
-          currentTicket: props.ticket
-        })}
-        data-cy="delete-ticket-statusbar"
-      >
-        <Trash/>
-      </Button>
+      {user?.role === UserRole.Admin && (
+        <Button
+          variant="destructive"
+          onClick={() => props.setDialogStateAction({
+            mode: "delete",
+            currentTicket: props.ticket
+          })}
+          data-cy="delete-ticket-statusbar"
+        >
+          <Trash/>
+        </Button>
+      )}
     </div>
   )
 }

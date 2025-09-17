@@ -73,8 +73,10 @@ type Query {
     labels(ids: [ID!]): [Label] @hasRole(role: USER)
     formLabels(ids: [ID!]): [Label]
     users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
+    isMailInUse(mail: String!): Boolean! @hasRole(role: USER)
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     footerSettings: [Setting]
+    aboutSectionSettings: [Setting]
     login(mail: String!, password: String!): Boolean!
     loginCheck(sid: String): User
     questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]
@@ -152,7 +154,7 @@ type Mutation {
 
     createLabel(label: NewLabel!): Label! @hasRole(role: USER)
     deleteLabel(ids: [String!]!): Int! @hasRole(role: ADMIN)
-    updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: ADMIN)
+    updateLabel(id: String!, label: UpdateLabel!): String! @hasRole(role: USER)
 
     createUser(user: NewUser!): User! @hasRole(role: ADMIN)
     deleteUser(ids: [String!]!): Int! @hasRole(role: ADMIN)
@@ -164,12 +166,13 @@ type Mutation {
     createSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
     deleteSetting(keys: [String!]!): Int! @hasRole(role: ADMIN)
     updateSetting(setting: NewSetting!): Setting! @hasRole(role: ADMIN)
+    updateAboutSectionText(text: String!): String! @hasRole(role: USER)
 
     addLabelToTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
     removeLabelFromTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
 
-    createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: ADMIN)
-    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
-    updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: ADMIN)
-    updateQuestionAnswerPairOrder(qaps: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: ADMIN)
+    createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: USER)
+    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: USER)
+    updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: USER)
+    updateQuestionAnswerPairOrder(qaps: [UpdateQuestionAnswerPairOrder!]!): Int! @hasRole(role: USER)
 }

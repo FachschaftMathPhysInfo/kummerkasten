@@ -11,7 +11,6 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import {QAPColumns} from "@/app/(settings)/faq/faq-columns";
 import QAPDialog from "@/app/(settings)/faq/faq-dialog";
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
@@ -32,6 +31,7 @@ import {toast} from "sonner";
 
 import {DndProvider, useDrag, useDrop} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
+import QAPColumns from "@/app/(settings)/faq/faq-columns";
 
 export interface QAPTableDialogState {
   mode: "create" | "update" | "delete" | null;
@@ -141,10 +141,7 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  const columns = useMemo<QAPColumnDef<QuestionAnswerPair>[]>(
-    () => QAPColumns({setDialogState}),
-    [setDialogState]
-  );
+  const columns = QAPColumns({setDialogState})
 
   const table = useReactTable({
     data: filteredData,
@@ -195,7 +192,7 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="space-y-2" data-cy="qap-table">
+      <div className="space-y-2 mt-2" data-cy="qap-table">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <Button
             data-cy="qap-create-button"
@@ -215,7 +212,7 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
           />
         </div>
 
-        <div className="rounded-md border overflow-hidden">
+        <div className="rounded-md border overflow-hidden mb-8">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
