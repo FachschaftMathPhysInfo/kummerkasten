@@ -192,7 +192,7 @@ roles.forEach((role) => {
         })
       })
 
-      context.only('Label Table', () => {
+      context('Label Table', () => {
         it('exists', () => {
           page.getLabelTable().should('be.visible')
         });
