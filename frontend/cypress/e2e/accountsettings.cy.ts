@@ -231,6 +231,7 @@ roles.forEach((role) => {
       });
 
       context('Password Form - Wrong Passwords', () => {
+        //FIXME: #312
         it('shows an error when the current password is incorrect', () => {
           const invalidPassword = 'WrongPassword123!';
           accountPage.getCurrentPasswordInput().type(invalidPassword);
