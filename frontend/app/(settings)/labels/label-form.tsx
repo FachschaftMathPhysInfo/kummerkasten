@@ -211,7 +211,7 @@ export default function LabelForm(props: LabelFormProps) {
               <FormMessage className={'-mt-1'}/>
               <FormDescription>
                 {isLastFormLabel ? (
-                  "Dieses Label ist das letzte öffentliche Label. Wenn es privat gemacht werden soll, muss erst mindestens ein anderes Label öffentlich gemacht werden"
+                  "Dieses Label ist das letzte öffentliche Label. Wenn es privat gemacht werden soll, muss erst mindestens ein anderes Label öffentlich gemacht werden."
                 ) : (
                   "Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen"
                 )}
