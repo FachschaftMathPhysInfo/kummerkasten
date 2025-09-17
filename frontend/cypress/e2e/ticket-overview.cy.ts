@@ -428,7 +428,7 @@ roles.forEach(role => {
             });
           });
 
-          context.only('interaction with ticket card', () => {
+          context('interaction with ticket card', () => {
             it('loads ticketstate for ticketcard', () => {
               ticketPage.getTicketCard(tickets[0].id).should('exist').and('be.visible')
               ticketPage.getTicketCardState(tickets[0].state).should('exist').and('be.visible')
