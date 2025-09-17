@@ -1,6 +1,27 @@
 import {TicketSortingField} from "@/app/tickets/page";
 import {TicketState} from "@/lib/graph/generated/graphql";
 
+export function getTodaySuffixForCalendar () {
+  const today = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  };
+
+  const formatted = today.toLocaleDateString('en-US', options);
+
+  const day = today.getDate();
+  const suffix =
+    day % 10 === 1 && day !== 11 ? 'st' :
+      day % 10 === 2 && day !== 12 ? 'nd' :
+        day % 10 === 3 && day !== 13 ? 'rd' : 'th';
+
+  return formatted.replace(/\d+/, `${day}${suffix}`);
+}
+
 export function getDesktopSearchTextInput() {
   return cy.get('[data-cy="ticket-overview-search-field"]')
 }
