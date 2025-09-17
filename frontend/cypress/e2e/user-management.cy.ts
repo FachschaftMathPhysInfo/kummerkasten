@@ -1,6 +1,5 @@
 import users from "../fixtures/users.json"
 import * as page from "../pages/users/user-management.po"
-import * as actions from "../pages/users/user-actions.po"
 import * as creationDialog from "../pages/users/user-dialog.po"
 
 describe('User Management Page Tests', () => {
@@ -86,7 +85,7 @@ describe('User Management Page Tests', () => {
         creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
       });
 
-      it.only('shows error and disables submit on invalid submit - mail taken', () => {
+      it('shows error and disables submit on invalid submit - mail taken', () => {
         creationDialog.fillOutForm({
           firstname: users.temp.firstname,
           lastname: users.temp.lastname,
@@ -156,14 +155,11 @@ describe('User Management Page Tests', () => {
         creationDialog.getDialog().should('not.exist')
         page.getUserRows().contains('td', users.temp.mail).should('be.visible')
 
-        cy.logout()
-        cy.login(users.temp.mail, users.temp.password)
-        cy.visit('/tickets')
-        cy.url().should('contain', '/tickets')
+        cy.getUserIdByMail(users.temp.mail).should('have.length.above', 0)
       });
 
       after(() => {
-        actions.deleteUserAPI(users.temp.mail)
+        cy.deleteUser(users.temp.mail)
       })
     })
   })

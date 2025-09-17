@@ -2,7 +2,8 @@
 
 // Add this to cypress/support/commands.js
 import * as sidebar from "../pages/sidebar.po"
-import {UpdateUser} from "@/lib/graph/generated/graphql";
+import {UpdateUser, UserRole} from "../../lib/graph/generated/graphql";
+import * as users from "../fixtures/users.json"
 
 Cypress.Commands.add('login', (mail: string, password: string) => {
   cy.session([mail, password], () => {
@@ -24,6 +25,17 @@ Cypress.Commands.add('login', (mail: string, password: string) => {
       }
     });
   })
+});
+
+Cypress.Commands.add('loginAsRole', (role: UserRole) => {
+  if (role === UserRole.Admin) cy.login(users.cypress.mail, users.cypress.password)
+  else cy.login(users.fsles1.mail, users.fsles1.password)
+})
+
+Cypress.Commands.add('logout', () => {
+  sidebar.getLogout().click();
+  cy.clearAllCookies();
+  cy.visit('/login');
 });
 
 Cypress.Commands.add('logout', () => {
@@ -109,6 +121,33 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add('deleteUser', (mail: string) => {
+  cy.getUserIdByMail(mail).then((id) => {
+    cy.loginAsRole(UserRole.Admin)
+
+    const mutation = `
+      mutation deleteUser($id: String!) {
+        deleteUser(ids: [$id])
+      }
+    `;
+
+    cy.request({
+      method: "POST",
+      url: "http://localhost:8080/api",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        query: mutation,
+        variables: {
+          id: id,
+        },
+        operationName: "deleteUser",
+      },
+    });
+  })
+})
+
 Cypress.Commands.add("getAllTickets", (): Cypress.Chainable<any> => {
   const query = `
         query allTickets {
@@ -188,6 +227,8 @@ declare global {
     interface Chainable {
       login(mail: string, password: string): Chainable<Response<any>>;
 
+      loginAsRole(role: UserRole): Chainable<any>
+
       logout(): Chainable<Response<any>>
 
       getUserIdByMail(mail: string): Chainable<string>;
@@ -195,6 +236,8 @@ declare global {
       updateUserProfile(id: string, user: UpdateUser): Chainable<Response<any>>;
 
       updateUserPassword(currentPassword: string, newPassword: string): Chainable<Response<any>>;
+
+      deleteUser(mail: string): Chainable<any>
 
       getAllTickets(): Chainable<any>;
 
