@@ -994,7 +994,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
 		log.Printf("Password is incorrect for %v is incorrect", user.Mail)
-		return false, fmt.Errorf("incorrect password")
+		return false, fmt.Errorf("incorrect credentials")
 	}
 
 	newSid := uuid.New().String()
