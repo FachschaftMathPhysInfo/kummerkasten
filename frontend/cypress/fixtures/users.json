@@ -11,19 +11,24 @@
     "firstname": "Admin",
     "lastname": "Kummerkasten",
     "mail": "admin@kummer.kasten",
-    "password": "admin"
+    "password": "admin",
+    "id": "111111",
+    "role": "ADMIN"
   },
   "fsles1": {
     "firstname": "Fachschaft",
     "lastname": "Eins",
     "mail": "fsles1@kummerkasten.local",
     "password": "fachschaft",
+    "id": "222222",
     "role": "USER"
   },
   "chef": {
     "firstname": "Chef",
     "lastname": "Fe",
     "mail": "cheffe@kummerkasten.local",
-    "password": "cheffe"
+    "password": "cheffe",
+    "id": "333333",
+    "role": "ADMIN"
   }
 }
