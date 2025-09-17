@@ -35,7 +35,7 @@ var (
 
 func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 	if err = godotenv.Load("../.env.local"); err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+		log.Println("Error loading .env file, relying on env variables: %s", err)
 	}
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",

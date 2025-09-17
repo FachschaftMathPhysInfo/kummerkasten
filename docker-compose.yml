@@ -10,5 +10,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  app:
+    build: .
+    image: kummerkasten:latest
+    ports:
+      - "8080:8080"
+    env_file: .env.local
+    depends_on:
+      postgres:
+        condition: service_started
+
 volumes:
   pgdata:
