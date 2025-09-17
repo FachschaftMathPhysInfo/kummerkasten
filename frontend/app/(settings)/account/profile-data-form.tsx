@@ -70,8 +70,8 @@ export default function AccountDataForm() {
 
     if (userData.mail !== user.mail) {
       try {
-        const existing = await client.request(CheckIfMailExistsDocument, {mail: userData.mail});
-        const emailUsedByOtherUser = existing.users?.some((u) => u?.id !== user.id);
+        const data = await client.request(CheckIfMailExistsDocument, {mail: userData.mail});
+        const emailUsedByOtherUser = data.isMailInUse
 
         if (emailUsedByOtherUser) {
           form.setError("mail", {

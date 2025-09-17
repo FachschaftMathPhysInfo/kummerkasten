@@ -3,11 +3,11 @@
 import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
   CreateLabelDocument,
-  CreateLabelMutation,
+  CreateLabelMutation, FormLabelsDocument,
   Label,
   NewLabel,
   UpdateLabelDocument,
@@ -19,12 +19,13 @@ import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessag
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
+import {cn} from "@/lib/utils";
 
 const LabelMaxLength = 50;
 
 interface LabelFormProps {
   createMode: boolean;
-  label: Label | null;
+  originalLabel: Label | null;
   closeDialog: () => void
   refreshData: () => void
 }
@@ -43,15 +44,26 @@ const labelFormSchema = z.object({
 
 export default function LabelForm(props: LabelFormProps) {
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
-  const [color, setColor] = useState(props.label?.color ?? "#7A7777")
+  const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
   const [loading, setLoading] = useState<boolean>(false)
+  const [isLastFormLabel, setIsLastFormLabel] = useState(false)
+
+  useEffect(() => {
+    const checkIfIsLastFormLabel = async () => {
+      const client = getClient();
+      const data = await client.request(FormLabelsDocument)
+      setIsLastFormLabel(data.formLabels?.length === 1)
+    }
+
+    void checkIfIsLastFormLabel()
+  }, [props.originalLabel])
 
   const form = useForm<z.infer<typeof labelFormSchema>>({
     resolver: zodResolver(labelFormSchema),
     defaultValues: {
-      name: props.label?.name ?? "",
-      color: props.label?.color ?? color,
-      isFormLabel: props.label?.formLabel ?? false
+      name: props.originalLabel?.name ?? "",
+      color: props.originalLabel?.color ?? color,
+      isFormLabel: props.originalLabel?.formLabel ?? false
     }
   })
 
@@ -61,8 +73,8 @@ export default function LabelForm(props: LabelFormProps) {
     if (props.createMode) {
       await createLabel(data.name, data.color, data.isFormLabel)
     } else {
-      if (!props.label) return
-      await updateLabel(props.label?.id, data.name, data.color, data.isFormLabel)
+      if (!props.originalLabel) return
+      await updateLabel(props.originalLabel?.id, data.name, data.color, data.isFormLabel)
     }
 
     setLoading(false)
@@ -119,8 +131,8 @@ export default function LabelForm(props: LabelFormProps) {
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input
-                  data-cy={'label-name-input'}
-                  placeholder={props.label?.name ?? ""}
+                  data-cy={'name-input'}
+                  placeholder={props.originalLabel?.name ?? ""}
                   maxLength={50}
                   {...field}
                   onChange={e => field.onChange(e.target.value)}
@@ -128,7 +140,7 @@ export default function LabelForm(props: LabelFormProps) {
               </FormControl>
               <div className={'w-full flex justify-between'}>
                 <div>
-                  <FormMessage/>
+                  <FormMessage data-cy={'name-input-message'}/>
                 </div>
                 <div className={'text-xs text-muted-foreground'}>
                   {field.value.length} / {LabelMaxLength}
@@ -148,7 +160,7 @@ export default function LabelForm(props: LabelFormProps) {
                 <div className={'flex space-x-8 items-center'}>
                   <div className={'h-full min-h-9 aspect-square flex-shrink-0'}>
                     <input
-                      data-cy={'color-picker'}
+                      data-cy={'color-picker-input'}
                       type={"color"}
                       value={color}
                       onChange={e => {
@@ -170,10 +182,11 @@ export default function LabelForm(props: LabelFormProps) {
                       setColor(e.target.value.toUpperCase());
                       if (hasTriedToSubmit) void form.trigger('color')
                     }}
+                    data-cy={'color-input'}
                   />
                 </div>
               </FormControl>
-              <FormMessage data-cy={'label-color-message'}/>
+              <FormMessage data-cy={'color-input-message'}/>
             </FormItem>
           )}
         />
@@ -184,19 +197,25 @@ export default function LabelForm(props: LabelFormProps) {
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <div className={'flex items-center gap-4 mt-2'}>
-                <FormLabel>Öffentliche Label</FormLabel>
+                <FormLabel className={cn(isLastFormLabel && 'text-muted-foreground')}>Öffentliche Label</FormLabel>
                 <FormControl>
                   <Checkbox
+                    disabled={isLastFormLabel}
                     checked={field.value}
                     onCheckedChange={checked =>
                       form.setValue('isFormLabel', checked as boolean)
                     }
-                    data-cy={'label-isFormLabel-checkbox'}
+                    data-cy={'public-checkbox'}
                   />
                 </FormControl>
               </div>
+              <FormMessage className={'-mt-1'}/>
               <FormDescription>
-                Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen
+                {isLastFormLabel ? (
+                  "Dieses Label ist das letzte öffentliche Label. Wenn es privat gemacht werden soll, muss erst mindestens ein anderes Label öffentlich gemacht werden."
+                ) : (
+                  "Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen"
+                )}
               </FormDescription>
             </FormItem>
           )}
@@ -204,7 +223,7 @@ export default function LabelForm(props: LabelFormProps) {
 
         <div className={"flex justify-between items-center gap-x-12 mt-8"}>
           <Button
-            data-cy={'close-dialog-button'}
+            data-cy={'cancel-button'}
             onClick={props.closeDialog}
             variant={"outline"}
             type={"button"}

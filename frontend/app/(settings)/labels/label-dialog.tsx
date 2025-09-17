@@ -15,14 +15,14 @@ export default function LabelDialog(props: LabelDialogProps) {
   return (
     <Dialog open={props.open}>
       {/*hides the x in top right corner*/}
-      <DialogContent className="[&>button]:hidden">
+      <DialogContent className="[&>button]:hidden" data-cy={'create-label-dialog'}>
         <DialogTitle className={'flex items-center gap-2'}>
           {props.createMode ? <PlusCircle/> : <Edit2 size={20}/>}
           {props.createMode ? "Label erstellen" : "Label bearbeiten"}
         </DialogTitle>
         <LabelForm
           createMode={props.createMode}
-          label={props.label}
+          originalLabel={props.label}
           closeDialog={props.closeDialog}
           refreshData={props.refreshData}
         />
