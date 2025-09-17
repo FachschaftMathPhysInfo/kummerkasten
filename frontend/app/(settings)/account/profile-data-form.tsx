@@ -62,6 +62,11 @@ export default function AccountDataForm() {
   async function onValidSubmit(userData: AccountDataFormData) {
     setIsSavingAccount(true);
     const client = getClient();
+    let userObject = {
+      firstname: userData.firstname !== user?.firstname ? userData.firstname : null,
+      lastname: userData.lastname !== user?.lastname ? userData.lastname : null,
+      mail: userData.mail !== user?.mail ? userData.mail : null,
+    }
 
     if (!user) {
       toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
@@ -90,11 +95,7 @@ export default function AccountDataForm() {
 
     const updateData: UpdateUserSettingsMutationVariables = {
       id: user.id,
-      user: {
-        mail: userData.mail.trimStart().trimEnd(),
-        firstname: userData.firstname.trimStart().trimEnd(),
-        lastname: userData.lastname.trimStart().trimEnd(),
-      },
+      user: userObject,
     };
 
     try {
