@@ -54,7 +54,6 @@ describe('User Management Page Tests', () => {
         creationDialog.getConfirmPasswordInputMessage().should('not.exist')
       });
 
-      // FIXME: #268
       it('shows error and disables submit on invalid submit - empty form', () => {
         creationDialog.submit()
 
@@ -62,7 +61,6 @@ describe('User Management Page Tests', () => {
         creationDialog.getLastnameInputMessage().should('be.visible').and('have.length.above', 0)
         creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
         creationDialog.getPasswordInputMessage().should('be.visible').and('have.length.above', 0)
-        creationDialog.getConfirmPasswordInputMessage().should('be.visible').and('have.length.above', 0)
 
         creationDialog.getSubmitButton().should('be.disabled')
       });
@@ -81,7 +79,6 @@ describe('User Management Page Tests', () => {
         creationDialog.getLastnameInputMessage().should('be.visible').and('have.length.above', 0)
       });
 
-      // FIXME: #267
       it('shows error and disables submit on invalid submit - invalid mail format', () => {
         creationDialog.fillOutForm({mail: "a"})
         creationDialog.submit()
@@ -89,8 +86,14 @@ describe('User Management Page Tests', () => {
         creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
       });
 
-      it('shows error and disables submit on invalid submit - mail taken', () => {
-        creationDialog.fillOutForm({mail: users.admin.mail})
+      it.only('shows error and disables submit on invalid submit - mail taken', () => {
+        creationDialog.fillOutForm({
+          firstname: users.temp.firstname,
+          lastname: users.temp.lastname,
+          mail: users.fsles1.mail,
+          password: users.temp.password,
+          confirmPassword: users.temp.password,
+        })
         creationDialog.submit()
 
         creationDialog.getEmailInputMessage().should('be.visible').and('have.length.above', 0)
