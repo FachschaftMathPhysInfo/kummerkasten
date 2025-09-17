@@ -53,11 +53,11 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
 
   return (
     <Card className="w-full p-3">
-      <CardTitle className="flex flex-col ml-2 justify-between">
-        <div className="flex justify-between items-center w-full">
+      <CardTitle className="flex items-center justify-between gap-12 max-w-full">
+        <div className={'flex items-center gap-4'}>
           <Badge
             className={cn(
-              "absolute left-11 md:relative md:left-0",
+              "min-w-[50px]",
               ticket.state === TicketState.New && "bg-ticketstate-new",
               ticket.state === TicketState.Open && "bg-ticketstate-open",
               ticket.state === TicketState.Closed && "bg-ticketstate-closed"
@@ -70,75 +70,73 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                 ? "Offen"
                 : "Fertig"}
           </Badge>
-          <div className="flex-grow truncate pl-[60px] md:absolute md:pl-[70px] leading-normal"
-               title={ticket.title}>
+          <p className="leading-normal" title={ticket.title}>
             {ticket.title}
-          </div>
-          <div className="flex flex-col items-end">
-            <div className=" md:flex md:mr-1">
-              {!isMobile && (
-                <>
-                  <div className="flex md:max-w-[300px] overflow-x-auto whitespace-nowrap gap-1">
-                    {ticketLabels.length <= 2 ? (
-                      ticketLabels?.map((label) => (
-                        label?.id && <LabelBadge key={label.id} label={label}/>
-                      ))
-                    ) : (
-                      <div className={'flex gap-2 items-center'}>
-                        <LabelBadge label={ticketLabels[0]}/>
-                        <LabelBadge label={ticketLabels[1]}/>
-                        <p
-                          className={'text-muted-foreground text-xs px-2 py-1 border border-muted-foreground rounded-md'}
-                        >
-                          + {ticketLabels.length - 2}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <div
-                    className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
-                    Geändert: {format(new Date(ticket.lastModified), "dd.MM.yy")}
-                  </div>
-                </>
-              )}
+          </p>
+        </div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="cursor-pointer flex items-center justify-center">
-                    {isMobile ? (
-                      <MoreHorizontal className="w-6 h-6"/>
-                    ) : (
-                      <MoreVertical className="w-6 h-6"/>
-                    )}
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="bottom" align="end">
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      void copyTicketUrl();
-                    }}
-                  >
-                    <Link/> Link kopieren
-                  </DropdownMenuItem>
-                  {user?.role === UserRole.Admin && (
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        if (!ticket) return;
-                        setDialogStateAction({mode: "delete", currentTicket: ticket});
-                      }}
-                      className="text-destructive"
+        <div className="flex items-center min-w-[20px] gap-4 grow justify-end">
+          {!isMobile && (
+            <>
+              <div className="flex overflow-x-auto gap-1">
+                {ticketLabels.length <= 2 ? (
+                  ticketLabels?.map((label) => (
+                    label?.id && <LabelBadge key={label.id} label={label}/>
+                  ))
+                ) : (
+                  <div className={'flex gap-1 items-center'}>
+                    <LabelBadge label={ticketLabels[0]}/>
+                    <LabelBadge label={ticketLabels[1]}/>
+                    <p
+                      className={'text-muted-foreground text-xs px-2 py-1 border border-muted-foreground rounded-md'}
                     >
-                      <Trash2 className="text-destructive"/> Löschen
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+                      + {ticketLabels.length - 2}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div
+                className="hidden shrink-0 md:flex flex-col text-xs items-center justify-center text-muted-foreground">
+                Geändert: {format(new Date(ticket.lastModified), "dd.MM.yy")}
+              </div>
+            </>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="cursor-pointer flex items-center justify-center">
+                {isMobile ? (
+                  <MoreHorizontal className="w-6 h-6"/>
+                ) : (
+                  <MoreVertical className="w-6 h-6"/>
+                )}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="bottom" align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  void copyTicketUrl();
+                }}
+              >
+                <Link/> Link kopieren
+              </DropdownMenuItem>
+              {user?.role === UserRole.Admin && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (!ticket) return;
+                    setDialogStateAction({mode: "delete", currentTicket: ticket});
+                  }}
+                  className="text-destructive"
+                >
+                  <Trash2 className="text-destructive"/> Löschen
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardTitle>
     </Card>
