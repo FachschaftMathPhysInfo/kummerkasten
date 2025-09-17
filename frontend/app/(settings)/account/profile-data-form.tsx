@@ -62,7 +62,7 @@ export default function AccountDataForm() {
   async function onValidSubmit(userData: AccountDataFormData) {
     setIsSavingAccount(true);
     const client = getClient();
-    let userObject = {
+    const userObject = {
       firstname: userData.firstname !== user?.firstname ? userData.firstname : null,
       lastname: userData.lastname !== user?.lastname ? userData.lastname : null,
       mail: userData.mail !== user?.mail ? userData.mail : null,
