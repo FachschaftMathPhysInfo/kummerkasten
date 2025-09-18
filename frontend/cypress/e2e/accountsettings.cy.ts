@@ -53,7 +53,6 @@ roles.forEach((role) => {
       });
 
       context('Validation Errors - Empty Fields', () => {
-        //FIXME: #297 (for user)
         it('shows validation errors for empty field firstname', () => {
           accountPage.getFirstnameInput().should('have.value', user.firstname);
           accountPage.getFirstnameInput().clear()
