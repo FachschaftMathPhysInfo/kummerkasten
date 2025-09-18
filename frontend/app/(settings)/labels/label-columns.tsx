@@ -21,7 +21,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
     {
       accessorKey: "name",
       header: ({column}) => (
-        <DataTableColumnHeader column={column} title="Name"/>
+        <DataTableColumnHeader column={column} title="Name" data-cy={'sort-by-name-button'}/>
       ),
       sortingFn: compareInLowercase,
       cell: ({row}) =>

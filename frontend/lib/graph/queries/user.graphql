@@ -30,11 +30,8 @@ query userAccountData ($id:  [ID!]!){
     }
 }
 
-query checkIfMailExists ($mail: [String!]!){
-    users(mail: $mail){
-        id
-        mail
-    }
+query checkIfMailExists ($mail: String!){
+    isMailInUse(mail: $mail)
 }
 
 query getUserIdByMail($mail: [String!]!) {
