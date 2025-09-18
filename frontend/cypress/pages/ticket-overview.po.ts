@@ -1,5 +1,6 @@
 import {TicketSortingField} from "@/app/tickets/page";
 import {TicketState} from "@/lib/graph/generated/graphql";
+import {string} from "zod";
 
 export function getTodaySuffixForCalendar () {
   const today = new Date();
@@ -20,6 +21,16 @@ export function getTodaySuffixForCalendar () {
         day % 10 === 3 && day !== 13 ? 'rd' : 'th';
 
   return formatted.replace(/\d+/, `${day}${suffix}`);
+}
+
+export function getTodayCalendarLabel() {
+  const today = new Date();
+
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = String(today.getFullYear()).slice(-2);
+
+  return `${day}.${month}.${year}`;
 }
 
 export function getDesktopSearchTextInput() {

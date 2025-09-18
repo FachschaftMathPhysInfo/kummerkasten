@@ -1,5 +1,6 @@
 import * as ticketPage from "../pages/ticket-overview.po";
 import {Label, Ticket, TicketState, UserRole} from "../../lib/graph/generated/graphql";
+import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "../pages/ticket-overview.po";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
@@ -231,14 +232,14 @@ roles.forEach(role => {
 
             it('start calendar should show selected date in button', () => {
               ticketPage.getDesktopCalendarStartButton().click()
-              cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
-              ticketPage.getDesktopCalendarStartButton().contains('17.09.25')
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+              ticketPage.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
             })
 
             it('start calendar should have a reset button', () => {
               ticketPage.getDesktopCalendarStartButton().click()
-              cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
-              ticketPage.getDesktopCalendarStartButton().contains('17.09.25')
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+              ticketPage.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
               ticketPage.getStartCalendarReset().click()
               ticketPage.getDesktopCalendarStartButton().contains('Start')
             })
@@ -246,9 +247,12 @@ roles.forEach(role => {
             it('show tickets created after start date if start date selected', () => {
               const startDate = new Date('2025-09-17T00:00:00.000Z');
               ticketPage.getDesktopCalendarStartButton().click()
-              cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
-              ticketPage.getDesktopCalendarStartButton().contains('17.09.25')
-              tickets.forEach((t) => {
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+              ticketPage.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
+              const visibleTickets = tickets.filter(
+                (t) => t.state === TicketState.New || t.state === TicketState.Open
+              );
+              visibleTickets.forEach((t) => {
                 const created = new Date(t.createdAt);
                 if (created >= startDate) {
                   ticketPage.getTicketCard(t.id).should('exist');
@@ -270,14 +274,14 @@ roles.forEach(role => {
 
             it('end calendar should show selected date in button', () => {
               ticketPage.getDesktopCalendarEndButton().click()
-              cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
-              ticketPage.getDesktopCalendarEndButton().contains('17.09.25')
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+              ticketPage.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
             })
 
             it('end calendar should have a reset button', () => {
               ticketPage.getDesktopCalendarEndButton().click()
-              cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
-              ticketPage.getDesktopCalendarEndButton().contains('17.09.25')
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+              ticketPage.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
               ticketPage.getEndCalendarReset().click()
               ticketPage.getDesktopCalendarEndButton().contains('Ende')
             })
@@ -285,9 +289,12 @@ roles.forEach(role => {
             it('show tickets created before end date if end date selected', () => {
               const endDate = new Date('2025-09-10T00:00:00.000Z');
               ticketPage.getDesktopCalendarEndButton().click()
-              cy.get('button[aria-label="Wednesday, September 10th, 2025"]').click();
-              ticketPage.getDesktopCalendarEndButton().contains('10.09.25')
-              tickets.forEach((t) => {
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+              ticketPage.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
+              const visibleTickets = tickets.filter(
+                (t) => t.state === TicketState.New || t.state === TicketState.Open
+              );
+              visibleTickets.forEach((t) => {
                 const created = new Date(t.createdAt);
                 if (created <= endDate) {
                   ticketPage.getTicketCard(t.id).should('exist');
@@ -409,9 +416,9 @@ roles.forEach(role => {
               ticketPage.getDesktopOverviewLabelFilterButton().click();
               ticketPage.getDesktopOverviewLabel(labels[0].id).parent().click();
               ticketPage.getDesktopCalendarStartButton().click();
-              cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
               ticketPage.getDesktopCalendarEndButton().click();
-              cy.get('button[aria-label="Wednesday, September 17th, 2025"]').click();
+              cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
 
               ticketPage.getDesktopOverviewResetFilters().should('be.visible').click();
               const visibleTickets = tickets.filter(
