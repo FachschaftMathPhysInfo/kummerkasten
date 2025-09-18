@@ -395,7 +395,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 			Model((*model.Session)(nil)).
 			Where("user_id = ?", originalUser.ID).
 			Exec(ctx); err != nil {
-			log.Printf("Failed to delete user sessions on logout: %v", err)
+			log.Printf("Failed to delete user sessions on critical data change: %v", err)
 			return "", fmt.Errorf("internal system error")
 		}
 
