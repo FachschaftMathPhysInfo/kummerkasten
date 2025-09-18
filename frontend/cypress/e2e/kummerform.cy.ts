@@ -21,53 +21,53 @@ describe("Kummerform Page", () => {
   context("page elements", () => {
     it("should load the kummerform page correctly", () => {
       kummerform.getAboutText().should("exist");
-      if (formLabels.length > 0) {
-        kummerform.getFormLabel(formLabels[0].id).should("exist");
-        kummerform.getFormLabelCheckbox(formLabels[0].id).should("exist");
-        kummerform.getFormLabelName(formLabels[0].id).should("exist");
+      for (let i = 0; i < formLabels.length; i++) {
+        kummerform.getFormLabel(formLabels[i].id).should("be.visible");
+        kummerform.getFormLabelCheckbox(formLabels[i].id).should("be.visible");
+        kummerform.getFormLabelName(formLabels[i].id).should("be.visible");
       }
       if (qaps.length > 0) {
-        kummerform.getQAPs(qaps[0].id).should("exist");
+        for (let i = 0; i < qaps.length; i++) {
+         kummerform.getQAPs(qaps[i].id).should("be.visible"); 
+        }
       } else {
-        kummerform.QAPEmpty().should("exist");
+        kummerform.QAPEmpty().should("be.visible");
       }
     });
 
     it("should display form inputs", () => {
-      kummerform.getTitleInput().should("exist");
-      kummerform.getTextInput().should("exist");
+      kummerform.getTitleInput().should("be.visible");
+      kummerform.getTextInput().should("be.visible");
     });
 
     it("should display buttons", () => {
-      if (formLabels.length > 0) {
-        kummerform.getFormLabelCheckbox(formLabels[0].id).should("exist");
+      for (let i = 0; i < formLabels.length; i++) {
+        kummerform.getFormLabelCheckbox(formLabels[0].id).should("be.visible").and('not.be.disabled');
       }
-      kummerform.getSendButton().should("exist").and("be.visible");
+      kummerform.getSendButton().should("be.visible").and('not.be.disabled');
+      kummerform.getThemeToggle().should("be.visible");
     });
+
+    it('should change theme', () => {
+          const lightModeRgb = 'rgb(255, 255, 255)'
+          const darkModeRgb = 'rgb(10, 10, 10)'
+    
+          cy.get('body')
+            .invoke('css', 'background-color')
+            .then((initialBg) => {
+              kummerform.getThemeToggle().click()
+    
+              cy.get('body')
+                .invoke('css', 'background-color')
+                .should((newBg) => {
+                  if (initialBg.toString() === lightModeRgb) expect(newBg).to.equal(darkModeRgb);
+                  else expect(newBg).to.equal(lightModeRgb);
+                });
+            });
+        });
   });
 
   context("send kummerform", () => {
-
-    it("shows the complete form", () => {
-      it("shows all formLabels correctly", () => {
-        if (formLabels.length > 0) {
-          kummerform.getAllFormLabels().should("contain.value");
-          for (let i = 0; i < formLabels.length; i++) {
-            kummerform.getFormLabel(formLabels[i].id).should("be.visible");
-            kummerform
-              .getFormLabelCheckbox(formLabels[i].id)
-              .should("be.visible");
-            kummerform.getFormLabelName(formLabels[i].id).should("be.visible");
-          }
-        }
-        //will be addressed in future issue
-        else kummerform.getFormLabel(formLabels[0].id).should("not.exist");
-      });
-
-      kummerform.getTitleInput().should("be.visible");
-      kummerform.getTextInput().should("be.visible");
-      kummerform.getSendButton().should("not.be.disabled");
-    });
 
     it("shows no error on empty form - no submit", () => {
       kummerform.getLabelsMessage().should("not.exist");
@@ -85,7 +85,7 @@ describe("Kummerform Page", () => {
     });
 
     it("shows error and disables submit on invalid submit - empty labels", () => {
-      kummerform.fillOutForm({ title: "testtitle", text: "testtext" });
+      kummerform.fillOutForm({title: "testtitle", text: "testtext"});
       kummerform.submit();
 
       kummerform.getLabelsMessage().should("be.visible").and("contain", "Bitte wähle mindestens ein Label aus.");
@@ -128,7 +128,18 @@ describe("Kummerform Page", () => {
       kummerform.getSendButton().should("not.be.disabled");
     });
 
-    it("should have sent a form with valid inputs", () => {
+    it ('does not allow text input size over 3000', () => {
+      kummerform.getTextInput().click();
+      kummerform.getTextInput().invoke('val', kummerformstrings.maxlength.stringoflength2985);
+      kummerform.getTextInput().type(kummerformstrings.maxlength.stringoflength30);
+      kummerform.getTextInput().invoke('val').then(value => {
+        expect(value).to.have.length(3000);
+      });
+
+      kummerform.getSendButton().should('not.be.disabled');
+    });
+
+    it("should have sent a ticket with valid inputs", () => {
       kummerform.fillOutForm({
         formLabelVal: [true, false, true, false],
         formLabelArray: formLabels,
@@ -136,15 +147,38 @@ describe("Kummerform Page", () => {
         text: "testtext",
       });
       kummerform.submit();
+      kummerform.getLabelsMessage().should("not.exist");
+      kummerform.getTitleMessage().should("not.exist");
+      kummerform.getTextMessage().should("not.exist");
 
       cy.login(users.admin.mail, users.admin.password);
       cy.visit("/tickets");
       kummerform.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("exist");
     });
 
+    it("should reset the form on valid inputs", () => {
+      kummerform.fillOutForm({
+        formLabelVal: [false, false, true, false],
+        formLabelArray: formLabels,
+        title: kummerformstrings.maxlength.testtitle,
+        text: "testtext",
+      });
+      kummerform.submit();
+
+      kummerform.getLabelsMessage().should("not.exist");
+      for (let i = 0; i < formLabels.length; i++) {
+        kummerform.getFormLabelCheckbox(formLabels[i].id).should("not.be.checked");
+      }
+      kummerform.getTitleMessage().should("not.exist");
+      kummerform.getTitleInputLength().should("have.length", 0);
+      kummerform.getTextMessage().should("not.exist");
+      kummerform.getTextInputLength().should("have.length", 0);
+      kummerform.getSendButton().should('not.be.disabled');
+    });
+
     after(() => {
-      cy.visit("/tickets");
       cy.deleteFormTickets(kummerformstrings.maxlength.testtitle);
+      cy.visit("/tickets");
       kummerform.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("not.exist");
     });
   });

@@ -34,7 +34,7 @@ export function getTitleInput() {
 }
 
 export function getTitleInputLength() {
-  return cy.get("[data-cy=kummerform-title-input]").invoke("val");
+  return getTitleInput().invoke("val");
 }
 
 export function getTitleMessage() {
@@ -46,7 +46,7 @@ export function getTextInput() {
 }
 
 export function getTextInputLength() {
-  return cy.get('[data-cy="kummerform-text-input"]').invoke("val");
+  return getTextInput().invoke("val");
 }
 
 export function getTextMessage() {
@@ -71,6 +71,10 @@ export function getQAPAnswer(id: string) {
 
 export function QAPEmpty() {
   return cy.get(`[data-cy=kummerform-faq-empty]`);
+}
+
+export function getThemeToggle() {
+  return cy.get("[data-cy=theme-toggle]");
 }
 
 export function fillOutForm(data: KummerFormData) {

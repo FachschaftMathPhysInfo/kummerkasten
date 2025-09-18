@@ -3,6 +3,7 @@
 // Add this to cypress/support/commands.js
 import * as sidebar from "../pages/sidebar.po"
 import {UpdateUser} from "@/lib/graph/generated/graphql";
+import * as users from "../fixtures/users.json"
 
 Cypress.Commands.add('login', (mail: string, password: string) => {
     cy.session([mail, password], () => {
@@ -201,6 +202,8 @@ Cypress.Commands.add("deleteFormTickets", (title: string): Cypress.Chainable<Cyp
         deleteTicket(ids: $ids)
       }
     `;
+
+    cy.login(users.cypress.mail, users.cypress.password);
 
     return cy.getAllTickets().then((tickets: any[]) => {
         const ticketsToDelete = tickets.filter((t) => t.originalTitle === title);
