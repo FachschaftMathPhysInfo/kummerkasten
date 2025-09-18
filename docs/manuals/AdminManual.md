@@ -1,5 +1,5 @@
 # Admin Handbuch
-> Dieses Handbuch richtet sich an Admins, damit sind Use rmit der Rolle 'Admin' und nicht System-Admins gemeint
+> Dieses Handbuch richtet sich an Admins, damit sind User mit der Rolle 'Admin' und nicht System-Admins gemeint
 
 ## User Verwaltung
 
@@ -22,6 +22,6 @@ Dies löscht den User sofort
 ## App Einstellungen
 
 ### Footer
-Hier könnt ihr die Links konfigurieren, die den Usern im Footer angezeigt wird
+Hier könnt ihr die Links konfigurieren, die den Usern im Footer angezeigt werden
 > Beachtet, dass es zwar eine grobe Validierung des URL Formats gibt, es jedoch in der Veranwortung der Admins ist,
 > dass die Links auch wirklich stimmen

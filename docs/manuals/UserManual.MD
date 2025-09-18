@@ -3,8 +3,8 @@
 >Dieses Handbuch richtet sich an User ohne Admin Rechte.
 
 ## Login
-Das Login-Interface findet ihr unter `domain.com/login` dort meldet man sich mit dem vom Administrator vergebenen E-Mail
-und Passwort an
+Das Login-Interface findet ihr unter `domain.com/login` dort meldet man sich mit den vom Administrator vergebenen E-Mail-
+und Passwort-Daten an
 
 ## Account-Einstellungen
 Sobald ihr euch eingeloggt habt, solltet ihr euer Passwort ändern. Navigiert dazu in die Account Einstellungen. Dies ist
@@ -13,7 +13,7 @@ auf zwei Wegen möglich:
 - Klickt auf "Account" in der Sidebar
 
 ## Tickets
-Unter `domain/tickets` findet ihr alle Tickets, die Filter unterstützen euch beim Suchen spezifischer Eingänge.
+Unter `domain/tickets` findet ihr alle Tickets, die Filter unterstützen euch beim Suchen spezifischer Einträge.
 
 ### Ticket Detail View
 Sobald ihr auf ein Ticket klickt, werdet ihr in der sog. Ticket-Detail-View landen. Hier könnt ihr folgende Anpassungen vornehmen:
@@ -30,17 +30,17 @@ Unter `domain/labels` könnt ihr Labels verwalten.
 
 ### Labels erstellen
 Labels können unabhängig von Groß- und Kleinschreibung nur einmal existieren, vesucht ihr ein Label nochmal zu erstellen,
-bzw. eine anderes zu aktualisieren. Wird ein Error erscheinen der euch davor warnt, dass ein Label mit diesem
+bzw. eine anderes zu aktualisieren, Wird ein Error erscheinen der euch davor warnt, dass ein Label mit diesem
 Namen schon existiert
 
 ### Labels bearbeiten
 Labels können bearbeitet werden in dem man auf das Stift-Icon klickt
 
 ### Labels löschen
-Intuitiverweise funktioniet dies über den Mülleimer Button. Eine bestätigung ist nötig
+Intuitiverweise funktioniet dies über den Mülleimer Button. Eine Bestätigung ist nötig
 
 ## FAQ Verwalten
-Wie ihr wahrscheinlich auf der Root-Seite(`domain.com`) gesehen habt, gibt es eine FAQ-Sektion unter dem Formular und eine
+Wie ihr wahrscheinlich auf der Root-Seite (`domain.com`) gesehen habt, gibt es eine FAQ-Sektion unter dem Formular und eine
 kleine Beschreibungsbox oben drüber. Beides kann unter `domain.com/faq` angepasst werden.
 
 ### About-Sektion 
