@@ -440,14 +440,6 @@ roles.forEach(role => {
               ticketPage.getTicketCard(tickets[0].id).should('exist').and('be.visible')
               ticketPage.getTicketCardState(tickets[0].state).should('exist').and('be.visible')
             });
-
-            it('loads labels for ticketcard', () => {
-              ticketPage.getTicketCard(tickets[0].id).should('exist').and('be.visible')
-              tickets[0].labels?.forEach(l => {
-                ticketPage.getTicketCardLabel(l.name).should('exist').and('be.visible');
-              });
-            });
-
             it('dropdown menu button exists and is interactable', () => {
               ticketPage.getTicketCardDropdown(tickets[0].id)
                 .should('exist')

@@ -179,11 +179,11 @@ export function getTicketCardDeleteButton(id: string) {
 }
 
 export function getTicketDeleteCancel() {
-  return cy.get('[data-cy="confirmation-cancel"]')
+  return cy.get('[data-cy="confirmation-dialog-cancel-button"]')
 }
 
 export function getTicketDeleteConfirm() {
-  return cy.get('[data-cy="confirmation-delete"]')
+  return cy.get('[data-cy="confirmation-dialog-confirm-button"]');
 }
 
 export function getClearLabels(){
