@@ -2,8 +2,9 @@
 
 // Add this to cypress/support/commands.js
 import * as sidebar from "../pages/sidebar.po"
-import {UpdateUser, UserRole} from "../../lib/graph/generated/graphql";
+import {NewLabel, UpdateUser, UserRole} from "../../lib/graph/generated/graphql";
 import * as users from "../fixtures/users.json"
+import {LabelDialogData} from "@/cypress/pages/labels/label-management.po";
 
 Cypress.Commands.add('login', (mail: string, password: string) => {
   cy.session([mail, password], () => {
@@ -220,6 +221,62 @@ Cypress.Commands.add("getFooterSettings", (): Cypress.Chainable<Record<string, s
     return settings;
   });
 });
+Cypress.Commands.add("deleteLabels", (names: string[]) => {
+  cy.loginAsRole(UserRole.Admin)
+  return cy.getAllLabels().then((labels: Array<{ id: string; name: string }>) => {
+    const idsToDelete = labels
+      .filter(label => names.includes(label.name))
+      .map(l => l.id);
+
+    if (!idsToDelete.length) {
+      return
+    }
+
+    const mutation = `
+      mutation deleteLabel($ids: [String!]!) {
+        deleteLabel(ids: $ids)
+      }
+    `;
+
+    cy.request({
+      method: "POST",
+      url: "/api",
+      headers: {"Content-Type": "application/json"},
+      body: {
+        query: mutation,
+        operationName: "deleteLabel",
+        variables: {ids: idsToDelete},
+      },
+    })
+  });
+});
+
+Cypress.Commands.add('createLabel', (data: LabelDialogData) => {
+  const newLabel: NewLabel = {
+    name: data.name,
+    color: data.color,
+    formLabel: data.public,
+  };
+
+  const mutation = `
+    mutation createLabel($label: NewLabel!) {
+      createLabel(label: $label) {
+        id
+      }
+    }
+  `;
+
+  cy.request({
+    method: "POST",
+    url: "/api",
+    headers: {"Content-Type": "application/json"},
+    body: {
+      query: mutation,
+      operationName: "createLabel",
+      variables: {label: newLabel},
+    },
+  })
+});
 
 
 declare global {
@@ -244,6 +301,10 @@ declare global {
       getAllLabels(): Chainable<any>;
 
       getFooterSettings(): Chainable<any>;
+
+      deleteLabels(name: string[]): Chainable<any>
+
+      createLabel(label: LabelDialogData): Chainable<any>
     }
   }
 }

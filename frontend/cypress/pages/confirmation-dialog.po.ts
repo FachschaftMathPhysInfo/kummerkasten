@@ -1,8 +1,12 @@
-export function getTitle() {
+export function getDialog() {
+  return cy.get('[data-cy=confirmation-dialog]')
+}
+
+export function getTitleText() {
   return cy.get('[data-cy="confirmation-dialog-title"]').invoke('text');
 }
 
-export function getDescription() {
+export function getDescriptionText() {
   return cy.get('[data-cy="confirmation-dialog-description"]').invoke('text');
 }
 

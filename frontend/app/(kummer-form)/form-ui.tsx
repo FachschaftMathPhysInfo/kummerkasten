@@ -131,7 +131,7 @@ export default function FormUi() {
                               key={label.id}
                             >
                               <FormControl>
-                                <div className={'flex items-center gap-2 mx-2'}>
+                                <div className={'flex items-center gap-2 mx-2'} data-cy={`label-${label.name}`}>
                                   <Checkbox
                                     className={cn("h-4 w-4 shrink-0 rounded-sm ring-offset-background focus-visible:outline-none focus-visible:border-2")}
                                     checked={field.value?.includes(label.name)}
@@ -142,12 +142,14 @@ export default function FormUi() {
                                           field.value?.filter((value) => value !== label.name)
                                         );
                                     }}
+                                    data-cy={'label-checkbox'}
                                   />
                                   <span
                                     className={cn(
                                       'capitalize',
                                       hasTriedToSubmit && form.formState.errors.labels && 'text-destructive'
                                     )}
+                                    data-cy={`label-name`}
                                   >
                                     {label.name}
                                   </span>

@@ -131,7 +131,7 @@ export default function LabelForm(props: LabelFormProps) {
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input
-                  data-cy={'label-name-input'}
+                  data-cy={'name-input'}
                   placeholder={props.originalLabel?.name ?? ""}
                   maxLength={50}
                   {...field}
@@ -140,7 +140,7 @@ export default function LabelForm(props: LabelFormProps) {
               </FormControl>
               <div className={'w-full flex justify-between'}>
                 <div>
-                  <FormMessage/>
+                  <FormMessage data-cy={'name-input-message'}/>
                 </div>
                 <div className={'text-xs text-muted-foreground'}>
                   {field.value.length} / {LabelMaxLength}
@@ -160,7 +160,7 @@ export default function LabelForm(props: LabelFormProps) {
                 <div className={'flex space-x-8 items-center'}>
                   <div className={'h-full min-h-9 aspect-square flex-shrink-0'}>
                     <input
-                      data-cy={'color-picker'}
+                      data-cy={'color-picker-input'}
                       type={"color"}
                       value={color}
                       onChange={e => {
@@ -182,10 +182,11 @@ export default function LabelForm(props: LabelFormProps) {
                       setColor(e.target.value.toUpperCase());
                       if (hasTriedToSubmit) void form.trigger('color')
                     }}
+                    data-cy={'color-input'}
                   />
                 </div>
               </FormControl>
-              <FormMessage data-cy={'label-color-message'}/>
+              <FormMessage data-cy={'color-input-message'}/>
             </FormItem>
           )}
         />
@@ -204,7 +205,7 @@ export default function LabelForm(props: LabelFormProps) {
                     onCheckedChange={checked =>
                       form.setValue('isFormLabel', checked as boolean)
                     }
-                    data-cy={'label-isFormLabel-checkbox'}
+                    data-cy={'public-checkbox'}
                   />
                 </FormControl>
               </div>
@@ -222,7 +223,7 @@ export default function LabelForm(props: LabelFormProps) {
 
         <div className={"flex justify-between items-center gap-x-12 mt-8"}>
           <Button
-            data-cy={'close-dialog-button'}
+            data-cy={'cancel-button'}
             onClick={props.closeDialog}
             variant={"outline"}
             type={"button"}
