@@ -2,7 +2,7 @@
 
 // Add this to cypress/support/commands.js
 import * as sidebar from "../pages/sidebar.po"
-import {TicketState, NewLabel, UpdateUser, UserRole} from "../../lib/graph/generated/graphql";
+import {NewLabel, TicketState, UpdateUser, UserRole} from "../../lib/graph/generated/graphql";
 import * as users from "../fixtures/users.json"
 import {LabelDialogData} from "@/cypress/pages/labels/label-management.po";
 
@@ -39,13 +39,6 @@ Cypress.Commands.add('logout', () => {
   cy.visit('/login');
 });
 
-Cypress.Commands.add('logout', () => {
-  sidebar.getLogout().click();
-  cy.clearAllCookies();
-  cy.visit('/login');
-});
-
-// cypress/support/commands.js
 Cypress.Commands.add("getUserIdByMail", (mail: string) => {
   const query = `
     query getUserIdByMail($mail: [String!]!) {
@@ -63,7 +56,6 @@ Cypress.Commands.add("getUserIdByMail", (mail: string) => {
     })
     .its("body.data.users[0].id") as Cypress.Chainable<string>;
 });
-
 
 Cypress.Commands.add("updateUserProfile", (id: string, user: UpdateUser) => {
   const mutation = `
@@ -93,34 +85,31 @@ Cypress.Commands.add("updateUserProfile", (id: string, user: UpdateUser) => {
   });
 });
 
-Cypress.Commands.add(
-  "updateUserPassword",
-  (id: string, newPassword: string): Cypress.Chainable<Cypress.Response<any>> => {
-    const mutation = `
+Cypress.Commands.add("updateUserPassword", (id: string, newPassword: string) => {
+  const mutation = `
       mutation updateUser($id: String!, $user: UpdateUser!) {
         updateUser(id: $id, user: $user)
       }
     `;
 
-    return cy.request({
-      method: "POST",
-      url: "http://localhost:8080/api",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: {
-        query: mutation,
-        variables: {
-          id,
-          user: {
-            password: newPassword,
-          },
+  return cy.request({
+    method: "POST",
+    url: "http://localhost:8080/api",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {
+      query: mutation,
+      variables: {
+        id,
+        user: {
+          password: newPassword,
         },
-        operationName: "updateUser",
       },
-    });
-  }
-);
+      operationName: "updateUser",
+    },
+  });
+});
 
 Cypress.Commands.add('deleteUser', (mail: string) => {
   cy.getUserIdByMail(mail).then((id) => {
@@ -178,6 +167,38 @@ Cypress.Commands.add("getAllTickets", (): Cypress.Chainable<any> => {
   }).its("body.data.tickets");
 });
 
+Cypress.Commands.add("getTicketsByStateNewOrOpen", (): Cypress.Chainable<any[]> => {
+  const query = `
+        query allTickets {
+            tickets {
+                id
+                originalTitle
+                title
+                text
+                note
+                state
+                createdAt
+                lastModified
+                labels {
+                    id
+                    name
+                    color
+                }
+            }
+        }
+    `;
+
+  return cy.request({
+    method: "POST",
+    url: "/api",
+    headers: {"Content-Type": "application/json"},
+    body: {query, operationName: "allTickets"},
+  }).then((response) => {
+    const tickets = response.body.data.tickets;
+    return tickets.filter((t: any) => t.state === TicketState.New || t.state === TicketState.Open);
+  });
+});
+
 Cypress.Commands.add("getAllLabels", (): Cypress.Chainable<any> => {
   const query = `
         query allLabels {
@@ -197,30 +218,33 @@ Cypress.Commands.add("getAllLabels", (): Cypress.Chainable<any> => {
   }).its("body.data.labels");
 });
 
-Cypress.Commands.add("getFooterSettings", (): Cypress.Chainable<Record<string, string>> => {
-  const query = `
-        query footerSettings {
-            footerSettings {
-                key
-                value
-            }
-        }
-    `;
+Cypress.Commands.add('createLabel', (data: LabelDialogData) => {
+  const newLabel: NewLabel = {
+    name: data.name,
+    color: data.color,
+    formLabel: data.public,
+  };
 
-  return cy.request({
+  const mutation = `
+    mutation createLabel($label: NewLabel!) {
+      createLabel(label: $label) {
+        id
+      }
+    }
+  `;
+
+  cy.request({
     method: "POST",
     url: "/api",
     headers: {"Content-Type": "application/json"},
-    body: {query, operationName: "footerSettings"},
-  }).then((res) => {
-    const data = res.body.data.footerSettings;
-    const settings: Record<string, string> = {};
-    data.forEach((s: any) => {
-      settings[s.key] = s.value;
-    });
-    return settings;
-  });
+    body: {
+      query: mutation,
+      operationName: "createLabel",
+      variables: {label: newLabel},
+    },
+  })
 });
+
 Cypress.Commands.add("deleteLabels", (names: string[]) => {
   cy.loginAsRole(UserRole.Admin)
   return cy.getAllLabels().then((labels: Array<{ id: string; name: string }>) => {
@@ -251,20 +275,21 @@ Cypress.Commands.add("deleteLabels", (names: string[]) => {
   });
 });
 
-Cypress.Commands.add('createLabel', (data: LabelDialogData) => {
-  const newLabel: NewLabel = {
-    name: data.name,
-    color: data.color,
-    formLabel: data.public,
-  };
+Cypress.Commands.add('getAboutText', () => {
+  const query = 'query aboutText {aboutSectionSettings { value }}';
 
-  const mutation = `
-    mutation createLabel($label: NewLabel!) {
-      createLabel(label: $label) {
-        id
-      }
-    }
-  `;
+  return cy.request({
+    method: "POST",
+    url: "/api",
+    headers: {"Content-Type": "application/json"},
+    body: { query, operationName: "aboutText" },
+  }).then((res) => {
+    return res.body.data.aboutSectionSettings[0].value;
+  });
+})
+
+Cypress.Commands.add('updateAboutText', (text: string) => {
+  const mutation = "mutation updateAboutText($text: String!) {updateAboutSectionText(text: $text)}"
 
   cy.request({
     method: "POST",
@@ -272,44 +297,36 @@ Cypress.Commands.add('createLabel', (data: LabelDialogData) => {
     headers: {"Content-Type": "application/json"},
     body: {
       query: mutation,
-      operationName: "createLabel",
-      variables: {label: newLabel},
+      operationName: "updateAboutText",
+      variables: {text: text},
     },
   })
-});
-Cypress.Commands.add("getTicketsByStateNewOrOpen", (): Cypress.Chainable<any[]> => {
-    const query = `
-        query allTickets {
-            tickets {
-                id
-                originalTitle
-                title
-                text
-                note
-                state
-                createdAt
-                lastModified
-                labels {
-                    id
-                    name
-                    color
-                }
+})
+
+Cypress.Commands.add("getFooterSettings", (): Cypress.Chainable<Record<string, string>> => {
+  const query = `
+        query footerSettings {
+            footerSettings {
+                key
+                value
             }
         }
     `;
 
-    return cy.request({
-        method: "POST",
-        url: "/api",
-        headers: { "Content-Type": "application/json" },
-        body: { query, operationName: "allTickets" },
-    }).then((response) => {
-        const tickets = response.body.data.tickets;
-        return tickets.filter((t: any) => t.state === TicketState.New || t.state === TicketState.Open);
+  return cy.request({
+    method: "POST",
+    url: "/api",
+    headers: {"Content-Type": "application/json"},
+    body: {query, operationName: "footerSettings"},
+  }).then((res) => {
+    const data = res.body.data.footerSettings;
+    const settings: Record<string, string> = {};
+    data.forEach((s: any) => {
+      settings[s.key] = s.value;
     });
+    return settings;
+  });
 });
-
-
 
 
 declare global {
@@ -331,15 +348,19 @@ declare global {
 
       getAllTickets(): Chainable<any>;
 
-      getAllLabels(): Chainable<any>;
-
       getTicketsByStateNewOrOpen(): Chainable<any>;
 
-      getFooterSettings(): Chainable<any>;
+      getAllLabels(): Chainable<any>;
+
+      createLabel(label: LabelDialogData): Chainable<any>
 
       deleteLabels(name: string[]): Chainable<any>
 
-      createLabel(label: LabelDialogData): Chainable<any>
+      getAboutText(): Chainable<string>
+
+      updateAboutText(text: string): Chainable<any>
+
+      getFooterSettings(): Chainable<any>;
     }
   }
 }
