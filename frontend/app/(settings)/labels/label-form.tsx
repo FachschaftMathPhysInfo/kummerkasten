@@ -71,10 +71,10 @@ export default function LabelForm(props: LabelFormProps) {
     setLoading(true)
 
     if (props.createMode) {
-      await createLabel(data.name, data.color, data.isFormLabel)
+      await createLabel(data.name.trim(), data.color, data.isFormLabel)
     } else {
       if (!props.originalLabel) return
-      await updateLabel(props.originalLabel?.id, data.name, data.color, data.isFormLabel)
+      await updateLabel(props.originalLabel.id, data.name.trim(), data.color, data.isFormLabel)
     }
 
     setLoading(false)

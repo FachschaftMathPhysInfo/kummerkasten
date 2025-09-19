@@ -194,7 +194,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	var labels []*models.Label
 
 	if err := r.DB.NewSelect().Model(&labels).
-		Where("LOWER(name) = ?", strings.ToLower(label.Name)).
+		Where("LOWER(TRIM(name)) = ?", strings.ToLower(strings.TrimSpace(label.Name))).
 		Scan(ctx); err != nil {
 		fmt.Printf("failed creating tickets, comparisong to existing label names failed: %v", err)
 		return nil, ErrInternal
@@ -274,7 +274,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 		var labels []*models.Label
 
 		if err := r.DB.NewSelect().Model(&labels).
-			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
+			Where("LOWER(TRIM(name)) = ?", strings.ToLower(strings.TrimSpace(*label.Name))).
 			Where("id != ?", dbLabel.ID).Scan(ctx); err != nil {
 			return "", ErrInternal
 		}
