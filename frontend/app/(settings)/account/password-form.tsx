@@ -81,10 +81,7 @@ export default function PasswordDataForm() {
 
     } catch (err) {
       if (String(err).includes('credentials')) {
-        passwordForm.reset();
-        passwordForm.setError("oldPassword", {
-          message: "Falsches aktuelles Passwort",
-        });
+        passwordForm.setError("oldPassword", {message: "Falsches aktuelles Passwort",});
       } else {
         toast.error("Fehler beim Aktualisieren der Daten");
       }
