@@ -18,7 +18,7 @@ import {useRouter} from "next/navigation"
 interface UserContextType {
   user: User | null;
   triggerUserRefetch: () => void;
-  login: (mail: string, password: string) => Promise<boolean>
+  login: (mail: string, password: string) => Promise<boolean| null>
   logout: () => Promise<void>;
 }
 
@@ -63,19 +63,25 @@ export function UserProvider({children}: { children: ReactNode }) {
     setRefetchKey(!refetchKey)
   }
 
-  const login = async (mail: string, password: string): Promise<boolean> => {
+  const login = async (mail: string, password: string): Promise<boolean | null> => {
     const client = getClient();
-    const response = await client.request<LoginQuery>(
-      LoginDocument,
-      {mail: mail, password: password}
-    )
+    try {
+      const response = await client.request<LoginQuery>(
+        LoginDocument,
+        {mail: mail, password: password}
+      )
 
-    if (response.login) {
-      await fetchSID()
-      return true
-    } else {
-      return false
+      if (response.login) {
+        await fetchSID()
+        return true
+      } else {
+        return false
+      }
+    } catch (err) {
+      if(String(err).includes("credentials")) return false
     }
+
+    return null
   }
 
   const logout = async () => {
