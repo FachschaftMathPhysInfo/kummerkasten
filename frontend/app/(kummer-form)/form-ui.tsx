@@ -134,7 +134,6 @@ export default function FormUi() {
                                 <div className={'flex items-center gap-2 mx-2'} data-cy={`label-${label.name}`}>
                                   <Checkbox
                                     className={cn("h-4 w-4 shrink-0 rounded-sm ring-offset-background focus-visible:outline-none focus-visible:border-2")}
-                                    data-cy={`kummerform-label-checkbox-${label.id}`}
                                     checked={field.value?.includes(label.name)}
                                     onCheckedChange={(checked) => {
                                       return checked
@@ -143,7 +142,7 @@ export default function FormUi() {
                                           field.value?.filter((value) => value !== label.name)
                                         );
                                     }}
-                                    data-cy={'label-checkbox'}
+                                    data-cy={`kummerform-label-checkbox-${label.id}`}
                                   />
                                   <span
                                     className={cn(

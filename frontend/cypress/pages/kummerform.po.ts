@@ -10,31 +10,23 @@ export function getAboutText() {
 }
 
 export function getAllFormLabels() {
-  return cy.get(`[data-cy="kummerform-labels"]`);
+  return cy.get(`[data-cy="kummerform-labels"]`); //
 }
 
 export function getLabels() {
-  return cy.get('[data-cy^=label-]')
+  return cy.get('[data-cy^=label-]') //
 }
 
 export function getLabelsMessage() {
-  return cy.get("[data-cy=kummerform-labels-message]");
-}
-
-export function getFormLabel(id: string) {
-  return cy.get(`[data-cy="kummerform-label-${id}"]`);
+  return cy.get("[data-cy=kummerform-labels-message]"); //
 }
 
 export function getFormLabelCheckbox(id: string) {
-  return cy.get(`[data-cy="kummerform-label-checkbox-${id}"]`);
-}
-
-export function getFormLabelName(id: string) {
-  return cy.get(`[data-cy="kummerform-label-name-${id}"]`);
+  return cy.get(`[data-cy="kummerform-label-checkbox-${id}"]`); //--
 }
 
 export function getTitleInput() {
-  return cy.get("[data-cy=kummerform-title-input]");
+  return cy.get("[data-cy=kummerform-title-input]"); //
 }
 
 export function getTitleInputLength() {
@@ -42,11 +34,11 @@ export function getTitleInputLength() {
 }
 
 export function getTitleMessage() {
-  return cy.get("[data-cy=kummerform-title-message]");
+  return cy.get("[data-cy=kummerform-title-message]"); //
 }
 
 export function getTextInput() {
-  return cy.get('[data-cy="kummerform-text-input"]');
+  return cy.get('[data-cy="kummerform-text-input"]'); //
 }
 
 export function getTextInputLength() {
@@ -54,27 +46,27 @@ export function getTextInputLength() {
 }
 
 export function getTextMessage() {
-  return cy.get("[data-cy=kummerform-text-message]");
+  return cy.get("[data-cy=kummerform-text-message]"); //
 }
 
 export function getSendButton() {
-  return cy.get(`[data-cy="kummerform-send"]`);
+  return cy.get(`[data-cy="kummerform-send"]`); //
 }
 
 export function getQAPs(id: string) {
-  return cy.get(`[data-cy="kummerform-faq-${id}"]`);
+  return cy.get(`[data-cy="kummerform-faq-${id}"]`); //
 }
 
 export function getQAPQuestion(id: string) {
-  return cy.get(`[data-cy="kummerform-faq-question${id}"]`);
+  return cy.get(`[data-cy="kummerform-faq-question${id}"]`); //
 }
 
 export function getQAPAnswer(id: string) {
-  return cy.get(`[data-cy="kummerform-faq-answer${id}"]`);
+  return cy.get(`[data-cy="kummerform-faq-answer${id}"]`); //
 }
 
 export function QAPEmpty() {
-  return cy.get(`[data-cy=kummerform-faq-empty]`);
+  return cy.get(`[data-cy=kummerform-faq-empty]`); //
 }
 
 export function getThemeToggle() {
@@ -97,12 +89,12 @@ export function fillOutForm(data: KummerFormData) {
   if (data.text) {
     getTextInput().type(data.text);
   }
-}
-//will propably be obsolete after #288
+} //
+
 export function checkTicketExistence(title: string) {
-  return cy.get(`[data-cy="ticket-card-title-${title}"]`);
+  return cy.get(`[data-cy="ticket-card-title-${title}"]`); //
 }
 
 export function submit() {
   getSendButton().click();
-}
+} //

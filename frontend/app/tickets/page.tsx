@@ -16,9 +16,9 @@ import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
 import MobileFilterSheet from "@/app/tickets/mobile-filter-sheet";
 import FilterBar from "@/components/filter-bar";
-import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
+import {getFilteredTickets, getSortedTickets, getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
-import {getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
+
 
 
 export type TicketDialogState = {

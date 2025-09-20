@@ -22,10 +22,10 @@ describe("Kummerform Page", () => {
     it("should load the kummerform page correctly", () => {
       kummerform.getAboutText().should("exist");
       for (let i = 0; i < formLabels.length; i++) {
-        kummerform.getFormLabel(formLabels[i].id).should("be.visible");
         kummerform.getFormLabelCheckbox(formLabels[i].id).should("be.visible");
-        kummerform.getFormLabelName(formLabels[i].id).should("be.visible");
+        kummerform.getLabels().contains(formLabels[i].name).should("be.visible");
       }
+      
       if (qaps.length > 0) {
         for (let i = 0; i < qaps.length; i++) {
          kummerform.getQAPs(qaps[i].id).should("be.visible"); 
@@ -129,13 +129,8 @@ describe("Kummerform Page", () => {
     });
 
     it ('does not allow text input size over 3000', () => {
-      kummerform.getTextInput().click();
-      kummerform.getTextInput().invoke('val', kummerformstrings.maxlength.stringoflength2985);
-      kummerform.getTextInput().type(kummerformstrings.maxlength.stringoflength30);
-      kummerform.getTextInput().invoke('val').then(value => {
-        expect(value).to.have.length(3000);
-      });
-
+      kummerform.getTextInput().type(kummerformstrings.maxlength.text, {delay: 0});
+      kummerform.getTextInputLength().should("have.length", 3000);
       kummerform.getSendButton().should('not.be.disabled');
     });
 
