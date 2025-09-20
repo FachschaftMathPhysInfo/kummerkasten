@@ -142,12 +142,13 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
               </FormLabel>
               <FormControl>
                 <Input
-                  type="number"
+                  type="text"
                   {...field}
-                  value={field.value + 1}
+                  value={Number.isNaN(field.value) ? "" : field.value + 1}
                   onChange={e => {
-                    if (Number.isNaN(parseInt(e.target.value))) field.onChange(0)
-                    else field.onChange(parseInt(e.target.value) - 1)
+                    const val = e.target.value
+                    if(Number.isNaN(val)) field.onChange("")
+                    else field.onChange(parseInt(val) - 1)
                   }}
                 />
               </FormControl>
