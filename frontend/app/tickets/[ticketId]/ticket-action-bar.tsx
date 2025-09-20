@@ -24,7 +24,7 @@ export default function TicketActionsBar(props: TicketActionsBarProps) {
           mode: "update",
           currentTicket: props.ticket
         })}
-        data-cy="edit-ticket"
+        data-cy="edit-ticket-statusbar"
       >
         <Edit2/>
       </Button>

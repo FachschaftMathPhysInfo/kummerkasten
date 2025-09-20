@@ -74,36 +74,39 @@ export default function TicketDetailView({
         isMobile && 'min-h-[calc(100vh-2.5rem-28px)]'
       )}
     >
-        {!isMobile ? (
-          <div className={'w-full justify-between flex items-center gap-4'}>
-            {editMode ? (
-              <Input
-                autoFocus
-                onKeyDown={(e) =>
-                  e.key === "Enter" && handleTitleChange()
-                }
-                type="text"
-                className={'bg-primary border-none !text-4xl !py-6'}
-                maxLength={MAX_TITLE_LENGTH}
-                placeholder={ticket?.title}
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-              />
-            ) : (
-              <h1
-                className="text-4xl font-semibold text-wrap whitespace-nowrap truncate"
-                title={"Original Titel: " + ticket.originalTitle}
-              >
-                {ticket.title}
-              </h1>
-            )}
+      {!isMobile ? (
+        <div className={'w-full justify-between flex items-center gap-4'}>
+          {editMode ? (
+            <Input
+              autoFocus
+              onKeyDown={(e) =>
+                e.key === "Enter" && handleTitleChange()
+              }
+              type="text"
+              className={'bg-primary border-none !text-4xl !py-6'}
+              maxLength={MAX_TITLE_LENGTH}
+              placeholder={ticket?.title}
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              data-cy={'ticket-detail-title-input'}
+            />
+          ) : (
+            <h1
+              className="text-4xl font-semibold text-wrap whitespace-nowrap truncate"
+              title={"Original Titel: " + ticket.originalTitle}
+              data-cy={'ticket-detail-title'}
+            >
+              {ticket.title}
+            </h1>
+          )}
 
-            <span>
+          <span>
             {editMode ? (
               <span className={'flex items-center gap-2'}>
                 <Button
                   variant={'secondary'}
                   onClick={() => setEditMode(false)}
+                  data-cy={'ticket-detail-title-cancel'}
                 >
                   Cancel
                 </Button>
@@ -112,19 +115,20 @@ export default function TicketDetailView({
                   variant={'secondary'}
                   onClick={handleTitleChange}
                   className={'bg-accent hover:bg-accent/60'}
+                  data-cy={'ticket-detail-title-save'}
                 >
                   <Save/>
                   Speichern
                 </Button>
               </span>
             ) : (
-              <Button variant={'secondary'} onClick={() => setEditMode(true)}>Edit</Button>
+              <Button variant={'secondary'} onClick={() => setEditMode(true)}
+                      data-cy={'ticket-detail-title-edit'}>Edit</Button>
             )}
           </span>
-
-          </div>
-        ) : (
-          <span className="flex items-center justify-between gap-2">
+        </div>
+      ) : (
+        <span className="flex items-center justify-between gap-2">
             <h1
               className="text-2xl font-semibold text-wrap whitespace-nowrap"
               title={"Originaltitel: " + ticket.originalTitle}
@@ -137,20 +141,20 @@ export default function TicketDetailView({
               setDialogStateAction={setDialogStateAction}
             />
           </span>
+      )}
+
+      <div className={'w-full my-4 h-[1px] bg-border'}></div>
+
+      <div className="flex justify-between h-full grow">
+        <p>{ticket.text}</p>
+        {!isMobile && (
+          <TicketInfoPane
+            ticket={ticket}
+            initialTicketLabels={ticketLabels}
+            setDialogStateAction={setDialogStateAction}
+          />
         )}
-
-        <div className={'w-full my-4 h-[1px] bg-border'}></div>
-
-        <div className="flex justify-between h-full grow">
-          <p>{ticket.text}</p>
-          {!isMobile && (
-            <TicketInfoPane
-              ticket={ticket}
-              initialTicketLabels={ticketLabels}
-              setDialogStateAction={setDialogStateAction}
-            />
-          )}
-        </div>
+      </div>
     </div>
   );
 }
