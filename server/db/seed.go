@@ -68,7 +68,34 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Name:  "soziales",
 			Color: "#6a4770",
 		},
-	}
+        {
+            Name: "mathematikon",
+            Color: "#797596",
+        },
+        {
+            Name: "PAP",
+            Color: "#A1869E",
+        },
+        {
+            Name: "Vorkurs",
+            Color: "#684A52",
+        },
+        {
+            Name: "Bachelorarbeit",
+            Color: "#87A0B2",
+        },
+        {
+            Name: "Seminar",
+            Color: "#A4BEF3",
+        },
+        {
+            Name: "Mittagspause",
+            Color: "#4E8098",
+        },
+        {
+            Name: "Laptop",
+            Color: "#B6CB9E",
+        }}
 
 	if err := insertData(ctx, db, (*models.Label)(nil), labels, "Labels"); err != nil {
 		return err
