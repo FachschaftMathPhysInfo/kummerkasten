@@ -23,24 +23,18 @@ import {getClient} from "@/lib/graph/client";
 import {
   DeleteQuestionAnswerPairDocument,
   DeleteQuestionAnswerPairMutation,
-  QuestionAnswerPair,
-  UpdateQuestionAnswerPairOrderDocument,
-  UpdateQuestionAnswerPairOrderMutation,
+  QuestionAnswerPair, UpdateQuestionAnswerPairDocument,
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 
 import {DndProvider, useDrag, useDrop} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import QAPColumns from "@/app/(settings)/faq/faq-columns";
+import {useQAPs} from "@/components/providers/qap-provider";
 
 export interface QAPTableDialogState {
   mode: "create" | "update" | "delete" | null;
   currentQAP: QuestionAnswerPair | null;
-}
-
-interface QAPTableProps {
-  data: QuestionAnswerPair[];
-  refreshData: () => void;
 }
 
 type QAPColumnDef<TData> = ColumnDef<TData> & {
@@ -55,11 +49,11 @@ interface DragItem {
 const DndTableRow = ({
                        row,
                        moveRow,
-                       saveOrder,
+                       savePosition,
                      }: {
   row: TanStackRow<QuestionAnswerPair>;
   moveRow: (draggedId: string, toIndex: number) => void;
-  saveOrder: (draggedId: string, newIndex: number) => void;
+  savePosition: (draggedId: string, newIndex: number) => void;
 }) => {
   const {original} = row;
   const dropRef = useRef<HTMLTableRowElement | null>(null);
@@ -91,7 +85,7 @@ const DndTableRow = ({
     }),
     end: (item, monitor) => {
       if (!monitor.didDrop()) return;
-      saveOrder(item.id, item.index);
+      savePosition(item.id, item.index);
     },
   });
 
@@ -127,12 +121,13 @@ const DndTableRow = ({
   );
 };
 
-export function QAPTable({data, refreshData}: QAPTableProps) {
+export function QAPTable() {
   const [dialogState, setDialogState] = useState<QAPTableDialogState>({mode: null, currentQAP: null});
   const [searchTerm, setSearchTerm] = useState("");
+  const {qaps, triggerQAPRefetch} = useQAPs()
 
-  const [localData, setLocalData] = useState<QuestionAnswerPair[]>(() => [...data].sort((a, b) => a.order - b.order));
-  useEffect(() => setLocalData([...data].sort((a, b) => a.order - b.order)), [data]);
+  const [localData, setLocalData] = useState<QuestionAnswerPair[]>(() => [...qaps].sort((a, b) => a.position - b.position));
+  useEffect(() => setLocalData([...qaps].sort((a, b) => a.position - b.position)), [qaps]);
 
   const filteredData = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -161,7 +156,7 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
     try {
       await client.request<DeleteQuestionAnswerPairMutation>(DeleteQuestionAnswerPairDocument, {ids: [id]});
       resetDialogState();
-      refreshData();
+      triggerQAPRefetch();
     } catch {
       toast.error("Fehler beim Löschen der Frage.");
     }
@@ -178,17 +173,15 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
     });
   }, []);
 
-  const saveOrder = useCallback(async (draggedId: string, newOrder: number) => {
+  const savePosition = useCallback(async (draggedId: string, newPosition: number) => {
     try {
-      await client.request<UpdateQuestionAnswerPairOrderMutation>(UpdateQuestionAnswerPairOrderDocument, {
-        qaps: [{id: draggedId, order: newOrder}],
-      });
-      refreshData();
+      await client.request(UpdateQuestionAnswerPairDocument, {id: draggedId, questionAnswerPair: {position: newPosition}});
     } catch {
       toast.error("Fehler beim Sortieren der FAQ aufgetreten.");
-      refreshData();
     }
-  }, [client, refreshData]);
+
+    triggerQAPRefetch()
+  }, [client, triggerQAPRefetch]);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -229,7 +222,7 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
             <TableBody>
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <DndTableRow key={row.id} row={row} moveRow={moveRow} saveOrder={saveOrder}/>
+                  <DndTableRow key={row.id} row={row} moveRow={moveRow} savePosition={savePosition}/>
                 ))
               ) : (
                 <TableRow>
@@ -242,27 +235,20 @@ export function QAPTable({data, refreshData}: QAPTableProps) {
           </Table>
         </div>
 
-        {(dialogState.mode === "create" || dialogState.mode === "update") && (
-          <QAPDialog
-            open={true}
-            createMode={dialogState.mode === "create"}
-            qap={dialogState.currentQAP}
-            closeDialog={resetDialogState}
-            refreshData={refreshData}
-            maxOrder={localData.length > 0 ? Math.max(...localData.map(q => q.order)) : -1}
-            uniqueQuestion={localData.map((q) => q.question)}
-          />
-        )}
+        <QAPDialog
+          open={dialogState.mode === "create" || dialogState.mode === "update"}
+          createMode={dialogState.mode === "create"}
+          qap={dialogState.currentQAP}
+          closeDialog={resetDialogState}
+        />
 
-        {dialogState.mode === "delete" && dialogState.currentQAP && (
-          <ConfirmationDialog
-            mode="confirmation"
-            description={`Dies wird die Frage "${dialogState.currentQAP.question}" unwiderruflich löschen.`}
-            onConfirm={() => deleteQAP(dialogState.currentQAP!.id)}
-            isOpen={true}
-            closeDialog={resetDialogState}
-          />
-        )}
+        <ConfirmationDialog
+          mode="confirmation"
+          description={`Dies wird die Frage "${dialogState.currentQAP?.question}" unwiderruflich löschen.`}
+          onConfirm={() => deleteQAP(dialogState.currentQAP!.id)}
+          isOpen={dialogState.mode === "delete"}
+          closeDialog={resetDialogState}
+        />
       </div>
     </DndProvider>
   );

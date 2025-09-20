@@ -3,6 +3,6 @@ query allQuestionAnswerPair{
         question
         answer
         id
-        order
+        position
     }
 }

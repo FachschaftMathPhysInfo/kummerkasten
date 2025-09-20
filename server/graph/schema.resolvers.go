@@ -682,11 +682,12 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 
 // CreateQuestionAnswerPair is the resolver for the createQuestionAnswerPair field.
 func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
-	var maxOrder sql.NullInt32
+	var maxPosition sql.NullInt32
+	var newPosition int32
 	var questionExists bool
 
 	questionExists, err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
-		Where("LOWER(question) = LOWER(?)", questionAnswerPair.Question).
+		Where("LOWER(TRIM(question)) = LOWER(?)", strings.TrimSpace(questionAnswerPair.Question)).
 		Exists(ctx)
 
 	if err != nil {
@@ -695,26 +696,62 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 	}
 
 	if questionExists {
-		log.Printf("This question already exists: %v", err)
+		log.Print("failed to create question, it already exists")
 		return nil, fmt.Errorf("this question already exists")
 	}
 
 	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
-		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
+		ColumnExpr(`MAX("position")`).Scan(ctx, &maxPosition)
 	if err != nil {
-		log.Printf("Failed to get max order for QuestionAnswerPair: %v", err)
+		log.Printf("Failed to get max position for QuestionAnswerPair: %v", err)
 		return nil, ErrInternal
+	}
+
+	if maxPosition.Valid {
+		newPosition = maxPosition.Int32 + 1
+	} else {
+		newPosition = 0
 	}
 
 	createdQuestionAnswerPair := &model.QuestionAnswerPair{
 		ID:       uuid.New().String(),
 		Question: questionAnswerPair.Question,
 		Answer:   questionAnswerPair.Answer,
-		Order:    maxOrder.Int32 + 1,
+		Position: newPosition,
 	}
 
-	if !maxOrder.Valid {
-		createdQuestionAnswerPair.Order = 0
+	if questionAnswerPair.Position != nil {
+		if *questionAnswerPair.Position < 0 {
+			log.Print("questionAnswerPair was not created as position was < 0")
+			return nil, fmt.Errorf("position must be > 0")
+		} else if *questionAnswerPair.Position > newPosition {
+			createdQuestionAnswerPair.Position = newPosition
+		} else {
+			createdQuestionAnswerPair.Position = *questionAnswerPair.Position
+		}
+
+		if createdQuestionAnswerPair.Position > 0 && createdQuestionAnswerPair.Position < newPosition {
+			var qaps []*model.QuestionAnswerPair
+			if err := r.DB.NewSelect().
+				Model(&qaps).
+				Where("position >= ?", createdQuestionAnswerPair.Position).
+				Order("position DESC").
+				Scan(ctx); err != nil {
+				log.Printf("failed to select qaps: %v", err)
+				return nil, ErrInternal
+			}
+
+			for _, q := range qaps {
+				if _, err := r.DB.NewUpdate().
+					Model(q).
+					Set(`"position" = "position" + 1`).
+					Where("id = ?", q.ID).
+					Exec(ctx); err != nil {
+					log.Printf("failed to bump qap %d: %v", q.ID, err)
+					return nil, ErrInternal
+				}
+			}
+		}
 	}
 
 	if _, err := r.DB.NewInsert().Model(createdQuestionAnswerPair).Exec(ctx); err != nil {
@@ -727,11 +764,11 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 
 // DeleteQuestionAnswerPair is the resolver for the deleteQuestionAnswerPair field.
 func (r *mutationResolver) DeleteQuestionAnswerPair(ctx context.Context, ids []string) (int32, error) {
-	var orders []int
+	var positions []int
 	err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
-		Column("order").Where("id IN (?)", bun.In(ids)).Scan(ctx, &orders)
+		Column("position").Where("id IN (?)", bun.In(ids)).Scan(ctx, &positions)
 	if err != nil {
-		log.Printf("Failed to fetch order: %v", err)
+		log.Printf("Failed to fetch position: %v", err)
 		return 0, ErrInternal
 	}
 
@@ -742,29 +779,29 @@ func (r *mutationResolver) DeleteQuestionAnswerPair(ctx context.Context, ids []s
 		return 0, ErrInternal
 	}
 
-	minDeletedOrder := orders[0]
-	maxDeletedOrder := orders[0]
-	for _, o := range orders {
-		if o < minDeletedOrder {
-			minDeletedOrder = o
+	minDeletedPosition := positions[0]
+	maxDeletedPosition := positions[0]
+	for _, o := range positions {
+		if o < minDeletedPosition {
+			minDeletedPosition = o
 		}
-		if o > maxDeletedOrder {
-			maxDeletedOrder = o
+		if o > maxDeletedPosition {
+			maxDeletedPosition = o
 		}
 	}
 
-	var maxOrder int
+	var maxPosition int
 	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
-		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
+		ColumnExpr(`MAX("position")`).Scan(ctx, &maxPosition)
 	if err != nil {
 		return 0, ErrInternal
 	}
 
-	for i := minDeletedOrder + 1; i <= maxOrder+1; i++ {
+	for i := minDeletedPosition + 1; i <= maxPosition+1; i++ {
 		_, err := r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
-			Set(`"order" = ?`, i-1).Where(`"order" = ?`, i).Exec(ctx)
+			Set(`"position" = ?`, i-1).Where(`"position" = ?`, i).Exec(ctx)
 		if err != nil {
-			log.Printf("Failed to shift QuestionAnswerPair order %d -> %d: %v", i, i-1, err)
+			log.Printf("Failed to shift QuestionAnswerPair position %d -> %d: %v", i, i-1, err)
 			return 0, ErrInternal
 		}
 	}
@@ -794,6 +831,59 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	if questionAnswerPair.Answer != nil {
 		qAP.Answer = *questionAnswerPair.Answer
 	}
+	if questionAnswerPair.Position != nil {
+		var maxPositionNullable sql.NullInt32
+		var maxPosition int32
+
+		err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
+			ColumnExpr(`MAX("position")`).
+			Scan(ctx, &maxPositionNullable)
+
+		if err != nil {
+			log.Printf("Failed to fetch max position: %v", err)
+			return "", ErrInternal
+		}
+
+		if maxPositionNullable.Valid {
+			maxPosition = maxPositionNullable.Int32
+		} else {
+			maxPosition = 0
+		}
+
+		pos := *questionAnswerPair.Position
+
+		if pos < 0 {
+			log.Print("questionAnswerPair was not created as position was < 0")
+			return "", fmt.Errorf("position must be > 0")
+		} else if pos > maxPosition {
+			qAP.Position = maxPosition
+		} else {
+			qAP.Position = pos
+		}
+
+		if pos > 0 && pos < maxPosition {
+			var qaps []*model.QuestionAnswerPair
+			if err := r.DB.NewSelect().
+				Model(&qaps).
+				Where("position >= ?", pos).
+				Order("position DESC").
+				Scan(ctx); err != nil {
+				log.Printf("failed to select qaps: %v", err)
+				return "", ErrInternal
+			}
+
+			for _, q := range qaps {
+				if _, err := r.DB.NewUpdate().
+					Model(q).
+					Set(`"position" = "position" + 1`).
+					Where("id = ?", q.ID).
+					Exec(ctx); err != nil {
+					log.Printf("failed to bump qap %d: %v", q.ID, err)
+					return "", ErrInternal
+				}
+			}
+		}
+	}
 
 	if _, err := r.DB.NewUpdate().Model(qAP).
 		Where("id = ?", id).
@@ -803,70 +893,6 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	}
 
 	return qAP.ID, nil
-}
-
-// UpdateQuestionAnswerPairOrder is the resolver for the UpdateQuestionAnswerPairOrder field.
-func (r *mutationResolver) UpdateQuestionAnswerPairOrder(ctx context.Context, qaps []*model.UpdateQuestionAnswerPairOrder) (int32, error) {
-	qap := qaps[0]
-
-	var maxOrder int32
-	err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
-		ColumnExpr(`MAX("order")`).Scan(ctx, &maxOrder)
-	if err != nil {
-		return 0, ErrInternal
-	}
-
-	var currentOrder int
-	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
-		Column("order").Where("id = ?", qap.ID).Scan(ctx, &currentOrder)
-	if err != nil {
-		return 0, ErrInternal
-	}
-
-	if qap.Order > maxOrder {
-		qap.Order = maxOrder
-	}
-
-	_, err = r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
-		Set(`"order" = ?`, -1).Where("id = ?", qap.ID).Exec(ctx)
-	if err != nil {
-		return 0, ErrInternal
-	}
-
-	if qap.Order < int32(currentOrder) {
-		for i := currentOrder - 1; i >= int(qap.Order); i-- {
-			_, err := r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
-				Set(`"order" = ?`, i+1).Where(`"order" = ?`, i).Exec(ctx)
-			if err != nil {
-				log.Printf("Failed to shift QuestionAnswerPairs order up %d -> %d: %v", i, i+1, err)
-				return 0, ErrInternal
-			}
-		}
-	} else if qap.Order > int32(currentOrder) {
-		for i := currentOrder + 1; i <= int(qap.Order); i++ {
-			_, err := r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
-				Set(`"order" = ?`, i-1).Where(`"order" = ?`, i).Exec(ctx)
-			if err != nil {
-				log.Printf("Failed to shift QuestionAnswerPairs order down %d -> %d: %v", i, i-1, err)
-				return 0, ErrInternal
-			}
-		}
-	}
-
-	result, err := r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
-		Set(`"order" = ?`, int(qap.Order)).Where("id = ?", qap.ID).Exec(ctx)
-	if err != nil {
-		log.Printf("Failed to update QuestionAnswerPair order for ID %s: %v", qap.ID, err)
-		return 0, ErrInternal
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		log.Printf("Failed to read affected rows: %v", err)
-		return 0, fmt.Errorf("update was successful, but counting failed")
-	}
-
-	return int32(rowsAffected), nil
 }
 
 // Tickets is the resolver for the tickets field.
@@ -1200,7 +1226,7 @@ func (r *queryResolver) QuestionAnswerPairs(ctx context.Context, ids []string) (
 		query = query.Where("id IN (?)", bun.In(ids))
 	}
 
-	query = query.Order("question_answer_pair.order ASC")
+	query = query.Order("question_answer_pair.position ASC")
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get QuestionAnswerPairs: %v", err)
