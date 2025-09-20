@@ -1,5 +1,5 @@
-import users from "../fixtures/users.json";
-import * as ticketDetail from "../pages/ticket-detail.po";
+import users from "../../fixtures/users.json";
+import * as ticketDetail from "../../pages/tickets/ticket-detail.po";
 
 describe('Ticket Detail / Status Bar', () => {
     const currentCorrectMail = users.cypress.mail;
