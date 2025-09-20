@@ -1,73 +1,42 @@
 "use client"
 
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Card, CardTitle} from "@/components/ui/card";
-import {
-  Label,
-  Ticket,
-  TicketsByIdsDocument,
-  TicketsByIdsQuery,
-  TicketState,
-  UserRole
-} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketState, UserRole} from "@/lib/graph/generated/graphql";
 import {Link, MoreHorizontal, MoreVertical, Trash2} from "lucide-react";
 import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
-import {getClient} from "@/lib/graph/client";
 import {TicketDialogState} from "@/app/tickets/page";
 import {toast} from "sonner";
 import {format} from "date-fns";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {cn} from "@/lib/utils";
-import {getTicketStateColor} from "@/lib/ticketstate-colour";
 import {useUser} from "@/components/providers/user-provider";
+import {getTicketStateColor} from "@/lib/ticket-operations";
+import LabelBadge from "@/components/label-badge";
+import {useSidebar} from "@/components/ui/sidebar";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 
-type TicketProps = {
+type TicketCardProps = {
   ticketID: string
   setDialogStateAction: React.Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-function useIsMobile(breakpoint = 380) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const update = () => setIsMobile(window.innerWidth < breakpoint);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [breakpoint]);
-  return isMobile;
-}
 
-const client = getClient();
-
-export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
-  const isMobile = useIsMobile();
+export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
+  const {isMobile} = useSidebar()
   const {user} = useUser();
+  const {tickets} = useTickets();
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
-  const [ticketStateColour, setTicketStateColour] = useState("#000");
 
-  const fetchTicketData = useCallback(async () => {
-    const data = await client.request<TicketsByIdsQuery>(TicketsByIdsDocument, {id: ticketID});
-    const ticketData = data?.tickets?.[0];
-    const labels = ticketData?.labels;
-    if (ticketData) {
-      setTicket(ticketData);
-      setTicketLabels(labels ?? []);
-      setTicketStateColour(getTicketStateColor(ticketData.state));
-    }
-  }, [ticketID]);
 
   useEffect(() => {
-    void fetchTicketData();
-  }, [fetchTicketData]);
-
-  useEffect(() => {
-    if (ticket?.state) {
-      setTicketStateColour(getTicketStateColor(ticket.state));
-    }
-  }, [ticket?.state]);
+    const currentTicket = tickets.find(t => t.id === ticketID);
+    setTicket(currentTicket);
+    setTicketLabels(currentTicket?.labels ?? [])
+  }, [ticketID, tickets]);
 
   const copyTicketUrl = async () => {
     try {
@@ -84,81 +53,90 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketProps) {
 
   return (
     <Card className="w-full p-3">
-      <CardTitle className="flex flex-col ml-2 justify-between">
-        <div className="flex justify-between items-center w-full">
+      <CardTitle className="flex items-center justify-between gap-12 max-w-full">
+        <div className={'flex items-center gap-4'}>
           <Badge
             className={cn(
-              "absolute left-11 md:relative md:left-0",
-              ticket?.state === TicketState.New && "bg-ticketstate-new",
-              ticket?.state === TicketState.Open && "bg-ticketstate-open",
-              ticket?.state === TicketState.Closed && "bg-ticketstate-closed"
+              "min-w-[50px]",
+              ticket.state === TicketState.New && "bg-ticketstate-new",
+              ticket.state === TicketState.Open && "bg-ticketstate-open",
+              ticket.state === TicketState.Closed && "bg-ticketstate-closed"
             )}
-            style={{color: calculateFontColor(ticketStateColour)}}
+            style={{color: calculateFontColor(getTicketStateColor(ticket.state))}}
           >
-            {ticket?.state === TicketState.New
+            {ticket.state === TicketState.New
               ? "Neu"
-              : ticket?.state === TicketState.Open
+              : ticket.state === TicketState.Open
                 ? "Offen"
                 : "Fertig"}
           </Badge>
-          <div className="flex-grow truncate pl-[60px] md:absolute md:pl-[70px] leading-normal"
-               data-cy={`ticket-card-title-${ticket.title}`}
-               title={ticket?.title}>
-            {ticket?.title}
-          </div>
-          <div className="flex flex-col items-end">
-            <div className=" md:flex md:mr-1">
-              <div className="flex md:max-w-[300px] overflow-x-auto whitespace-nowrap gap-1">
-                {ticketLabels?.map((label) => (
-                  label?.id &&
-                  <Badge key={label.id} className="hidden md:flex md:mx-1  justify-center"
-                         style={{
-                           backgroundColor: label.color,
-                           color: calculateFontColor(label.color)
-                         }}>{label.name}</Badge>
-                ))}
+          <p className="leading-normal" title={ticket.title}>
+            {ticket.title}
+          </p>
+        </div>
+
+        <div className="flex items-center min-w-[20px] gap-4 grow justify-end">
+          {!isMobile && (
+            <>
+              <div className="flex overflow-x-auto gap-1">
+                {ticketLabels.length <= 2 ? (
+                  ticketLabels?.map((label) => (
+                    label?.id && <LabelBadge key={label.id} label={label}/>
+                  ))
+                ) : (
+                  <div className={'flex gap-1 items-center'}>
+                    <LabelBadge label={ticketLabels[0]}/>
+                    <LabelBadge label={ticketLabels[1]}/>
+                    <p
+                      className={'text-muted-foreground text-xs px-2 py-1 border border-muted-foreground rounded-md'}
+                    >
+                      + {ticketLabels.length - 2}
+                    </p>
+                  </div>
+                )}
               </div>
               <div
-                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
-                Geändert: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
+                className="hidden shrink-0 md:flex flex-col text-xs items-center justify-center text-muted-foreground">
+                Geändert: {format(new Date(ticket.lastModified), "dd.MM.yy")}
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="cursor-pointer flex items-center justify-center">
-                    {isMobile ? (
-                      <MoreHorizontal className="w-6 h-6"/>
-                    ) : (
-                      <MoreVertical className="w-6 h-6"/>
-                    )}
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="bottom" align="end">
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      void copyTicketUrl();
-                    }}
-                  >
-                    <Link/> Link kopieren
-                  </DropdownMenuItem>
-                  {user?.role === UserRole.Admin && (
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        if (!ticket) return;
-                        setDialogStateAction({mode: "delete", currentTicket: ticket});
-                      }}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="text-destructive"/> Löschen
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+            </>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="cursor-pointer flex items-center justify-center">
+                {isMobile ? (
+                  <MoreHorizontal className="w-6 h-6"/>
+                ) : (
+                  <MoreVertical className="w-6 h-6"/>
+                )}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="bottom" align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  void copyTicketUrl();
+                }}
+              >
+                <Link/> Link kopieren
+              </DropdownMenuItem>
+              {user?.role === UserRole.Admin && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (!ticket) return;
+                    setDialogStateAction({mode: "delete", currentTicket: ticket});
+                  }}
+                  className="text-destructive"
+                >
+                  <Trash2 className="text-destructive"/> Löschen
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardTitle>
     </Card>

@@ -1,28 +1,18 @@
 "use client";
 
-import { z } from "zod";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useCallback, useEffect, useState } from "react";
-import { getClient } from "@/lib/graph/client";
-import {
-  AboutSectionSettingsDocument,
-  Setting,
-  UpdateSettingDocument,
-} from "@/lib/graph/generated/graphql";
-import { toast } from "sonner";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useUser } from "@/components/providers/user-provider";
-import { Button } from "@/components/ui/button";
-import { Loader2, Save, RotateCcw, BookText } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import {z} from "zod";
+import {FormProvider, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import React, {useCallback, useEffect, useState} from "react";
+import {getClient} from "@/lib/graph/client";
+import {AboutSectionSettingsDocument, UpdateAboutSectionTextDocument,} from "@/lib/graph/generated/graphql";
+import {toast} from "sonner";
+import {FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import {useUser} from "@/components/providers/user-provider";
+import {Button} from "@/components/ui/button";
+import {BookText, Loader2, RotateCcw, Save} from "lucide-react";
+import {Textarea} from "@/components/ui/textarea";
+import {cn} from "@/lib/utils";
 
 export const ABOUT_SECTION_TEXT_KEY = "ABOUT_SECTION_TEXT";
 const MAX_ABOUT_TEXT_LENGTH = 2000;
@@ -40,14 +30,14 @@ const aboutSectionSchema = z.object({
 type AboutSectionFormData = z.infer<typeof aboutSectionSchema>;
 
 export default function AboutSectionForm() {
-  const { user } = useUser();
+  const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
 
   const form = useForm<AboutSectionFormData>({
     resolver: zodResolver(aboutSectionSchema),
-    defaultValues: { aboutText: "" },
+    defaultValues: {aboutText: ""},
     mode: "onChange",
   });
 
@@ -92,11 +82,7 @@ export default function AboutSectionForm() {
     }
 
     try {
-      const setting: Setting = {
-        key: ABOUT_SECTION_TEXT_KEY,
-        value: data.aboutText,
-      };
-      await client.request(UpdateSettingDocument, { setting });
+      await client.request(UpdateAboutSectionTextDocument, {text: data.aboutText});
 
       toast.success("About-Section erfolgreich aktualisiert");
       await fetchAboutSection();
@@ -116,7 +102,7 @@ export default function AboutSectionForm() {
           !isLoading && "hidden"
         )}
       >
-        <Loader2 className="animate-spin w-6 h-6" />
+        <Loader2 className="animate-spin w-6 h-6"/>
         Lade About-Section...
       </div>
       <FormProvider {...form}>
@@ -135,7 +121,7 @@ export default function AboutSectionForm() {
           <FormField
             control={form.control}
             name="aboutText"
-            render={({ field }) => (
+            render={({field}) => (
               <FormItem>
                 <div className="flex justify-between items-center">
                   <FormLabel className="text-sm font-semibold text-foreground-muted">
@@ -145,7 +131,7 @@ export default function AboutSectionForm() {
                     className={cn(
                       "text-sm text-muted-foreground",
                       field.value.length > MAX_ABOUT_TEXT_LENGTH &&
-                        "text-destructive"
+                      "text-destructive"
                     )}
                   >
                     {field.value.length} / {MAX_ABOUT_TEXT_LENGTH}
@@ -165,7 +151,7 @@ export default function AboutSectionForm() {
                   />
                 </FormControl>
 
-                <FormMessage />
+                <FormMessage/>
               </FormItem>
             )}
           />
@@ -192,10 +178,10 @@ export default function AboutSectionForm() {
               className="flex items-center gap-2"
             >
               {isSaving ? (
-                <Loader2 className="animate-spin" />
+                <Loader2 className="animate-spin"/>
               ) : (
                 <>
-                  <Save /> Speichern
+                  <Save/> Speichern
                 </>
               )}
             </Button>

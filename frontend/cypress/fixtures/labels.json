@@ -1,0 +1,27 @@
+{
+  "soziales": {
+    "name": "soziales",
+    "color": "#6A4770",
+    "public": false
+  },
+  "lineare_algebra":  {
+    "name": "lineare algebra",
+    "color": "#487047",
+    "public": false
+  },
+  "fachschaft": {
+    "name": "fachschaft",
+    "color": "#477068",
+    "public": true
+  },
+  "test1": {
+    "name": "Test Label 1",
+    "color": "#AEAEAE",
+    "public": false
+  },
+  "test2": {
+    "name": "Test Label 2",
+    "color": "#FF00AE",
+    "public": true
+  }
+}

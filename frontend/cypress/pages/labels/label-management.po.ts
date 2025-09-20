@@ -1,4 +1,12 @@
-export function getCreateUserButton() {
+import * as confirmationDialog from "../confirmation-dialog.po"
+
+export type LabelDialogData = {
+  name: string,
+  color: string,
+  public: boolean,
+}
+
+export function getCreateLabelButton() {
   return cy.get("[data-cy=create-label-button]")
 }
 
@@ -8,6 +16,10 @@ export function getSearchbar() {
 
 export function search(query: string) {
   getSearchbar().type(query)
+}
+
+export function getSortByNamesButton() {
+  return cy.get("[data-cy=table-header-button]")
 }
 
 export function getNoResultsMessage() {
@@ -42,14 +54,22 @@ export function getDeleteButtonsOfLabels(name?: string) {
   }
 }
 
+export function deleteLabel(name: string) {
+  getDeleteButtonsOfLabels(name).eq(0).click()
+  confirmationDialog.confirm();
+}
+
 export function getEditButtonsOfLabels(name?: string) {
   if (name) {
     return getLabelRows().filter((_, row) => {
-      return Cypress.$(row).find('td').filter((_, td) => {
-        return Cypress.$(td).text().trim() === name;
-      }).length > 0;
-    }).find('[data-cy=label-edit-button]')
+      const labelText = Cypress.$(row).find('[data-cy=label-name-cell]').text().trim();
+      return labelText === name;
+    }).find('[data-cy=label-edit-button]');
   } else {
-    return cy.get("[data-cy=label-edit-button]")
+    return cy.get("[data-cy=label-edit-button]");
   }
+}
+
+export function openEditOfLabel(name: string) {
+  getEditButtonsOfLabels(name).eq(0).click()
 }

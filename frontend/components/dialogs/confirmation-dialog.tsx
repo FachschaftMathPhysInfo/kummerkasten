@@ -35,14 +35,14 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
   const {description, isOpen, closeDialog} = props;
   return (
     <Dialog open={isOpen}>
-      <DialogContent className="[&>button:last-child]:hidden">
+      <DialogContent className="[&>button:last-child]:hidden" data-cy={'confirmation-dialog'}>
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle data-cy={'confirmation-dialog-title'}>
             {props.mode === 'confirmation'
               ? 'Bist du sicher?'
               : props.information}
           </DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription data-cy={'confirmation-dialog-description'}>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <div
@@ -54,6 +54,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
             <Button
               onClick={() => closeDialog()}
               variant={props.mode === 'confirmation' ? 'outline' : 'default'}
+              data-cy={'confirmation-dialog-cancel-button'}
             >
               {props.mode === 'confirmation' ? 'Abbrechen' : 'Verstanden'}
             </Button>
@@ -64,6 +65,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
                   closeDialog();
                 }}
                 variant={'destructive'}
+                data-cy={'confirmation-dialog-confirm-button'}
               >
                 Bestätigen
               </Button>

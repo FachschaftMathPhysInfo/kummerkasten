@@ -13,6 +13,10 @@ export function getAllFormLabels() {
   return cy.get(`[data-cy="kummerform-labels"]`);
 }
 
+export function getLabels() {
+  return cy.get('[data-cy^=label-]')
+}
+
 export function getLabelsMessage() {
   return cy.get("[data-cy=kummerform-labels-message]");
 }

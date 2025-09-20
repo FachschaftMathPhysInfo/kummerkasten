@@ -28,7 +28,6 @@ export default function TicketPage() {
   const {ticketId} = useParams();
   const {triggerTicketRefetch} = useTickets()
   const {isMobile} = useSidebar()
-  const [searchTerm, setSearchTerm] = useState("");
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
   const {state} = useSidebar()
@@ -67,7 +66,6 @@ export default function TicketPage() {
     }
   }
 
-
   useEffect(() => {
     void fetchTicketDetail();
   }, [fetchTicketDetail, ticketId]);
@@ -87,8 +85,6 @@ export default function TicketPage() {
           className="flex-col hidden md:flex"
         >
           <TicketSidebar
-            searchTerm={searchTerm}
-            setSearchTermAction={setSearchTerm}
             selectedTicketId={String(ticketId)}
           />
         </ResizablePanel>
