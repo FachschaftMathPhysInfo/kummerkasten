@@ -7,19 +7,33 @@ Das Login-Interface findet ihr unter `domain.com/login` dort meldet man sich mit
 und Passwort-Daten an
 
 ## Account-Einstellungen
-Sobald ihr euch eingeloggt habt, solltet ihr euer Passwort ändern. Navigiert dazu in die Account Einstellungen. Dies ist
-auf zwei Wegen möglich:
+Eure Account-Einstellungen könnt ihr auf zwei Wegen erreichen:
 - Ändert die URL zu `domain/account`
 - Klickt auf "Account" in der Sidebar
 
+### Passwort ändern
+Sobald ihr euch eingeloggt habt, solltet ihr euer Passwort ändern. 
+- Gebt euer aktuelles Passwort in das Feld "Aktuelles Passwort" ein
+- Gebt euer neues Passwort in die Felder "Neues Passwort" und "Wiederhole dein neues Passwort" ein
+    Ein Passwort muss aus:
+    - mindestens einem Großbuchstaben
+    - mindestens einer Zahl (0-9)
+    - mindestens einem Sonderzeichen (!@#$%^&*(),.?":{}|<>)
+    - mindestens 8 Zeichen
+    bestehen.
+- Drückt den Knopf "Speichern" in der unteren rechten Ecke
+
+### Account-Daten ändern
+Ihr könnt euren Vor- und Nachnamen sowie eure E-Mail-Adresse ändern, indem ihr in den jeweiligen Feldern eure Daten eingebt und
+auf den Knopf "Speichern" drückt.
+
 ## Tickets
-Unter `domain/tickets` findet ihr alle Tickets, die Filter unterstützen euch beim Suchen spezifischer Einträge.
+Unter `domain/tickets` findet ihr alle Tickets. Die Filter unterstützen euch beim Suchen spezifischer Einträge.
 
 ### Ticket Detail View
 Sobald ihr auf ein Ticket klickt, werdet ihr in der sog. Ticket-Detail-View landen. Hier könnt ihr folgende Anpassungen vornehmen:
 
 - Den Status des Tickets ändern
-- Das Ticket löschen
 - Den Titel des Tickets ändern (Der Original-Titel ist immer noch verfügbar)
 - Labels an das Ticket anhängen und entfernen
 
@@ -29,15 +43,14 @@ Sobald ihr auf ein Ticket klickt, werdet ihr in der sog. Ticket-Detail-View land
 Unter `domain/labels` könnt ihr Labels verwalten.
 
 ### Labels erstellen
-Labels können unabhängig von Groß- und Kleinschreibung nur einmal existieren, vesucht ihr ein Label nochmal zu erstellen,
-bzw. eine anderes zu aktualisieren, Wird ein Error erscheinen der euch davor warnt, dass ein Label mit diesem
-Namen schon existiert
+Labels können unabhängig von Groß- und Kleinschreibung nur einmal existieren. Versucht ihr ein Label nochmal zu erstellen,
+bzw. eine anderes zu aktualisieren, wird ein Error erscheinen der euch davor warnt, dass ein Label mit diesem 
+Namen schon existiert.
 
 ### Labels bearbeiten
-Labels können bearbeitet werden in dem man auf das Stift-Icon klickt
-
-### Labels löschen
-Intuitiverweise funktioniet dies über den Mülleimer Button. Eine Bestätigung ist nötig
+Labels können bearbeitet werden in dem man auf das Stift-Icon klickt. Hier kannst du den Namen anpassen, die Farbe ändern und 
+auswählen, ob das Label öffentlich auf der Root-Seite (`domain.com`) zur Auswahl beim absenden eines Tickets stehen soll.
+Es muss immer mindestens ein öffentliches Label geben, dass die Nutzer*innen beim Absenden des Formulars auswählen können.
 
 ## FAQ Verwalten
 Wie ihr wahrscheinlich auf der Root-Seite (`domain.com`) gesehen habt, gibt es eine FAQ-Sektion unter dem Formular und eine
@@ -49,8 +62,9 @@ Die Bearbeitung ist einfach über das Text-Feld möglich
 ### FAQ
 Neben der gleichen bearbeitungsweise wie bei den Labels, steht euch hier auch eine Drag and Drop Funktionalität zur Verfügung.
 Dazu einfach eine FAQ aus der Tabelle an der linken Seite 'greifen' und verschieben.
-
 > Derzeit werden Änderungen in der FAQ Reihenfolge sofort gültig
+Den Wortlaut der Frage oder Antwort könnt ihr bearbeiten indem ihr auf den Stift-Icon klickt. Dort könnt ihr auch manuell
+die Position in der Reihenfolge festlegen
 
 ## Sonstiges
 
