@@ -13,6 +13,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/compo
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<LabelTableDialogState>>;
+  formLabelFilter: boolean | null;
 }
 
 export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
@@ -21,12 +22,12 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
   return [
      {
       id: "formLabel",
-      size: 50,
+      size: 70,
       accessorFn: (row) => row.formLabel ? 1 : 0,
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Form" data-cy={'sort-by-formlabel-button'}/>
+        <DataTableColumnHeader column={column} title="Form" className="flex items-center justify-center h-full" data-cy={'sort-by-formlabel-button'}/>
       ),
-      enableSorting: true,
+      enableSorting: props.formLabelFilter === null,
       sortingFn: (rowA, rowB, columnId) => {
         const a = rowA.getValue(columnId) as number;
         const b = rowB.getValue(columnId) as number;
