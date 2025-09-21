@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button";
 import {Label, UserRole} from "@/lib/graph/generated/graphql"
 import {ColumnDef} from "@tanstack/react-table";
-import {Edit2, Trash,} from "lucide-react";
+import {MousePointerClick, Edit2, Trash,} from "lucide-react";
 import React from "react";
 import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-header";
 import {LabelTableDialogState} from "@/app/(settings)/labels/label-table";
@@ -9,6 +9,7 @@ import {Badge} from "@/components/ui/badge";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {compareInLowercase} from "@/lib/utils";
 import {useUser} from "@/components/providers/user-provider";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<LabelTableDialogState>>;
@@ -18,6 +19,41 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
   const {user} = useUser()
 
   return [
+     {
+      id: "formLabel",
+      size: 50,
+      accessorFn: (row) => row.formLabel ? 1 : 0,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Form" data-cy={'sort-by-formlabel-button'}/>
+      ),
+      enableSorting: true,
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = rowA.getValue(columnId) as number;
+        const b = rowB.getValue(columnId) as number;
+
+        if (a != b) {
+          return a < b ? -1 : 1; 
+        }
+        const nameSortResult = compareInLowercase(rowA, rowB, "name");
+        return nameSortResult === 0 ? 0 : nameSortResult > 0 ? -1 : 1;
+      },
+      cell: ({row}) => (
+        <div className="flex items-center justify-center h-full">
+          {row.original.formLabel === true && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <MousePointerClick data-cy={'formLabel-icon'}/>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Öffentliches Label</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+      ),
+    },
     {
       accessorKey: "name",
       header: ({column}) => (

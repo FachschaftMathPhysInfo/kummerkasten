@@ -107,7 +107,10 @@ export function LabelTable() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead className={"text-left"} key={header.id}>
+                    <TableHead 
+                      className={"text-left"} 
+                      key={header.id} 
+                      style={{ width: header.id == "formLabel" ? header.getSize() : undefined }}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
