@@ -34,8 +34,8 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
   }
 
   return (
-    <div className={'text-muted-foreground flex flex-col gap-2'}>
-      <div className={'w-full px-5'}>
+    <div className={'text-muted-foreground flex flex-col'}>
+      <div className={'w-full px-5 mb-2'}>
         <Button
           variant={"ghost"}
           onClick={() => setEditMode(!editMode)}
@@ -82,7 +82,7 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
           </Button>
         </Command>
       ) : (
-        <div className="flex flex-col gap-2 overflow-y-scroll grow items-end px-10">
+        <div className="flex flex-col gap-2 overflow-y-scroll items-end px-10 max-h-[55vh]">
           {ticketLabels.map(label => (<LabelBadge key={label.id} label={label} />))}
         </div>
       )}

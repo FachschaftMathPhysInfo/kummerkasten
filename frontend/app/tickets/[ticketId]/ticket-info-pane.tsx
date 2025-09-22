@@ -153,7 +153,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
         </SheetContent>
       </Sheet>
     ) : (
-      <div className={'h-full flex flex-col w-[200px] pb-5 gap-2 justify-between'}>
+      <div className={'h-full flex flex-col w-[200px] gap-2 justify-between'}>
         <div className={'flex flex-col grow w-full gap-2'}>
           <span className={'flex items-center justify-between pb-2 px-5 gap-2'}>
             <TicketStatusArea
