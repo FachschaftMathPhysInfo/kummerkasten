@@ -74,11 +74,15 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
 
   const onValidSubmit = async (data: z.infer<typeof faqFormSchema>) => {
     setLoading(true);
-    if (createMode) await createQAP(data)
-    else await updateQAP(data)
+    let ok: boolean
+    if (createMode) ok = await createQAP(data)
+    else ok = await updateQAP(data)
 
-    form.reset()
-    closeDialog();
+    if (ok) {
+      form.reset()
+      closeDialog();
+    }
+
     triggerQAPRefetch();
     setLoading(false);
   }
@@ -87,15 +91,18 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
     const client = getClient()
     try {
       await client.request(CreateQuestionAnswerPairDocument, {questionAnswerPair: data})
-    } catch {
-      toast.error('Beim Erstellen ist ein Fehler aufgetreten')
+      return true
+    } catch (err) {
+      if(String(err).includes('unique')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+      else toast.error('Beim Erstellen ist ein Fehler aufgetreten')
+      return false
     }
   }
 
   async function updateQAP(data: z.infer<typeof faqFormSchema>) {
     if(!qap) {
       toast.error('Ein Fehler ist aufgetreten')
-      return
+      return false
     }
 
     const client = getClient()
@@ -103,8 +110,11 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
       await client.request(
         UpdateQuestionAnswerPairDocument,
         {id: qap.id, questionAnswerPair: data})
-    } catch {
-      toast.error('Beim Aktualisieren des FAQ ist ein Fehler aufgetreten')
+      return true
+    } catch (err) {
+      if(String(err).includes('unique')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+      else toast.error('Beim Aktualisieren des FAQ ist ein Fehler aufgetreten')
+      return false
     }
   }
 
