@@ -3,26 +3,44 @@ import * as ticketInfoPane from "../../pages/tickets/ticket-info-pane.po";
 import * as ticketLabelArea from "../../pages/tickets/ticket-label-area.po";
 import * as ticketStatusArea from "../../pages/tickets/ticket-status-area.po";
 import * as confirmationDialog from "../../pages/confirmation-dialog.po";
-import {Label, Ticket, UserRole} from "../../../lib/graph/generated/graphql";
+import {Label, TicketState, UserRole} from "../../../lib/graph/generated/graphql";
+
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
 roles.forEach(role => {
   describe('Ticket Detail Tests', () => {
-    let tickets: Ticket[] = [];
     let labels: Label[] = [];
+    let ticketId: string;
+    let originalTitle: string;
+    let originalState: TicketState;
+
     context(`${role} Tests`, () => {
       beforeEach(() => {
-        cy.loginAsRole(role).then(() => {
-          cy.getAllLabels().then(fetchedLabels => {
-            labels = fetchedLabels;
+        cy.loginAsRole(role)
+        cy.createTicket({
+          originalTitle: "Initial Test Title",
+          text: "This is a test ticket",
+          labels: [],
+        }).then((id) => {
+          ticketId = id;
+          originalTitle = "Initial Test Title";
+          originalState = TicketState.New;
+          cy.visit(`/tickets/${ticketId}`);
+        });
+        cy.getAllLabels().then((fetchedLabels) => {
+          labels = fetchedLabels;
+        });
+      });
+
+      afterEach(() => {
+        if (ticketId) {
+          cy.visit("/");
+          cy.loginAsRole(UserRole.Admin).then(() => {
+            cy.deleteTicket(ticketId)
           });
-          cy.getAllTickets().then(fetchedTickets => {
-            tickets = fetchedTickets;
-            cy.visit(`/tickets/${fetchedTickets[0].id}`);
-          });
-        })
-      })
+        }
+      });
 
       it(`loads page elements`, () => {
         ticketDetail.getTicketDetailTitle().should('exist');
@@ -39,10 +57,10 @@ roles.forEach(role => {
           ticketDetail.getTicketDetailTitleEdit().click();
           ticketDetail.getTicketDetailSave().should('exist');
           ticketDetail.getTicketDetailCancel().should('exist');
+          ticketDetail.getTicketDetailTitleInput().should('exist');
         })
 
         it("cancel button resets title changes", () => {
-          const originalTitle = tickets[0].title;
           ticketDetail.getTicketDetailTitleEdit().click();
           ticketDetail.getTicketDetailTitleInput().clear().type("Wrong Title");
           ticketDetail.getTicketDetailCancel().click();
@@ -50,7 +68,7 @@ roles.forEach(role => {
         });
 
         it("valid save button changes title", () => {
-          const newTitle = tickets[0].id;
+          const newTitle = "This is a new Test Title"
           ticketDetail.getTicketDetailTitleEdit().click();
           ticketDetail.getTicketDetailTitleInput().clear().type(newTitle);
           ticketDetail.getTicketDetailSave().click();
@@ -78,18 +96,15 @@ roles.forEach(role => {
         });
       })
 
-      context("Delete", () => {
-        it("deletes ticket correctly", () => {
-          if (role === UserRole.Admin) {
-            let currentTicket = tickets[0];
+      if (role === UserRole.Admin) {
+        context("Delete", () => {
+          it("deletes ticket correctly", () => {
             ticketInfoPane.getTicketInfoPaneDelete().click();
             confirmationDialog.getConfirmButton().click();
-            cy.contains(currentTicket.title).should("not.exist");
-          } else {
-            ticketInfoPane.getTicketInfoPaneDelete().should("not.exist");
-          }
+            cy.contains(originalTitle).should("not.exist");
+          });
         });
-      });
+      }
 
       context("Label", () => {
         it("opens label view", () => {
@@ -113,7 +128,7 @@ roles.forEach(role => {
         });
 
         it("searches labels correctly", () => {
-          const searchTerm = labels[0].name.slice(0, 3);
+          const searchTerm = labels[0].name;
           ticketLabelArea.getTicketLabelSettings().click();
           ticketLabelArea.getLabelSearch().type(searchTerm);
           ticketLabelArea.getTicketLabel(labels[0].id).should("contain.text", searchTerm);
