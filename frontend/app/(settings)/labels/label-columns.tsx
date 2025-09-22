@@ -9,7 +9,6 @@ import {Badge} from "@/components/ui/badge";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {compareInLowercase} from "@/lib/utils";
 import {useUser} from "@/components/providers/user-provider";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<LabelTableDialogState>>;
@@ -41,16 +40,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
       cell: ({row}) => (
         <div className="flex items-center justify-center h-full">
           {row.original.formLabel === true && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <MousePointerClick data-cy={'formLabel-icon'}/>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Öffentliches Label</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <MousePointerClick data-cy={'formLabel-icon'}/>
           )}
         </div>
       ),

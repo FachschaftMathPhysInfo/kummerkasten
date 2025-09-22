@@ -131,11 +131,11 @@ export function LabelTable() {
                 >
                   <MousePointerClick />
 
-                  <TooltipContent>
+                  <TooltipContent side="top" sideOffset={5}>
                     {formLabelFilter === null ? (
                       <p>Öffentliche Labels anzeigen</p>
                       ) : formLabelFilter === true ? (
-                      <p>Nicht-Öffentliche Labels anzeigen</p>
+                      <p>Nicht-öffentliche Labels anzeigen</p>
                       ) : (
                       <p>Alle Labels anzeigen</p>
                     )}
