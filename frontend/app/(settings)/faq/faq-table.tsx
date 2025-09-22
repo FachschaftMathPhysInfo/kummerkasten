@@ -16,7 +16,7 @@ import {
   DeleteQuestionAnswerPairDocument,
   DeleteQuestionAnswerPairMutation,
   QuestionAnswerPair,
-  UpdateQuestionAnswerPairDocument,
+  UpdateQuestionAnswerPairPositionsDocument,
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 
@@ -77,28 +77,24 @@ export function QAPTable() {
     });
   }, []);
 
-  const updatePosition = useCallback(async (draggedId: string, _newPosition: number) => {
-    setLocalData((current) => {
-      return current;
-    });
+  const updatePosition = useCallback(async () => {
+      const reordered = localData.map((qap, idx) => ({
+        id: qap.id,
+        position: idx,
+      }));
 
-    const newIndex = localData.findIndex((r) => r.id === draggedId);
-    if (newIndex === -1) {
-      return;
-    }
+      try {
+        await client.request(UpdateQuestionAnswerPairPositionsDocument, {
+          qaps: reordered,
+        });
+      } catch {
+        toast.error("Fehler beim Aktualisieren der Positionen");
+      }
 
-    try {
-      await client.request(UpdateQuestionAnswerPairDocument, {
-        id: draggedId,
-        questionAnswerPair: { position: newIndex },
-      });
-    } catch {
-      toast.error("Fehler beim Sortieren der FAQ aufgetreten.");
-    }
-
-    triggerQAPRefetch();
-  }, [client, localData, triggerQAPRefetch]);
-
+      triggerQAPRefetch();
+    },
+    [client, localData, triggerQAPRefetch]
+  );
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-2 mt-2" data-cy="qap-table">

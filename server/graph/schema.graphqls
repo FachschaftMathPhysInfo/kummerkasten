@@ -143,7 +143,7 @@ input UpdateQuestionAnswerPair{
     position: Int
 }
 
-input UpdateQuestionAnswerPairPosiiton{
+input UpdateQuestionAnswerPairPosition{
     id: String!
     position: Int!
 }
@@ -176,5 +176,5 @@ type Mutation {
     createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: USER)
     deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: USER)
     updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: USER)
-    updateQuestionAnswerPairBatchPositons(questionAnswerPairs: [UpdateQuestionAnswerPairPosiiton!]!): Boolean! @hasRole(role: USER)
+    updateQuestionAnswerPairBatchPositions(questionAnswerPairs: [UpdateQuestionAnswerPairPosition!]!): Boolean! @hasRole(role: USER)
 }

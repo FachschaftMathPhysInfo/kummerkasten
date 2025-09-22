@@ -13,16 +13,24 @@ interface DragItem {
   index: number;
 }
 
-export function DndTableRow({row, moveRow, savePosition,}: {
+export function DndTableRow({
+                              row,
+                              moveRow,
+                              savePosition,
+                            }: {
   row: TanStackRow<QuestionAnswerPair>;
   moveRow: (draggedId: string, toIndex: number) => void;
-  savePosition: (draggedId: string, newIndex: number) => void;
+  savePosition: (draggedId: string) => void;
 }) {
   const {original} = row;
   const dropRef = useRef<HTMLTableRowElement | null>(null);
   const dragHandleRef = useRef<HTMLDivElement | null>(null);
 
-  const [{handlerId, isOver}, drop] = useDrop<DragItem, void, { handlerId: string | symbol | null; isOver: boolean }>({
+  const [{handlerId, isOver}, drop] = useDrop<
+    DragItem,
+    void,
+    {handlerId: string | symbol | null; isOver: boolean}
+  >({
     accept: "row",
     collect(monitor) {
       return {
@@ -48,7 +56,7 @@ export function DndTableRow({row, moveRow, savePosition,}: {
     }),
     end: (item, monitor) => {
       if (!monitor.didDrop()) return;
-      savePosition(item.id, item.index);
+      savePosition(item.id);
     },
   });
 
@@ -56,20 +64,24 @@ export function DndTableRow({row, moveRow, savePosition,}: {
   preview(dropRef);
   drag(dragHandleRef);
 
-  const handlerIdAttr = (handlerId ?? undefined);
+  const handlerIdAttr = handlerId ?? undefined;
 
   return (
     <TableRow
       ref={dropRef}
       style={{opacity: isDragging ? 0 : 1}}
-      className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${isOver ? "bg-accent/20 border-t-2 border-b-2 border-primary" : ""}`}
+      className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${
+        isOver ? "bg-accent/20 border-t-2 border-b-2 border-primary" : ""
+      }`}
       data-handler-id={handlerIdAttr}
       data-cy="qap-row"
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell
           key={cell.id}
-          className={`whitespace-normal break-words px-4 py-3 ${((cell.column.columnDef as QAPColumnDef<QuestionAnswerPair>).className) ?? ""}`}
+          className={`whitespace-normal break-words px-4 py-3 ${
+            ((cell.column.columnDef as QAPColumnDef<QuestionAnswerPair>).className) ?? ""
+          }`}
         >
           {cell.column.id === "drag-handle" ? (
             <div ref={dragHandleRef} className="cursor-grab">
@@ -82,4 +94,4 @@ export function DndTableRow({row, moveRow, savePosition,}: {
       ))}
     </TableRow>
   );
-};
+}

@@ -897,7 +897,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 }
 
 // UpdateQuestionAnswerPairBatchPositons is the resolver for the updateQuestionAnswerPairBatchPositons field.
-func (r *mutationResolver) UpdateQuestionAnswerPairBatchPositons(ctx context.Context, questionAnswerPairs []*model.UpdateQuestionAnswerPairPosiiton) (bool, error) {
+func (r *mutationResolver) UpdateQuestionAnswerPairBatchPositions(ctx context.Context, questionAnswerPairs []*model.UpdateQuestionAnswerPairPosition) (bool, error) {
 	amountQAPsInDB, err := r.DB.NewSelect().Model((*model.QuestionAnswerPair)(nil)).Count(ctx)
 	if err != nil {
 		log.Printf("Failed to fetch count of questionAnswerPairs: %v", err)
