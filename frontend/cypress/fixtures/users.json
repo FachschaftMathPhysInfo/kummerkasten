@@ -23,5 +23,11 @@
     "lastname": "Fe",
     "mail": "cheffe@kummerkasten.local",
     "password": "cheffe"
+  },
+  "temp": {
+    "firstname": "Test",
+    "lastname": "User",
+    "mail": "test.user@kummer.kasten",
+    "password": "EinTestPasswort123!"
   }
 }

@@ -14,7 +14,8 @@ After installing general golang and dependencies run
 ```
 cp .env .env.local
 ```
-and fill out the configurations as desired. Afterwards run
+and fill out the configurations as desired. Afterwards comment out the `app` service from the `docker-compose.yml`
+and run:
 
 ```
 cd server
@@ -33,5 +34,13 @@ npm run test
 ```
 
 ## Deployment
-To be added
+The software is best deployed in a dockerized environment. We provide an example `docker-compose.yml` 
+which can be used to quickly deploy the software via.
+```
+docker compose up -d
+```
 
+> [!CAUTION]
+> Note that this software was not yet penetration tested in production. While we give our best to adhere
+> to security by design principles some issues can only be found in a full blown test, executed by experts
+> \- something we are not.

@@ -51,32 +51,23 @@ export default function PasswordDataForm() {
       newPassword: "",
       confirmPassword: "",
     },
-    mode: "onChange",
-    reValidateMode: "onChange",
   });
 
   async function onPasswordSubmit(data: PasswordFormData) {
     setIsSavingPassword(true);
     if (!user) {
-      toast.error("Fehler beim Laden des Benutzers");
+      toast.error("Ein Fehler ist aufgetreten, bitte melde dich erneut an");
       return;
     }
 
     const client = getClient();
 
     try {
-      const loginResponse = await client.request(LoginDocument, {
+      await client.request(LoginDocument, {
         mail: user.mail,
         password: data.oldPassword,
       });
 
-      if (!loginResponse.login) {
-        passwordForm.reset();
-        passwordForm.setError("oldPassword", {
-          message: "Falsches aktuelles Passwort",
-        });
-        return;
-      }
 
       await client.request(UpdateUserDocument, {
         id: user.id,
@@ -89,8 +80,12 @@ export default function PasswordDataForm() {
       await logout();
 
     } catch (err) {
-      console.error(err);
-      toast.error("Fehler beim Aktualisieren der Daten");
+      if (String(err).includes('credentials')) {
+        passwordForm.setError("oldPassword", {message: "Falsches aktuelles Passwort",});
+      } else {
+        toast.error("Fehler beim Aktualisieren der Daten");
+      }
+
       return;
     } finally {
       setIsSavingPassword(false);

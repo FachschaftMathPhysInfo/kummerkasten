@@ -9,6 +9,10 @@ export function getAboutText() {
   return cy.get(`[data-cy=kummerform-about]`);
 }
 
+export function getAboutTextVal() {
+  return cy.get('[data-cy=about-text]').invoke('text')
+}
+
 export function getAllFormLabels() {
   return cy.get(`[data-cy="kummerform-labels"]`);
 }
@@ -94,3 +98,4 @@ export function fillOutForm(data: KummerFormData) {
 export function submit() {
   getSendButton().click();
 }
+

@@ -147,11 +147,11 @@ export default function AboutSectionForm() {
                       "resize-none text-foreground flex min-h-[120px] bg-background text-sm"
                     )}
                     {...field}
-                    data-cy="about-section-input"
+                    data-cy="about-text-input"
                   />
                 </FormControl>
 
-                <FormMessage/>
+                <FormMessage data-cy={'about-text-input-message'}/>
               </FormItem>
             )}
           />
@@ -163,6 +163,7 @@ export default function AboutSectionForm() {
               disabled={!form.formState.isDirty}
               onClick={() => fetchAboutSection()}
               className="flex items-center gap-2"
+              data-cy={'about-cancel-button'}
             >
               <RotateCcw/>
               Abbrechen
@@ -176,6 +177,7 @@ export default function AboutSectionForm() {
                 isSaving
               }
               className="flex items-center gap-2"
+              data-cy={'about-submit-button'}
             >
               {isSaving ? (
                 <Loader2 className="animate-spin"/>

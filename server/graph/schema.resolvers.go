@@ -194,7 +194,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	var labels []*models.Label
 
 	if err := r.DB.NewSelect().Model(&labels).
-		Where("LOWER(name) = ?", strings.ToLower(label.Name)).
+		Where("LOWER(TRIM(name)) = ?", strings.ToLower(strings.TrimSpace(label.Name))).
 		Scan(ctx); err != nil {
 		fmt.Printf("failed creating tickets, comparisong to existing label names failed: %v", err)
 		return nil, ErrInternal
@@ -274,7 +274,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 		var labels []*models.Label
 
 		if err := r.DB.NewSelect().Model(&labels).
-			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
+			Where("LOWER(TRIM(name)) = ?", strings.ToLower(strings.TrimSpace(*label.Name))).
 			Where("id != ?", dbLabel.ID).Scan(ctx); err != nil {
 			return "", ErrInternal
 		}
@@ -376,6 +376,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 		return "", fmt.Errorf("user with id %v not found", id)
 	}
 
+	originalUser := users[0]
 	updatedUser := users[0]
 
 	if user.Mail != nil {
@@ -407,6 +408,44 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 		return "", ErrInternal
 	}
 
+	if user.Mail != nil || user.Password != nil {
+		if _, err := r.DB.NewDelete().
+			Model((*model.Session)(nil)).
+			Where("user_id = ?", originalUser.ID).
+			Exec(ctx); err != nil {
+			log.Printf("Failed to delete user sessions on critical data change: %v", err)
+			return "", fmt.Errorf("internal system error")
+		}
+
+		newSid := uuid.New().String()
+		now := time.Now()
+		originalUser.LastLogin = &now
+		expiresAt := now.AddDate(0, 0, 2)
+
+		newSession := &model.Session{
+			ID:        newSid,
+			UserID:    originalUser.ID,
+			ExpiresAt: expiresAt,
+		}
+
+		if _, err := r.DB.NewInsert().Model(newSession).Exec(ctx); err != nil {
+			log.Printf("Failed to create session: %v", err)
+			return "", fmt.Errorf("internal system error")
+		}
+
+		httpResponseWriter := ctx.Value(middleware.WriterKey).(http.ResponseWriter)
+
+		http.SetCookie(httpResponseWriter, &http.Cookie{
+			Name:     "sid",
+			Value:    newSid,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   os.Getenv("ENV") != "DEV",
+			SameSite: http.SameSiteLaxMode,
+			Expires:  expiresAt,
+		})
+	}
+
 	return updatedUser.ID, nil
 }
 
@@ -428,6 +467,14 @@ func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model
 		Exec(ctx); err != nil {
 		log.Printf("Failed to update user role: %v", err)
 		return "", ErrInternal
+	}
+
+	if _, err := r.DB.NewDelete().
+		Model((*model.Session)(nil)).
+		Where("user_id = ?", updatedUser.ID).
+		Exec(ctx); err != nil {
+		log.Printf("Failed to delete user sessions on role change: %v", err)
+		return "", fmt.Errorf("internal system error")
 	}
 
 	return updatedUser.ID, nil
@@ -453,6 +500,14 @@ func (r *mutationResolver) ResetPassword(ctx context.Context, id string, passwor
 	if _, err := r.DB.NewUpdate().Model(user).WherePK().Exec(ctx); err != nil {
 		log.Printf("Failed to update user for password reset: %v", err)
 		return nil, ErrInternal
+	}
+
+	if _, err := r.DB.NewDelete().
+		Model((*model.Session)(nil)).
+		Where("user_id = ?", user.ID).
+		Exec(ctx); err != nil {
+		log.Printf("Failed to delete user sessions on password reset: %v", err)
+		return nil, fmt.Errorf("internal system error")
 	}
 
 	return nil, nil

@@ -78,13 +78,15 @@ export default function TicketPage() {
       filtering.labels.length,
       filtering.searchTerm,
       filtering.startDate,
-      filtering.endDate
+      filtering.endDate,
+      filtering,
+      sorting
     ]
   );
 
   useEffect(() => {
     setSortedTickets(getSortedTickets(sorting, [...filteredTickets]))
-  }, [sorting.field, sorting.orderAscending]);
+  }, [sorting.field, sorting.orderAscending, filteredTickets, sorting]);
 
   useEffect(() => {
     setSorting(prevState => ({
@@ -140,7 +142,7 @@ export default function TicketPage() {
                 ...prev,
                 searchTerm: e.target.value,
               }))}
-              data-cy="search-title"
+              data-cy="ticket-overview-search-field"
             />
 
             {isMobile ? (
@@ -166,7 +168,7 @@ export default function TicketPage() {
               variant="outline"
               className="whitespace-nowrap"
               onClick={() => setFiltering(defaultTicketFiltering)}
-              data-cy="reset-filters"
+              data-cy="desktop-overview-reset-filters"
             >
               <Trash2 className="text-destructive"/>
               Filter zurücksetzen
@@ -183,7 +185,7 @@ export default function TicketPage() {
 
       {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
           ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>
                 <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
               </Link>
@@ -198,7 +200,7 @@ export default function TicketPage() {
       </div>
       {getOlderSemesterTickets(sortedTickets).map((ticket) =>
           ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-${ticket.id}`}>
+            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
               <Link href={`/tickets/${ticket.id}`} passHref>
                 <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
               </Link>
@@ -212,8 +214,6 @@ export default function TicketPage() {
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDialogState}
-        data-cy-confirm="confirm-delete"
-        data-cy-cancel="cancel-delete"
       />
     </div>
   )
