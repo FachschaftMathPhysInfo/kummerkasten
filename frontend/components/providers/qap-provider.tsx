@@ -50,7 +50,7 @@ export const useQAPs = (): QAPContextType => {
   const context = useContext(QAPContext);
 
   if (!context) {
-    throw new Error("useQAPS must be used within a QAPProvider");
+    throw new Error("useQAPs must be used within a QAPProvider");
   }
 
   return context;

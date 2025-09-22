@@ -723,7 +723,6 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 
 	if questionAnswerPair.Position != nil {
 		if *questionAnswerPair.Position < 0 {
-			log.Print("questionAnswerPair was not created as position was < 0")
 			return nil, fmt.Errorf("position must be > 0")
 		} else if *questionAnswerPair.Position > maxPosition {
 			createdQuestionAnswerPair.Position = maxPosition + 1
@@ -854,7 +853,6 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 		pos := *questionAnswerPair.Position
 
 		if pos < 0 {
-			log.Print("questionAnswerPair was not created as position was < 0")
 			return "", fmt.Errorf("position must be >= 0")
 		} else if pos > maxPosition {
 			qAP.Position = maxPosition
@@ -913,7 +911,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPairBatchPositions(ctx context.Co
 	for i, qAP := range questionAnswerPairs {
 		if int32(i) != qAP.Position {
 			log.Printf("Positions in batchUpdate not consecutive at index %v: got %v", i, qAP.Position)
-			return false, fmt.Errorf("positions must be consecutive (0..N-1)")
+			return false, fmt.Errorf("positions must be consecutive (0, 1, 2, ...)")
 		}
 	}
 
