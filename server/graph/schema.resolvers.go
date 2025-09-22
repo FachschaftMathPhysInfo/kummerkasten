@@ -137,6 +137,16 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 		return "", fmt.Errorf("ticket with id %v not found", id)
 	}
 
+	const MaxTitleLength = 70
+	if len(*ticket.Title) > MaxTitleLength {
+		return "", fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
+	}
+
+	const MaxTextLength = 3000
+	if len(*ticket.Text) > MaxTextLength {
+		return "", fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
+	}
+
 	if ticket.Title != nil {
 		dbTicket.Title = *ticket.Title
 	}
