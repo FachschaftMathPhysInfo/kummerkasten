@@ -830,6 +830,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 
 		exists, err := r.DB.NewSelect().Model((*model.QuestionAnswerPair)(nil)).
 			Where("LOWER(TRIM(question)) = ?", strings.ToLower(strings.TrimSpace(qAP.Question))).
+			Where("id != ?", qAP.ID).
 			Exists(ctx)
 
 		if err != nil {

@@ -26,7 +26,7 @@ interface FaqFormProps {
 
 export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const [loading, setLoading] = useState(false);
-  const {qaps} = useQAPs()
+  const {qaps, triggerQAPRefetch} = useQAPs()
   // maxPosition is the highest OCCUPIED zero-based index
   const [maxPosition, setMaxPosition] = useState(qaps.length - 1)
   const createMode = !qap
@@ -75,6 +75,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
 
     if (ok) {
       form.reset()
+      triggerQAPRefetch();
       closeDialog();
     }
 
