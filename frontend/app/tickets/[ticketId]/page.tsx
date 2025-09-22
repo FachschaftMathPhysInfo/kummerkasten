@@ -73,16 +73,16 @@ export default function TicketPage() {
   return (
     <div
       className={cn(
-        "flex flex-col py-5 grow",
+        "flex flex-col py-5 grow overflow-hidden h-full ",
         isMobile ? "max-w-screen" : (state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]")
       )}
     >
-      <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow">
+      <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow h-full">
         <ResizablePanel
           defaultSize={30}
           minSize={20}
-          maxSize={30}
-          className="flex-col hidden md:flex"
+          maxSize={27}
+          className="flex-col hidden md:flex h-full"
         >
           <TicketSidebar
             selectedTicketId={String(ticketId)}
