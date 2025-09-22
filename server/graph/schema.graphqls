@@ -143,6 +143,11 @@ input UpdateQuestionAnswerPair{
     position: Int
 }
 
+input UpdateQuestionAnswerPairPosiiton{
+    id: String!
+    position: Int!
+}
+
 type Mutation {
     createTicket(ticket: NewTicket!): Ticket!
     deleteTicket(ids: [String!]!): Int! @hasRole(role: ADMIN)
@@ -171,4 +176,5 @@ type Mutation {
     createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: USER)
     deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: USER)
     updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: USER)
+    updateQuestionAnswerPairBatchPositons(questionAnswerPairs: [UpdateQuestionAnswerPairPosiiton!]!): Boolean! @hasRole(role: USER)
 }

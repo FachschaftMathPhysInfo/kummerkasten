@@ -748,7 +748,7 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 					Set(`"position" = "position" + 1`).
 					Where("id = ?", q.ID).
 					Exec(ctx); err != nil {
-					log.Printf("failed to bump qap %d: %v", q.ID, err)
+					log.Printf("failed to bump qap %v: %v", q.ID, err)
 					return nil, ErrInternal
 				}
 			}
@@ -802,7 +802,7 @@ func (r *mutationResolver) DeleteQuestionAnswerPair(ctx context.Context, ids []s
 		_, err := r.DB.NewUpdate().Model((*models.QuestionAnswerPair)(nil)).
 			Set(`"position" = ?`, i-1).Where(`"position" = ?`, i).Exec(ctx)
 		if err != nil {
-			log.Printf("Failed to shift QuestionAnswerPair position %d -> %d: %v", i, i-1, err)
+			log.Printf("Failed to shift QuestionAnswerPair position %v -> %v: %v", i, i-1, err)
 			return 0, ErrInternal
 		}
 	}
@@ -879,7 +879,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 					Set(`"position" = "position" + 1`).
 					Where("id = ?", q.ID).
 					Exec(ctx); err != nil {
-					log.Printf("failed to bump qap %d: %v", q.ID, err)
+					log.Printf("failed to bump qap %v: %v", q.ID, err)
 					return "", ErrInternal
 				}
 			}
@@ -894,6 +894,87 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	}
 
 	return qAP.ID, nil
+}
+
+// UpdateQuestionAnswerPairBatchPositons is the resolver for the updateQuestionAnswerPairBatchPositons field.
+func (r *mutationResolver) UpdateQuestionAnswerPairBatchPositons(ctx context.Context, questionAnswerPairs []*model.UpdateQuestionAnswerPairPosiiton) (bool, error) {
+	amountQAPsInDB, err := r.DB.NewSelect().Model((*model.QuestionAnswerPair)(nil)).Count(ctx)
+	if err != nil {
+		log.Printf("Failed to fetch count of questionAnswerPairs: %v", err)
+		return false, ErrInternal
+	}
+
+	if len(questionAnswerPairs) != amountQAPsInDB {
+		log.Printf("Batch update count mismatch: got %v, expected %v",
+			len(questionAnswerPairs), amountQAPsInDB)
+		return false, fmt.Errorf("provide all qaps in batchUpdate mutation")
+	}
+
+	for i, qAP := range questionAnswerPairs {
+		if int32(i) != qAP.Position {
+			log.Printf("Positions in batchUpdate not consecutive at index %v: got %v", i, qAP.Position)
+			return false, fmt.Errorf("positions must be consecutive (0..N-1)")
+		}
+	}
+
+	newPos := make(map[uuid.UUID]int32, len(questionAnswerPairs))
+	for _, q := range questionAnswerPairs {
+		idAsUUID, _ := uuid.Parse(q.ID)
+		newPos[idAsUUID] = q.Position
+	}
+
+	var allQAPs []*model.QuestionAnswerPair
+	if err := r.DB.NewSelect().Model(&allQAPs).Scan(ctx); err != nil {
+		log.Printf("Failed to fetch all questionAnswerPairs: %v", err)
+		return false, ErrInternal
+	}
+
+	tx, err := r.DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Printf("Failed to begin transaction: %v", err)
+		return false, ErrInternal
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	offset := int32(len(allQAPs))
+
+	for _, q := range allQAPs {
+		idAsUUID, _ := uuid.Parse(q.ID)
+		newPosition, ok := newPos[idAsUUID]
+		if !ok {
+			log.Printf("ID %s missing from batch update", q.ID)
+			return false, fmt.Errorf("all IDs must be included in batchUpdate mutation")
+		}
+
+		if _, err := tx.NewUpdate().
+			Model(q).
+			Set(`"position" = ?`, newPosition+offset).
+			Where("id = ?", q.ID).
+			Exec(ctx); err != nil {
+			log.Printf("Failed to temporarily update position for QAP %s: %v", q.ID, err)
+			return false, ErrInternal
+		}
+	}
+
+	for _, q := range allQAPs {
+		idAsUUID, _ := uuid.Parse(q.ID)
+		finalPosition := newPos[idAsUUID]
+		if _, err := tx.NewUpdate().
+			Model(q).
+			Set(`"position" = ?`, finalPosition).
+			Where("id = ?", q.ID).
+			Exec(ctx); err != nil {
+			log.Printf("Failed to update final position for QAP %s: %v", q.ID, err)
+			return false, ErrInternal
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Printf("Failed to commit batch update: %v", err)
+		return false, ErrInternal
+	}
+
+	return true, nil
 }
 
 // Tickets is the resolver for the tickets field.
