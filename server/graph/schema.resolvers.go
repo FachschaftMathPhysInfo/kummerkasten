@@ -140,12 +140,6 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 	if ticket.Title != nil {
 		dbTicket.Title = *ticket.Title
 	}
-	if ticket.Text != nil {
-		dbTicket.Text = *ticket.Text
-	}
-	if ticket.Note != nil {
-		dbTicket.Note = *ticket.Note
-	}
 	if ticket.State != nil {
 		dbTicket.State = *ticket.State
 	}

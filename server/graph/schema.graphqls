@@ -110,8 +110,6 @@ input UpdateUser {
 
 input UpdateTicket {
     title: String
-    text: String
-    note: String
     state: TicketState
 }
 
