@@ -796,6 +796,17 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 		return "", fmt.Errorf("QuestionAnswerPair with id %v not found", id)
 	}
 
+	const MAXQUESTIONLENGTH = 70
+	const MAXANSWERLENGTH = 700
+
+	if len(*questionAnswerPair.Question) > MAXQUESTIONLENGTH {
+		return "", fmt.Errorf("question exceeds max length of %v", MAXQUESTIONLENGTH)
+	}
+
+	if len(*questionAnswerPair.Answer) > MAXANSWERLENGTH {
+		return "", fmt.Errorf("answer exceeds max length of %v", MAXANSWERLENGTH)
+	}
+
 	qAP := questionAnswerPairs[0]
 
 	if questionAnswerPair.Question != nil {
