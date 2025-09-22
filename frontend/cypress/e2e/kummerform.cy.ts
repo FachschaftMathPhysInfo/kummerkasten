@@ -6,6 +6,8 @@ import * as tickets from "../pages/ticket-overview.po"
 describe("Kummerform Page", () => {
   let formLabels: any[] = [];
   let qaps: any[] = [];
+  let testTitle: string = "testtitle";
+  let testText: string = "testext";
 
   beforeEach(() => {
     cy.getFormLabels().then((fetchedFormLabels) => {
@@ -86,7 +88,7 @@ describe("Kummerform Page", () => {
     });
 
     it("shows error and disables submit on invalid submit - empty labels", () => {
-      kummerform.fillOutForm({title: "testtitle", text: "testtext"});
+      kummerform.fillOutForm({title: testTitle, text: testText});
       kummerform.submit();
 
       kummerform.getLabelsMessage().should("be.visible").and("contain", "Bitte wähle mindestens ein Label aus.");
@@ -99,7 +101,7 @@ describe("Kummerform Page", () => {
       kummerform.fillOutForm({
         formLabelVal: [true, false, false, false],
         formLabelArray: formLabels,
-        text: "testtext",
+        text: testText,
       });
       kummerform.submit();
 
@@ -113,7 +115,7 @@ describe("Kummerform Page", () => {
       kummerform.fillOutForm({
         formLabelVal: [true, false, false, false],
         formLabelArray: formLabels,
-        title: "testtitle",
+        title: testTitle,
       });
       kummerform.submit();
 
@@ -124,13 +126,13 @@ describe("Kummerform Page", () => {
     });
 
     it("does not allow title input size over 70", () => {
-      kummerform.fillOutForm({ title: kummerformstrings.maxlength.title });
+      kummerform.fillOutForm({ title: kummerformstrings.maxLength.title });
       kummerform.getTitleInputLength().should("have.length", 70);
       kummerform.getSendButton().should("not.be.disabled");
     });
 
     it ('does not allow text input size over 3000', () => {
-      kummerform.getTextInput().type(kummerformstrings.maxlength.text, {delay: 0});
+      kummerform.getTextInput().type(kummerformstrings.maxLength.text, {delay: 0});
       kummerform.getTextInputLength().should("have.length", 3000);
       kummerform.getSendButton().should('not.be.disabled');
     });
@@ -139,8 +141,8 @@ describe("Kummerform Page", () => {
       kummerform.fillOutForm({
         formLabelVal: [true, false, true, false],
         formLabelArray: formLabels,
-        title: kummerformstrings.maxlength.testtitle,
-        text: "testtext",
+        title: testTitle,
+        text: testText,
       });
       kummerform.submit();
       kummerform.getLabelsMessage().should("not.exist");
@@ -149,15 +151,15 @@ describe("Kummerform Page", () => {
 
       cy.login(users.admin.mail, users.admin.password);
       cy.visit("/tickets");
-      tickets.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("exist");
+      tickets.checkTicketExistence(testTitle).should("exist");
     });
 
     it("should reset the form on valid inputs", () => {
       kummerform.fillOutForm({
         formLabelVal: [false, false, true, false],
         formLabelArray: formLabels,
-        title: kummerformstrings.maxlength.testtitle,
-        text: "testtext",
+        title: testTitle,
+        text: testText,
       });
       kummerform.submit();
 
@@ -173,9 +175,9 @@ describe("Kummerform Page", () => {
     });
 
     after(() => {
-      cy.deleteFormTickets(kummerformstrings.maxlength.testtitle);
+      cy.deleteFormTickets(testTitle);
       cy.visit("/tickets");
-      tickets.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("not.exist");
+      tickets.checkTicketExistence(testTitle).should("not.exist");
     });
   });
 });
