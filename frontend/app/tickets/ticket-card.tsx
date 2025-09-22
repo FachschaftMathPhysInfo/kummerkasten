@@ -62,6 +62,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
               ticket.state === TicketState.Open && "bg-ticketstate-open",
               ticket.state === TicketState.Closed && "bg-ticketstate-closed"
             )}
+            data-cy={`ticket-card-state-${ticket.state}`}
             style={{color: calculateFontColor(getTicketStateColor(ticket.state))}}
           >
             {ticket.state === TicketState.New
@@ -81,7 +82,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
               <div className="flex overflow-x-auto gap-1">
                 {ticketLabels.length <= 2 ? (
                   ticketLabels?.map((label) => (
-                    label?.id && <LabelBadge key={label.id} label={label}/>
+                    label?.id && <LabelBadge key={label.id} label={label} data-cy={`ticket-card-label-${label.name}`}/>
                   ))
                 ) : (
                   <div className={'flex gap-1 items-center'}>
@@ -96,7 +97,8 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                 )}
               </div>
               <div
-                className="hidden shrink-0 md:flex flex-col text-xs items-center justify-center text-muted-foreground">
+                className="hidden shrink-0 md:flex flex-col text-xs items-center justify-center text-muted-foreground"
+                ata-cy={`ticket-card-changed-${ticket.lastModified}`}>
                 Geändert: {format(new Date(ticket.lastModified), "dd.MM.yy")}
               </div>
             </>
@@ -104,7 +106,12 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="cursor-pointer flex items-center justify-center">
+              <div className="cursor-pointer flex items-center justify-center"
+                   data-cy={`ticket-card-dropdown-${ticket.id}`}
+                   onClick={(e) => {
+                     e.stopPropagation();
+                     e.preventDefault();
+                   }}>
                 {isMobile ? (
                   <MoreHorizontal className="w-6 h-6"/>
                 ) : (
@@ -119,6 +126,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                   e.preventDefault();
                   void copyTicketUrl();
                 }}
+                data-cy={`ticket-card-copy-${ticket.id}`}
               >
                 <Link/> Link kopieren
               </DropdownMenuItem>
@@ -131,6 +139,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                     setDialogStateAction({mode: "delete", currentTicket: ticket});
                   }}
                   className="text-destructive"
+                  data-cy={`ticket-card-delete-${ticket.id}`}
                 >
                   <Trash2 className="text-destructive"/> Löschen
                 </DropdownMenuItem>

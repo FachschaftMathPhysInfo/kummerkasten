@@ -60,8 +60,15 @@ export default function AccountDataForm() {
   }, [resetFormWithUserData]);
 
   async function onValidSubmit(userData: AccountDataFormData) {
+    setHasTriedToSubmit(true)
     setIsSavingAccount(true);
+
     const client = getClient();
+    const userObject = {
+      firstname: userData.firstname !== user?.firstname ? userData.firstname : null,
+      lastname: userData.lastname !== user?.lastname ? userData.lastname : null,
+      mail: userData.mail !== user?.mail ? userData.mail : null,
+    }
 
     if (!user) {
       toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
@@ -77,24 +84,21 @@ export default function AccountDataForm() {
           form.setError("mail", {
             message: "Diese E-Mail-Adresse wird bereits verwendet",
           });
-          setIsSavingAccount(false);
           return;
         }
+
+        setHasTriedToSubmit(false);
       } catch (error) {
         toast.error("Fehler beim Überprüfen der E-Mail-Adresse");
         console.error(error);
-        setIsSavingAccount(false);
-        return;
+      } finally {
+        setIsSavingAccount(false)
       }
     }
 
     const updateData: UpdateUserSettingsMutationVariables = {
       id: user.id,
-      user: {
-        mail: userData.mail.trimStart().trimEnd(),
-        firstname: userData.firstname.trimStart().trimEnd(),
-        lastname: userData.lastname.trimStart().trimEnd(),
-      },
+      user: userObject,
     };
 
     try {
@@ -139,6 +143,7 @@ export default function AccountDataForm() {
           isSaving={isSavingAccount}
           isLoading={isLoading}
           dataCy="input-profile-save"
+          isValid={form.formState.isValid}
         >
           <FormField
             control={form.control}

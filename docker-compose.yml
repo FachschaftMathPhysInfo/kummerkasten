@@ -3,12 +3,19 @@ services:
     image: postgres:17
     container_name: database
     restart: unless-stopped
-    env_file:
-      - .env.local
-    ports:
-      - "5432:5432"
+    env_file: .env.local
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    image: kummerkasten:latest
+    env_file: .env.local
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_started
 
 volumes:
   pgdata:

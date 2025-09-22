@@ -32,6 +32,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                 <Button
                   variant="outline"
                   className={"w-fit justify-between"}
+                  data-cy={'calendar-start'}
                 >
                   {startDate ? format(startDate, "dd.MM.yy") : "Start"}
                 </Button>
@@ -57,6 +58,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                 <Button
                   variant="outline"
                   className={"w-fit justify-between"}
+                  data-cy={'calendar-end'}
                 >
                   {endDate ? format(endDate, "dd.MM.yy") : "Ende"}
                 </Button>
@@ -96,7 +98,8 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
     <div className="flex gap-2">
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className={cn(!!startDate && "border !border-accent")}>
+          <Button variant="outline" className={cn(!!startDate && "border !border-accent")}
+                  data-cy="desktop-calendar-start">
             <CalendarIcon className="mr-1 h-4 w-4"/>
             {startDate ? format(startDate, "dd.MM.yy") : <span>Start</span>}
           </Button>
@@ -114,6 +117,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               disabled={!startDate}
               onClick={() => setStartDate(null)}
               className={'w-full justify-center items-center gap-2'}
+              data-cy={'start-calendar-reset'}
             >
               <RotateCcw/>
               Zurücksetzen
@@ -124,7 +128,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className={cn(!!endDate && "border !border-accent")}>
+          <Button variant="outline" className={cn(!!endDate && "border !border-accent")} data-cy="desktop-calendar-end">
             <CalendarIcon className="mr-1 h-4 w-4"/>
             {endDate ? format(endDate, "dd.MM.yy") : <span>Ende</span>}
           </Button>
@@ -142,6 +146,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               disabled={!endDate}
               onClick={() => setEndDate(null)}
               className={'w-full justify-center items-center gap-2'}
+              data-cy={'end-calendar-reset'}
             >
               <RotateCcw/>
               Zurücksetzen

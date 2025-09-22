@@ -113,9 +113,9 @@ export default function UserForm(props: UserFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Vorname</FormLabel>
               <FormControl>
-                <Input placeholder={"Maxi"} {...field} />
+                <Input placeholder={"Maxi"} {...field} data-cy={'firstname-input'}/>
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'firstname-input-message'}/>
             </FormItem>
           )}
         />
@@ -127,9 +127,9 @@ export default function UserForm(props: UserFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Nachname</FormLabel>
               <FormControl>
-                <Input placeholder={"Musterperson"} {...field} />
+                <Input placeholder={"Musterperson"} {...field} data-cy={'lastname-input'}/>
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'lastname-input-message'}/>
             </FormItem>
           )}
         />
@@ -141,9 +141,9 @@ export default function UserForm(props: UserFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>E-Mail</FormLabel>
               <FormControl>
-                <Input placeholder={"maxi.musterperson@mail.de"} {...field} />
+                <Input placeholder={"maxi.musterperson@mail.de"} {...field} data-cy={'mail-input'}/>
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'mail-input-message'}/>
             </FormItem>
           )}
         />
@@ -155,9 +155,9 @@ export default function UserForm(props: UserFormProps) {
             <FormItem className={"flex-grow"}>
               <FormLabel>Passwort</FormLabel>
               <FormControl>
-                <Input placeholder={"Passwort"} type={"password"} {...field} />
+                <Input placeholder={"Passwort"} type={"password"} {...field} data-cy={'password-input'}/>
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'password-input-message'}/>
             </FormItem>
           )}
         />
@@ -173,9 +173,10 @@ export default function UserForm(props: UserFormProps) {
                   type={"password"}
                   {...field}
                   className={cn(form.getFieldState('password').invalid && 'border-destructive')}
+                  data-cy={'confirm-password-input'}
                 />
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'confirm-password-input-message'}/>
             </FormItem>
           )}
         />
@@ -186,6 +187,7 @@ export default function UserForm(props: UserFormProps) {
             variant={"outline"}
             type={"button"}
             className={"flex-grow-[0.5]"}
+            data-cy={'cancel-button'}
           >
             Abbrechen
           </Button>
@@ -194,6 +196,7 @@ export default function UserForm(props: UserFormProps) {
             disabled={(!form.formState.isValid && hasTriedToSubmit) || loading}
             type="submit"
             className={"flex-grow"}
+            data-cy={'submit-button'}
           >
             {loading ? (
               <LoaderCircle/>

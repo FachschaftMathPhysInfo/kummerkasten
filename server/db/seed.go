@@ -68,7 +68,34 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Name:  "soziales",
 			Color: "#6a4770",
 		},
-	}
+		{
+			Name:  "mathematikon",
+			Color: "#797596",
+		},
+		{
+			Name:  "PAP",
+			Color: "#A1869E",
+		},
+		{
+			Name:  "Vorkurs",
+			Color: "#684A52",
+		},
+		{
+			Name:  "Bachelorarbeit",
+			Color: "#87A0B2",
+		},
+		{
+			Name:  "Seminar",
+			Color: "#A4BEF3",
+		},
+		{
+			Name:  "Mittagspause",
+			Color: "#4E8098",
+		},
+		{
+			Name:  "Laptop",
+			Color: "#B6CB9E",
+		}}
 
 	if err := insertData(ctx, db, (*models.Label)(nil), labels, "Labels"); err != nil {
 		return err
@@ -119,7 +146,151 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Labels:        []*models.Label{labelMap["soziales"], labelMap["fachschaft"]},
 			CreatedAt:     time.Now(),
 			LastModified:  time.Now(),
-		}}
+		},
+		{
+			Title:         "PAP",
+			OriginalTitle: "PAP",
+			Text:          "Das PAP geht mir zu lange",
+			Note:          "",
+			State:         model.TicketStateOpen,
+			Labels:        []*models.Label{labelMap["veranstaltung"], labelMap["PAP"]},
+			CreatedAt:     time.Now().AddDate(0, -1, -3),
+			LastModified:  time.Now(),
+		},
+		{
+			Title:         "Klausurvorbereitung",
+			OriginalTitle: "Analysis II",
+			Text:          "Ich brauche Hilfe bei den Übungsaufgaben.",
+			Note:          "",
+			State:         model.TicketStateNew,
+			Labels:        []*models.Label{labelMap["prof. mathe"], labelMap["veranstaltung"], labelMap["mathematikon"]},
+			CreatedAt:     time.Now().AddDate(0, -1, -3),
+			LastModified:  time.Now().AddDate(0, -1, -1),
+		},
+		{
+			Title:         "Bibliothek",
+			OriginalTitle: "Bib",
+			Text:          "Die Bibliothek ist immer voll!",
+			Note:          "Weitergeben an Uni-Verwaltung.",
+			State:         model.TicketStateOpen,
+			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["veranstaltung"]},
+			CreatedAt:     time.Now().AddDate(0, -2, 0),
+			LastModified:  time.Now().AddDate(0, -1, 20),
+		},
+		{
+			Title:         "Tutorium",
+			OriginalTitle: "IPK Tut",
+			Text:          "Das Tutorium für Programmieren fällt oft aus.",
+			Note:          "Nachfragen bei Tutor*innen.",
+			State:         model.TicketStateOpen,
+			Labels:        []*models.Label{labelMap["Laptop"], labelMap["veranstaltung"]},
+			CreatedAt:     time.Now().AddDate(-2, 0, -10),
+			LastModified:  time.Now().AddDate(0, 0, -5),
+		},
+		{
+			Title:         "Mentoring",
+			OriginalTitle: "Buddys??",
+			Text:          "Ich verstehe das Buddy-Programm nicht.",
+			Note:          "An Verantwortliche weiterleiten.",
+			State:         model.TicketStateNew,
+			Labels:        []*models.Label{labelMap["soziales"], labelMap["Vorkurs"]},
+			CreatedAt:     time.Now().AddDate(-3, 0, -10),
+			LastModified:  time.Now().AddDate(-3, 0, -10),
+		},
+		{
+			Title:         "Mensa",
+			OriginalTitle: "Essen",
+			Text:          "Das Essen in der Mensa ist zu teuer.",
+			Note:          "Valid",
+			State:         model.TicketStateClosed,
+			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"]},
+			CreatedAt:     time.Now().AddDate(-1, 0, -10),
+			LastModified:  time.Now().AddDate(0, -2, -10),
+		},
+		{
+			Title:         "Ich bin ein sehr sehr langer langer Titel (hoffentlich sehr lang)",
+			OriginalTitle: "jaja",
+			Text:          "das voll smart.",
+			Note:          "Valid",
+			State:         model.TicketStateNew,
+			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"]},
+			CreatedAt:     time.Now().AddDate(-1, -8, -10),
+			LastModified:  time.Now().AddDate(0, -2, -1),
+		},
+		{
+			Title:         "Kurzer Titel!",
+			OriginalTitle: "jaja",
+			Text: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient
+            		        montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu,
+            		        pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel,
+                            aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a,
+       		                venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer
+       		                tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend
+            		        tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+            		        Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra
+                            nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies
+       		                nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus.
+       		                Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet
+          		            adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar,
+            		        hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien
+                            ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros
+      		                faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales
+       		                sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
+           		            quis gravida magna mi a libero. Fusce vulputate eleifend sapien. Vestibulum purus
+            		        quam, scelerisque ut, mollis sed, nonummy id, metus. Nullam accumsan lorem in dui.
+                            Cras ultricies mi eu turpis hendrerit fringilla. Vestibulum ante ipsum primis in
+            		        faucibus orci luctus et ultrices posuere cubilia Curae; In ac dui quis mi
+            		        consectetuer lacinia. Nam pretium turpis et arcu. Duis arcu tortor, suscipit eget,
+            		        imperdiet nec, imperdiet iaculis, ipsum. Sed aliquam ultrices mauris. Integer ante
+            		        arcu, accumsan a, consectetuer eget, posuere ut, mauris. Praesent adipiscing.
+            		        Phasellus ullamcorper ipsum rutrum nunc. Nunc nonummy metus. Vestibulum volutpat
+            		        pretium libero. Cras id dui. Aenean ut eros et nisl sagittis vestibulum. Nullam
+            		        nulla eros, ultricies sit amet, nonummy id, imperdiet feugiat, pede. Sed lectus.
+            		        Donec mollis hendrerit risus. Phasellus nec sem in justo pellentesque facilisis.
+            		        Etiam imperdiet imperdiet orci. Nunc nec neque. Phasellus leo dolor, tempus non,
+            		        auctor et, hendrerit quis, nisi. Curabitur ligula sapien, tincidunt non, euismod
+            		        vitae, posuere imperdiet, leo. Maecenas malesuada. Praesent congue erat at massa.
+            		        Sed cursus turpis vitae tortor. Donec posuere vulputate arcu. Phasellus accumsan
+            		        cursus velit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+            		        posuere cubilia Curae; Sed aliquam, nisi quis porttitor congue, elit erat euismod
+            		        orci, ac placerat dolor lectus quis orci. Phasellus consectetuer vestibulum elit.
+            		        Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc. Vestibulum
+            		        fringilla pede sit amet augue. In turpis. Pellentesque posuere. Praesent turpis.
+            		        Aenean posuere, tor`,
+			Note:         "Valid",
+			State:        model.TicketStateNew,
+			Labels:       []*models.Label{labelMap["PAP"], labelMap["fachschaft"]},
+			CreatedAt:    time.Now().AddDate(0, -8, -10),
+			LastModified: time.Now().AddDate(0, -2, -1),
+		},
+		{
+			Title:         "Sehr viele Labels",
+			OriginalTitle: "jaja",
+			Text:          "das voll smart.",
+			Note:          "Valid",
+			State:         model.TicketStateNew,
+			Labels: []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"],
+				labelMap["dozent*in"], labelMap["prof. mathe"],
+				labelMap["lineare algebra"], labelMap["fachschaft"],
+				labelMap["gremienwahlen"], labelMap["soziales"],
+				labelMap["mathematikon"], labelMap["PAP"], labelMap["Vorkurs"],
+				labelMap["Bachelorarbeit"], labelMap["Seminar"],
+				labelMap["Laptop"]},
+			CreatedAt:    time.Now().AddDate(0, -4, -10),
+			LastModified: time.Now().AddDate(0, -2, -1),
+		},
+		{
+			Title:         "Ich bin ein sehr altes Ticket",
+			OriginalTitle: "jaja",
+			Text:          "das voll smart.",
+			Note:          "Valid",
+			State:         model.TicketStateClosed,
+			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["mathematikon"]},
+			CreatedAt:     time.Now().AddDate(-10, -8, -10),
+			LastModified:  time.Now().AddDate(-9, -2, -1),
+		},
+	}
 	if err := insertData(ctx, db, (*models.Ticket)(nil), tickets, "Tickets"); err != nil {
 		return err
 	}

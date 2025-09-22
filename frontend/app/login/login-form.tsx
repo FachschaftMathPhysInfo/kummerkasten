@@ -45,18 +45,17 @@ export default function LoginForm() {
   };
 
   async function onValidSubmit(userData: z.infer<typeof loginFormSchema>) {
-    let ok: boolean
     setIsLoading(true);
 
-    try {
-      ok = await login(userData.mail, userData.password)
-    } catch (error) {
+    const ok = await login(userData.mail, userData.password)
+
+    if (ok === null) {
       toast.error("Fehler beim Anmelden")
-      console.error("Failed logging in user: ", error)
       return
     }
 
     setIsLoading(false);
+
     if (ok) {
       setHasTriedToSubmit(false)
       router.push("/tickets")

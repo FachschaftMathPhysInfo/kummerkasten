@@ -31,7 +31,12 @@ export default function AboutSection() {
         Was ist der Kummerkasten?
       </CardTitle>
       <CardContent className="text-left">
-        <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">{text}</p>
+        <p
+          className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap"
+          data-cy={'about-text'}
+        >
+          {text}
+        </p>
       </CardContent>
     </Card>
   );

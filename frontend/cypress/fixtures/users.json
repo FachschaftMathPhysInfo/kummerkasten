@@ -30,5 +30,13 @@
     "password": "cheffe",
     "id": "333333",
     "role": "ADMIN"
+  },
+  "temp": {
+    "firstname": "Test",
+    "lastname": "User",
+    "mail": "test.user@kummer.kasten",
+    "id": "444444",
+    "role": "USER",
+    "password": "EinTestPasswort123!"
   }
 }

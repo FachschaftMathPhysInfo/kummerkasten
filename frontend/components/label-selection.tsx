@@ -15,7 +15,7 @@ interface LabelSelectionProps {
 export default function LabelSelection({labels, selectedLabels, setLabels}: LabelSelectionProps) {
   return (
     <Command>
-      <CommandInput placeholder="Labels suchen..."/>
+      <CommandInput placeholder="Labels suchen..." data-cy={'label-search'}/>
       <CommandGroup className={'max-h-[300px] overflow-y-auto'}>
         {labels.map((label) => {
           const isSelected = selectedLabels.map(l => l.id).includes(label.id);
@@ -30,6 +30,7 @@ export default function LabelSelection({labels, selectedLabels, setLabels}: Labe
                 )
               }}
               className={'data-[selected=true]:!bg-accent/50 flex items-center'}
+              data-cy={'desktop-overview-label-${label.id}'}
             >
               <Check className={cn("mr-2 h-4 w-4", isSelected ? "opacity-100" : "opacity-0")}/>
               <div className={'flex-1 min-w-0'}>

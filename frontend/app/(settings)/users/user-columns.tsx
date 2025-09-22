@@ -104,6 +104,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           mode: "demote",
                           currentUser: row.original
                         })}
+                        data-cy={'demote-button'}
                       >
                         <UserMinus className={'inline mr-2'}/>
                         Admin entfernen
@@ -114,6 +115,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           mode: "resetPassword",
                           currentUser: row.original
                         })}
+                        data-cy={'reset-password-button'}
                       >
                         <RotateCcw className={'inline mr-2'}/>
                         Password zurücksetzen
@@ -126,6 +128,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           mode: "promote",
                           currentUser: row.original
                         })}
+                        data-cy={'promote-button'}
                       >
                         <UserCheck className={'inline mr-2'}/>
                         Admin machen
@@ -136,6 +139,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           mode: "resetPassword",
                           currentUser: row.original
                         })}
+                        data-cy={'reset-password-button'}
                       >
                         <RotateCcw className={'inline mr-2'}/>
                         Password zurücksetzen
@@ -147,6 +151,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                           currentUser: row.original
                         })}
                         className={'text-destructive'}
+                        data-cy={'delete-button'}
                       >
                         <Trash className={'stroke-destructive inline mr-2'}/>
                         Löschen
