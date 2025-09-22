@@ -1,6 +1,7 @@
 import * as kummerform from "../pages/kummerform.po";
 import users from "../fixtures/users.json";
 import kummerformstrings from "../fixtures/kummerform.json";
+import * as tickets from "../pages/ticket-overview.po"
 
 describe("Kummerform Page", () => {
   let formLabels: any[] = [];
@@ -148,7 +149,7 @@ describe("Kummerform Page", () => {
 
       cy.login(users.admin.mail, users.admin.password);
       cy.visit("/tickets");
-      kummerform.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("exist");
+      tickets.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("exist");
     });
 
     it("should reset the form on valid inputs", () => {
@@ -174,7 +175,7 @@ describe("Kummerform Page", () => {
     after(() => {
       cy.deleteFormTickets(kummerformstrings.maxlength.testtitle);
       cy.visit("/tickets");
-      kummerform.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("not.exist");
+      tickets.checkTicketExistence(kummerformstrings.maxlength.testtitle).should("not.exist");
     });
   });
 });

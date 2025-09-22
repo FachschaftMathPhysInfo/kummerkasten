@@ -29,3 +29,7 @@ export function getSortOrderDesc() {
 export function getTicketCard(id: string) {
     return cy.get(`[data-cy="ticket-card-${id}"]`)
 }
+
+export function checkTicketExistence(title: string) {
+  return cy.get(`[data-cy="ticket-card-title-${title}"]`);
+}
