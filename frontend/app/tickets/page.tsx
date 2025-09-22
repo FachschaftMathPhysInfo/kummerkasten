@@ -55,6 +55,8 @@ export default function TicketPage() {
 
   useEffect(() => {
     triggerTicketRefetch()
+    // can't use function as array dependency as the render and update depth are exceeded
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

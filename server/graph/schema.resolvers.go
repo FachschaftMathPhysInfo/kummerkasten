@@ -684,6 +684,16 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
 	var maxOrder sql.NullInt32
 	var questionExists bool
+	const MAXQUESTIONLENGTH = 70
+	const MAXANSWERLENGTH = 700
+
+	if len(questionAnswerPair.Question) > MAXQUESTIONLENGTH {
+		return nil, fmt.Errorf("question exceeds max length of %v", MAXQUESTIONLENGTH)
+	}
+
+	if len(questionAnswerPair.Answer) > MAXANSWERLENGTH {
+		return nil, fmt.Errorf("answer exceeds max length of %v", MAXANSWERLENGTH)
+	}
 
 	questionExists, err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		Where("LOWER(question) = LOWER(?)", questionAnswerPair.Question).
