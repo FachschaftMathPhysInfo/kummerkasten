@@ -684,7 +684,7 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
 	var maxOrder sql.NullInt32
 	var questionExists bool
-	const MAXQUESTIONLENGTH = 70
+	const MAXQUESTIONLENGTH = 100
 	const MAXANSWERLENGTH = 700
 
 	if len(questionAnswerPair.Question) > MAXQUESTIONLENGTH {
@@ -796,15 +796,15 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 		return "", fmt.Errorf("QuestionAnswerPair with id %v not found", id)
 	}
 
-	const MAXQUESTIONLENGTH = 70
-	const MAXANSWERLENGTH = 700
+	const MAX_QUESTION_LENGTH = 100
+	const MAX_ANSWER_LENGTH = 700
 
-	if len(*questionAnswerPair.Question) > MAXQUESTIONLENGTH {
-		return "", fmt.Errorf("question exceeds max length of %v", MAXQUESTIONLENGTH)
+	if len(*questionAnswerPair.Question) > MAX_QUESTION_LENGTH {
+		return "", fmt.Errorf("question exceeds max length of %v", MAX_QUESTION_LENGTH)
 	}
 
-	if len(*questionAnswerPair.Answer) > MAXANSWERLENGTH {
-		return "", fmt.Errorf("answer exceeds max length of %v", MAXANSWERLENGTH)
+	if len(*questionAnswerPair.Answer) > MAX_ANSWER_LENGTH {
+		return "", fmt.Errorf("answer exceeds max length of %v", MAX_ANSWER_LENGTH)
 	}
 
 	qAP := questionAnswerPairs[0]

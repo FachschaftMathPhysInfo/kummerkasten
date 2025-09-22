@@ -28,15 +28,15 @@ interface FaqFormProps {
   uniqueQuestion: string[];
 }
 
-const QUESTION_MAX_LENGTH = 70
+const QUESTION_MAX_LENGTH = 100
 const ANSWER_MAX_LENGTH = 700
 
 const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuestion?: string, createMode?: boolean) => z.object({
     question: z.string().nonempty({message: "Bitte gib eine Frage ein."}).refine(
       (val) =>
         !uniqueQuestion.includes(val) || val === currentQuestion,
-      {message: "Diese Frage existiert bereits."}).max(QUESTION_MAX_LENGTH, "Frage darf maximal 70 Charaktere lang sein."),
-    answer: z.string().nonempty({message: "Bitte gib eine Antwort ein."}).max(ANSWER_MAX_LENGTH, "Antwort darf maximal 700 Charaktere lang sein."),
+      {message: "Diese Frage existiert bereits."}).max(QUESTION_MAX_LENGTH, `Frage darf maximal ${QUESTION_MAX_LENGTH} Charaktere lang sein.`),
+    answer: z.string().nonempty({message: "Bitte gib eine Antwort ein."}).max(ANSWER_MAX_LENGTH, `Antwort darf maximal ${ANSWER_MAX_LENGTH} Charaktere lang sein.`),
     order: z.union([z.string(), z.number()])
       .transform((val, ctx) => {
         if (val === "") {
