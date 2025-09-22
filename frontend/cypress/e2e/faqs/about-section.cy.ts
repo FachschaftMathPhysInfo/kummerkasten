@@ -58,7 +58,7 @@ describe('About Section Tests', () => {
         page.getSubmitButton().should('be.disabled')
 
         cy.visit('/')
-        kummerform.getAboutTextVal().should('eq', currentAboutText)
+        kummerform.getAboutText().should('eq', currentAboutText)
       })
 
       it('saves valid text', () => {

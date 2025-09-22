@@ -30,18 +30,13 @@ export default function AboutSection() {
       <CardTitle className="text-3xl items-center text-center font-semibold text-foreground mb-2">
         Was ist der Kummerkasten?
       </CardTitle>
-<<<<<<< HEAD
       <CardContent className="text-left" data-cy={'kummerform-about'}>
-        <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">{text}</p>
-=======
-      <CardContent className="text-left">
         <p
           className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap"
           data-cy={'about-text'}
         >
           {text}
         </p>
->>>>>>> main
       </CardContent>
     </Card>
   );

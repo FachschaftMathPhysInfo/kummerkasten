@@ -5,11 +5,11 @@ export type KummerFormData = {
   text?: string;
 };
 
-export function getAboutText() {
+export function getKummerAboutText() {
   return cy.get(`[data-cy=kummerform-about]`);
 }
 
-export function getAboutTextVal() {
+export function getAboutText() {
   return cy.get('[data-cy=about-text]').invoke('text')
 }
 
