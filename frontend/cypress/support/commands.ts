@@ -278,35 +278,6 @@ Cypress.Commands.add('createLabel', (data: LabelDialogData) => {
   })
 });
 
-Cypress.Commands.add('createLabelWithIdAsReturn', (data: LabelDialogData) => {
-  const newLabel: NewLabel = {
-    name: data.name,
-    color: data.color,
-    formLabel: data.public,
-  };
-
-  const mutation = `
-    mutation createLabel($label: NewLabel!) {
-      createLabel(label: $label) {
-        id
-      }
-    }
-  `;
-
-  cy.request({
-    method: "POST",
-    url: "/api",
-    headers: {"Content-Type": "application/json"},
-    body: {
-      query: mutation,
-      operationName: "createLabel",
-      variables: {label: newLabel},
-    },
-  }).then((res) => {
-    return res.body.data.createLabel.id as string;
-  });
-});
-
 Cypress.Commands.add("getTicketsByStateNewOrOpen", (): Cypress.Chainable<any[]> => {
   const query = `
         query allTickets {
@@ -338,57 +309,6 @@ Cypress.Commands.add("getTicketsByStateNewOrOpen", (): Cypress.Chainable<any[]> 
     return tickets.filter((t: any) => t.state === TicketState.New || t.state === TicketState.Open);
   });
 });
-
-Cypress.Commands.add('updateTicketTitle', (id: string, newTitle: string) => {
-  const mutation = `
-      mutation updateTicket($id: String!, $ticket: UpdateTicket!) {
-        updateTicket(id: $id, ticket: $ticket)
-      }
-    `;
-
-  return cy.request({
-    method: "POST",
-    url: "http://localhost:8080/api",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: {
-      query: mutation,
-      variables: {
-        id,
-        ticket: {
-          title: newTitle,
-        },
-      },
-      operationName: "updateTicket",
-    },
-  });
-});
-
-Cypress.Commands.add('updateTicketState', (id: string, state: TicketState) => {
-  const mutation = `
-      mutation updateTicketState($id: [String!], $state: TicketState!) {
-        updateTicketState(ids: [$id], state: $state)
-      }
-    `;
-
-  return cy.request({
-    method: "POST",
-    url: "http://localhost:8080/api",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: {
-      query: mutation,
-      variables: {
-        id,
-        state
-      },
-      operationName: "updateTicketState",
-    },
-  });
-});
-
 
 Cypress.Commands.add('createTicket', (ticket: NewTicket): Cypress.Chainable<string> => {
   const newTicket: NewTicket = {
@@ -466,12 +386,6 @@ declare global {
       deleteLabels(name: string[]): Chainable<any>
 
       createLabel(label: LabelDialogData): Chainable<any>
-
-      createLabelWithIdAsReturn(label: LabelDialogData): Chainable<any>
-
-      updateTicketTitle(id: string, newTitle: string): Chainable<Response<any>>;
-
-      updateTicketState(id: string, state: TicketState): Chainable<Response<any>>;
 
       createTicket(ticket: NewTicket): Chainable<string>;
 

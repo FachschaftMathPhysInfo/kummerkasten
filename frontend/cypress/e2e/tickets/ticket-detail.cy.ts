@@ -53,7 +53,7 @@ roles.forEach(role => {
       })
 
       context(`Title`, () => {
-        it(`Edit button loads save and cancel`, () => {
+        it(`Edit button loads save, cancel and title input`, () => {
           ticketDetail.getTicketDetailTitleEdit().click();
           ticketDetail.getTicketDetailSave().should('exist');
           ticketDetail.getTicketDetailCancel().should('exist');
