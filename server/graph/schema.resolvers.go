@@ -827,6 +827,19 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 
 	if questionAnswerPair.Question != nil {
 		qAP.Question = *questionAnswerPair.Question
+
+		exists, err := r.DB.NewSelect().Model((*model.QuestionAnswerPair)(nil)).
+			Where("LOWER(TRIM(question)) = ?", strings.ToLower(strings.TrimSpace(qAP.Question))).
+			Exists(ctx)
+
+		if err != nil {
+			log.Printf("Failed to fetch questionAnswerPair for update uniquenes checj: %v", err)
+			return "", ErrInternal
+		}
+
+		if exists {
+			return "", fmt.Errorf("qap with this question already exists")
+		}
 	}
 	if questionAnswerPair.Answer != nil {
 		qAP.Answer = *questionAnswerPair.Answer

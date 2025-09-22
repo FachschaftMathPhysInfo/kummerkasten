@@ -32,12 +32,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const createMode = !qap
 
   const faqFormSchema = z.object({
-    question: z.string()
-      .nonempty({error: "Bitte gib eine Frage an"})
-      .refine(
-        val => !qaps.map(q => q.question).includes(val),
-        {error: "Diese Frage existiert bereits"}
-      ),
+    question: z.string().nonempty({error: "Bitte gib eine Frage an"}),
     answer: z.string().nonempty({error: "Bitte gib eine Antwort an"}),
     position: z.number()
       .min(0, {error: "Bitte gib einen Wert über 0 an"}),
@@ -83,7 +78,6 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
       closeDialog();
     }
 
-    triggerQAPRefetch();
     setLoading(false);
   }
 
@@ -93,7 +87,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
       await client.request(CreateQuestionAnswerPairDocument, {questionAnswerPair: data})
       return true
     } catch (err) {
-      if(String(err).includes('unique')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+      if(String(err).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
       else toast.error('Beim Erstellen ist ein Fehler aufgetreten')
       return false
     }
@@ -112,7 +106,8 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
         {id: qap.id, questionAnswerPair: data})
       return true
     } catch (err) {
-      if(String(err).includes('unique')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+      console.log(String(err))
+      if(String(err).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
       else toast.error('Beim Aktualisieren des FAQ ist ein Fehler aufgetreten')
       return false
     }
