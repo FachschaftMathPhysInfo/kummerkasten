@@ -77,18 +77,27 @@ export function QAPTable() {
     });
   }, []);
 
-  const updatePosition = useCallback(async (draggedId: string, newPosition: number) => {
+  const updatePosition = useCallback(async (draggedId: string, _newPosition: number) => {
+    setLocalData((current) => {
+      return current;
+    });
+
+    const newIndex = localData.findIndex((r) => r.id === draggedId);
+    if (newIndex === -1) {
+      return;
+    }
+
     try {
       await client.request(UpdateQuestionAnswerPairDocument, {
         id: draggedId,
-        questionAnswerPair: {position: newPosition}
+        questionAnswerPair: { position: newIndex },
       });
     } catch {
       toast.error("Fehler beim Sortieren der FAQ aufgetreten.");
     }
 
-    triggerQAPRefetch()
-  }, [client, triggerQAPRefetch]);
+    triggerQAPRefetch();
+  }, [client, localData, triggerQAPRefetch]);
 
   return (
     <DndProvider backend={HTML5Backend}>

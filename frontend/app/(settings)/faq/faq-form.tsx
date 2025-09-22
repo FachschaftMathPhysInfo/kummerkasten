@@ -27,15 +27,15 @@ interface FaqFormProps {
 export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const [loading, setLoading] = useState(false);
   const {qaps, triggerQAPRefetch} = useQAPs()
-  const [maxOrder, setMaxOrder] = useState(Math.max(0, ...qaps.map(q => q.position)))
+  // maxPosition is the highest OCCUPIED zero-based index
+  const [maxPosition, setMaxPosition] = useState(qaps.length - 1)
   const createMode = !qap
 
   const faqFormSchema = z.object({
     question: z.string().nonempty({error: "Bitte gib eine Frage an"}),
     answer: z.string().nonempty({error: "Bitte gib eine Frage an"}),
     position: z.number()
-      .min(1, {error: "Bitte gib einen Wert über 0 an"})
-      .max(maxOrder + 1, {error: `Bitte gib einen Wert unter ${maxOrder + 1} an`}),
+      .min(0, {error: "Bitte gib einen Wert über 0 an"}),
   })
 
   const form = useForm<z.infer<typeof faqFormSchema>>({
@@ -43,19 +43,36 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
     defaultValues: {
       question: qap?.question ?? "",
       answer: qap?.answer ?? "",
-      position: qap?.position ? qap.position + 1 : maxOrder + 1
+      position: qap?.position ? qap.position : maxPosition + 1
     },
   });
 
   useEffect(() => {
-    setMaxOrder(Math.max(0, ...qaps.map(q => q.position)))
+    setMaxPosition(qaps.length - 1)
   }, [qaps])
+
+  useEffect(() => {
+    if (qap) {
+      form.reset({
+        question: qap.question,
+        answer: qap.answer,
+        position: qap.position,
+      });
+    } else {
+      form.reset({
+        question: "",
+        answer: "",
+        position: maxPosition + 1,
+      });
+    }
+  }, [qap, maxPosition]);
 
   const onValidSubmit = async (data: z.infer<typeof faqFormSchema>) => {
     setLoading(true);
     if (createMode) await createQAP(data)
     else await updateQAP(data)
 
+    form.reset()
     closeDialog();
     triggerQAPRefetch();
     setLoading(false);

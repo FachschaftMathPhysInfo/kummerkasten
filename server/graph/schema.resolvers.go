@@ -682,8 +682,9 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 
 // CreateQuestionAnswerPair is the resolver for the createQuestionAnswerPair field.
 func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
-	var maxPosition sql.NullInt32
-	var newPosition int32
+	// The first OCCUPIED position
+	var maxPositionNullable sql.NullInt32
+	var maxPosition int32
 	var questionExists bool
 
 	questionExists, err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
@@ -701,36 +702,36 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 	}
 
 	err = r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
-		ColumnExpr(`MAX("position")`).Scan(ctx, &maxPosition)
+		ColumnExpr(`MAX("position")`).Scan(ctx, &maxPositionNullable)
 	if err != nil {
 		log.Printf("Failed to get max position for QuestionAnswerPair: %v", err)
 		return nil, ErrInternal
 	}
 
-	if maxPosition.Valid {
-		newPosition = maxPosition.Int32 + 1
+	if maxPositionNullable.Valid {
+		maxPosition = maxPositionNullable.Int32
 	} else {
-		newPosition = 0
+		maxPosition = -1
 	}
 
 	createdQuestionAnswerPair := &model.QuestionAnswerPair{
 		ID:       uuid.New().String(),
 		Question: questionAnswerPair.Question,
 		Answer:   questionAnswerPair.Answer,
-		Position: newPosition,
+		Position: maxPosition + 1,
 	}
 
 	if questionAnswerPair.Position != nil {
 		if *questionAnswerPair.Position < 0 {
 			log.Print("questionAnswerPair was not created as position was < 0")
 			return nil, fmt.Errorf("position must be > 0")
-		} else if *questionAnswerPair.Position > newPosition {
-			createdQuestionAnswerPair.Position = newPosition
+		} else if *questionAnswerPair.Position > maxPosition {
+			createdQuestionAnswerPair.Position = maxPosition + 1
 		} else {
 			createdQuestionAnswerPair.Position = *questionAnswerPair.Position
 		}
 
-		if createdQuestionAnswerPair.Position > 0 && createdQuestionAnswerPair.Position < newPosition {
+		if createdQuestionAnswerPair.Position <= maxPosition {
 			var qaps []*model.QuestionAnswerPair
 			if err := r.DB.NewSelect().
 				Model(&qaps).
@@ -854,14 +855,14 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 
 		if pos < 0 {
 			log.Print("questionAnswerPair was not created as position was < 0")
-			return "", fmt.Errorf("position must be > 0")
+			return "", fmt.Errorf("position must be >= 0")
 		} else if pos > maxPosition {
 			qAP.Position = maxPosition
 		} else {
 			qAP.Position = pos
 		}
 
-		if pos > 0 && pos < maxPosition {
+		if pos < maxPosition {
 			var qaps []*model.QuestionAnswerPair
 			if err := r.DB.NewSelect().
 				Model(&qaps).
