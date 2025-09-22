@@ -32,7 +32,12 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const createMode = !qap
 
   const faqFormSchema = z.object({
-    question: z.string().nonempty({error: "Bitte gib eine Frage an"}),
+    question: z.string()
+      .nonempty({error: "Bitte gib eine Frage an"})
+      .refine(
+        val => !qaps.map(q => q.question).includes(val),
+        {error: "Diese Frage existiert bereits"}
+      ),
     answer: z.string().nonempty({error: "Bitte gib eine Antwort an"}),
     position: z.number()
       .min(0, {error: "Bitte gib einen Wert über 0 an"}),
