@@ -83,8 +83,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
 
     const updatedTicket: UpdateTicket = {
       title: data.title,
-      text: data.text,
-      note: data.note,
       state: data.state,
     }
 

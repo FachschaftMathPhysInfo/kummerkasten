@@ -1,6 +1,7 @@
-import * as ticketPage from "../pages/ticket-overview.po";
-import {Label, Ticket, TicketState, UserRole} from "../../lib/graph/generated/graphql";
-import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "../pages/ticket-overview.po";
+import * as ticketPage from "../../pages/tickets/ticket-overview.po";
+import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "../../pages/tickets/ticket-overview.po";
+import * as filterBar from "../../pages/tickets/filter-bar.po";
+import {Label, Ticket, TicketState, UserRole} from "../../../lib/graph/generated/graphql";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
@@ -30,20 +31,20 @@ roles.forEach(role => {
 
           it('loads filter options', () => {
             ticketPage.getDesktopSearchTextInput().should('exist')
-            ticketPage.getDesktopOverviewStateFilterButton().should('exist')
-            ticketPage.getDesktopOverviewLabelFilterButton().should('exist')
-            ticketPage.getDesktopCalendarStartButton().should('exist')
-            ticketPage.getDesktopCalendarEndButton().should('exist')
-            ticketPage.getSortingSelectionSortButton().should('exist')
+            filterBar.getDesktopOverviewStateFilterButton().should('exist')
+            filterBar.getDesktopOverviewLabelFilterButton().should('exist')
+            filterBar.getDesktopCalendarStartButton().should('exist')
+            filterBar.getDesktopCalendarEndButton().should('exist')
+            filterBar.getSortingSelectionSortButton().should('exist')
           });
 
           it('shows filter options', () => {
             ticketPage.getDesktopSearchTextInput().should('be.visible')
-            ticketPage.getDesktopOverviewStateFilterButton().should('be.visible')
-            ticketPage.getDesktopOverviewLabelFilterButton().should('be.visible')
-            ticketPage.getDesktopCalendarStartButton().should('be.visible')
-            ticketPage.getDesktopCalendarEndButton().should('be.visible')
-            ticketPage.getSortingSelectionSortButton().should('be.visible')
+            filterBar.getDesktopOverviewStateFilterButton().should('be.visible')
+            filterBar.getDesktopOverviewLabelFilterButton().should('be.visible')
+            filterBar.getDesktopCalendarStartButton().should('be.visible')
+            filterBar.getDesktopCalendarEndButton().should('be.visible')
+            filterBar.getSortingSelectionSortButton().should('be.visible')
           })
 
           it('clear filter does not exist on start', () => {
@@ -98,118 +99,118 @@ roles.forEach(role => {
             });
 
             it('status field should be interactable', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().should('not.be.disabled');
+              filterBar.getDesktopOverviewStateFilterButton().should('not.be.disabled');
             })
 
             it('status field should have 3 status buttons', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().click()
-              ticketPage.getDesktopOverviewStatusButtonNew().should('be.visible');
-              ticketPage.getDesktopOverviewStatusButtonOpen().should('be.visible');
-              ticketPage.getDesktopOverviewStatusButtonClosed().should('be.visible');
+              filterBar.getDesktopOverviewStateFilterButton().click()
+              filterBar.getDesktopOverviewStatusButtonNew().should('be.visible');
+              filterBar.getDesktopOverviewStatusButtonOpen().should('be.visible');
+              filterBar.getDesktopOverviewStatusButtonClosed().should('be.visible');
             })
 
             it('status field should have a search bar', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().click()
-              ticketPage.getDesktopOverviewStatusFilterSearch().should('be.visible').should('not.be.disabled')
+              filterBar.getDesktopOverviewStateFilterButton().click()
+              filterBar.getDesktopOverviewStatusFilterSearch().should('be.visible').should('not.be.disabled')
             })
 
             it('status field should be filterable', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().click()
-              ticketPage.getDesktopOverviewStatusFilterSearch().type('Offen')
-              ticketPage.getDesktopOverviewStatusButtonClosed().should('not.exist')
-              ticketPage.getDesktopOverviewStatusButtonNew().should('not.exist')
-              ticketPage.getDesktopOverviewStatusButtonOpen().should('be.visible')
+              filterBar.getDesktopOverviewStateFilterButton().click()
+              filterBar.getDesktopOverviewStatusFilterSearch().type('Offen')
+              filterBar.getDesktopOverviewStatusButtonClosed().should('not.exist')
+              filterBar.getDesktopOverviewStatusButtonNew().should('not.exist')
+              filterBar.getDesktopOverviewStatusButtonOpen().should('be.visible')
             })
 
             it('status field should show selected status amount in button', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().contains('2');
+              filterBar.getDesktopOverviewStateFilterButton().contains('2');
             })
 
             it('status field should reset to new and open', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().click();
-              ticketPage.getDesktopOverviewStatusButtonClosed().click();
-              ticketPage.getDesktopOverviewStateFilterButton().click();
+              filterBar.getDesktopOverviewStateFilterButton().click();
+              filterBar.getDesktopOverviewStatusButtonClosed().click();
+              filterBar.getDesktopOverviewStateFilterButton().click();
               ticketPage.getDesktopOverviewResetFilters().click()
-              ticketPage.getDesktopOverviewStateFilterButton().contains('2');
+              filterBar.getDesktopOverviewStateFilterButton().contains('2');
             })
 
             it('filtering by open shows only open tickets', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().click();
-              ticketPage.getDesktopOverviewStatusButtonNew().click();
+              filterBar.getDesktopOverviewStateFilterButton().click();
+              filterBar.getDesktopOverviewStatusButtonNew().click();
             })
 
             it('filtering by closed shows only closed tickets', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().click();
-              ticketPage.getDesktopOverviewStatusButtonNew().click();
-              ticketPage.getDesktopOverviewStatusButtonClosed().click();
+              filterBar.getDesktopOverviewStateFilterButton().click();
+              filterBar.getDesktopOverviewStatusButtonNew().click();
+              filterBar.getDesktopOverviewStatusButtonClosed().click();
             })
 
             it('filtering by new shows only new tickets', () => {
-              ticketPage.getDesktopOverviewStateFilterButton().click();
-              ticketPage.getDesktopOverviewStatusButtonNew().click();
-              ticketPage.getDesktopOverviewStatusButtonClosed().click();
+              filterBar.getDesktopOverviewStateFilterButton().click();
+              filterBar.getDesktopOverviewStatusButtonNew().click();
+              filterBar.getDesktopOverviewStatusButtonClosed().click();
             })
           })
 
           context('Labels Field', () => {
             it('labels field should be interactable', () => {
-              ticketPage.getDesktopOverviewLabelFilterButton().should('not.be.disabled')
+              filterBar.getDesktopOverviewLabelFilterButton().should('not.be.disabled')
             })
 
             it('labels field should be loaded with no labels selected', () => {
-              ticketPage.getDesktopOverviewLabelFilterButton().contains('Labels')
+              filterBar.getDesktopOverviewLabelFilterButton().contains('Labels')
             })
 
             it('labels field should have all labels loaded as options', () => {
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabelFilterButton().click();
               labels.forEach(label => {
-                ticketPage.getDesktopOverviewLabel(label.id).parent().should('exist');
+                filterBar.getDesktopOverviewLabel(label.id).parent().should('exist');
               });
             })
 
             it('labels field should have a search function', () => {
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
-              ticketPage.getDesktopOverviewLabelFilterButton().parent().should('be.visible')
+              filterBar.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabelFilterButton().parent().should('be.visible')
             })
 
             it('labels field should be filterable', () => {
               const label = labels[0]
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
-              ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
-              ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible')
+              filterBar.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
+              filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible')
             })
 
             it('labels field should show selected amount in button', () => {
               const label = labels[0]
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
-              ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
-              ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
-              ticketPage.getDesktopOverviewLabelFilterButton().contains('1 Labels')
+              filterBar.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
+              filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
+              filterBar.getDesktopOverviewLabelFilterButton().contains('1 Labels')
             })
 
             it('labels field should have a reset button', () => {
               const label = labels[0]
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
-              ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
-              ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
-              ticketPage.getClearLabels().click()
+              filterBar.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
+              filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
+              filterBar.getClearLabels().click()
             })
 
             it('labels field should reset to no labels selected', () => {
               const label = labels[0]
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
-              ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
-              ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
-              ticketPage.getDesktopOverviewLabelFilterButton().contains('1 Labels')
-              ticketPage.getClearLabels().click()
-              ticketPage.getDesktopOverviewLabelFilterButton().contains('Labels')
+              filterBar.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
+              filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
+              filterBar.getDesktopOverviewLabelFilterButton().contains('1 Labels')
+              filterBar.getClearLabels().click()
+              filterBar.getDesktopOverviewLabelFilterButton().contains('Labels')
             })
 
             it('filtering by label should only show tickets with that label', () => {
               const label = labels[0]
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
-              ticketPage.getDesktopOverviewLabelSearch().click().type(label.name)
-              ticketPage.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
+              filterBar.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
+              filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
               tickets.forEach(ticket => {
                 const hasLabel = ticket.labels?.some((l) => l.id === label.id);
                 if (hasLabel) {
@@ -223,32 +224,32 @@ roles.forEach(role => {
 
           context('Start Calendar', () => {
             it('start calendar should have no date selected as default', () => {
-              ticketPage.getDesktopCalendarStartButton().contains('Start')
+              filterBar.getDesktopCalendarStartButton().contains('Start')
             })
 
             it('start calendar should be interactable', () => {
-              ticketPage.getDesktopCalendarStartButton().click()
+              filterBar.getDesktopCalendarStartButton().click()
             })
 
             it('start calendar should show selected date in button', () => {
-              ticketPage.getDesktopCalendarStartButton().click()
+              filterBar.getDesktopCalendarStartButton().click()
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
-              ticketPage.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
+              filterBar.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
             })
 
             it('start calendar should have a reset button', () => {
-              ticketPage.getDesktopCalendarStartButton().click()
+              filterBar.getDesktopCalendarStartButton().click()
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
-              ticketPage.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
-              ticketPage.getStartCalendarReset().click()
-              ticketPage.getDesktopCalendarStartButton().contains('Start')
+              filterBar.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
+              filterBar.getStartCalendarReset().click()
+              filterBar.getDesktopCalendarStartButton().contains('Start')
             })
 
             it('show tickets created after start date if start date selected', () => {
               const startDate = new Date('2025-09-17T00:00:00.000Z');
-              ticketPage.getDesktopCalendarStartButton().click()
+              filterBar.getDesktopCalendarStartButton().click()
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
-              ticketPage.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
+              filterBar.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
               const visibleTickets = tickets.filter(
                 (t) => t.state === TicketState.New || t.state === TicketState.Open
               );
@@ -265,32 +266,32 @@ roles.forEach(role => {
 
           context('End Calendar', () => {
             it('end calendar should have no date selected as default', () => {
-              ticketPage.getDesktopCalendarEndButton().contains('Ende')
+              filterBar.getDesktopCalendarEndButton().contains('Ende')
             })
 
             it('end calendar should be interactable', () => {
-              ticketPage.getDesktopCalendarEndButton().click()
+              filterBar.getDesktopCalendarEndButton().click()
             })
 
             it('end calendar should show selected date in button', () => {
-              ticketPage.getDesktopCalendarEndButton().click()
+              filterBar.getDesktopCalendarEndButton().click()
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
-              ticketPage.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
+              filterBar.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
             })
 
             it('end calendar should have a reset button', () => {
-              ticketPage.getDesktopCalendarEndButton().click()
+              filterBar.getDesktopCalendarEndButton().click()
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
-              ticketPage.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
-              ticketPage.getEndCalendarReset().click()
-              ticketPage.getDesktopCalendarEndButton().contains('Ende')
+              filterBar.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
+              filterBar.getEndCalendarReset().click()
+              filterBar.getDesktopCalendarEndButton().contains('Ende')
             })
 
             it('show tickets created before end date if end date selected', () => {
               const endDate = new Date('2025-09-10T00:00:00.000Z');
-              ticketPage.getDesktopCalendarEndButton().click()
+              filterBar.getDesktopCalendarEndButton().click()
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
-              ticketPage.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
+              filterBar.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
               const visibleTickets = tickets.filter(
                 (t) => t.state === TicketState.New || t.state === TicketState.Open
               );
@@ -307,19 +308,19 @@ roles.forEach(role => {
 
           context('Sorting', () => {
             it('sorting button should be interactable', () => {
-              ticketPage.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortButton().click()
             })
 
             it('sorting button should have 3 sorting values', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Erstellt').should('exist');
-              ticketPage.getSortingSelectionSortField('Geändert').should('exist');
-              ticketPage.getSortingSelectionSortField('Titel').should('exist');
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Erstellt').should('exist');
+              filterBar.getSortingSelectionSortField('Geändert').should('exist');
+              filterBar.getSortingSelectionSortField('Titel').should('exist');
             })
 
             it('selecting a sorting order should show tickets in that order', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Erstellt').click()
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Erstellt').click()
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime());
@@ -328,9 +329,9 @@ roles.forEach(role => {
             })
 
             it('clicking on the same button again should reverse the order', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Erstellt').click()
-              ticketPage.getSortingSelectionSortField('Erstellt').click()
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Erstellt').click()
+              filterBar.getSortingSelectionSortField('Erstellt').click()
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => b.getTime() - a.getTime());
@@ -339,14 +340,14 @@ roles.forEach(role => {
             })
 
             it('show sorting type and order in button', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Erstellt').click()
-              ticketPage.getSortingSelectionSortButton().contains('Erstellt');
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Erstellt').click()
+              filterBar.getSortingSelectionSortButton().contains('Erstellt');
             })
 
             it('sort tickets by create date ascending', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Erstellt').click()
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Erstellt').click()
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime());
@@ -355,9 +356,9 @@ roles.forEach(role => {
             });
 
             it('sort tickets by create date descending', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Erstellt').click()
-              ticketPage.getSortingSelectionSortField('Erstellt').click()
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Erstellt').click()
+              filterBar.getSortingSelectionSortField('Erstellt').click()
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.createdAt!));
                 const sortedDates = [...dates].sort((a, b) => b.getTime() - a.getTime());
@@ -366,8 +367,8 @@ roles.forEach(role => {
             });
 
             it('sort tickets by modified date ascending', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Geändert').click()
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Geändert').click()
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.lastModified!));
                 const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime());
@@ -376,9 +377,9 @@ roles.forEach(role => {
             })
 
             it('sort tickets by modified date descending', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Geändert').click()
-              ticketPage.getSortingSelectionSortField('Geändert').click()
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Geändert').click()
+              filterBar.getSortingSelectionSortField('Geändert').click()
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const dates = [...$cards].map(card => new Date(card.dataset.lastModified!));
                 const sortedDates = [...dates].sort((a, b) => b.getTime() - a.getTime());
@@ -387,8 +388,8 @@ roles.forEach(role => {
             })
 
             it('sort tickets by title ascending', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Titel').click();
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Titel').click();
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const titles = [...$cards].map(c => c.dataset.title!);
                 const sortedTitles = [...titles].sort();
@@ -397,9 +398,9 @@ roles.forEach(role => {
             })
 
             it('sort tickets by title descending', () => {
-              ticketPage.getSortingSelectionSortButton().click()
-              ticketPage.getSortingSelectionSortField('Titel').click();
-              ticketPage.getSortingSelectionSortField('Titel').click();
+              filterBar.getSortingSelectionSortButton().click()
+              filterBar.getSortingSelectionSortField('Titel').click();
+              filterBar.getSortingSelectionSortField('Titel').click();
               cy.get('[data-cy^="ticket-card-id"]').then($cards => {
                 const titles = [...$cards].map(c => c.dataset.title!);
                 const sortedTitles = [...titles].sort().reverse();
@@ -411,13 +412,13 @@ roles.forEach(role => {
           context('general filtering', () => {
             it('should reset all filters when clicked', () => {
               ticketPage.getDesktopSearchTextInput().type('Test');
-              ticketPage.getDesktopOverviewStateFilterButton().click();
-              ticketPage.getDesktopOverviewStatusButtonClosed().click();
-              ticketPage.getDesktopOverviewLabelFilterButton().click();
-              ticketPage.getDesktopOverviewLabel(labels[0].id).parent().click();
-              ticketPage.getDesktopCalendarStartButton().click();
+              filterBar.getDesktopOverviewStateFilterButton().click();
+              filterBar.getDesktopOverviewStatusButtonClosed().click();
+              filterBar.getDesktopOverviewLabelFilterButton().click();
+              filterBar.getDesktopOverviewLabel(labels[0].id).parent().click();
+              filterBar.getDesktopCalendarStartButton().click();
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
-              ticketPage.getDesktopCalendarEndButton().click();
+              filterBar.getDesktopCalendarEndButton().click();
               cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
 
               ticketPage.getDesktopOverviewResetFilters().should('be.visible').click();
@@ -426,10 +427,10 @@ roles.forEach(role => {
               );
 
               ticketPage.getDesktopSearchTextInput().should('have.value', '');
-              ticketPage.getDesktopOverviewStateFilterButton().contains('2');
-              ticketPage.getDesktopOverviewLabelFilterButton().contains('Labels');
-              ticketPage.getDesktopCalendarStartButton().contains('Start');
-              ticketPage.getDesktopCalendarEndButton().contains('Ende');
+              filterBar.getDesktopOverviewStateFilterButton().contains('2');
+              filterBar.getDesktopOverviewLabelFilterButton().contains('Labels');
+              filterBar.getDesktopCalendarStartButton().contains('Start');
+              filterBar.getDesktopCalendarEndButton().contains('Ende');
 
               cy.get('[data-cy^="ticket-card-id"]').should('have.length', visibleTickets.length);
             });
