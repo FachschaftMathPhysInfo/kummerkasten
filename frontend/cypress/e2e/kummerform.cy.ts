@@ -1,7 +1,7 @@
 import * as kummerform from "../pages/kummerform.po";
 import users from "../fixtures/users.json";
 import kummerformstrings from "../fixtures/kummerform.json";
-import * as tickets from "../pages/ticket-overview.po"
+import * as tickets from "../pages/tickets/ticket-overview.po"
 
 describe("Kummerform Page", () => {
   let formLabels: any[] = [];
