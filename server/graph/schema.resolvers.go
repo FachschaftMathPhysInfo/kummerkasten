@@ -17,6 +17,7 @@ import (
 
 	"github.com/Plebysnacc/kummerkasten/auth"
 	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/Plebysnacc/kummerkasten/graph/utils"
 	"github.com/Plebysnacc/kummerkasten/middleware"
 	"github.com/Plebysnacc/kummerkasten/models"
 	"github.com/google/uuid"
@@ -869,40 +870,14 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 		if pos < 0 {
 			return "", fmt.Errorf("position must be >= 0")
 		} else if pos > maxPosition {
-			qAP.Position = maxPosition
-		} else {
-			qAP.Position = pos
-		}
-
-		if pos < maxPosition {
-			var qaps []*model.QuestionAnswerPair
-			if err := r.DB.NewSelect().
-				Model(&qaps).
-				Where("position >= ?", pos).
-				Order("position DESC").
-				Scan(ctx); err != nil {
-				log.Printf("failed to select qaps: %v", err)
+			if err := utils.Indices(ctx, r.DB, maxPosition, qAP.ID); err != nil {
 				return "", ErrInternal
 			}
-
-			for _, q := range qaps {
-				if _, err := r.DB.NewUpdate().
-					Model(q).
-					Set(`"position" = "position" + 1`).
-					Where("id = ?", q.ID).
-					Exec(ctx); err != nil {
-					log.Printf("failed to bump qap %v: %v", q.ID, err)
-					return "", ErrInternal
-				}
+		} else {
+			if err := utils.Indices(ctx, r.DB, pos, qAP.ID); err != nil {
+				return "", ErrInternal
 			}
 		}
-	}
-
-	if _, err := r.DB.NewUpdate().Model(qAP).
-		Where("id = ?", id).
-		Exec(ctx); err != nil {
-		log.Printf("Failed to update QuestionAnswerPair: %v", err)
-		return "", ErrInternal
 	}
 
 	return qAP.ID, nil
