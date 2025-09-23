@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/Plebysnacc/kummerkasten/models"
-	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -33,10 +33,10 @@ var (
 	}
 )
 
+const MaxDbPings = 10
+const PingIntervalDBConnection = 5 * time.Second
+
 func Init(ctx context.Context) (*sql.DB, *bun.DB) {
-	if err = godotenv.Load("../.env.local"); err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
-	}
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		os.Getenv("POSTGRES_USER"),
@@ -47,7 +47,17 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 
 	sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 
-	if err = sqldb.Ping(); err != nil {
+	for i := 0; i < MaxDbPings; i++ {
+		log.Printf("Try %v of %v: Connecting to database...\n", i+1, MaxDbPings)
+		err = sqldb.Ping()
+		if err == nil {
+			break
+		}
+
+		time.Sleep(PingIntervalDBConnection)
+	}
+
+	if err != nil {
 		log.Fatal("Error connecting to database: ", err)
 	}
 

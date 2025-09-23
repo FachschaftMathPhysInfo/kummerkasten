@@ -194,7 +194,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	var labels []*models.Label
 
 	if err := r.DB.NewSelect().Model(&labels).
-		Where("LOWER(name) = ?", strings.ToLower(label.Name)).
+		Where("LOWER(TRIM(name)) = ?", strings.ToLower(strings.TrimSpace(label.Name))).
 		Scan(ctx); err != nil {
 		fmt.Printf("failed creating tickets, comparisong to existing label names failed: %v", err)
 		return nil, ErrInternal
@@ -274,7 +274,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 		var labels []*models.Label
 
 		if err := r.DB.NewSelect().Model(&labels).
-			Where("LOWER(name) = ?", strings.ToLower(*label.Name)).
+			Where("LOWER(TRIM(name)) = ?", strings.ToLower(strings.TrimSpace(*label.Name))).
 			Where("id != ?", dbLabel.ID).Scan(ctx); err != nil {
 			return "", ErrInternal
 		}
@@ -684,6 +684,16 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, assignment
 func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questionAnswerPair model.NewQuestionAnswerPair) (*model.QuestionAnswerPair, error) {
 	var maxOrder sql.NullInt32
 	var questionExists bool
+	const MaxQuestionLength = 100
+	const MaxAnswerLength = 700
+
+	if len(questionAnswerPair.Question) > MaxQuestionLength {
+		return nil, fmt.Errorf("question exceeds max length of %v", MaxQuestionLength)
+	}
+
+	if len(questionAnswerPair.Answer) > MaxAnswerLength {
+		return nil, fmt.Errorf("answer exceeds max length of %v", MaxAnswerLength)
+	}
 
 	questionExists, err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		Where("LOWER(question) = LOWER(?)", questionAnswerPair.Question).
@@ -784,6 +794,17 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 
 	if err != nil || len(questionAnswerPairs) == 0 {
 		return "", fmt.Errorf("QuestionAnswerPair with id %v not found", id)
+	}
+
+	const MaxQuestionLength = 100
+	const MaxAnswerLength = 700
+
+	if len(*questionAnswerPair.Question) > MaxQuestionLength {
+		return "", fmt.Errorf("question exceeds max length of %v", MaxQuestionLength)
+	}
+
+	if len(*questionAnswerPair.Answer) > MaxAnswerLength {
+		return "", fmt.Errorf("answer exceeds max length of %v", MaxAnswerLength)
 	}
 
 	qAP := questionAnswerPairs[0]

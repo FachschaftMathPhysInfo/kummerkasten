@@ -119,7 +119,7 @@ export default function FormUi() {
                     <LoaderCircle className="animate-spin"/>
                   </div>}
                 {!isLabelsLoading && formLabels.length > 0 && (
-                  <div className="flex flex-row flex-wrap">
+                  <div className="flex flex-row flex-wrap" data-cy="kummerform-labels">
                     {formLabels.map((label) => (
                       <FormField
                         key={label.id}
@@ -142,7 +142,7 @@ export default function FormUi() {
                                           field.value?.filter((value) => value !== label.name)
                                         );
                                     }}
-                                    data-cy={'label-checkbox'}
+                                    data-cy={`kummerform-label-checkbox-${label.id}`}
                                   />
                                   <span
                                     className={cn(
@@ -162,7 +162,7 @@ export default function FormUi() {
                     ))}
                   </div>
                 )}
-                <FormMessage/>
+                <FormMessage data-cy={'kummerform-labels-message'}/>
               </FormItem>
             )}
           />
@@ -186,10 +186,11 @@ export default function FormUi() {
                     className={cn("bg-background text-foreground")}
                     placeholder="Vorlesung ..."
                     maxLength={TITLE_MAX_LENGTH}
+                    data-cy={'kummerform-title-input'}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage/>
+                <FormMessage data-cy={'kummerform-title-message'}/>
               </FormItem>
             )}
           />
@@ -214,9 +215,10 @@ export default function FormUi() {
                     className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
                       "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
                       "focus-visible:ring-ring focus-visible:ring-offset-2 ",)}
+                    data-cy="kummerform-text-input"
                     {...field} />
                 </FormControl>
-                <FormMessage/>
+                <FormMessage data-cy={'kummerform-text-message'}/>
               </FormItem>
             )}
           />
@@ -224,6 +226,7 @@ export default function FormUi() {
             disabled={!form.formState.isValid && hasTriedToSubmit || loading}
             type="submit"
             className="w-full flex justify-center items-center gap-2"
+            data-cy="kummerform-send"
           >
             {loading ? (
               <LoaderCircle className="animate-spin"/>
