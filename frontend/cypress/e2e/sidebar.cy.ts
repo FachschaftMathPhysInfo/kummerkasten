@@ -52,8 +52,8 @@ describe('Footer Tests', () => {
     });
 
     it('should change theme', () => {
-      const lightModeRgb = 'oklch(1 0 0)'
-      const darkModeRgb = 'oklch(0.145 0 0)'
+      const lightModeRgb = 'rgb(255, 255, 255)'
+      const darkModeRgb = 'rgb(10, 10, 10)'
 
       cy.get('body')
         .invoke('css', 'background-color')
