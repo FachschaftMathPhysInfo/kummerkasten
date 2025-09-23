@@ -28,12 +28,15 @@ interface FaqFormProps {
   uniqueQuestion: string[];
 }
 
+const QUESTION_MAX_LENGTH = 100
+const ANSWER_MAX_LENGTH = 700
+
 const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuestion?: string, createMode?: boolean) => z.object({
     question: z.string().nonempty({message: "Bitte gib eine Frage ein."}).refine(
       (val) =>
         !uniqueQuestion.includes(val) || val === currentQuestion,
-      {message: "Diese Frage existiert bereits."}),
-    answer: z.string().nonempty({message: "Bitte gib eine Antwort ein."}),
+      {message: "Diese Frage existiert bereits."}).max(QUESTION_MAX_LENGTH, `Frage darf maximal ${QUESTION_MAX_LENGTH} Charaktere lang sein.`),
+    answer: z.string().nonempty({message: "Bitte gib eine Antwort ein."}).max(ANSWER_MAX_LENGTH, `Antwort darf maximal ${ANSWER_MAX_LENGTH} Charaktere lang sein.`),
     order: z.union([z.string(), z.number()])
       .transform((val, ctx) => {
         if (val === "") {
@@ -169,12 +172,20 @@ export default function FaqForm({createMode, qap, closeDialog, refreshData, maxO
               <FormControl>
                 <Input
                   placeholder="Frage"
+                  maxLength={QUESTION_MAX_LENGTH}
                   {...field}
                   aria-invalid={fieldState.invalid}
                   className={[fieldState.invalid ? "border-destructive ring-1" : ""].join(" ")}
                 />
               </FormControl>
-              <FormMessage/>
+              <div className={'w-full flex justify-between'}>
+                <div>
+                  <FormMessage/>
+                </div>
+                <div className={'text-xs text-muted-foreground'}>
+                  {field.value.length} / {QUESTION_MAX_LENGTH}
+                </div>
+              </div>
             </FormItem>
           )}
         />
@@ -189,12 +200,20 @@ export default function FaqForm({createMode, qap, closeDialog, refreshData, maxO
                 <Textarea
                   placeholder="Antwort"
                   rows={7}
+                  maxLength={ANSWER_MAX_LENGTH}
                   {...field}
                   aria-invalid={fieldState.invalid}
                   className={`resize-none ${fieldState.invalid ? "border-destructive ring-1" : ""}`}
                 />
               </FormControl>
-              <FormMessage/>
+              <div className={'w-full flex justify-between'}>
+                <div>
+                  <FormMessage/>
+                </div>
+                <div className={'text-xs text-muted-foreground'}>
+                  {field.value.length} / {ANSWER_MAX_LENGTH}
+                </div>
+              </div>
             </FormItem>
           )}
         />

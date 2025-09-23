@@ -71,7 +71,9 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                 ? "Offen"
                 : "Fertig"}
           </Badge>
-          <p className="leading-normal" title={ticket.title}>
+          <p className="leading-normal"
+            data-cy={`ticket-card-title-${ticket.originalTitle}`}
+            title={ticket.title}>
             {ticket.title}
           </p>
         </div>
