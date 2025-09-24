@@ -101,7 +101,7 @@ export function getDesktopOverviewResetFilters() {
 }
 
 export function getTicketCard(id: string) {
-    return cy.get(`[data-cy="ticket-card-${id}"]`)
+    return cy.get(`[data-cy="ticket-card-id-${id}"]`)
 }
 
 export function checkTicketExistence(title: string) {
