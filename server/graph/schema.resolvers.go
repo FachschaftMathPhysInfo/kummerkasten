@@ -126,31 +126,34 @@ func (r *mutationResolver) DeleteTicket(ctx context.Context, ids []string) (int3
 
 // UpdateTicket is the resolver for the updateTicket field.
 func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket model.UpdateTicket) (string, error) {
-	dbTicket := &models.Ticket{}
+	var dbTickets []*models.Ticket
 	err := r.DB.NewSelect().
-		Model(dbTicket).
+		Model(&dbTickets).
 		Where("id = ?", id).
-		Limit(1).
 		Scan(ctx)
 
 	if err != nil {
-		return "", fmt.Errorf("ticket with id %v not found", id)
+		log.Printf("Failed to update ticket : %v", err)
+		return "", ErrInternal
+	}
+	if len(dbTickets) == 0 {
+		return "", fmt.Errorf("ticket not found")
 	}
 
-	const MaxTitleLength = 70
-	if len(*ticket.Title) > MaxTitleLength {
-		return "", fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
-	}
-
-	const MaxTextLength = 3000
-	if len(*ticket.Text) > MaxTextLength {
-		return "", fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
-	}
+	dbTicket := dbTickets[0]
 
 	if ticket.Title != nil {
+		const MaxTitleLength = 70
+		if len(*ticket.Title) > MaxTitleLength {
+			return "", fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
+		}
 		dbTicket.Title = *ticket.Title
 	}
 	if ticket.Text != nil {
+		const MaxTextLength = 3000
+		if len(*ticket.Text) > MaxTextLength {
+			return "", fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
+		}
 		dbTicket.Text = *ticket.Text
 	}
 	if ticket.Note != nil {
