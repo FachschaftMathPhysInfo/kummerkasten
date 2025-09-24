@@ -221,7 +221,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
                 {t.title}
               </div>
               <div
-                className="hidden md:flex flex-col text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
+                className="hidden md:flex text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
               </div>
             </div>
