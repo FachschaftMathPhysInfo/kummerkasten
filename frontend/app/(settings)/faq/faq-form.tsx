@@ -7,7 +7,7 @@ import {useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
   CreateQuestionAnswerPairDocument,
-  QuestionAnswerPair,
+  QuestionAnswerPair, UpdateQuestionAnswerPair,
   UpdateQuestionAnswerPairDocument,
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
@@ -101,10 +101,17 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
     }
 
     const client = getClient()
+
+    const qapObject: UpdateQuestionAnswerPair = {
+      question: data.question === qap.question ? null : data.question,
+      answer: data.answer === qap.answer ? null : data.answer,
+      position: data.position === qap.position ? null : data.position
+    }
+
     try {
       await client.request(
         UpdateQuestionAnswerPairDocument,
-        {id: qap.id, questionAnswerPair: data})
+        {id: qap.id, questionAnswerPair: qapObject})
       return true
     } catch (err) {
       console.log(String(err))

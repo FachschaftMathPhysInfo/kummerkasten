@@ -846,6 +846,12 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	if questionAnswerPair.Answer != nil {
 		qAP.Answer = *questionAnswerPair.Answer
 	}
+
+	if _, err := r.DB.NewUpdate().Model(qAP).Where("id = ?", qAP.ID).Exec(ctx); err != nil {
+		log.Printf("Failed to update qap: %v", err)
+		return "", ErrInternal
+	}
+
 	if questionAnswerPair.Position != nil {
 		var maxPositionNullable sql.NullInt32
 		var maxPosition int32
