@@ -34,7 +34,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const faqFormSchema = z.object({
     question: z.string().nonempty({error: "Bitte gib eine Frage an"}),
     answer: z.string().nonempty({error: "Bitte gib eine Antwort an"}),
-    position: z.number()
+    position: z.int({error: "Bitte gib eine ganze Zahl an"})
       .min(0, {error: "Bitte gib einen Wert über 0 an"}),
   })
 
