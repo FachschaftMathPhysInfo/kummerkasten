@@ -138,6 +138,16 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 		return "", fmt.Errorf("ticket with id %v not found", id)
 	}
 
+	const MaxTitleLength = 70
+	if len(*ticket.Title) > MaxTitleLength {
+		return "", fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
+	}
+
+	const MaxTextLength = 3000
+	if len(*ticket.Text) > MaxTextLength {
+		return "", fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
+	}
+
 	if ticket.Title != nil {
 		dbTicket.Title = *ticket.Title
 	}
@@ -687,6 +697,16 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 	var maxPositionNullable sql.NullInt32
 	var maxPosition int32
 	var questionExists bool
+	const MaxQuestionLength = 100
+	const MaxAnswerLength = 700
+
+	if len(questionAnswerPair.Question) > MaxQuestionLength {
+		return nil, fmt.Errorf("question exceeds max length of %v", MaxQuestionLength)
+	}
+
+	if len(questionAnswerPair.Answer) > MaxAnswerLength {
+		return nil, fmt.Errorf("answer exceeds max length of %v", MaxAnswerLength)
+	}
 
 	questionExists, err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
 		Where("LOWER(TRIM(question)) = LOWER(?)", strings.TrimSpace(questionAnswerPair.Question)).
@@ -822,6 +842,17 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 
 	if err != nil || len(questionAnswerPairs) == 0 {
 		return "", fmt.Errorf("QuestionAnswerPair with id %v not found", id)
+	}
+
+	const MaxQuestionLength = 100
+	const MaxAnswerLength = 700
+
+	if len(*questionAnswerPair.Question) > MaxQuestionLength {
+		return "", fmt.Errorf("question exceeds max length of %v", MaxQuestionLength)
+	}
+
+	if len(*questionAnswerPair.Answer) > MaxAnswerLength {
+		return "", fmt.Errorf("answer exceeds max length of %v", MaxAnswerLength)
 	}
 
 	qAP := questionAnswerPairs[0]

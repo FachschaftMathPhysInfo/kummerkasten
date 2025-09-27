@@ -79,7 +79,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/tickets">Tickets</BreadcrumbLink>
+            <BreadcrumbLink href="/tickets" data-cy="ticket-sidebar-breadcrumb">Tickets</BreadcrumbLink>
           </BreadcrumbItem>
           {selectedTicketId && (
             <>
@@ -102,14 +102,14 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
               })
             )}
             className="mb-4"
-            data-cy="search-ticket-detail"
+            data-cy="ticket-detail-search"
           />
 
           <Button
             variant="outline"
             className={cn(areFiltersSet && 'border !border-accent')}
             onClick={() => setShowFilters(!showFilters)}
-            data-cy="mobile-filter-button"
+            data-cy="ticket-detail-filter-button"
           >
             Filter
           </Button>
@@ -140,6 +140,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
                 setShowFilters(false)
               }}
               className={'w-full'}
+              data-cy="ticket-detail-reset-filter"
             >
               <RotateCcw/> Filter zurücksetzen
             </Button>
