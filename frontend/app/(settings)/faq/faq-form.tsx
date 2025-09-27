@@ -117,6 +117,17 @@ export default function FaqForm({createMode, qap, closeDialog, refreshData, maxO
 
   const onValidSubmit = async (data: FaqFormValues) => {
     setLoading(true);
+<<<<<<< Updated upstream
+=======
+    let ok: boolean
+    const trimmedData = {
+      question: data.question.trim(),
+      answer: data.answer.trim(),
+      position: data.position,
+    }
+    if (createMode) ok = await createQAP(trimmedData)
+    else ok = await updateQAP(trimmedData)
+>>>>>>> Stashed changes
 
     const client = getClient();
     const trueOrderValue = data.order - 1;
