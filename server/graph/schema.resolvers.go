@@ -54,8 +54,8 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 	dbTicket := &models.Ticket{
 		ID:            uuid.New().String(),
 		Text:          ticket.Text,
-		OriginalTitle: ticket.OriginalTitle,
-		Title:         ticket.OriginalTitle,
+		OriginalTitle: strings.TrimSpace(ticket.OriginalTitle),
+		Title:         strings.TrimSpace(ticket.OriginalTitle),
 		State:         model.TicketStateNew,
 		Labels:        labels,
 		CreatedAt:     time.Now(),
@@ -148,7 +148,7 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 	}
 
 	if ticket.Title != nil {
-		dbTicket.Title = *ticket.Title
+		dbTicket.Title = strings.TrimSpace(*ticket.Title)
 	}
 	if ticket.Text != nil {
 		dbTicket.Text = *ticket.Text
@@ -216,7 +216,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 
 	newLabel := &models.Label{
 		ID:   uuid.New().String(),
-		Name: label.Name,
+		Name: strings.TrimSpace(label.Name),
 	}
 
 	if label.Color != nil {
@@ -293,7 +293,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 			return "", fmt.Errorf("unique constraint error: label with name %v does already exist", *label.Name)
 		}
 
-		dbLabel.Name = *label.Name
+		dbLabel.Name = strings.TrimSpace(*label.Name)
 	}
 
 	if label.Color != nil {
@@ -343,9 +343,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 
 	newUser := &model.User{
 		ID:           userId,
-		Mail:         user.Mail,
-		Firstname:    user.Firstname,
-		Lastname:     user.Lastname,
+		Mail:         strings.TrimSpace(user.Mail),
+		Firstname:    strings.TrimSpace(user.Firstname),
+		Lastname:     strings.TrimSpace(user.Lastname),
 		Password:     hashedPassword,
 		Role:         model.UserRoleUser,
 		CreatedAt:    time.Now(),
@@ -390,13 +390,13 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 	updatedUser := users[0]
 
 	if user.Mail != nil {
-		updatedUser.Mail = *user.Mail
+		updatedUser.Mail = strings.TrimSpace(*user.Mail)
 	}
 	if user.Firstname != nil {
-		updatedUser.Firstname = *user.Firstname
+		updatedUser.Firstname = strings.TrimSpace(*user.Firstname)
 	}
 	if user.Lastname != nil {
-		updatedUser.Lastname = *user.Lastname
+		updatedUser.Lastname = strings.TrimSpace(*user.Lastname)
 	}
 	if user.Password != nil {
 		hashedPassword, err := auth.HashPassword(*user.Password)
@@ -538,7 +538,7 @@ func (r *mutationResolver) Logout(ctx context.Context, sid string) (string, erro
 // CreateSetting is the resolver for the createSetting field.
 func (r *mutationResolver) CreateSetting(ctx context.Context, setting model.NewSetting) (*model.Setting, error) {
 	insertedSetting := &model.Setting{
-		Value: setting.Value,
+		Value: strings.TrimSpace(setting.Value),
 		Key:   setting.Key,
 	}
 
@@ -728,8 +728,8 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 
 	createdQuestionAnswerPair := &model.QuestionAnswerPair{
 		ID:       uuid.New().String(),
-		Question: questionAnswerPair.Question,
-		Answer:   questionAnswerPair.Answer,
+		Question: strings.TrimSpace(questionAnswerPair.Question),
+		Answer:   strings.TrimSpace(questionAnswerPair.Answer),
 		Order:    maxOrder.Int32 + 1,
 	}
 
@@ -820,10 +820,10 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	qAP := questionAnswerPairs[0]
 
 	if questionAnswerPair.Question != nil {
-		qAP.Question = *questionAnswerPair.Question
+		qAP.Question = strings.TrimSpace(*questionAnswerPair.Question)
 	}
 	if questionAnswerPair.Answer != nil {
-		qAP.Answer = *questionAnswerPair.Answer
+		qAP.Answer = strings.TrimSpace(*questionAnswerPair.Answer)
 	}
 
 	if _, err := r.DB.NewUpdate().Model(qAP).
