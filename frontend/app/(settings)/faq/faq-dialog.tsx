@@ -11,9 +11,6 @@ interface QAPDialogProps {
   createMode: boolean;
   qap: QuestionAnswerPair | null;
   closeDialog: () => void;
-  refreshData: () => void;
-  maxOrder: number;
-  uniqueQuestion: string[];
 }
 
 export default function QAPDialog(props: QAPDialogProps) {
@@ -25,12 +22,8 @@ export default function QAPDialog(props: QAPDialogProps) {
           {props.createMode ? "Frage erstellen" : "Frage bearbeiten"}
         </DialogTitle>
         <QAPForm
-          createMode={props.createMode}
           qap={props.qap}
           closeDialog={props.closeDialog}
-          refreshData={props.refreshData}
-          maxOrder={props.maxOrder}
-          uniqueQuestion={props.uniqueQuestion}
         />
       </DialogContent>
     </Dialog>
