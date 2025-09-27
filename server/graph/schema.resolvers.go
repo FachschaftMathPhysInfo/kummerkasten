@@ -739,7 +739,7 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 		ID:       uuid.New().String(),
 		Question: strings.TrimSpace(questionAnswerPair.Question),
 		Answer:   strings.TrimSpace(questionAnswerPair.Answer),
-		Order:    maxPosition + 1,
+		Position:    maxPosition + 1,
 	}
 
 	if questionAnswerPair.Position != nil {
