@@ -65,6 +65,7 @@ type QuestionAnswerPair {
 type Session {
     id: String!
     user_id: String!
+    last_interaction: Time!
     expires_at: Time!
 }
 
