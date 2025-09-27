@@ -1,6 +1,7 @@
 # Benutzerhandbuch
 
->Dieses Handbuch richtet sich an User ohne Admin Rechte.
+>Dieses Handbuch richtet sich an User ohne Admin Rechte. User mit Admin-Rechten haben natürlich auch Zugriff auf alle
+> hier gelisteten Funktionen.
 
 ## Login
 Das Login-Interface findet ihr unter `domain.com/login` dort meldet man sich mit den vom Administrator vergebenen E-Mail-
@@ -29,6 +30,7 @@ auf den Knopf "Speichern" drückt.
 
 ## Tickets
 Unter `domain/tickets` findet ihr alle Tickets. Die Filter unterstützen euch beim Suchen spezifischer Einträge.
+Ihr werdet bemerken, dass Tickets mit Status "Fertig" hier nicht gelistet werden. Dies kann in den Status-Filtern geändert werden.
 
 ### Ticket Detail View
 Sobald ihr auf ein Ticket klickt, werdet ihr in der sog. Ticket-Detail-View landen. Hier könnt ihr folgende Anpassungen vornehmen:
@@ -37,14 +39,16 @@ Sobald ihr auf ein Ticket klickt, werdet ihr in der sog. Ticket-Detail-View land
 - Den Titel des Tickets ändern (Der Original-Titel ist immer noch verfügbar)
 - Labels an das Ticket anhängen und entfernen
 
-Über die Ticket-Sidebar auf der linken Seite kommt ihr zu anderen Tickets, beziehungsweise auch zurück zur Gesamtübersicht
+Über die Ticket-Sidebar auf der linken Seite kommt ihr zu anderen Tickets, beziehungsweise auch zurück zur Gesamtübersicht.
+
+> Der Titel unter dem das Ticket ursprünglich eingegangen ist, ist einsehbar indem man über den Titel mit der Maus hovered.
 
 ## Labels
 Unter `domain/labels` könnt ihr Labels verwalten.
 
 ### Labels erstellen
 Labels können unabhängig von Groß- und Kleinschreibung nur einmal existieren. Versucht ihr ein Label nochmal zu erstellen,
-bzw. eine anderes zu aktualisieren, wird ein Error erscheinen der euch davor warnt, dass ein Label mit diesem 
+bzw. ein anderes zu aktualisieren, wird ein Error erscheinen der euch davor warnt, dass ein Label mit diesem 
 Namen schon existiert.
 
 ### Labels bearbeiten
@@ -57,14 +61,14 @@ Wie ihr wahrscheinlich auf der Root-Seite (`domain.com`) gesehen habt, gibt es e
 kleine Beschreibungsbox oben drüber. Beides kann unter `domain.com/faq` angepasst werden.
 
 ### About-Sektion 
-Die Bearbeitung ist einfach über das Text-Feld möglich
+Die Bearbeitung ist einfach über das Text-Feld möglich.
 
 ### FAQ
 Neben der gleichen bearbeitungsweise wie bei den Labels, steht euch hier auch eine Drag and Drop Funktionalität zur Verfügung.
 Dazu einfach eine FAQ aus der Tabelle an der linken Seite 'greifen' und verschieben.
 > Derzeit werden Änderungen in der FAQ Reihenfolge sofort gültig
-Den Wortlaut der Frage oder Antwort könnt ihr bearbeiten indem ihr auf den Stift-Icon klickt. Dort könnt ihr auch manuell
-die Position in der Reihenfolge festlegen
+Den Wortlaut der Frage oder Antwort könnt ihr bearbeiten indem ihr auf das Stift-Icon klickt. Dort könnt ihr auch manuell
+die Position in der Reihenfolge festlegen.
 
 ## Sonstiges
 
