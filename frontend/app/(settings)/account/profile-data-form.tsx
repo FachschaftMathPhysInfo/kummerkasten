@@ -17,6 +17,7 @@ import {Input} from "@/components/ui/input";
 import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
+import PasswordDialog from "@/components/dialogs/password-dialog";
 
 const MAX_NAME_LENGTH = 50;
 
@@ -35,6 +36,8 @@ export default function AccountDataForm() {
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
+  const [pendingUserData, setPendingUserData] = useState<AccountDataFormData>();
+  const [passwordInputOpen, setPasswordInputOpen] = useState(false);
 
   const form = useForm<z.infer<typeof accountDataSchema>>({
     resolver: zodResolver(accountDataSchema),
@@ -60,15 +63,9 @@ export default function AccountDataForm() {
   }, [resetFormWithUserData]);
 
   async function onValidSubmit(userData: AccountDataFormData) {
+    setPendingUserData(userData)
     setHasTriedToSubmit(true)
     setIsSavingAccount(true);
-
-    const client = getClient();
-    const userObject = {
-      firstname: userData.firstname !== user?.firstname ? userData.firstname : null,
-      lastname: userData.lastname !== user?.lastname ? userData.lastname : null,
-      mail: userData.mail !== user?.mail ? userData.mail : null,
-    }
 
     if (!user) {
       toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
@@ -77,6 +74,7 @@ export default function AccountDataForm() {
 
     if (userData.mail !== user.mail) {
       try {
+        const client = getClient();
         const data = await client.request(CheckIfMailExistsDocument, {mail: userData.mail});
         const emailUsedByOtherUser = data.isMailInUse
 
@@ -86,14 +84,33 @@ export default function AccountDataForm() {
           });
           return;
         }
-
         setHasTriedToSubmit(false);
+        setPasswordInputOpen(true);
       } catch (error) {
         toast.error("Fehler beim Überprüfen der E-Mail-Adresse");
         console.error(error);
       } finally {
         setIsSavingAccount(false)
       }
+    } else {
+      await updateProfileData()
+    }
+  }
+
+  async function updateProfileData() {
+    const data = pendingUserData;
+    if (!user || !data) {
+      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      return;
+    }
+
+    setIsSavingAccount(true)
+
+    const client = getClient();
+    const userObject = {
+      firstname: data.firstname !== user?.firstname ? data.firstname : null,
+      lastname: data.lastname !== user?.lastname ? data.lastname : null,
+      mail: data.mail !== user?.mail ? data.mail : null,
     }
 
     const updateData: UpdateUserSettingsMutationVariables = {
@@ -104,12 +121,12 @@ export default function AccountDataForm() {
     try {
       await client.request<UpdateUserSettingsMutation>(UpdateUserSettingsDocument, updateData);
       form.reset({
-        firstname: userData.firstname,
-        lastname: userData.lastname,
-        mail: userData.mail,
+        firstname: data.firstname,
+        lastname: data.lastname,
+        mail: data.mail,
       });
 
-      if (userData.mail !== user.mail) {
+      if (data.mail !== user.mail) {
         toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt");
         await logout();
       } else {
@@ -125,70 +142,77 @@ export default function AccountDataForm() {
     }
   }
 
-
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onValidSubmit, () =>
-          setHasTriedToSubmit(true)
-        )}
-        className="space-y-4 w-full"
-      >
-
-        <SettingsBlock
-          icon={<User/>}
-          title={"Account"}
-          hasTriedToSubmit={hasTriedToSubmit}
-          isDirty={form.formState.isDirty}
-          isSaving={isSavingAccount}
-          isLoading={isLoading}
-          dataCy="input-profile-save"
-          isValid={form.formState.isValid}
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onValidSubmit, () =>
+            setHasTriedToSubmit(true)
+          )}
+          className="space-y-4 w-full"
         >
-          <FormField
-            control={form.control}
-            name="firstname"
-            render={({field}) => (
-              <FormItem className={"flex-grow"}>
-                <FormLabel>Vorname</FormLabel>
-                <FormControl>
-                  <Input placeholder={"Vorname"} {...field} data-cy={'account-firstname-input'}/>
-                </FormControl>
-                <FormMessage data-cy={'account-firstname-input-message'}/>
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            control={form.control}
-            name="lastname"
-            render={({field}) => (
-              <FormItem className={"flex-grow"}>
-                <FormLabel>Nachname</FormLabel>
-                <FormControl>
-                  <Input placeholder={"Nachname"} {...field} data-cy={'account-lastname-input'}/>
-                </FormControl>
-                <FormMessage data-cy={'account-lastname-input-message'}/>
-              </FormItem>
-            )}
-          />
+          <SettingsBlock
+            icon={<User/>}
+            title={"Account"}
+            hasTriedToSubmit={hasTriedToSubmit}
+            isDirty={form.formState.isDirty}
+            isSaving={isSavingAccount}
+            isLoading={isLoading}
+            dataCy="input-profile-save"
+            isValid={form.formState.isValid}
+          >
+            <FormField
+              control={form.control}
+              name="firstname"
+              render={({field}) => (
+                <FormItem className={"flex-grow"}>
+                  <FormLabel>Vorname</FormLabel>
+                  <FormControl>
+                    <Input placeholder={"Vorname"} {...field} data-cy={'account-firstname-input'}/>
+                  </FormControl>
+                  <FormMessage data-cy={'account-firstname-input-message'}/>
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="mail"
-            render={({field}) => (
-              <FormItem className={"flex-grow"}>
-                <FormLabel>E-Mail</FormLabel>
-                <FormControl>
-                  <Input placeholder={"vor.nachname@kummerkasten.de"} {...field}
-                         data-cy={'account-mail-input'}/>
-                </FormControl>
-                <FormMessage data-cy={'account-mail-input-message'}/>
-              </FormItem>
-            )}
-          />
-        </SettingsBlock>
-      </form>
-    </Form>
+            <FormField
+              control={form.control}
+              name="lastname"
+              render={({field}) => (
+                <FormItem className={"flex-grow"}>
+                  <FormLabel>Nachname</FormLabel>
+                  <FormControl>
+                    <Input placeholder={"Nachname"} {...field} data-cy={'account-lastname-input'}/>
+                  </FormControl>
+                  <FormMessage data-cy={'account-lastname-input-message'}/>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="mail"
+              render={({field}) => (
+                <FormItem className={"flex-grow"}>
+                  <FormLabel>E-Mail</FormLabel>
+                  <FormControl>
+                    <Input placeholder={"vor.nachname@kummerkasten.de"} {...field}
+                           data-cy={'account-mail-input'}/>
+                  </FormControl>
+                  <FormMessage data-cy={'account-mail-input-message'}/>
+                </FormItem>
+              )}
+            />
+          </SettingsBlock>
+        </form>
+      </Form>
+
+      <PasswordDialog
+        open={passwordInputOpen}
+        closeDialogAction={() => setPasswordInputOpen(false)}
+        onSuccessfulConfirmationAction={() => updateProfileData()}
+      />
+    </>
   )
 }
