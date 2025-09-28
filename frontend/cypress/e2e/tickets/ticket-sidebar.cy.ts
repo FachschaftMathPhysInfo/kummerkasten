@@ -36,7 +36,8 @@ roles.forEach(role => {
 
         it('loads filter bar elements', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().should('exist')
           filterBar.getDesktopOverviewLabelFilterButton().should('exist')
           filterBar.getDesktopCalendarStartButton().should('exist')
@@ -46,7 +47,8 @@ roles.forEach(role => {
 
         it('shows filter bar elements', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().scrollIntoView().should('be.visible')
           filterBar.getDesktopOverviewLabelFilterButton().scrollIntoView().should('be.visible')
           filterBar.getDesktopCalendarStartButton().scrollIntoView().should('be.visible')
@@ -58,11 +60,11 @@ roles.forEach(role => {
           ticketSidebar.getTicketDetailFilterReset().should('not.exist')
         })
 
-        it('shows ticket breadcrumb',()=>{
+        it('shows ticket breadcrumb', () => {
           ticketSidebar.getTicketsBreadcrumb().should('exist')
         })
 
-        it('ticket breadcrumb works properly',()=>{
+        it('ticket breadcrumb works properly', () => {
           ticketSidebar.getTicketsBreadcrumb().should('exist').click()
           cy.url().should('include', `/tickets`);
         })
@@ -115,13 +117,15 @@ roles.forEach(role => {
 
         it('status field should be interactable', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().should('exist').and('not.be.disabled');
         })
 
         it('status field should have 3 status buttons', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().click()
           filterBar.getDesktopOverviewStatusButtonNew().should('be.visible');
           filterBar.getDesktopOverviewStatusButtonOpen().should('be.visible');
@@ -130,14 +134,16 @@ roles.forEach(role => {
 
         it('status field should have a search bar', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().click()
           filterBar.getDesktopOverviewStatusFilterSearch().should('be.visible').should('not.be.disabled')
         })
 
         it('status field should be filterable', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().click()
           filterBar.getDesktopOverviewStatusFilterSearch().type('Offen')
           filterBar.getDesktopOverviewStatusButtonClosed().should('not.exist')
@@ -147,25 +153,29 @@ roles.forEach(role => {
 
         it('status field should show selected status amount in button', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().contains('2');
         })
 
         it('status field should reset to new and open', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().should('exist');
           filterBar.getDesktopOverviewStateFilterButton().click();
           filterBar.getDesktopOverviewStatusButtonClosed().click();
           filterBar.getDesktopOverviewStateFilterButton().click();
           ticketSidebar.getTicketDetailFilterReset().click();
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().contains('2');
         })
 
         it('filtering by open shows only open tickets', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().should('exist');
           filterBar.getDesktopOverviewStateFilterButton().click();
           filterBar.getDesktopOverviewStatusButtonNew().click();
@@ -173,7 +183,8 @@ roles.forEach(role => {
 
         it('filtering by closed shows only closed tickets', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().click();
           filterBar.getDesktopOverviewStatusButtonNew().click();
           filterBar.getDesktopOverviewStatusButtonClosed().click();
@@ -181,7 +192,8 @@ roles.forEach(role => {
 
         it('filtering by new shows only new tickets', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewStateFilterButton().click();
           filterBar.getDesktopOverviewStatusButtonNew().click();
           filterBar.getDesktopOverviewStatusButtonClosed().click();
@@ -191,19 +203,22 @@ roles.forEach(role => {
       context(`Labels Field`, () => {
         it('labels field should be interactable', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().should('not.be.disabled')
         })
 
         it('labels field should be loaded with no labels selected', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().contains('Labels')
         })
 
         it('labels field should have all labels loaded as options', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().click();
           labels.forEach(label => {
             filterBar.getDesktopOverviewLabel(label.id).parent().should('exist');
@@ -212,7 +227,8 @@ roles.forEach(role => {
 
         it('labels field should have a search function', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().click();
           filterBar.getDesktopOverviewLabelFilterButton().parent().should('be.visible')
         })
@@ -220,7 +236,8 @@ roles.forEach(role => {
         it('labels field should be filterable', () => {
           const label = labels[0]
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().click();
           filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
           filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible')
@@ -229,7 +246,8 @@ roles.forEach(role => {
         it('labels field should show selected amount in button', () => {
           const label = labels[0]
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().click();
           filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
           filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -239,7 +257,8 @@ roles.forEach(role => {
         it('labels field should have a reset button', () => {
           const label = labels[0]
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().click();
           filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
           filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -249,7 +268,8 @@ roles.forEach(role => {
         it('labels field should reset to no labels selected', () => {
           const label = labels[0]
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().click();
           filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
           filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -261,7 +281,8 @@ roles.forEach(role => {
         it('filtering by label should only show tickets with that label', () => {
           const label = labels[0]
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopOverviewLabelFilterButton().click();
           filterBar.getDesktopOverviewLabelSearch().click().type(label.name)
           filterBar.getDesktopOverviewLabel(label.id).parent().should('be.visible').click()
@@ -279,19 +300,22 @@ roles.forEach(role => {
       context(`Start Calendar`, () => {
         it('start calendar should have no date selected as default', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarStartButton().contains('Start')
         })
 
         it('start calendar should be interactable', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarStartButton().click()
         })
 
         it('start calendar should show selected date in button', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarStartButton().click()
           cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
           filterBar.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
@@ -299,7 +323,8 @@ roles.forEach(role => {
 
         it('start calendar should have a reset button', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarStartButton().click()
           cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
           filterBar.getDesktopCalendarStartButton().contains(getTodayCalendarLabel());
@@ -309,7 +334,8 @@ roles.forEach(role => {
 
         it('show tickets created after start date if start date selected', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           const startDate = new Date('2025-09-17T00:00:00.000Z');
           filterBar.getDesktopCalendarStartButton().click()
           cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
@@ -331,19 +357,22 @@ roles.forEach(role => {
       context(`End Calendar`, () => {
         it('end calendar should have no date selected as default', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarEndButton().contains('Ende')
         })
 
         it('end calendar should be interactable', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarEndButton().click()
         })
 
         it('end calendar should show selected date in button', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarEndButton().click()
           cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
           filterBar.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
@@ -351,7 +380,8 @@ roles.forEach(role => {
 
         it('end calendar should have a reset button', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           filterBar.getDesktopCalendarEndButton().click()
           cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
           filterBar.getDesktopCalendarEndButton().contains(getTodayCalendarLabel());
@@ -361,7 +391,8 @@ roles.forEach(role => {
 
         it('show tickets created before end date if end date selected', () => {
           ticketSidebar.getTicketDetailFilterButton().should('exist');
-          ticketSidebar.getTicketDetailFilterButton().click();
+          ticketSidebar.getTicketDetailFilterButton().click({ force: true });
+          ticketSidebar.getTicketFilterBar().should('be.visible');
           const endDate = new Date('2025-09-10T00:00:00.000Z');
           filterBar.getDesktopCalendarEndButton().click()
           cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
