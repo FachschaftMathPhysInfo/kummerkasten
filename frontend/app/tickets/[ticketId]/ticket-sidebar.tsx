@@ -122,16 +122,14 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
           )}
         >
           {showFilters && (
-            <div data-cy={'ticket-filter-bar'}>
-              <FilterBar
-                filtering={filtering}
-                setFiltering={setFiltering}
-                sorting={sorting}
-                setSorting={setSorting}
-                stateFilterSet={isStateFilterSet}
-                scrollable
-              />
-            </div>
+            <FilterBar
+              filtering={filtering}
+              setFiltering={setFiltering}
+              sorting={sorting}
+              setSorting={setSorting}
+              stateFilterSet={isStateFilterSet}
+              scrollable
+            />
           )}
 
           {areFiltersSet && (

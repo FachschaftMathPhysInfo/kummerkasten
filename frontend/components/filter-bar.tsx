@@ -21,12 +21,12 @@ interface FilterBarProps {
 }
 
 export default function FilterBar(
-  {filtering, setFiltering, sorting, setSorting, stateFilterSet, scrollable = false}: FilterBarProps)
-{
+  {filtering, setFiltering, sorting, setSorting, stateFilterSet, scrollable = false}: FilterBarProps) {
   const {labels} = useLabels()
 
   return (
-    <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}>
+    <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}
+         data-cy={'ticket-filter-bar'}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
