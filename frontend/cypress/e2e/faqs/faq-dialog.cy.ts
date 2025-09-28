@@ -134,7 +134,7 @@ describe('FAQ Manipulation Tests', () => {
       })
 
       if(role === UserRole.Admin) {
-        context.only("Delete FAQs", () => {
+        context("Delete FAQs", () => {
           beforeEach(() => page.getDeleteButtons().eq(0).click())
 
           it('shows the delete dialog', () => {
