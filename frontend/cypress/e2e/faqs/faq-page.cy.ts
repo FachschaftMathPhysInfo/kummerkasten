@@ -18,7 +18,7 @@ describe('FAQ Table Tests', () => {
         page.getEditButtons().should('have.length', AMOUNT_FAQ_SEED_DB)
         page.getDndHandles().should('have.length', AMOUNT_FAQ_SEED_DB)
         if (role === UserRole.Admin) page.getDeleteButtons().should('have.length', AMOUNT_FAQ_SEED_DB)
-        // FIXME: #350
+        // FIXME: #353
         else page.getDeleteButtons().should('not.exist')
       });
     })
