@@ -7,6 +7,7 @@ import {DialogProps} from "@radix-ui/react-dialog";
 import {useUser} from "@/components/providers/user-provider";
 import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
 
 interface PasswordDialogProps extends DialogProps {
   onSuccessfulConfirmationAction: () => void
@@ -52,6 +53,7 @@ export default function PasswordDialog(props: PasswordDialogProps) {
             placeholder="Passwort eingeben"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className={cn(!!error && 'border-destructive')}
           />
           {!!error && (
             <p className={'text-destructive text-sm'}>{error}</p>
