@@ -144,11 +144,12 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
                   {...field}
                   aria-invalid={fieldState.invalid}
                   className={[fieldState.invalid ? "border-destructive ring-1" : ""].join(" ")}
+                  data-cy={'question=input'}
                 />
               </FormControl>
               <div className={'w-full flex justify-between'}>
                 <div>
-                  <FormMessage/>
+                  <FormMessage data-cy={'question-input-message'}/>
                 </div>
                 <div className={'text-xs text-muted-foreground'}>
                   {field.value.length} / {QUESTION_MAX_LENGTH}
@@ -172,11 +173,12 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
                   {...field}
                   aria-invalid={fieldState.invalid}
                   className={`resize-none ${fieldState.invalid ? "border-destructive ring-1" : ""}`}
+                  data-cy={'answer-input'}
                 />
               </FormControl>
               <div className={'w-full flex justify-between'}>
                 <div>
-                  <FormMessage/>
+                  <FormMessage data-cy={'anwer-input-message'}/>
                 </div>
                 <div className={'text-xs text-muted-foreground'}>
                   {field.value.length} / {ANSWER_MAX_LENGTH}
@@ -204,19 +206,20 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
                     if(Number.isNaN(val)) field.onChange("")
                     else field.onChange(parseInt(val) - 1)
                   }}
+                  data-cy={'position-input'}
                 />
               </FormControl>
-              <FormMessage/>
+              <FormMessage data-cy={'position-input-message'}/>
             </FormItem>
           )}
         />
 
 
         <div className="flex justify-between gap-2 mt-4">
-          <Button type="button" variant="outline" className="flex-1" onClick={closeDialog}>
+          <Button type="button" variant="outline" className="flex-1" onClick={closeDialog} data-cy={'cancel-button'}>
             Abbrechen
           </Button>
-          <Button type="submit" className="flex-1" disabled={loading}>
+          <Button type="submit" className="flex-1" disabled={loading} data-cy={'submit-button'}>
             {createMode ? (
               <><CirclePlus/> Erstellen</>
             ) : (
