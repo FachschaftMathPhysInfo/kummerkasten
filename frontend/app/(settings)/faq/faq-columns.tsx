@@ -61,7 +61,7 @@ export default function QAPColumns({
           className="flex justify-end gap-x-2 shrink-0"
         >
           <Button
-            data-cy={`edit-button-${row.original.id}`}
+            data-cy={`edit-faq-button-${row.original.id}`}
             onClick={() =>
               setDialogState({mode: "update", currentQAP: row.original})
             }
@@ -71,7 +71,7 @@ export default function QAPColumns({
             <Edit2/>
           </Button>
           <Button
-            data-cy={`delete-button-${row.original.id}`}
+            data-cy={`delete-faq-button-${row.original.id}`}
             onClick={() =>
               setDialogState({mode: "delete", currentQAP: row.original})
             }

@@ -97,10 +97,10 @@ export function QAPTable() {
   );
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="space-y-2 mt-2" data-cy="qap-table">
+      <div className="space-y-2 mt-2" data-cy="faqs-table">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <Button
-            data-cy="qap-create-button"
+            data-cy="create-faq-button"
             onClick={() => setDialogState({mode: "create", currentQAP: null})}
             className="flex gap-2"
           >
@@ -134,7 +134,7 @@ export function QAPTable() {
             <TableBody>
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <DndTableRow key={row.id} row={row} moveRow={moveRow} savePosition={updatePosition}/>
+                  <DndTableRow key={row.id} row={row} moveRow={moveRow} savePosition={updatePosition} data-cy={'faq-row'}/>
                 ))
               ) : (
                 <TableRow>
