@@ -6,7 +6,7 @@ import * as faqs from "../../fixtures/faqs.json"
 
 const roles: UserRole[] = [UserRole.User, UserRole.Admin]
 
-describe('FAQ Tests', () => {
+describe('FAQ Manipulation Tests', () => {
   roles.forEach((role) => {
     context(`${role} Tests`, () => {
       beforeEach(() => {
@@ -109,7 +109,7 @@ describe('FAQ Tests', () => {
       })
 
       context("Edit FAQs", () => {
-        beforeEach(() => page.getEditButton().eq(0).click())
+        beforeEach(() => page.getEditButtons().eq(0).click())
 
         it('shows the whole dialog', () => {
           dialog.getQuestionInput().should('have.value', faqs.first.question)
@@ -135,7 +135,7 @@ describe('FAQ Tests', () => {
 
       if(role === UserRole.Admin) {
         context.only("Delete FAQs", () => {
-          beforeEach(() => page.getDeleteButton().eq(0).click())
+          beforeEach(() => page.getDeleteButtons().eq(0).click())
 
           it('shows the delete dialog', () => {
             confirmationDialog.getDialog().should('be.visible')

@@ -10,14 +10,14 @@ export function getCreateButton() {
   return cy.get('[data-cy=create-faq-button]');
 }
 
-export function getEditButton() {
+export function getEditButtons() {
   return cy.get('[data-cy^=edit-faq-button]');
 }
 
-export function getDeleteButton() {
+export function getDeleteButtons() {
   return cy.get('[data-cy^=delete-faq-button]');
 }
 
-export function getDndHandle() {
+export function getDndHandles() {
   return cy.get('[data-cy^=drag-handle]');
 }
