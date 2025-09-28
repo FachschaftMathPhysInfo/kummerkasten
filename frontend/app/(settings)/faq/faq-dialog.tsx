@@ -16,7 +16,7 @@ interface QAPDialogProps {
 export default function QAPDialog(props: QAPDialogProps) {
   return (
     <Dialog open={props.open}>
-      <DialogContent className="[&>button]:hidden">
+      <DialogContent className="[&>button]:hidden" data-cy={'faq-dialog'}>
         <DialogTitle className="flex items-center gap-2">
           {props.createMode ? <PlusCircle/> : <Edit2 size={20}/>}
           {props.createMode ? "Frage erstellen" : "Frage bearbeiten"}

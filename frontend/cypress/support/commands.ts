@@ -2,9 +2,17 @@
 
 // Add this to cypress/support/commands.js
 import * as sidebar from "../pages/sidebar.po";
-import {NewLabel, NewTicket, TicketState, UpdateUser, UserRole} from "../../lib/graph/generated/graphql";
+import {
+  NewLabel,
+  NewTicket,
+  QuestionAnswerPair,
+  TicketState,
+  UpdateUser,
+  UserRole
+} from "../../lib/graph/generated/graphql";
 import * as users from "../fixtures/users.json";
-import {LabelDialogData} from "@/cypress/pages/labels/label-management.po";
+import {LabelDialogData} from "../pages/labels/label-management.po";
+import {FAQDialogData} from "../pages/faqs/faq-dialog.po";
 
 Cypress.Commands.add("login", (mail: string, password: string) => {
   cy.session([mail, password], () => {
@@ -385,7 +393,7 @@ Cypress.Commands.add("getAllQAPs", (): Cypress.Chainable<any> => {
                 question
                 answer
                 id
-                order
+                position
             }
         }
     `;
@@ -397,6 +405,49 @@ Cypress.Commands.add("getAllQAPs", (): Cypress.Chainable<any> => {
       body: {query, operationName: "allQuestionAnswerPair"},
     })
     .its("body.data.questionAnswerPairs");
+});
+
+Cypress.Commands.add('createFAQ', (data: FAQDialogData) => {
+  const mutation = 'mutation createQuestionAnswerPair($questionAnswerPair: NewQuestionAnswerPair!) {createQuestionAnswerPair(questionAnswerPair: $questionAnswerPair){id}}'
+  const newQap = {
+    question: data.question,
+    answer: data.answer,
+    position: data.position
+  }
+
+  cy.request({
+    method: "POST",
+    url: "http://localhost:8080/api",
+    headers: {"Content-Type": "application/json"},
+    body: {
+      query: mutation,
+      variables: {questionAnswerPair: newQap},
+      operationName: "createQuestionAnswerPair",
+    },
+  });
+});
+
+Cypress.Commands.add('deleteFAQ', (question: string) => {
+  cy.loginAsRole(UserRole.Admin);
+
+  cy.getAllQAPs().then((qaps: QuestionAnswerPair[]) => {
+    const qapToDelete = qaps.find(q => q.question === question)?.id
+
+    if (!qapToDelete) return
+
+    const mutation = `mutation deleteQuestionAnswerPair($id: String!) {deleteQuestionAnswerPair(ids: [$id])}`
+
+    return cy.request({
+      method: "POST",
+      url: "/api",
+      headers: { "Content-Type": "application/json" },
+      body: {
+        query: mutation,
+        variables: { id: qapToDelete },
+        operationName: "deleteQuestionAnswerPair",
+      },
+    });
+  });
 });
 
 Cypress.Commands.add(
@@ -522,6 +573,10 @@ declare global {
       getFormLabels(): Chainable<any>;
 
       getAllQAPs(): Chainable<any>;
+
+      createFAQ(faq: FAQDialogData): Chainable<any>
+
+      deleteFAQ(question: string): Chainable<any>
 
       deleteFormTickets(title: string): Chainable<Response<any>>;
 

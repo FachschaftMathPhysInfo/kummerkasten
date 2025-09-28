@@ -134,7 +134,7 @@ export function QAPTable() {
             <TableBody>
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <DndTableRow key={row.id} row={row} moveRow={moveRow} savePosition={updatePosition} data-cy={'faq-row'}/>
+                  <DndTableRow key={row.id} row={row} moveRow={moveRow} savePosition={updatePosition}/>
                 ))
               ) : (
                 <TableRow>

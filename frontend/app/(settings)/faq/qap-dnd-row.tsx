@@ -74,7 +74,7 @@ export function DndTableRow({
         isOver ? "bg-accent/20 border-t-2 border-b-2 border-primary" : ""
       }`}
       data-handler-id={handlerIdAttr}
-      data-cy="qap-row"
+      data-cy="faq-row"
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell

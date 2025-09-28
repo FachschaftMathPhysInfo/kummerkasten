@@ -144,7 +144,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
                   {...field}
                   aria-invalid={fieldState.invalid}
                   className={[fieldState.invalid ? "border-destructive ring-1" : ""].join(" ")}
-                  data-cy={'question=input'}
+                  data-cy={'question-input'}
                 />
               </FormControl>
               <div className={'w-full flex justify-between'}>
@@ -178,7 +178,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
               </FormControl>
               <div className={'w-full flex justify-between'}>
                 <div>
-                  <FormMessage data-cy={'anwer-input-message'}/>
+                  <FormMessage data-cy={'answer-input-message'}/>
                 </div>
                 <div className={'text-xs text-muted-foreground'}>
                   {field.value.length} / {ANSWER_MAX_LENGTH}

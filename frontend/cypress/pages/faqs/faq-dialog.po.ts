@@ -1,7 +1,11 @@
-export type LabelDialogData = {
+export type FAQDialogData = {
   question?: string;
   answer?: string;
   position?: number;
+}
+
+export function getDialog() {
+  return cy.get('[data-cy="faq-dialog"]');
 }
 
 export function getQuestionInput() {
@@ -36,7 +40,7 @@ export function getSubmitButton() {
   return cy.get('[data-cy="submit-button"]');
 }
 
-export function fillOut(data: LabelDialogData) {
+export function fillOut(data: FAQDialogData) {
   if (data.question) getQuestionInput().clear().type(data.question)
   if (data.answer) getAnswerInput().clear().type(data.answer)
   if (data.position) getPositionInput().clear().type(data.position.toString())

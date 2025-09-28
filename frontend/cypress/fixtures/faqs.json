@@ -1,0 +1,22 @@
+{
+  "first": {
+    "question": "Was ist der Kummerkasten?",
+    "answer": "Eine anonyme Anlaufstelle für Kummer im und ums Studium.",
+    "position": 1
+  },
+  "second": {
+    "question": "Wofür ist der Kummerkasten?",
+    "answer": "Zu schwere Zettel, Erschwerte Kommunikation mit einer/m Dozierenden, Zu hoher Lernaufwand in einer Veranstaltung, Probleme mit der Fachschaft,...",
+    "postion": 2
+  },
+  "third": {
+    "question": "Wer ist der Kummerkasten?",
+    "answer": "Eine kleine Teilmenge der Fachschaft MathPhysInfo.",
+    "position": 3
+  },
+  "test": {
+    "question": "Bin ich eine Testfrage?",
+    "answer": "Ich bin eine Testfrage!",
+    "position": 4
+  }
+}
