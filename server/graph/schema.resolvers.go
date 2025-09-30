@@ -1296,7 +1296,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 // LoginCheck is the resolver for the loginCheck field.
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
-	if sid == nil {
+	if _, err := uuid.Parse(*sid); err != nil {
 		return nil, nil
 	}
 
