@@ -111,7 +111,7 @@ describe('Label Management Page Tests', () => {
           });
         }
 
-        context.only('Sorting', () => {
+        context('Sorting', () => {
           it('sorts names ascending by default', () => {
             let names: string[] = []
             page.getLabelRows().should("have.length.at.least", 2)
