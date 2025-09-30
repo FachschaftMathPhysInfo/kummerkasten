@@ -6,8 +6,8 @@ import * as tickets from "../pages/tickets/ticket-overview.po"
 describe("Kummerform Page", () => {
   let formLabels: any[] = [];
   let qaps: any[] = [];
-  let testTitle: string = "testtitle";
-  let testText: string = "testext";
+  let testTitle = "testtitle";
+  let testText = "testext";
 
   beforeEach(() => {
     cy.getFormLabels().then((fetchedFormLabels) => {
@@ -24,15 +24,15 @@ describe("Kummerform Page", () => {
   context("page elements", () => {
     it("should load the kummerform page correctly", () => {
       kummerform.getAboutText().should("exist");
-      for (let i = 0; i < formLabels.length; i++) {
+      formLabels.forEach((_label, i) => {
         kummerform.getFormLabelCheckbox(formLabels[i].id).should("be.visible");
         kummerform.getLabels().contains(formLabels[i].name).should("be.visible");
-      }
-      
+      })
+
       if (qaps.length > 0) {
-        for (let i = 0; i < qaps.length; i++) {
-         kummerform.getQAPs(qaps[i].id).should("be.visible"); 
-        }
+        qaps.forEach((_qap, i) => {
+          kummerform.getQAPs(qaps[i].id).should("be.visible");
+        })
       } else {
         kummerform.QAPEmpty().should("be.visible");
       }
@@ -44,9 +44,9 @@ describe("Kummerform Page", () => {
     });
 
     it("should display buttons", () => {
-      for (let i = 0; i < formLabels.length; i++) {
-        kummerform.getFormLabelCheckbox(formLabels[0].id).should("be.visible").and('not.be.disabled');
-      }
+      formLabels.forEach((_label, i) => {
+        kummerform.getFormLabelCheckbox(formLabels[i].id).should("be.visible").and('not.be.disabled');
+      })
       kummerform.getSendButton().should("be.visible").and('not.be.disabled');
       kummerform.getThemeToggle().should("be.visible");
     });
@@ -54,12 +54,12 @@ describe("Kummerform Page", () => {
     it('should change theme', () => {
           const lightModeRgb = 'rgb(255, 255, 255)'
           const darkModeRgb = 'rgb(10, 10, 10)'
-    
+
           cy.get('body')
             .invoke('css', 'background-color')
             .then((initialBg) => {
               kummerform.getThemeToggle().click()
-    
+
               cy.get('body')
                 .invoke('css', 'background-color')
                 .should((newBg) => {
@@ -164,9 +164,11 @@ describe("Kummerform Page", () => {
       kummerform.submit();
 
       kummerform.getLabelsMessage().should("not.exist");
-      for (let i = 0; i < formLabels.length; i++) {
-        kummerform.getFormLabelCheckbox(formLabels[i].id).should("not.be.checked");
-      }
+
+      formLabels.forEach((_label, i) =>
+        kummerform.getFormLabelCheckbox(formLabels[i].id).should("not.be.checked")
+      )
+
       kummerform.getTitleMessage().should("not.exist");
       kummerform.getTitleInputLength().should("have.length", 0);
       kummerform.getTextMessage().should("not.exist");
