@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function compareInLowercase<T>(
+export function compareRowsInLowercase<T>(
   rowA: Row<T>,
   rowB: Row<T>,
   columnId: string
@@ -15,6 +15,10 @@ export function compareInLowercase<T>(
   const b = String(rowB.getValue(columnId)).toLowerCase();
 
   return a.localeCompare(b);
+}
+
+export function compareStringsInLowerCase(a: string, b: string): number {
+  return a.toLowerCase().localeCompare(b.toLowerCase());
 }
 
 export function compareStringSets(xs: Set<string>, ys: Set<string>) {

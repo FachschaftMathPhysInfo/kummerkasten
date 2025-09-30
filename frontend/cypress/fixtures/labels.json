@@ -1,7 +1,7 @@
 {
-  "soziales": {
-    "name": "soziales",
-    "color": "#6A4770",
+  "bachelor_arbeit": {
+    "name": "Bachelorarbeit",
+    "color": "#87A0B2",
     "public": false
   },
   "lineare_algebra":  {
@@ -15,12 +15,12 @@
     "public": true
   },
   "test1": {
-    "name": "Test Label 1",
+    "name": "A Test Label 1",
     "color": "#AEAEAE",
     "public": false
   },
   "test2": {
-    "name": "Test Label 2",
+    "name": "A Test Label 2",
     "color": "#FF00AE",
     "public": true
   }

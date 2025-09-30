@@ -35,7 +35,7 @@ export function getLabelRows() {
 }
 
 export function getNameHeader() {
-  return cy.get("[data-cy=table-header-button]")
+  return cy.get("[data-cy=table-header-button]").eq(1)
 }
 
 export function getNameCells() {

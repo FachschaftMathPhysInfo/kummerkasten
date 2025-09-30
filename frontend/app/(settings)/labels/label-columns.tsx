@@ -7,7 +7,7 @@ import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-
 import {LabelTableDialogState} from "@/app/(settings)/labels/label-table";
 import {Badge} from "@/components/ui/badge";
 import {calculateFontColor} from "@/lib/calculate-colors";
-import {compareInLowercase} from "@/lib/utils";
+import {compareRowsInLowercase} from "@/lib/utils";
 import {useUser} from "@/components/providers/user-provider";
 
 interface UserColumnProps {
@@ -34,7 +34,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
         if (a != b) {
           return a < b ? -1 : 1; 
         }
-        const nameSortResult = compareInLowercase(rowA, rowB, "name");
+        const nameSortResult = compareRowsInLowercase(rowA, rowB, "name");
         return nameSortResult === 0 ? 0 : nameSortResult > 0 ? -1 : 1;
       },
       cell: ({row}) => (
@@ -50,7 +50,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
       header: ({column}) => (
         <DataTableColumnHeader column={column} title="Name" data-cy={'sort-by-name-button'}/>
       ),
-      sortingFn: compareInLowercase,
+      sortingFn: compareRowsInLowercase,
       cell: ({row}) =>
         <Badge
           data-cy={'label-name-cell'}
