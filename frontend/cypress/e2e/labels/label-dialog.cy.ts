@@ -9,7 +9,7 @@ const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 describe("Label Dialog Tests", () => {
   roles.forEach((role) => {
     context(`${role} tests`, () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         cy.loginAsRole(role)
         cy.visit("/labels")
       })
