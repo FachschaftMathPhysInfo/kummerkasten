@@ -39,7 +39,7 @@ export default function AccountDataForm() {
   const [pendingUserData, setPendingUserData] = useState<AccountDataFormData>();
   const [passwordInputOpen, setPasswordInputOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof accountDataSchema>>({
+  const form = useForm<AccountDataFormData>({
     resolver: zodResolver(accountDataSchema),
     defaultValues: {
       firstname: user?.firstname,
@@ -63,7 +63,6 @@ export default function AccountDataForm() {
   }, [resetFormWithUserData]);
 
   async function onValidSubmit(userData: AccountDataFormData) {
-    setPendingUserData(userData)
     setHasTriedToSubmit(true)
     setIsSavingAccount(true);
 
@@ -84,7 +83,8 @@ export default function AccountDataForm() {
           });
           return;
         }
-        setHasTriedToSubmit(false);
+
+        setPendingUserData(userData)
         setPasswordInputOpen(true);
       } catch (error) {
         toast.error("Fehler beim Überprüfen der E-Mail-Adresse");
@@ -93,12 +93,11 @@ export default function AccountDataForm() {
         setIsSavingAccount(false)
       }
     } else {
-      await updateProfileData()
+      await updateProfileData(userData)
     }
   }
 
-  async function updateProfileData() {
-    const data = pendingUserData;
+  async function updateProfileData(data: AccountDataFormData) {
     if (!user || !data) {
       toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
       return;
@@ -211,7 +210,10 @@ export default function AccountDataForm() {
       <PasswordDialog
         open={passwordInputOpen}
         closeDialogAction={() => setPasswordInputOpen(false)}
-        onSuccessfulConfirmationAction={() => updateProfileData()}
+        onSuccessfulConfirmationAction={async () => {
+          if (pendingUserData) await updateProfileData(pendingUserData)
+          else toast.error("Ein Fehler ist aufgetreten")
+        }}
       />
     </>
   )
