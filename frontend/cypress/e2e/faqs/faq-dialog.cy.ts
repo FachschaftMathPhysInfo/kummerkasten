@@ -5,6 +5,7 @@ import * as confirmationDialog from "../../pages/confirmation-dialog.po"
 import * as faqs from "../../fixtures/faqs.json"
 
 const roles: UserRole[] = [UserRole.User, UserRole.Admin]
+const AMOUNT_FAQS_SEED_DB = 5
 
 describe('FAQ Manipulation Tests', () => {
   roles.forEach((role) => {
@@ -26,7 +27,7 @@ describe('FAQ Manipulation Tests', () => {
           dialog.getQuestionInputMessage().should('not.exist')
           dialog.getAnswerInput().should('be.visible')
           dialog.getAnswerInputMessage().should('not.exist')
-          dialog.getPositionInput().should('be.visible')
+          dialog.getPositionInput().should('have.value', AMOUNT_FAQS_SEED_DB + 1)
           dialog.getPositionInputMessage().should('not.exist')
           dialog.getCancelButton().should('be.enabled')
           dialog.getSubmitButton().should('be.enabled')
@@ -96,7 +97,6 @@ describe('FAQ Manipulation Tests', () => {
         it('saves on valid input', () => {
           dialog.fillOut(faqs.test)
           dialog.submit()
-          // I am fucking lazy
           cy.reload()
 
           page.getFAQRows()

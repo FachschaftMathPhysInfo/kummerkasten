@@ -109,7 +109,7 @@ export function QAPTable() {
           </Button>
 
           <Input
-            data-cy="qap-searchbar"
+            data-cy="faq-searchbar"
             placeholder="Frage oder Antwort durchsuchen..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
