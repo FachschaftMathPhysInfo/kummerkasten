@@ -1,4 +1,4 @@
-import {Label, TicketState, User, UserRole} from "@/lib/graph/generated/graphql";
+import {Label, QuestionAnswerPair, TicketState, User, UserRole} from "@/lib/graph/generated/graphql";
 import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
 
 const now = new Date()
@@ -32,4 +32,11 @@ export const defaultTicketFiltering: TicketFiltering = {
 export const defaultTicketSorting: TicketSorting = {
   field: "Erstellt",
   orderAscending: true,
+}
+
+export const defaultQAP: QuestionAnswerPair = {
+  id: "invalid ID",
+  question: "Ist dies das default QAP??",
+  answer: "JA! ES IST DAS DEFAULT QAP",
+  position: -1
 }

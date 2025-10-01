@@ -41,7 +41,7 @@ export const useLabels = (): LabelContextType => {
   const context = useContext(LabelsContext);
 
   if (!context) {
-    throw new Error("useTickets must be used within a LabelProvider");
+    throw new Error("useLabels must be used within a LabelProvider");
   }
 
   return context;

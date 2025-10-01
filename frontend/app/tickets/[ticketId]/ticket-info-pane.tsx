@@ -169,6 +169,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
                   mode: "delete",
                   currentTicket: ticket
                 })}
+                data-cy={'ticket-info-pane-delete'}
               >
                 <Trash2 className={'stroke-destructive'}/>
               </Button>

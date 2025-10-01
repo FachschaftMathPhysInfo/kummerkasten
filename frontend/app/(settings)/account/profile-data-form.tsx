@@ -65,9 +65,9 @@ export default function AccountDataForm() {
 
     const client = getClient();
     const userObject = {
-      firstname: userData.firstname !== user?.firstname ? userData.firstname : null,
-      lastname: userData.lastname !== user?.lastname ? userData.lastname : null,
-      mail: userData.mail !== user?.mail ? userData.mail : null,
+      firstname: userData.firstname.trim() !== user?.firstname ? userData.firstname.trim() : null,
+      lastname: userData.lastname.trim() !== user?.lastname ? userData.lastname.trim() : null,
+      mail: userData.mail.trim() !== user?.mail ? userData.mail.trim() : null,
     }
 
     if (!user) {
