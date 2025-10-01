@@ -69,9 +69,9 @@ export default function UserForm(props: UserFormProps) {
     const client = getClient();
 
     const newUser: NewUser = {
-      firstname: data.firstname,
-      lastname: data.lastname,
-      mail: data.mail,
+      firstname: data.firstname.trim(),
+      lastname: data.lastname.trim(),
+      mail: data.mail.trim(),
       password: data.password,
     }
 

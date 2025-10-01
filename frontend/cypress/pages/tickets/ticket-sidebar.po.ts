@@ -17,3 +17,7 @@ export function getTicketDetailFilterReset() {
 export function getTicketCard(id: string) {
   return cy.get(`[data-cy="ticket-card-id-${id}"]`)
 }
+
+export function getTicketFilterBar() {
+  return cy.get('[data-cy="ticket-filter-bar"]')
+}

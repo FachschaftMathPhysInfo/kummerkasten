@@ -397,6 +397,7 @@ Cypress.Commands.add("getAllQAPs", (): Cypress.Chainable<any> => {
             }
         }
     `;
+
   return cy
     .request({
       method: "POST",

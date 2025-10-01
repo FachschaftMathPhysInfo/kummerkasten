@@ -10,9 +10,10 @@ import (
 type Session struct {
 	bun.BaseModel `bun:"table:sessions"`
 
-	ID        string    `bun:",pk,default:gen_random_UUID(),type:uuid"`
-	UserID    string    `bun:",type:uuid,notnull"`
-	ExpiresAt time.Time `bun:",notnull"`
+	ID              string    `bun:",pk,default:gen_random_UUID(),type:uuid"`
+	UserID          string    `bun:",type:uuid,notnull"`
+	LastInteraction time.Time `bun:",notnull"`
+	ExpiresAt       time.Time `bun:",notnull"`
 }
 
 func (*Session) AfterCreateTable(ctx context.Context, query *bun.CreateTableQuery) error {

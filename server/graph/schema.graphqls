@@ -65,6 +65,7 @@ type QuestionAnswerPair {
 type Session {
     id: String!
     user_id: String!
+    last_interaction: Time!
     expires_at: Time!
 }
 
@@ -110,8 +111,6 @@ input UpdateUser {
 
 input UpdateTicket {
     title: String
-    text: String
-    note: String
     state: TicketState
 }
 
@@ -174,7 +173,7 @@ type Mutation {
     removeLabelFromTicket(assignments: [LabelToTicketAssignment!]!): Int! @hasRole(role: USER)
 
     createQuestionAnswerPair(questionAnswerPair: NewQuestionAnswerPair!): QuestionAnswerPair! @hasRole(role: USER)
-    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: USER)
+    deleteQuestionAnswerPair(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateQuestionAnswerPair(id: String!,questionAnswerPair: UpdateQuestionAnswerPair!): String! @hasRole(role: USER)
     updateQuestionAnswerPairBatchPositions(questionAnswerPairs: [UpdateQuestionAnswerPairPosition!]!): Boolean! @hasRole(role: USER)
 }
