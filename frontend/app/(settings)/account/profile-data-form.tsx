@@ -18,6 +18,7 @@ import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
 import PasswordDialog from "@/components/dialogs/password-dialog";
+import {useRouter} from "next/navigation";
 
 const MAX_NAME_LENGTH = 50;
 
@@ -32,7 +33,8 @@ const accountDataSchema = z.object({
 type AccountDataFormData = z.infer<typeof accountDataSchema>;
 
 export default function AccountDataForm() {
-  const {user, logout} = useUser();
+  const {user} = useUser()
+  const router = useRouter()
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
@@ -125,14 +127,10 @@ export default function AccountDataForm() {
         mail: data.mail,
       });
 
-      if (data.mail !== user.mail) {
-        toast.success("Dein Account wurde erfolgreich aktualisiert. Du wirst jetzt ausgeloggt");
-        await logout();
-      } else {
-        toast.success("Dein Account wurde erfolgreich aktualisiert")
-      }
-
+      toast.success("Dein Account wurde erfolgreich aktualisiert")
       setHasTriedToSubmit(false);
+
+      if (data.mail !== user.mail) window.location.reload()
     } catch (error) {
       toast.error("Ein Fehler beim Aktualisieren der Daten ist aufgetreten");
       console.error(error);
