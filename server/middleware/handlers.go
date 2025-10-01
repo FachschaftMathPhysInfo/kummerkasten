@@ -13,7 +13,7 @@ import (
 func Auth(db *bun.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			sessionCookie, err := r.Cookie("sessionCookie")
+			sessionCookie, err := r.Cookie("sid")
 			if err != nil || sessionCookie.Value == "" {
 				next.ServeHTTP(w, r)
 				return
