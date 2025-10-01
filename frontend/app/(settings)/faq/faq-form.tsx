@@ -73,8 +73,13 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const onValidSubmit = async (data: z.infer<typeof faqFormSchema>) => {
     setLoading(true);
     let ok: boolean
-    if (createMode) ok = await createQAP(data)
-    else ok = await updateQAP(data)
+    const trimmedData = {
+      question: data.question.trim(),
+      answer: data.answer.trim(),
+      position: data.position,
+    }
+    if (createMode) ok = await createQAP(trimmedData)
+    else ok = await updateQAP(trimmedData)
 
     if (ok) {
       form.reset()

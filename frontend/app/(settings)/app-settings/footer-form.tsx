@@ -76,8 +76,8 @@ export default function FooterForm() {
     }
 
     try {
-      const constactSetting: Setting = {key: FOOTER_CONTACT_LINK_KEY, value: data.contactLink}
-      const legalNoticeSetting: Setting = {key: FOOTER_LEGAL_NOTICE_KEY, value: data.legalNoticeLink}
+      const constactSetting: Setting = {key: FOOTER_CONTACT_LINK_KEY, value: data.contactLink.trim()}
+      const legalNoticeSetting: Setting = {key: FOOTER_LEGAL_NOTICE_KEY, value: data.legalNoticeLink.trim()}
       await client.request(UpdateSettingDocument, {setting: constactSetting})
       await client.request(UpdateSettingDocument, {setting: legalNoticeSetting})
 

@@ -34,8 +34,6 @@ interface TicketEditDialogProps {
 
 const ticketEditSchema = z.object({
   title: z.string().nonempty(),
-  text: z.string().nonempty(),
-  note: z.string(),
   state: z.enum(TicketState),
   labels: z.array(z.string().min(1, {message: "Bitte wähle mindestens ein Label aus."})),
 })
@@ -48,8 +46,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
     resolver: zodResolver(ticketEditSchema),
     defaultValues: {
       title: "",
-      text: "",
-      note: "",
       state: props.ticket?.state,
       labels: props.ticket?.labels?.map(l => l.id)
     }
@@ -61,8 +57,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
     if (props.ticket) {
       form.reset({
         title: props.ticket.title,
-        text: props.ticket.text,
-        note: props.ticket.note ?? "",
         state: props.ticket.state,
         labels: props.ticket.labels?.map(l => l.id) || [],
       });

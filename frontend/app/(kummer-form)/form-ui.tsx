@@ -50,7 +50,7 @@ export default function FormUi() {
   const [isLabelsLoading, setIsLabelsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchLabels = async () => {
+    const fetchPublicLabels = async () => {
       try {
         setIsLabelsLoading(true);
         const client = getClient();
@@ -71,7 +71,7 @@ export default function FormUi() {
       }
     };
 
-    void fetchLabels();
+    void fetchPublicLabels();
   }, [form]);
 
   async function onValidSubmit(data: z.infer<typeof formUiSchema>) {
@@ -80,8 +80,8 @@ export default function FormUi() {
 
     const newTicket: NewTicket = {
       labels: data.labels,
-      originalTitle: data.title,
-      text: data.text,
+      originalTitle: data.title.trim(),
+      text: data.text.trim(),
     };
 
     try {

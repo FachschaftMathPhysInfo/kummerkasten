@@ -108,9 +108,9 @@ export default function AccountDataForm() {
 
     const client = getClient();
     const userObject = {
-      firstname: data.firstname !== user?.firstname ? data.firstname : null,
-      lastname: data.lastname !== user?.lastname ? data.lastname : null,
-      mail: data.mail !== user?.mail ? data.mail : null,
+      firstname: data.firstname.trim() !== user?.firstname ? data.firstname.trim() : null,
+      lastname: data.lastname.trim() !== user?.lastname ? data.lastname.trim() : null,
+      mail: data.mail.trim() !== user?.mail ? data.mail.trim() : null,
     }
 
     const updateData: UpdateUserSettingsMutationVariables = {

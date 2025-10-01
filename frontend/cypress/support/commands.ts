@@ -385,10 +385,11 @@ Cypress.Commands.add("getAllQAPs", (): Cypress.Chainable<any> => {
                 question
                 answer
                 id
-                order
+                position
             }
         }
     `;
+
   return cy
     .request({
       method: "POST",
