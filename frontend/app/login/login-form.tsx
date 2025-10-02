@@ -6,7 +6,7 @@ import {z} from "zod";
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {LoaderCircle, LogIn} from "lucide-react";
 import {useUser} from "@/components/providers/user-provider";
 import {toast} from "sonner";
@@ -27,6 +27,7 @@ export default function LoginForm() {
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
   const [correctCredentials, setCorrectCredentials] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -71,6 +72,7 @@ export default function LoginForm() {
       <form
         onSubmit={form.handleSubmit(onValidSubmit, () => setHasTriedToSubmit(true))}
         className="space-y-4 w-full mt-6"
+        onKeyDown={e => {if (e.key === "Enter") submitButtonRef.current?.focus()}}
       >
 
         <FormField
@@ -120,13 +122,14 @@ export default function LoginForm() {
         <div className={'w-full'}>
 
           <Button
+            ref={submitButtonRef}
             disabled={!form.formState.isValid && hasTriedToSubmit}
             type="submit"
             className={'w-full'}
             data-cy={'submit'}
           >
             {isLoading ? (
-              <LoaderCircle/>
+              <LoaderCircle className={'animate-spin'}/>
             ) : (
               <LogIn/>
             )}

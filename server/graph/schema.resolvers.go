@@ -1225,7 +1225,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 	hashedPassword := user.Password
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
-		log.Printf("Password is incorrect for %v is incorrect", user.Mail)
+		log.Printf("Failed login attempt for %v", user.Mail)
 		return false, fmt.Errorf("incorrect credentials")
 	}
 
