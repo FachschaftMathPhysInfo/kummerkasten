@@ -75,8 +75,8 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
   }, [tickets, filtering, sorting])
 
   return (
-    <div className="flex-1 overflow-y-clip overflow-x-hidden max-h-[90vh]">
-      <div className="px-4 flex flex-col gap-4 h-full">
+    <div className="h-[90vh] max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="px-4 flex flex-col gap-4 h-full min-h-0">
         <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -147,7 +147,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
           )}</div>
       </div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden max-h-[80vh]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
         <div>
         <div className={'w-full flex gap-4 items-center my-2'}>
           <span className={'grow h-0.5 bg-muted-foreground'}/>
