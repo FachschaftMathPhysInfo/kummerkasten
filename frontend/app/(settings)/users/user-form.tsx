@@ -3,7 +3,7 @@
 import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import React, {useRef, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {CreateUserDocument, CreateUserMutation, GetUserIdByMailDocument, NewUser} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
@@ -57,6 +57,32 @@ export default function UserForm(props: UserFormProps) {
   })
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const formRef = useRef<HTMLFormElement | null>(null)
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Tab' && formRef.current) {
+      const focusableElements = Array.from(
+        formRef.current.querySelectorAll(
+          'input:not([disabled]), button:not([disabled]), [role="button"]:not([disabled])'
+        )
+      ) as HTMLElement[];
+
+      const currentIndex = focusableElements.indexOf(e.target as HTMLElement);
+
+      if (currentIndex !== -1) {
+        e.preventDefault();
+
+        let nextIndex;
+        if (e.shiftKey) {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : focusableElements.length - 1;
+        } else {
+          nextIndex = currentIndex < focusableElements.length - 1 ? currentIndex + 1 : 0;
+        }
+
+        focusableElements[nextIndex]?.focus();
+      }
+    }
+  };
 
   async function onValidSubmit(data: z.infer<typeof userFormSchema>) {
     setLoading(true)
@@ -100,6 +126,8 @@ export default function UserForm(props: UserFormProps) {
   return (
     <FormProvider {...form}>
       <form
+        ref={formRef}
+        onKeyDown={handleKeyDown}
         onSubmit={form.handleSubmit(onValidSubmit, () =>
           setHasTriedToSubmit(true)
         )}
