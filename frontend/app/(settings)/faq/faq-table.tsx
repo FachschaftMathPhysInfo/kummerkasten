@@ -11,13 +11,7 @@ import {Input} from "@/components/ui/input";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 
 import {PlusCircle} from "lucide-react";
-import {getClient} from "@/lib/graph/client";
-import {
-  DeleteQuestionAnswerPairDocument,
-  DeleteQuestionAnswerPairMutation,
-  QuestionAnswerPair,
-  UpdateQuestionAnswerPairPositionsDocument,
-} from "@/lib/graph/generated/graphql";
+import {QuestionAnswerPair, UpdateQuestionAnswerPairPosition,} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 
 import {DndProvider} from "react-dnd";
@@ -34,7 +28,7 @@ export interface QAPTableDialogState {
 export function QAPTable() {
   const [dialogState, setDialogState] = useState<QAPTableDialogState>({mode: null, currentQAP: null});
   const [searchTerm, setSearchTerm] = useState("");
-  const {qaps, triggerQAPRefetch} = useQAPs()
+  const {qaps, deleteQaps, updateQapPositions, triggerQAPRefetch} = useQAPs()
   const [localData, setLocalData] = useState<QuestionAnswerPair[]>(qaps);
   const filteredData = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -48,20 +42,25 @@ export function QAPTable() {
     getSortedRowModel: getSortedRowModel(),
     columnResizeMode: "onChange",
   });
-  const client = getClient();
 
 
   useEffect(() => setLocalData(qaps), [qaps]);
 
   const resetDialogState = () => setDialogState({mode: null, currentQAP: null});
 
-  async function deleteQAP() {
-    try {
-      await client.request<DeleteQuestionAnswerPairMutation>(DeleteQuestionAnswerPairDocument, {ids: [dialogState.currentQAP?.id]});
+  async function deleteQAPHandler() {
+    if (!dialogState.currentQAP) {
+      toast.error("Ein Fehler ist aufgetreten")
+      return
+    }
+
+    const error = await deleteQaps([dialogState.currentQAP.id])
+
+    if (!error) {
       resetDialogState();
       triggerQAPRefetch();
       toast.success("QAP wurde erfolgreich gelöscht")
-    } catch {
+    } else {
       toast.error("Fehler beim Löschen der Frage");
     }
   }
@@ -78,22 +77,17 @@ export function QAPTable() {
   }, []);
 
   const updatePosition = useCallback(async () => {
-      const reordered = localData.map((qap, idx) => ({
+      const reordered: UpdateQuestionAnswerPairPosition[] = localData.map((qap, idx) => ({
         id: qap.id,
         position: idx,
       }));
 
-      try {
-        await client.request(UpdateQuestionAnswerPairPositionsDocument, {
-          qaps: reordered,
-        });
-      } catch {
-        toast.error("Fehler beim Aktualisieren der Positionen");
-      }
+      const error = await updateQapPositions(reordered)
+      if (error) toast.error("Fehler beim Aktualisieren der Positionen");
 
       triggerQAPRefetch();
     },
-    [client, localData, triggerQAPRefetch]
+    [localData, triggerQAPRefetch, updateQapPositions]
   );
   return (
     <DndProvider backend={HTML5Backend}>
@@ -157,7 +151,7 @@ export function QAPTable() {
         <ConfirmationDialog
           mode="confirmation"
           description={`Dies wird die Frage "${dialogState.currentQAP?.question}" unwiderruflich löschen.`}
-          onConfirm={() => deleteQAP()}
+          onConfirm={() => deleteQAPHandler()}
           isOpen={dialogState.mode === "delete"}
           closeDialog={resetDialogState}
         />
