@@ -1,11 +1,24 @@
 "use client"
 
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {AllTicketsDocument, Ticket} from "@/lib/graph/generated/graphql";
+import {
+  AddLabelsToTicketDocument,
+  AllTicketsDocument,
+  DeleteTicketDocument,
+  LabelToTicketAssignment,
+  RemoveLabelsFromTicketDocument,
+  Ticket,
+  UpdateTicket,
+  UpdateTicketDocument
+} from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
 
 interface TicketsContextType {
   tickets: Ticket[];
+  updateTicket: (id: string, ticket: UpdateTicket) => Promise<string | null>
+  deleteTickets: (ids: string[]) => Promise<string | null>
+  addLabelsToTicket: (ticketID: string, labelIDs: string[]) => Promise<string | null>
+  removeLabelsFromTicket: (ticketID: string, labelIDs: string[]) => Promise<string | null>
   triggerTicketRefetch: () => void;
 }
 
@@ -37,9 +50,65 @@ export function TicketsProvider({children}: { children: ReactNode }) {
     setRefetchKey(!refetchKey);
   }
 
+  async function updateTicket(id: string, ticket: UpdateTicket) {
+    const client = getClient()
+
+    try {
+      await client.request(UpdateTicketDocument, {id, ticket})
+      return null
+    } catch (e) {
+      return String(e)
+    }
+  }
+
+  async function deleteTickets(ids: string[]) {
+    const client = getClient()
+
+    try {
+      await client.request(DeleteTicketDocument, {ids})
+      return null
+    } catch (e) {
+      return String(e)
+    }
+  }
+
+  async function addLabelsToTicket(ticketID: string, labelsIDs: string[]) {
+    if(!(labelsIDs.length > 0)) return null
+
+    const client = getClient()
+    const assignments: LabelToTicketAssignment[] = labelsIDs.map(labelID => ({
+      labelID: labelID,
+      ticketID: ticketID
+    }))
+
+    try {
+      await client.request(AddLabelsToTicketDocument, {assignments})
+      return null
+    } catch (e) {
+      return String(e)
+    }
+  }
+
+  async function removeLabelsFromTicket(ticketID: string, labelsIDs: string[]) {
+    if(!(labelsIDs.length > 0)) return null
+
+    const client = getClient()
+    const assignments: LabelToTicketAssignment[] = labelsIDs.map(labelID => ({
+      labelID: labelID,
+      ticketID: ticketID
+    }))
+
+    try {
+      await client.request(RemoveLabelsFromTicketDocument, {assignments})
+      return null
+    } catch (e) {
+      return String(e)
+    }
+  }
 
   return (
-    <TicketsContext.Provider value={{tickets, triggerTicketRefetch}}>
+    <TicketsContext.Provider
+      value={{tickets, updateTicket, deleteTickets, addLabelsToTicket, removeLabelsFromTicket, triggerTicketRefetch}}>
       {children}
     </TicketsContext.Provider>
   );

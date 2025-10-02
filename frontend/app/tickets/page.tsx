@@ -3,9 +3,8 @@
 import {ManagementPageHeader} from "@/components/management-page-header";
 import {TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
-import {getClient} from "@/lib/graph/client";
 import React, {useEffect, useState} from "react";
-import {DeleteTicketDocument, DeleteTicketMutation, Label, Ticket, TicketState} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketState} from "@/lib/graph/generated/graphql";
 import {Input} from "@/components/ui/input";
 import Link from "next/link";
 import {toast} from "sonner";
@@ -16,9 +15,13 @@ import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
 import MobileFilterSheet from "@/app/tickets/mobile-filter-sheet";
 import FilterBar from "@/components/filter-bar";
-import {getFilteredTickets, getSortedTickets, getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
+import {
+  getCurrentSemesterTickets,
+  getFilteredTickets,
+  getOlderSemesterTickets,
+  getSortedTickets
+} from "@/lib/ticket-operations";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
-
 
 
 export type TicketDialogState = {
@@ -43,7 +46,7 @@ export type TicketFiltering = {
 
 
 export default function TicketPage() {
-  const {tickets, triggerTicketRefetch} = useTickets();
+  const {tickets, deleteTickets, triggerTicketRefetch} = useTickets();
   const [filtering, setFiltering] = useState<TicketFiltering>(defaultTicketFiltering);
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
   const [sorting, setSorting] = useState<TicketSorting>(defaultTicketSorting);
@@ -116,13 +119,13 @@ export default function TicketPage() {
       return
     }
 
-    try {
-      const client = getClient();
-      await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
+    const error = await deleteTickets([dialogState.currentTicket.id])
+
+    if(!error) {
       toast.success("Ticket wurde erfolgreich gelöscht")
       triggerTicketRefetch()
       resetDialogState()
-    } catch {
+    } else {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }

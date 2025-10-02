@@ -4,14 +4,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {useParams} from "next/navigation";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {getClient} from "@/lib/graph/client";
-import {
-  DeleteTicketDocument,
-  DeleteTicketMutation,
-  Label,
-  Ticket,
-  TicketsByIdsDocument,
-  TicketsByIdsQuery
-} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
 import {TicketDialogState} from "@/app/tickets/page";
@@ -26,7 +19,7 @@ const client = getClient();
 
 export default function TicketPage() {
   const {ticketId} = useParams();
-  const {triggerTicketRefetch} = useTickets()
+  const {deleteTickets, triggerTicketRefetch} = useTickets()
   const {isMobile} = useSidebar()
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -55,13 +48,14 @@ export default function TicketPage() {
       return
     }
 
-    try {
-      await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
+    const error = await deleteTickets([dialogState.currentTicket.id])
+
+    if (!error) {
       toast.success("Ticket wurde erfolgreich gelöscht")
       resetDialogState()
       triggerTicketRefetch()
       await fetchTicketDetail();
-    } catch {
+    } else {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
