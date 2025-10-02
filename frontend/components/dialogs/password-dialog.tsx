@@ -40,7 +40,7 @@ export default function PasswordDialog(props: PasswordDialogProps) {
 
   return (
     <Dialog open={props.open}>
-      <DialogContent>
+      <DialogContent className="[&>button]:hidden">
         <DialogHeader>
           <DialogTitle>E-Mail ändern bestätigen</DialogTitle>
         </DialogHeader>
