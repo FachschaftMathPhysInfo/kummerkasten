@@ -134,7 +134,7 @@ export function LabelTable() {
                   <TooltipContent side="top" sideOffset={5}>
                     {formLabelFilter === null ? (
                       <p>Öffentliche Labels anzeigen</p>
-                      ) : formLabelFilter === true ? (
+                      ) : formLabelFilter ? (
                       <p>Nicht-öffentliche Labels anzeigen</p>
                       ) : (
                       <p>Alle Labels anzeigen</p>
@@ -223,7 +223,6 @@ export function LabelTable() {
         createMode={dialogState.mode === "add"}
         label={dialogState.currentLabel}
         closeDialog={resetDialogState}
-        refreshData={triggerLabelRefetch}
       />
 
       <ConfirmationDialog

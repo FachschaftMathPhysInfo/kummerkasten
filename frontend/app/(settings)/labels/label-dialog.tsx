@@ -8,7 +8,6 @@ interface LabelDialogProps {
   createMode: boolean;
   label: Label | null;
   closeDialog: () => void;
-  refreshData: () => void;
 }
 
 export default function LabelDialog(props: LabelDialogProps) {
@@ -24,7 +23,6 @@ export default function LabelDialog(props: LabelDialogProps) {
           createMode={props.createMode}
           originalLabel={props.label}
           closeDialog={props.closeDialog}
-          refreshData={props.refreshData}
         />
       </DialogContent>
     </Dialog>
