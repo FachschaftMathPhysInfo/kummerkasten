@@ -12,7 +12,6 @@ export const defaultUser: User = {
   createdAt: now,
   mail: 'max.musterperson@mail.com',
   role: UserRole.User,
-  password: 'invalid',
 }
 
 export const defaultLabel: Label = {
