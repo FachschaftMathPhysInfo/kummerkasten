@@ -11,12 +11,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {cn, compareStringSets} from "@/lib/utils";
+import {cn} from "@/lib/utils";
 import React, {useEffect, useState} from "react";
 import {format} from "date-fns";
 import {useTickets} from "@/components/providers/ticket-provider";
-import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
-import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
+import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
 import {
   getCurrentSemesterTickets,
   getFilteredTickets,
@@ -32,29 +31,18 @@ interface TicketSidebarProps {
   selectedTicketId?: string;
 }
 
-export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
+export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
 
   const router = useRouter();
-  const {tickets} = useTickets()
-  const [filtering, setFiltering] = useState<TicketFiltering>(defaultTicketFiltering)
-  const [sorting, setSorting] = useState<TicketSorting>(defaultTicketSorting)
+  const {tickets, filtering, sorting, setFiltering, stateFilterSet} = useTickets()
   const [areFiltersSet, setAreFiltersSet] = useState(false)
-  const [isStateFilterSet, setIsStateFilterSet] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [filteredTickets, setFilteredTickets] = useState<Ticket[]>(getFilteredTickets(filtering, tickets))
   const [sortedTickets, setSortedTickets] = useState<Ticket[]>(getSortedTickets(sorting, filteredTickets))
 
   useEffect(() => {
-    const originalState = new Set(defaultTicketFiltering.state)
-    const currentState = new Set(filtering.state)
-    setIsStateFilterSet(!compareStringSets(originalState, currentState))
-    // This will always change by one, thus .length is sufficient here
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtering.state.length]);
-
-  useEffect(() => {
     setAreFiltersSet(
-      isStateFilterSet ||
+      stateFilterSet ||
       filtering.labels.length > 0 ||
       !!filtering.startDate ||
       !!filtering.endDate
@@ -64,7 +52,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
     setFilteredTickets(newFilteredTickets)
     setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
   }, [
-    isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm,
+    stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm,
     sorting.field, sorting.orderAscending, filtering, sorting, tickets
   ])
 
@@ -122,14 +110,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
           )}
         >
           {showFilters && (
-            <FilterBar
-              filtering={filtering}
-              setFiltering={setFiltering}
-              sorting={sorting}
-              setSorting={setSorting}
-              stateFilterSet={isStateFilterSet}
-              scrollable
-            />
+            <FilterBar scrollable/>
           )}
 
           {areFiltersSet && (

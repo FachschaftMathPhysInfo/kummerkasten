@@ -1,4 +1,4 @@
-import {TicketSortingField} from "@/app/tickets/page";
+import {TicketSortingField} from "@/components/providers/ticket-provider";
 
 export function getDesktopOverviewStateFilterButton() {
   return cy.get('[data-cy="desktop-overview-button-status"]')

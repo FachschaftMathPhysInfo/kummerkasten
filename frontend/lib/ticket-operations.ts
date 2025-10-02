@@ -1,5 +1,5 @@
 import {Ticket, TicketState} from "@/lib/graph/generated/graphql";
-import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
+import {TicketFiltering, TicketSorting} from "@/components/providers/ticket-provider";
 
 export function getTicketStateColor(state: TicketState): string {
   const stateVarMap: Record<TicketState, string> = {

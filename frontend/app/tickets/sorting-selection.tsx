@@ -5,7 +5,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
-import {TicketSorting, TicketSortingField} from "@/app/tickets/page";
+import {TicketSorting, TicketSortingField} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
 
 interface SortingSelectionProps {

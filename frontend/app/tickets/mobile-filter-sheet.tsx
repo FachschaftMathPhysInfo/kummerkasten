@@ -6,7 +6,7 @@ import {cn} from "@/lib/utils";
 import LabelBadge from "../../components/label-badge";
 import {DateRangeFilter} from "../../components/date-range-filter";
 import React, {useState} from "react";
-import {TicketFiltering, TicketSorting, TicketSortingField} from "@/app/tickets/page";
+import {TicketFiltering, TicketSorting, TicketSortingField} from "@/components/providers/ticket-provider";
 import {Input} from "@/components/ui/input";
 import {useLabels} from "@/components/providers/label-provider";
 

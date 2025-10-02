@@ -9,7 +9,6 @@ import {Input} from "@/components/ui/input";
 import Link from "next/link";
 import {toast} from "sonner";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
-import {compareStringSets} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
@@ -29,30 +28,11 @@ export type TicketDialogState = {
   currentTicket: Ticket | null
 }
 
-export type TicketSorting = {
-  field: TicketSortingField,
-  orderAscending: boolean
-}
-
-export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
-
-export type TicketFiltering = {
-  searchTerm: string;
-  state: TicketState[];
-  labels: Label[];
-  startDate: Date | null;
-  endDate: Date | null;
-}
-
-
 export default function TicketPage() {
-  const {tickets, deleteTickets, triggerTicketRefetch} = useTickets();
-  const [filtering, setFiltering] = useState<TicketFiltering>(defaultTicketFiltering);
+  const {tickets, filtering, sorting, setFiltering, setSorting, stateFilterSet, deleteTickets, triggerTicketRefetch} = useTickets();
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
-  const [sorting, setSorting] = useState<TicketSorting>(defaultTicketSorting);
   const {isMobile} = useSidebar();
   const [areFiltersSet, setAreFiltersSet] = useState(false);
-  const [isStateFilterSet, setIsStateFilterSet] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
   const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
 
@@ -61,15 +41,6 @@ export default function TicketPage() {
     // can't use function as array dependency as the render and update depth are exceeded
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const originalState = new Set([TicketState.New, TicketState.Open])
-    const currentState = new Set(filtering.state)
-    setIsStateFilterSet(!compareStringSets(originalState, currentState))
-    // We can't add the expected stateFilter as array dependency, as it will change size
-    // and thus throw an error
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtering.state.length]);
 
   useEffect(() => {
       const newFilteredTickets = getFilteredTickets(filtering, tickets);
@@ -102,12 +73,12 @@ export default function TicketPage() {
 
   useEffect(() => {
     setAreFiltersSet(
-      isStateFilterSet ||
+      stateFilterSet ||
       filtering.labels.length > 0 ||
       !!filtering.startDate ||
       !!filtering.endDate
     )
-  }, [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
+  }, [stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
 
   function resetDialogState() {
     setDialogState({mode: null, currentTicket: null})
@@ -158,13 +129,7 @@ export default function TicketPage() {
                 areFiltersSet={areFiltersSet}
               />
             ) : (
-              <FilterBar
-                filtering={filtering}
-                setFiltering={setFiltering}
-                sorting={sorting}
-                setSorting={setSorting}
-                stateFilterSet={isStateFilterSet}
-              />
+              <FilterBar/>
             )}
           </div>
           {areFiltersSet && (
