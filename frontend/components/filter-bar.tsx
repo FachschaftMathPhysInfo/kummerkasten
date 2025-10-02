@@ -17,7 +17,7 @@ interface FilterBarProps {
 
 export default function FilterBar({scrollable = false}: FilterBarProps) {
   const {labels} = useLabels()
-  const {filtering, stateFilterSet, sorting, setFiltering, setSorting} = useTickets()
+  const {filtering, stateFilterSet, setFiltering} = useTickets()
 
   return (
     <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}
@@ -105,7 +105,7 @@ export default function FilterBar({scrollable = false}: FilterBarProps) {
         endDate={filtering.endDate}
         setEndDate={(date) => setFiltering(prev => ({...prev, endDate: date}))}
       />
-      <SortingSelection setSorting={setSorting} sorting={sorting}/>
+      <SortingSelection/>
     </div>
 
   )

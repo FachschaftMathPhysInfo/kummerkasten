@@ -35,6 +35,7 @@ interface TicketsContextType {
   tickets: Ticket[];
   filtering: TicketFiltering
   stateFilterSet: boolean
+  areFiltersSet: boolean
   sorting: TicketSorting
   updateTicket: (id: string, ticket: UpdateTicket) => Promise<string | null>
   deleteTickets: (ids: string[]) => Promise<string | null>
@@ -53,6 +54,7 @@ export function TicketsProvider({children}: { children: ReactNode }) {
   const [sorting, setSorting] = useState(defaultTicketSorting);
   const [filtering, setFiltering] = useState(defaultTicketFiltering);
   const [stateFilterSet, setStateFilterSet] = useState(false)
+  const [areFiltersSet, setAreFiltersSet] = useState(false)
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -80,6 +82,15 @@ export function TicketsProvider({children}: { children: ReactNode }) {
     // and thus throw an error
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtering.state.length]);
+
+  useEffect(() => {
+    setAreFiltersSet(
+      stateFilterSet ||
+      filtering.labels.length > 0 ||
+      !!filtering.startDate ||
+      !!filtering.endDate
+    )
+  }, [stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
 
   function triggerTicketRefetch() {
     setRefetchKey(!refetchKey);
@@ -156,6 +167,7 @@ export function TicketsProvider({children}: { children: ReactNode }) {
         tickets,
         filtering,
         stateFilterSet,
+        areFiltersSet,
         sorting,
         updateTicket,
         deleteTickets,

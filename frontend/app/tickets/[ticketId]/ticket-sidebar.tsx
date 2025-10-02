@@ -34,20 +34,12 @@ interface TicketSidebarProps {
 export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
 
   const router = useRouter();
-  const {tickets, filtering, sorting, setFiltering, stateFilterSet} = useTickets()
-  const [areFiltersSet, setAreFiltersSet] = useState(false)
+  const {tickets, filtering, areFiltersSet, sorting, setFiltering, stateFilterSet} = useTickets()
   const [showFilters, setShowFilters] = useState(false)
   const [filteredTickets, setFilteredTickets] = useState<Ticket[]>(getFilteredTickets(filtering, tickets))
   const [sortedTickets, setSortedTickets] = useState<Ticket[]>(getSortedTickets(sorting, filteredTickets))
 
   useEffect(() => {
-    setAreFiltersSet(
-      stateFilterSet ||
-      filtering.labels.length > 0 ||
-      !!filtering.startDate ||
-      !!filtering.endDate
-    )
-
     const newFilteredTickets = getFilteredTickets(filtering, tickets)
     setFilteredTickets(newFilteredTickets)
     setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
