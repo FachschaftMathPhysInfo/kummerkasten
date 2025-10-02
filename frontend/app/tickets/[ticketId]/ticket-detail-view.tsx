@@ -27,7 +27,7 @@ export default function TicketDetailView({
                                            setDialogStateAction,
                                          }: TicketDetailViewProps) {
   const {isMobile} = useSidebar()
-  const {updateTicket, triggerTicketRefetch} = useTickets()
+  const {updateTicket} = useTickets()
   const [editMode, setEditMode] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "")
 
@@ -39,7 +39,6 @@ export default function TicketDetailView({
     const error = await updateTicket(ticket.id, {title: newTitle})
 
     if (!error) {
-      triggerTicketRefetch()
       setEditMode(false)
       ticket.title = newTitle
     } else {

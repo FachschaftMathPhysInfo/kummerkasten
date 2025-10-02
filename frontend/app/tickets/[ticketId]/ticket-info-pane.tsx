@@ -24,7 +24,7 @@ interface TicketInfoPaneProps {
 
 export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateAction}: TicketInfoPaneProps) {
   const {user} = useUser()
-  const {updateTicket, addLabelsToTicket, removeLabelsFromTicket, triggerTicketRefetch} = useTickets()
+  const {updateTicket, addLabelsToTicket, removeLabelsFromTicket} = useTickets()
   const {isMobile} = useSidebar()
   const [ticketLabels, setTicketLabels] = React.useState<Label[]>(initialTicketLabels)
   const [ticketState, setTicketState] = React.useState<TicketState>(ticket?.state ?? TicketState.New);
@@ -60,8 +60,6 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
 
     if (removeError || addError) toast.error("Fehler beim Aktualisieren der Labels")
     else setTicketLabels(labels);
-
-    triggerTicketRefetch()
   }
 
   const handleStateChange = async (state: TicketState) => {
@@ -69,10 +67,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
 
     const error = await updateTicket(ticket.id, {state: state})
     if (error) toast.error("Fehler beim Aktualisieren des Ticketstatus")
-
-    triggerTicketRefetch()
     setTicketState(state)
-
   }
 
   if (!ticket) return null;

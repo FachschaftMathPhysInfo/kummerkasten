@@ -32,7 +32,7 @@ type TicketEditFormData = z.infer<typeof ticketEditSchema>
 
 export default function TicketEditDialog(props: TicketEditDialogProps) {
   const {labels} = useLabels()
-  const {updateTicket, addLabelsToTicket, removeLabelsFromTicket, triggerTicketRefetch} = useTickets()
+  const {updateTicket, addLabelsToTicket, removeLabelsFromTicket} = useTickets()
   const form = useForm<TicketEditFormData>({
     resolver: zodResolver(ticketEditSchema),
     defaultValues: {
@@ -78,7 +78,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
       toast.success("Ticket wurde aktualisiert.")
       setHasTriedToSubmit(true)
       props.closeDialog()
-      triggerTicketRefetch()
     } else {
       toast.error("Beim Aktualisieren des Tickets ist ein Fehler aufgetreten.")
     }

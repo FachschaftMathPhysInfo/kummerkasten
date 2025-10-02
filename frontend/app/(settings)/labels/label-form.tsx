@@ -36,7 +36,7 @@ const labelFormSchema = z.object({
 })
 
 export default function LabelForm(props: LabelFormProps) {
-  const {createLabel, updateLabel, triggerLabelRefetch} = useLabels()
+  const {createLabel, updateLabel} = useLabels()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
   const [loading, setLoading] = useState<boolean>(false)
@@ -80,7 +80,6 @@ export default function LabelForm(props: LabelFormProps) {
 
     if (!error) {
       toast.success("Label erstellt!")
-      triggerLabelRefetch()
       props.closeDialog()
     } else {
       if (String(error).includes('unique constraint')) {
@@ -97,7 +96,6 @@ export default function LabelForm(props: LabelFormProps) {
 
     if (!error) {
       toast.success("Label erfolgreich updated!")
-      triggerLabelRefetch()
       props.closeDialog()
     } else {
       if (String(error).includes('unique constraint')) {

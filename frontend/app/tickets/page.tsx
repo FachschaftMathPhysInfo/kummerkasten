@@ -123,7 +123,6 @@ export default function TicketPage() {
 
     if(!error) {
       toast.success("Ticket wurde erfolgreich gelöscht")
-      triggerTicketRefetch()
       resetDialogState()
     } else {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")

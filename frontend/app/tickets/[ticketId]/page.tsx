@@ -19,7 +19,7 @@ const client = getClient();
 
 export default function TicketPage() {
   const {ticketId} = useParams();
-  const {deleteTickets, triggerTicketRefetch} = useTickets()
+  const {deleteTickets} = useTickets()
   const {isMobile} = useSidebar()
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -53,7 +53,6 @@ export default function TicketPage() {
     if (!error) {
       toast.success("Ticket wurde erfolgreich gelöscht")
       resetDialogState()
-      triggerTicketRefetch()
       await fetchTicketDetail();
     } else {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
@@ -96,10 +95,7 @@ export default function TicketPage() {
         open={dialogState.mode === "update"}
         ticket={dialogState.currentTicket}
         closeDialog={() => setDialogState({mode: null, currentTicket: null})}
-        refreshData={async () => {
-          triggerTicketRefetch()
-          await fetchTicketDetail();
-        }}
+        refreshData={async () => await fetchTicketDetail()}
       />
       <ConfirmationDialog
         mode="confirmation"

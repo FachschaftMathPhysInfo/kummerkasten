@@ -58,6 +58,8 @@ export function TicketsProvider({children}: { children: ReactNode }) {
       return null
     } catch (e) {
       return String(e)
+    } finally {
+      triggerTicketRefetch()
     }
   }
 
@@ -69,6 +71,8 @@ export function TicketsProvider({children}: { children: ReactNode }) {
       return null
     } catch (e) {
       return String(e)
+    } finally {
+      triggerTicketRefetch()
     }
   }
 
@@ -86,6 +90,8 @@ export function TicketsProvider({children}: { children: ReactNode }) {
       return null
     } catch (e) {
       return String(e)
+    } finally {
+      triggerTicketRefetch()
     }
   }
 
@@ -103,6 +109,8 @@ export function TicketsProvider({children}: { children: ReactNode }) {
       return null
     } catch (e) {
       return String(e)
+    } finally {
+      triggerTicketRefetch()
     }
   }
 

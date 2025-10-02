@@ -55,6 +55,8 @@ export function QAPProvider({children}: { children: ReactNode }) {
       return null
     } catch (e) {
       return String(e)
+    } finally {
+      triggerQAPRefetch()
     }
   }
 
@@ -66,6 +68,8 @@ export function QAPProvider({children}: { children: ReactNode }) {
       return null
     } catch (e) {
       return String(e)
+    } finally {
+      triggerQAPRefetch()
     }
   }
 
@@ -77,6 +81,8 @@ export function QAPProvider({children}: { children: ReactNode }) {
       return null
     } catch(e) {
       return String(e)
+    } finally {
+      triggerQAPRefetch()
     }
   }
 
@@ -88,6 +94,8 @@ export function QAPProvider({children}: { children: ReactNode }) {
       return null
     } catch (e) {
       return String(e)
+    } finally {
+      triggerQAPRefetch()
     }
   }
 

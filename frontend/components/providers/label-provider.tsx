@@ -47,6 +47,8 @@ export function LabelProvider({children}: { children: ReactNode }) {
       return null
     } catch (err) {
       return String(err)
+    } finally {
+      triggerLabelRefetch()
     }
   }
 
@@ -58,6 +60,8 @@ export function LabelProvider({children}: { children: ReactNode }) {
       return null
     } catch (err) {
       return String(err)
+    } finally {
+      triggerLabelRefetch()
     }
   }
 
@@ -69,6 +73,8 @@ export function LabelProvider({children}: { children: ReactNode }) {
       return null
     } catch (err) {
       return String(err)
+    } finally {
+      triggerLabelRefetch()
     }
   }
 
