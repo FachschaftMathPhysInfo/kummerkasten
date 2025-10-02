@@ -18,7 +18,6 @@ import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
 import PasswordDialog from "@/components/dialogs/password-dialog";
-import {useRouter} from "next/navigation";
 
 const MAX_NAME_LENGTH = 50;
 
@@ -34,7 +33,6 @@ type AccountDataFormData = z.infer<typeof accountDataSchema>;
 
 export default function AccountDataForm() {
   const {user} = useUser()
-  const router = useRouter()
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
