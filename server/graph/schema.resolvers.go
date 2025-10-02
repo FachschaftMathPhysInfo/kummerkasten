@@ -336,7 +336,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 
 	userId := uuid.New().String()
 
-	newUser := &model.User{
+	newDbUser := &models.User{
 		ID:           userId,
 		Mail:         strings.TrimSpace(user.Mail),
 		Firstname:    strings.TrimSpace(user.Firstname),
@@ -347,12 +347,23 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 		LastModified: time.Now(),
 	}
 
-	if _, err := r.DB.NewInsert().Model(newUser).Exec(ctx); err != nil {
+	if _, err := r.DB.NewInsert().Model(newDbUser).Exec(ctx); err != nil {
 		log.Printf("Failed to create user: %v", err)
 		return nil, ErrInternal
 	}
 
-	return newUser, nil
+	gqlUser := model.User{
+		ID:           newDbUser.ID,
+		Mail:         newDbUser.Mail,
+		Firstname:    newDbUser.Firstname,
+		Lastname:     newDbUser.Lastname,
+		Role:         newDbUser.Role,
+		CreatedAt:    newDbUser.CreatedAt,
+		LastModified: newDbUser.LastModified,
+		LastLogin:    &newDbUser.LastLogin,
+	}
+
+	return &gqlUser, nil
 }
 
 // DeleteUser is the resolver for the deleteUser field.
@@ -374,15 +385,16 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, ids []string) (int32,
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model.UpdateUser) (string, error) {
-	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
+	var dbUsers []*models.User
+	err := r.DB.NewSelect().Model(&dbUsers).Where("id = ?", id).Scan(ctx)
 
-	if err != nil || len(users) == 0 {
+	if err != nil || len(dbUsers) == 0 {
 		log.Printf("Failed to find user with id %v: %v", id, err)
 		return "", fmt.Errorf("user with id %v not found", id)
 	}
 
-	originalUser := users[0]
-	updatedUser := users[0]
+	originalUser := dbUsers[0]
+	updatedUser := dbUsers[0]
 
 	if user.Mail != nil {
 		updatedUser.Mail = strings.TrimSpace(*user.Mail)
@@ -424,7 +436,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 
 		newSid := uuid.New().String()
 		now := time.Now()
-		originalUser.LastLogin = &now
+		originalUser.LastLogin = now
 		expiresAt := now.AddDate(0, 0, 2)
 
 		newSession := &model.Session{
@@ -1215,28 +1227,28 @@ func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Sett
 
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
-	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
-	if err != nil || len(users) == 0 {
+	var dbUser = new(models.User)
+	err := r.DB.NewSelect().Model(dbUser).Where("mail = ?", mail).Scan(ctx)
+	if err != nil || dbUser == nil {
 		log.Printf("Failed to fetch user for login: %v", err)
 		return false, ErrInternal
 	}
 
-	user := users[0]
-	hashedPassword := user.Password
+	hashedPassword := dbUser.Password
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
-		log.Printf("Password is incorrect for %v is incorrect", user.Mail)
+		log.Printf("Failed authentication attempt for %v", mail)
 		return false, fmt.Errorf("incorrect credentials")
 	}
 
 	newSid := uuid.New().String()
 	now := time.Now()
-	user.LastLogin = &now
+	dbUser.LastLogin = now
 	expiresAt := now.AddDate(0, 0, 2)
 
 	newSession := &model.Session{
 		ID:        newSid,
-		UserID:    user.ID,
+		UserID:    dbUser.ID,
 		ExpiresAt: expiresAt,
 	}
 
@@ -1245,7 +1257,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		return false, ErrInternal
 	}
 
-	if _, err := r.DB.NewUpdate().Model(user).Where("mail = ?", mail).Exec(ctx); err != nil {
+	if _, err := r.DB.NewUpdate().Model(dbUser).Where("mail = ?", mail).Exec(ctx); err != nil {
 		log.Printf("Failed to update sid: %v", err)
 		return false, ErrInternal
 	}
@@ -1265,7 +1277,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 	var userSessions []*model.Session
 	if _, err := r.DB.NewSelect().
 		Model(&userSessions).
-		Where("user_id = ?", user.ID).
+		Where("user_id = ?", dbUser.ID).
 		Order("expires_at DESC").
 		Exec(ctx); err != nil {
 		log.Printf("Failed to fetch user sessions: %v", err)
@@ -1301,7 +1313,7 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 		return nil, nil
 	}
 
-	var users []*model.User
+	var users []*models.User
 
 	if err := r.DB.NewSelect().Model(&users).
 		Where("id = ?", sessions[0].UserID).
@@ -1313,7 +1325,18 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 		return nil, nil
 	}
 
-	return users[0], nil
+	gqlUser := model.User{
+		ID:           users[0].ID,
+		Mail:         users[0].Mail,
+		Firstname:    users[0].Firstname,
+		Lastname:     users[0].Lastname,
+		Role:         users[0].Role,
+		CreatedAt:    users[0].CreatedAt,
+		LastModified: users[0].LastLogin,
+		LastLogin:    &users[0].LastLogin,
+	}
+
+	return &gqlUser, nil
 }
 
 // QuestionAnswerPairs is the resolver for the questionAnswerPairs field.
