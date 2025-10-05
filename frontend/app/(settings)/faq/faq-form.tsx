@@ -7,152 +7,128 @@ import {useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
   CreateQuestionAnswerPairDocument,
-  CreateQuestionAnswerPairMutation,
-  QuestionAnswerPair,
+  QuestionAnswerPair, UpdateQuestionAnswerPair,
   UpdateQuestionAnswerPairDocument,
-  UpdateQuestionAnswerPairOrderDocument,
-  UpdateQuestionAnswerPairOrderMutation,
 } from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {useQAPs} from "@/components/providers/qap-provider";
+import {CirclePlus, Save} from "lucide-react";
 
 interface FaqFormProps {
-  createMode: boolean;
   qap: QuestionAnswerPair | null;
   closeDialog: () => void;
-  refreshData: () => void;
-  maxOrder: number;
-  uniqueQuestion: string[];
 }
 
-const faqFormSchema = (maxOrder: number, uniqueQuestion: string[], currentQuestion?: string, createMode?: boolean) => z.object({
-    question: z.string().nonempty({message: "Bitte gib eine Frage ein."}).refine(
-      (val) =>
-        !uniqueQuestion.includes(val) || val === currentQuestion,
-      {message: "Diese Frage existiert bereits."}),
-    answer: z.string().nonempty({message: "Bitte gib eine Antwort ein."}),
-    order: z.union([z.string(), z.number()])
-      .transform((val, ctx) => {
-        if (val === "") {
-          ctx.addIssue({
-            code: "custom",
-            message: "Bitte gib eine Position ein.",
-          });
-          return z.NEVER;
-        }
+const QUESTION_MAX_LENGTH = 100
+const ANSWER_MAX_LENGTH = 700
 
-        const num = typeof val === "number" ? val : Number(val);
 
-        if (isNaN(num) || !Number.isInteger(num)) {
-          ctx.addIssue({
-            code: "custom",
-            message: `Bitte gib eine Position zwischen 1 und ${createMode ? maxOrder + 2 : maxOrder + 1} ein.`,
-          });
-          return z.NEVER;
-        }
-
-        return num;
-      })
-      .pipe(
-        z.number().int().min(1, "Position muss mindestens 1 sein.").max(createMode ? maxOrder + 2 : maxOrder + 1, {message: `Position darf höchstens ${createMode ? maxOrder + 2 : maxOrder + 1} sein.`,})
-      ),
-  }
-);
-
-type FaqFormValues = z.infer<ReturnType<typeof faqFormSchema>>;
-
-export default function FaqForm({createMode, qap, closeDialog, refreshData, maxOrder, uniqueQuestion}: FaqFormProps) {
+export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const [loading, setLoading] = useState(false);
+  const {qaps, triggerQAPRefetch} = useQAPs()
+  // maxPosition is the highest OCCUPIED zero-based index
+  const [maxPosition, setMaxPosition] = useState(qaps.length - 1)
+  const createMode = !qap
 
-  if (maxOrder < 0) {
-    maxOrder = 0
-  }
+  const faqFormSchema = z.object({
+    question: z.string().nonempty({error: "Bitte gib eine Frage an"}),
+    answer: z.string().nonempty({error: "Bitte gib eine Antwort an"}),
+    position: z.int({error: "Bitte gib eine ganze Zahl an"})
+      .min(0, {error: "Bitte gib einen Wert über 0 an"}),
+  })
 
-  const defaultOrder = createMode ? (maxOrder > 0 ? maxOrder + 2 : 1) : (qap?.order ?? 0) + 1;
-
-  const schema = faqFormSchema(maxOrder, uniqueQuestion, qap?.question, createMode);
-  const form = useForm<FaqFormValues>({
-    resolver: zodResolver(schema as any), // eslint-disable-line
+  const form = useForm<z.infer<typeof faqFormSchema>>({
+    resolver: zodResolver(faqFormSchema),
     defaultValues: {
       question: qap?.question ?? "",
       answer: qap?.answer ?? "",
-      order: defaultOrder,
+      position: qap?.position ? qap.position : maxPosition + 1
     },
   });
 
   useEffect(() => {
-    form.setValue("order", defaultOrder,);
-  }, [form, defaultOrder]);
+    setMaxPosition(qaps.length - 1)
+  }, [qaps])
 
   useEffect(() => {
-    form.reset({
-      question: qap?.question ?? "",
-      answer: qap?.answer ?? "",
-      order: defaultOrder,
-    });
-  }, [qap, defaultOrder, form]);
+    if (qap) {
+      form.reset({
+        question: qap.question,
+        answer: qap.answer,
+        position: qap.position,
+      });
+    } else {
+      form.reset({
+        question: "",
+        answer: "",
+        position: maxPosition + 1,
+      });
+    }
+  }, [qap, maxPosition]);
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        closeDialog();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [closeDialog]);
-
-  const submitLabel = loading
-    ? "Speichern..."
-    : createMode
-      ? "Erstellen"
-      : "Aktualisieren";
-
-
-  const onValidSubmit = async (data: FaqFormValues) => {
+  const onValidSubmit = async (data: z.infer<typeof faqFormSchema>) => {
     setLoading(true);
+    let ok: boolean
+    const trimmedData = {
+      question: data.question.trim(),
+      answer: data.answer.trim(),
+      position: data.position,
+    }
+    if (createMode) ok = await createQAP(trimmedData)
+    else ok = await updateQAP(trimmedData)
 
-    const client = getClient();
-    const trueOrderValue = data.order - 1;
+    if (ok) {
+      form.reset()
+      triggerQAPRefetch();
+      closeDialog();
+    }
+
+    setLoading(false);
+  }
+
+  async function createQAP(data: z.infer<typeof faqFormSchema>) {
+    const client = getClient()
+    try {
+      await client.request(CreateQuestionAnswerPairDocument, {questionAnswerPair: data})
+      return true
+    } catch (err) {
+      if(String(err).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+      else toast.error('Beim Erstellen ist ein Fehler aufgetreten')
+      return false
+    }
+  }
+
+  async function updateQAP(data: z.infer<typeof faqFormSchema>) {
+    if(!qap) {
+      toast.error('Ein Fehler ist aufgetreten')
+      return false
+    }
+
+    const client = getClient()
+
+    const qapObject: UpdateQuestionAnswerPair = {
+      question: data.question === qap.question ? null : data.question,
+      answer: data.answer === qap.answer ? null : data.answer,
+      position: data.position === qap.position ? null : data.position
+    }
 
     try {
-      if (createMode) {
-        const createResp = await client.request<CreateQuestionAnswerPairMutation>(
-          CreateQuestionAnswerPairDocument,
-          {questionAnswerPair: {question: data.question, answer: data.answer}}
-        );
-        const createdId = createResp.createQuestionAnswerPair?.id;
-        if (createdId) {
-          await client.request<UpdateQuestionAnswerPairOrderMutation>(
-            UpdateQuestionAnswerPairOrderDocument,
-            {qaps: [{id: createdId, order: trueOrderValue}]}
-          );
-        }
-      } else if (qap) {
-        if (trueOrderValue !== qap.order) {
-          await client.request<UpdateQuestionAnswerPairOrderMutation>(
-            UpdateQuestionAnswerPairOrderDocument,
-            {qaps: [{id: qap.id, order: trueOrderValue}]}
-          );
-        }
-        await client.request(UpdateQuestionAnswerPairDocument, {
-          id: qap.id,
-          questionAnswerPair: {question: data.question, answer: data.answer},
-        });
-      }
-
-      closeDialog();
-      refreshData();
+      await client.request(
+        UpdateQuestionAnswerPairDocument,
+        {id: qap.id, questionAnswerPair: qapObject})
+      return true
     } catch (err) {
-      console.error(err);
-      toast.error("Fehler beim Speichern der FAQ.");
-    } finally {
-      setLoading(false);
+      console.log(String(err))
+      if(String(err).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+      else toast.error('Beim Aktualisieren des FAQ ist ein Fehler aufgetreten')
+      return false
     }
-  };
+  }
+
 
   return (
     <FormProvider {...form}>
@@ -169,12 +145,20 @@ export default function FaqForm({createMode, qap, closeDialog, refreshData, maxO
               <FormControl>
                 <Input
                   placeholder="Frage"
+                  maxLength={QUESTION_MAX_LENGTH}
                   {...field}
                   aria-invalid={fieldState.invalid}
                   className={[fieldState.invalid ? "border-destructive ring-1" : ""].join(" ")}
                 />
               </FormControl>
-              <FormMessage/>
+              <div className={'w-full flex justify-between'}>
+                <div>
+                  <FormMessage/>
+                </div>
+                <div className={'text-xs text-muted-foreground'}>
+                  {field.value.length} / {QUESTION_MAX_LENGTH}
+                </div>
+              </div>
             </FormItem>
           )}
         />
@@ -189,36 +173,45 @@ export default function FaqForm({createMode, qap, closeDialog, refreshData, maxO
                 <Textarea
                   placeholder="Antwort"
                   rows={7}
+                  maxLength={ANSWER_MAX_LENGTH}
                   {...field}
                   aria-invalid={fieldState.invalid}
                   className={`resize-none ${fieldState.invalid ? "border-destructive ring-1" : ""}`}
                 />
               </FormControl>
-              <FormMessage/>
+              <div className={'w-full flex justify-between'}>
+                <div>
+                  <FormMessage/>
+                </div>
+                <div className={'text-xs text-muted-foreground'}>
+                  {field.value.length} / {ANSWER_MAX_LENGTH}
+                </div>
+              </div>
             </FormItem>
           )}
         />
 
         <FormField
           control={form.control}
-          name="order"
-          render={({field, fieldState}) => (
+          name="position"
+          render={({field}) => (
             <FormItem>
-              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>
+              <FormLabel>
                 Position
               </FormLabel>
               <FormControl>
                 <Input
                   type="text"
-                  value={Number.isNaN(field.value as number) ? "" : field.value ?? ""}
-                  onChange={(e) => {
-                    field.onChange(e.target.value)
+                  {...field}
+                  value={Number.isNaN(field.value) ? "" : field.value + 1}
+                  onChange={e => {
+                    const val = e.target.value
+                    if(Number.isNaN(val)) field.onChange("")
+                    else field.onChange(parseInt(val) - 1)
                   }}
-                  aria-invalid={fieldState.invalid}
-                  className={`${fieldState.invalid ? "border-destructive ring-1" : ""}`}
                 />
               </FormControl>
-              <FormMessage className="w-full text-sm font-medium text-destructive"/>
+              <FormMessage/>
             </FormItem>
           )}
         />
@@ -229,7 +222,11 @@ export default function FaqForm({createMode, qap, closeDialog, refreshData, maxO
             Abbrechen
           </Button>
           <Button type="submit" className="flex-1" disabled={loading}>
-            {submitLabel}
+            {createMode ? (
+              <><CirclePlus/> Erstellen</>
+            ) : (
+              <><Save/> Speichern</>
+            )}
           </Button>
         </div>
       </form>

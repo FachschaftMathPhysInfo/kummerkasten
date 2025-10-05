@@ -1,22 +1,24 @@
 "use client";
 
 import {ColumnDef} from "@tanstack/react-table";
-import {QuestionAnswerPair} from "@/lib/graph/generated/graphql";
+import {QuestionAnswerPair, UserRole} from "@/lib/graph/generated/graphql";
 import {Edit2, Grip, Trash} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {QAPTableDialogState} from "@/app/(settings)/faq/faq-table";
 import React from "react";
 import {useSidebar} from "@/components/ui/sidebar";
+import {useUser} from "@/components/providers/user-provider";
 
 interface QAPColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<QAPTableDialogState>>;
 }
 
 export default function QAPColumns({
-                             setDialogState
-                           }: QAPColumnProps): ColumnDef<QuestionAnswerPair>[] {
+                                     setDialogState
+                                   }: QAPColumnProps): ColumnDef<QuestionAnswerPair>[] {
 
   const {isMobile} = useSidebar()
+  const {user} = useUser()
 
   return [
     {
@@ -70,17 +72,17 @@ export default function QAPColumns({
           >
             <Edit2/>
           </Button>
-          <Button
-            data-cy={`delete-button-${row.original.id}`}
-            onClick={() =>
-              setDialogState({mode: "delete", currentQAP: row.original})
-            }
-            variant="ghost"
-            size="icon"
-            className="text-destructive"
-          >
-            <Trash/>
-          </Button>
+          {user?.role === UserRole.Admin && (
+            <Button
+              data-cy={`delete-button-${row.original.id}`}
+              onClick={() => setDialogState({mode: "delete", currentQAP: row.original})}
+              variant="ghost"
+              size="icon"
+              className="text-destructive"
+            >
+              <Trash/>
+            </Button>
+          )}
         </div>
       ),
     },

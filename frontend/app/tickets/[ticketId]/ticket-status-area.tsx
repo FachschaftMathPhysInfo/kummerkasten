@@ -26,6 +26,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
                 : "!bg-ticketstate-closed hover:!bg-ticketstate-closed/60"
           )}
           style={{color: calculateFontColor(getTicketStateColor(state))}}
+          data-cy={'ticket-status-area'}
         >
           {state === TicketState.New
             ? "Neu"
@@ -38,6 +39,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
             <Badge
               className="w-full bg-ticketstate-new"
               style={{color: calculateFontColor(getTicketStateColor(TicketState.New))}}
+              data-cy={'ticket-status-new'}
             >
               Neu
             </Badge>
@@ -46,6 +48,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
             <Badge
               className="w-full bg-ticketstate-open"
               style={{color: calculateFontColor(getTicketStateColor(TicketState.Open))}}
+              data-cy={'ticket-status-open'}
             >
               Offen
             </Badge>
@@ -54,6 +57,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
             <Badge
               className="w-full bg-ticketstate-closed"
               style={{color: calculateFontColor(getTicketStateColor(TicketState.Closed))}}
+              data-cy={'ticket-status-closed'}
             >
               Fertig
             </Badge>

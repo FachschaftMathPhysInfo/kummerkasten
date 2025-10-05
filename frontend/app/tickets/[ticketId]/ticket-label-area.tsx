@@ -39,14 +39,15 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
         <Button
           variant={"ghost"}
           onClick={() => setEditMode(!editMode)}
-          className="w-full flex items-center justify-between">
+          className="w-full flex items-center justify-between"
+          data-cy={'label-settings-button'}>
           <p>Labels</p>
           <Settings size={18} className={'stroke-muted-foreground'}/>
         </Button>
       </div>
       {editMode ? (
         <Command>
-          <CommandInput placeholder="Labels suchen..." onValueChange={setSearchTerm}/>
+          <CommandInput placeholder="Labels suchen..." onValueChange={setSearchTerm} data-cy={'label-settings-search'}/>
           <CommandGroup className={'max-h-[300px] overflow-y-auto'}>
             {labels
               .filter((label) => label && label.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -64,6 +65,7 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
                       );
                     }}
                     className={'data-[selected=true]:!bg-accent/50'}
+                    data-cy={`label-settings-label-${label.id}`}
                   >
                     <Check
                       className={cn(
@@ -76,14 +78,14 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
                 );
               })}
           </CommandGroup>
-          <Button onClick={handleSave} variant={'secondary'}>
+          <Button onClick={handleSave} variant={'secondary'} data-cy={'label-area-save'}>
             <Save className={'mr-2'}/>
             Speichern
           </Button>
         </Command>
       ) : (
         <div className="flex flex-col gap-2 overflow-y-scroll grow items-end px-10">
-          {ticketLabels.map(label => (<LabelBadge key={label.id} label={label} />))}
+          {ticketLabels.map(label => (<LabelBadge key={label.id} label={label}/>))}
         </div>
       )}
     </div>

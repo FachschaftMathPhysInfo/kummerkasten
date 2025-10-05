@@ -8,8 +8,8 @@ mutation updateQuestionAnswerPair($id: String!, $questionAnswerPair: UpdateQuest
   updateQuestionAnswerPair(id: $id, questionAnswerPair: $questionAnswerPair)
 }
 
-mutation updateQuestionAnswerPairOrder($qaps: [UpdateQuestionAnswerPairOrder!]!)  {
-  updateQuestionAnswerPairOrder(qaps: $qaps)
+mutation updateQuestionAnswerPairPositions($qaps: [UpdateQuestionAnswerPairPosition!]!) {
+  updateQuestionAnswerPairBatchPositions(questionAnswerPairs: $qaps)
 }
 
 mutation deleteQuestionAnswerPair($ids: [String!]!) {

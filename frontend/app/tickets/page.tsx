@@ -16,9 +16,9 @@ import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
 import MobileFilterSheet from "@/app/tickets/mobile-filter-sheet";
 import FilterBar from "@/components/filter-bar";
-import {getFilteredTickets, getSortedTickets} from "@/lib/ticket-operations";
+import {getFilteredTickets, getSortedTickets, getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
-import {getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
+
 
 
 export type TicketDialogState = {
@@ -55,6 +55,8 @@ export default function TicketPage() {
 
   useEffect(() => {
     triggerTicketRefetch()
+    // can't use function as array dependency as the render and update depth are exceeded
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

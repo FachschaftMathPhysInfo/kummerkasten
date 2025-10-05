@@ -2,30 +2,42 @@ package middleware
 
 import (
 	"context"
+	"github.com/Plebysnacc/kummerkasten/graph/model"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
+	"log"
 	"net/http"
+	"time"
 )
 
 func Auth(db *bun.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			sid, err := r.Cookie("sid")
-			if err != nil || sid.Value == "" {
+			sessionCookie, err := r.Cookie("sid")
+			if err != nil || sessionCookie.Value == "" {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			_, err = uuid.Parse(sid.Value)
+			_, err = uuid.Parse(sessionCookie.Value)
 			if err != nil {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			user, err := VerifySID(r.Context(), sid.Value, db)
+			user, err := VerifySID(r.Context(), sessionCookie.Value, db)
 			if err != nil || user == nil {
 				next.ServeHTTP(w, r)
 				return
+			}
+
+			now := time.Now()
+			if _, err := db.NewUpdate().Model((*model.Session)(nil)).
+				Where("id = ?", sessionCookie.Value).
+				Set("last_interaction = ?", now).
+				Exec(context.Background()); err != nil {
+				log.Printf("Error updating session: %v", err)
+				next.ServeHTTP(w, r)
 			}
 
 			ctx := context.WithValue(r.Context(), UserKey, user)
