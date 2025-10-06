@@ -5,14 +5,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
-import {
-  CreateLabelDocument,
-  CreateLabelMutation, FormLabelsDocument,
-  Label,
-  NewLabel,
-  UpdateLabelDocument,
-  UpdateLabelMutation
-} from "@/lib/graph/generated/graphql";
+import {FormLabelsDocument, Label, NewLabel} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {LoaderCircle, PlusCircle, Save} from "lucide-react";
 import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -20,6 +13,7 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
 import {cn} from "@/lib/utils";
+import {useLabels} from "@/components/providers/label-provider";
 
 const LabelMaxLength = 50;
 
@@ -27,7 +21,6 @@ interface LabelFormProps {
   createMode: boolean;
   originalLabel: Label | null;
   closeDialog: () => void
-  refreshData: () => void
 }
 
 const labelFormSchema = z.object({
@@ -43,6 +36,7 @@ const labelFormSchema = z.object({
 })
 
 export default function LabelForm(props: LabelFormProps) {
+  const {createLabel, updateLabel} = useLabels()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
   const [loading, setLoading] = useState<boolean>(false)
@@ -71,25 +65,23 @@ export default function LabelForm(props: LabelFormProps) {
     setLoading(true)
 
     if (props.createMode) {
-      await createLabel(data.name.trim(), data.color, data.isFormLabel)
+      await createLabelHandler(data.name.trim(), data.color, data.isFormLabel)
     } else {
       if (!props.originalLabel) return
-      await updateLabel(props.originalLabel.id, data.name.trim(), data.color, data.isFormLabel)
+      await updateLabelHandler(props.originalLabel.id, data.name.trim(), data.color, data.isFormLabel)
     }
 
     setLoading(false)
   }
 
-  async function createLabel(name: string, color: string, isFormLabel: boolean) {
-    const client = getClient();
+  async function createLabelHandler(name: string, color: string, isFormLabel: boolean) {
     const label: NewLabel = {name: name, color: color, formLabel: isFormLabel};
+    const error = await createLabel(label)
 
-    try {
-      await client.request<CreateLabelMutation>(CreateLabelDocument, {label: label})
+    if (!error) {
       toast.success("Label erstellt!")
-      props.refreshData()
       props.closeDialog()
-    } catch (error) {
+    } else {
       if (String(error).includes('unique constraint')) {
         form.setError("name", {message: "Ein Label mit diesem Namen existiert bereits"})
       } else {
@@ -98,16 +90,14 @@ export default function LabelForm(props: LabelFormProps) {
     }
   }
 
-  async function updateLabel(id: string, name: string, color: string, isFormLabel: boolean) {
-    const client = getClient();
+  async function updateLabelHandler(id: string, name: string, color: string, isFormLabel: boolean) {
     const label: NewLabel = {name: name, color: color, formLabel: isFormLabel};
+    const error = await updateLabel(id, label)
 
-    try {
-      await client.request<UpdateLabelMutation>(UpdateLabelDocument, {id: id, label: label})
+    if (!error) {
       toast.success("Label erfolgreich updated!")
-      props.refreshData()
       props.closeDialog()
-    } catch (error) {
+    } else {
       if (String(error).includes('unique constraint')) {
         form.setError("name", {message: "Ein Label mit diesem Namen existiert bereits"})
       } else {

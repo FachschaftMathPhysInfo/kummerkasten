@@ -1,5 +1,5 @@
 import {Label, QuestionAnswerPair, TicketState, User, UserRole} from "@/lib/graph/generated/graphql";
-import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
+import {TicketFiltering, TicketSorting} from "@/components/providers/ticket-provider";
 
 const now = new Date()
 
@@ -12,7 +12,6 @@ export const defaultUser: User = {
   createdAt: now,
   mail: 'max.musterperson@mail.com',
   role: UserRole.User,
-  password: 'invalid',
 }
 
 export const defaultLabel: Label = {

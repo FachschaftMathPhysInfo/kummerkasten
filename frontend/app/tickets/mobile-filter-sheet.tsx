@@ -1,31 +1,22 @@
 import {Check, Trash2} from "lucide-react";
-import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "../../components/ui/sheet";
+import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {TicketState} from "@/lib/graph/generated/graphql";
 import {cn} from "@/lib/utils";
 import LabelBadge from "../../components/label-badge";
-import {DateRangeFilter} from "../../components/date-range-filter";
+import {DateRangeFilter} from "@/components/date-range-filter";
 import React, {useState} from "react";
-import {TicketFiltering, TicketSorting, TicketSortingField} from "@/app/tickets/page";
+import {TicketSortingField, useTickets} from "@/components/providers/ticket-provider";
 import {Input} from "@/components/ui/input";
 import {useLabels} from "@/components/providers/label-provider";
 
-interface MobileFilterSheetProps {
-  filtering: TicketFiltering
-  setFiltering: React.Dispatch<React.SetStateAction<TicketFiltering>>
-  sorting: TicketSorting
-  setSorting: React.Dispatch<React.SetStateAction<TicketSorting>>;
-  areFiltersSet: boolean
-}
-
-export default function MobileFilterSheet(
-  {filtering, setFiltering, sorting, setSorting, areFiltersSet}: MobileFilterSheetProps
-) {
+export default function MobileFilterSheet() {
   const {labels} = useLabels()
   const [showFilters, setShowFilters] = useState(false);
   const [showLabelFilters, setShowLabelFilters] = useState(false);
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
   const [showSort, setShowSort] = useState(false);
+  const {filtering, setFiltering, sorting, setSorting, areFiltersSet} = useTickets()
 
 
   return (

@@ -3,22 +3,24 @@
 import {ManagementPageHeader} from "@/components/management-page-header";
 import {TicketIcon, Trash2} from "lucide-react";
 import {TicketCard} from "@/app/tickets/ticket-card";
-import {getClient} from "@/lib/graph/client";
 import React, {useEffect, useState} from "react";
-import {DeleteTicketDocument, DeleteTicketMutation, Label, Ticket, TicketState} from "@/lib/graph/generated/graphql";
+import {Ticket} from "@/lib/graph/generated/graphql";
 import {Input} from "@/components/ui/input";
 import Link from "next/link";
 import {toast} from "sonner";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
-import {compareStringSets} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
 import MobileFilterSheet from "@/app/tickets/mobile-filter-sheet";
 import FilterBar from "@/components/filter-bar";
-import {getFilteredTickets, getSortedTickets, getCurrentSemesterTickets, getOlderSemesterTickets} from "@/lib/ticket-operations";
-import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
-
+import {
+  getCurrentSemesterTickets,
+  getFilteredTickets,
+  getOlderSemesterTickets,
+  getSortedTickets
+} from "@/lib/ticket-operations";
+import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
 
 
 export type TicketDialogState = {
@@ -26,30 +28,19 @@ export type TicketDialogState = {
   currentTicket: Ticket | null
 }
 
-export type TicketSorting = {
-  field: TicketSortingField,
-  orderAscending: boolean
-}
-
-export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
-
-export type TicketFiltering = {
-  searchTerm: string;
-  state: TicketState[];
-  labels: Label[];
-  startDate: Date | null;
-  endDate: Date | null;
-}
-
-
 export default function TicketPage() {
-  const {tickets, triggerTicketRefetch} = useTickets();
-  const [filtering, setFiltering] = useState<TicketFiltering>(defaultTicketFiltering);
+  const {
+    tickets,
+    filtering,
+    areFiltersSet,
+    sorting,
+    setFiltering,
+    setSorting,
+    deleteTickets,
+    triggerTicketRefetch
+  } = useTickets();
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
-  const [sorting, setSorting] = useState<TicketSorting>(defaultTicketSorting);
   const {isMobile} = useSidebar();
-  const [areFiltersSet, setAreFiltersSet] = useState(false);
-  const [isStateFilterSet, setIsStateFilterSet] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
   const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
 
@@ -58,15 +49,6 @@ export default function TicketPage() {
     // can't use function as array dependency as the render and update depth are exceeded
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const originalState = new Set([TicketState.New, TicketState.Open])
-    const currentState = new Set(filtering.state)
-    setIsStateFilterSet(!compareStringSets(originalState, currentState))
-    // We can't add the expected stateFilter as array dependency, as it will change size
-    // and thus throw an error
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtering.state.length]);
 
   useEffect(() => {
       const newFilteredTickets = getFilteredTickets(filtering, tickets);
@@ -97,15 +79,6 @@ export default function TicketPage() {
     }))
   }, [sorting.field]);
 
-  useEffect(() => {
-    setAreFiltersSet(
-      isStateFilterSet ||
-      filtering.labels.length > 0 ||
-      !!filtering.startDate ||
-      !!filtering.endDate
-    )
-  }, [isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
-
   function resetDialogState() {
     setDialogState({mode: null, currentTicket: null})
   }
@@ -116,13 +89,12 @@ export default function TicketPage() {
       return
     }
 
-    try {
-      const client = getClient();
-      await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
+    const error = await deleteTickets([dialogState.currentTicket.id])
+
+    if (!error) {
       toast.success("Ticket wurde erfolgreich gelöscht")
-      triggerTicketRefetch()
       resetDialogState()
-    } catch {
+    } else {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
@@ -148,21 +120,9 @@ export default function TicketPage() {
             />
 
             {isMobile ? (
-              <MobileFilterSheet
-                filtering={filtering}
-                setFiltering={setFiltering}
-                sorting={sorting}
-                setSorting={setSorting}
-                areFiltersSet={areFiltersSet}
-              />
+              <MobileFilterSheet/>
             ) : (
-              <FilterBar
-                filtering={filtering}
-                setFiltering={setFiltering}
-                sorting={sorting}
-                setSorting={setSorting}
-                stateFilterSet={isStateFilterSet}
-              />
+              <FilterBar/>
             )}
           </div>
           {areFiltersSet && (

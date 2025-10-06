@@ -1,12 +1,49 @@
 "use client"
 
-import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {AllTicketsDocument, Ticket} from "@/lib/graph/generated/graphql";
+import React, {createContext, ReactNode, SetStateAction, useContext, useEffect, useState} from "react";
+import {
+  AddLabelsToTicketDocument,
+  AllTicketsDocument,
+  DeleteTicketDocument, Label,
+  LabelToTicketAssignment,
+  RemoveLabelsFromTicketDocument,
+  Ticket, TicketState,
+  UpdateTicket,
+  UpdateTicketDocument
+} from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
+import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
+import {compareStringSets} from "@/lib/utils";
+
+
+export type TicketSorting = {
+  field: TicketSortingField,
+  orderAscending: boolean
+}
+
+export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
+
+export type TicketFiltering = {
+  searchTerm: string;
+  state: TicketState[];
+  labels: Label[];
+  startDate: Date | null;
+  endDate: Date | null;
+}
 
 interface TicketsContextType {
   tickets: Ticket[];
+  filtering: TicketFiltering
+  stateFilterSet: boolean
+  areFiltersSet: boolean
+  sorting: TicketSorting
+  updateTicket: (id: string, ticket: UpdateTicket) => Promise<string | null>
+  deleteTickets: (ids: string[]) => Promise<string | null>
+  addLabelsToTicket: (ticketID: string, labelIDs: string[]) => Promise<string | null>
+  removeLabelsFromTicket: (ticketID: string, labelIDs: string[]) => Promise<string | null>
   triggerTicketRefetch: () => void;
+  setFiltering: React.Dispatch<SetStateAction<TicketFiltering>>
+  setSorting: React.Dispatch<SetStateAction<TicketSorting>>
 }
 
 const TicketsContext = createContext<TicketsContextType | null>(null);
@@ -14,6 +51,10 @@ const TicketsContext = createContext<TicketsContextType | null>(null);
 export function TicketsProvider({children}: { children: ReactNode }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [refetchKey, setRefetchKey] = useState(false);
+  const [sorting, setSorting] = useState(defaultTicketSorting);
+  const [filtering, setFiltering] = useState(defaultTicketFiltering);
+  const [stateFilterSet, setStateFilterSet] = useState(false)
+  const [areFiltersSet, setAreFiltersSet] = useState(false)
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -33,13 +74,109 @@ export function TicketsProvider({children}: { children: ReactNode }) {
     void fetchTickets();
   }, [refetchKey]);
 
+  useEffect(() => {
+    const originalState = new Set(defaultTicketFiltering.state)
+    const currentState = new Set(filtering.state)
+    setStateFilterSet(!compareStringSets(originalState, currentState))
+    // We can't add the expected stateFilter as array dependency, as it will change size
+    // and thus throw an error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtering.state.length]);
+
+  useEffect(() => {
+    setAreFiltersSet(
+      stateFilterSet ||
+      filtering.labels.length > 0 ||
+      !!filtering.startDate ||
+      !!filtering.endDate
+    )
+  }, [stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
+
   function triggerTicketRefetch() {
     setRefetchKey(!refetchKey);
   }
 
 
+  async function updateTicket(id: string, ticket: UpdateTicket) {
+    const client = getClient()
+
+    try {
+      await client.request(UpdateTicketDocument, {id, ticket})
+      return null
+    } catch (e) {
+      return String(e)
+    } finally {
+      triggerTicketRefetch()
+    }
+  }
+
+  async function deleteTickets(ids: string[]) {
+    const client = getClient()
+
+    try {
+      await client.request(DeleteTicketDocument, {ids})
+      return null
+    } catch (e) {
+      return String(e)
+    } finally {
+      triggerTicketRefetch()
+    }
+  }
+
+  async function addLabelsToTicket(ticketID: string, labelsIDs: string[]) {
+    if (!(labelsIDs.length > 0)) return null
+
+    const client = getClient()
+    const assignments: LabelToTicketAssignment[] = labelsIDs.map(labelID => ({
+      labelID: labelID,
+      ticketID: ticketID
+    }))
+
+    try {
+      await client.request(AddLabelsToTicketDocument, {assignments})
+      return null
+    } catch (e) {
+      return String(e)
+    } finally {
+      triggerTicketRefetch()
+    }
+  }
+
+  async function removeLabelsFromTicket(ticketID: string, labelsIDs: string[]) {
+    if (!(labelsIDs.length > 0)) return null
+
+    const client = getClient()
+    const assignments: LabelToTicketAssignment[] = labelsIDs.map(labelID => ({
+      labelID: labelID,
+      ticketID: ticketID
+    }))
+
+    try {
+      await client.request(RemoveLabelsFromTicketDocument, {assignments})
+      return null
+    } catch (e) {
+      return String(e)
+    } finally {
+      triggerTicketRefetch()
+    }
+  }
+
   return (
-    <TicketsContext.Provider value={{tickets, triggerTicketRefetch}}>
+    <TicketsContext.Provider
+      value={{
+        tickets,
+        filtering,
+        stateFilterSet,
+        areFiltersSet,
+        sorting,
+        updateTicket,
+        deleteTickets,
+        addLabelsToTicket,
+        removeLabelsFromTicket,
+        triggerTicketRefetch,
+        setFiltering,
+        setSorting
+      }}>
       {children}
     </TicketsContext.Provider>
   );

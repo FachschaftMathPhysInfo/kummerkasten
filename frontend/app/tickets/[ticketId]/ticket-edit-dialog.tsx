@@ -1,20 +1,9 @@
 "use client"
 
 import {z} from "zod";
-import {
-  AddLabelsToTicketDocument,
-  AddLabelsToTicketMutation,
-  RemoveLabelsFromTicketDocument,
-  RemoveLabelsFromTicketMutation,
-  Ticket,
-  TicketState,
-  UpdateTicket,
-  UpdateTicketDocument,
-  UpdateTicketMutation
-} from "@/lib/graph/generated/graphql";
+import {Ticket, TicketState, UpdateTicket} from "@/lib/graph/generated/graphql";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {useEffect, useState} from "react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -24,6 +13,7 @@ import {LoaderCircle, PlusCircle} from "lucide-react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useLabels} from "@/components/providers/label-provider";
 import LabelSelection from "@/components/label-selection";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 
 interface TicketEditDialogProps {
@@ -42,6 +32,7 @@ type TicketEditFormData = z.infer<typeof ticketEditSchema>
 
 export default function TicketEditDialog(props: TicketEditDialogProps) {
   const {labels} = useLabels()
+  const {updateTicket, addLabelsToTicket, removeLabelsFromTicket} = useTickets()
   const form = useForm<TicketEditFormData>({
     resolver: zodResolver(ticketEditSchema),
     defaultValues: {
@@ -66,7 +57,6 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
   async function onValidSubmit(data: TicketEditFormData) {
     if (!props.ticket?.id) return;
     setLoading(true)
-    const client = getClient();
 
     const ticketId = props.ticket.id;
     const initialLabelIds = props.ticket.labels?.map(l => l.id) || [];
@@ -80,33 +70,18 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
       state: data.state,
     }
 
-    try {
-      await client.request<UpdateTicketMutation>(UpdateTicketDocument, {
-        id: props.ticket.id,
-        ticket: updatedTicket
-      })
-      if (labelsToAdd.length) {
-        const labelsToAddAssignments = labelsToAdd.map(labelID => ({
-          labelID,
-          ticketID: ticketId
-        }));
-        await client.request<AddLabelsToTicketMutation>(AddLabelsToTicketDocument, {assignments: labelsToAddAssignments});
-      }
-      if (labelsToRemove.length) {
-        const labelsToRemoveAssignments = labelsToRemove.map(labelID => ({
-          labelID,
-          ticketID: ticketId
-        }));
-        await client.request<RemoveLabelsFromTicketMutation>(RemoveLabelsFromTicketDocument, {assignments: labelsToRemoveAssignments})
-      }
+    const updateError = await updateTicket(ticketId, updatedTicket)
+    const addLabelsError = await addLabelsToTicket(ticketId, labelsToAdd)
+    const removeLabelsError = await removeLabelsFromTicket(ticketId, labelsToRemove)
+
+    if (!updateError && !addLabelsError && !removeLabelsError) {
       toast.success("Ticket wurde aktualisiert.")
       setHasTriedToSubmit(true)
       props.closeDialog()
-      props.refreshData()
-    } catch (error) {
+    } else {
       toast.error("Beim Aktualisieren des Tickets ist ein Fehler aufgetreten.")
-      console.error(error)
     }
+
     setLoading(false)
   }
 
@@ -208,5 +183,4 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
       </form>
     </FormProvider>
   )
-
 }

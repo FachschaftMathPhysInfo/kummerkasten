@@ -11,12 +11,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {cn, compareStringSets} from "@/lib/utils";
+import {cn} from "@/lib/utils";
 import React, {useEffect, useState} from "react";
 import {format} from "date-fns";
 import {useTickets} from "@/components/providers/ticket-provider";
-import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
-import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
+import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
 import {
   getCurrentSemesterTickets,
   getFilteredTickets,
@@ -32,39 +31,20 @@ interface TicketSidebarProps {
   selectedTicketId?: string;
 }
 
-export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
+export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
 
   const router = useRouter();
-  const {tickets} = useTickets()
-  const [filtering, setFiltering] = useState<TicketFiltering>(defaultTicketFiltering)
-  const [sorting, setSorting] = useState<TicketSorting>(defaultTicketSorting)
-  const [areFiltersSet, setAreFiltersSet] = useState(false)
-  const [isStateFilterSet, setIsStateFilterSet] = useState(false)
+  const {tickets, filtering, areFiltersSet, sorting, setFiltering, stateFilterSet} = useTickets()
   const [showFilters, setShowFilters] = useState(false)
   const [filteredTickets, setFilteredTickets] = useState<Ticket[]>(getFilteredTickets(filtering, tickets))
   const [sortedTickets, setSortedTickets] = useState<Ticket[]>(getSortedTickets(sorting, filteredTickets))
 
   useEffect(() => {
-    const originalState = new Set(defaultTicketFiltering.state)
-    const currentState = new Set(filtering.state)
-    setIsStateFilterSet(!compareStringSets(originalState, currentState))
-    // This will always change by one, thus .length is sufficient here
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtering.state.length]);
-
-  useEffect(() => {
-    setAreFiltersSet(
-      isStateFilterSet ||
-      filtering.labels.length > 0 ||
-      !!filtering.startDate ||
-      !!filtering.endDate
-    )
-
     const newFilteredTickets = getFilteredTickets(filtering, tickets)
     setFilteredTickets(newFilteredTickets)
     setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
   }, [
-    isStateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm,
+    stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm,
     sorting.field, sorting.orderAscending, filtering, sorting, tickets
   ])
 
@@ -75,8 +55,9 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
   }, [tickets, filtering, sorting])
 
   return (
-    <div className="px-4 flex flex-col gap-4">
-      <Breadcrumb>
+    <div className="h-[95vh] max-h-[95vh] flex flex-col overflow-hidden">
+      <div className="px-4 flex flex-col gap-4 h-full min-h-0">
+        <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/tickets" data-cy="ticket-sidebar-breadcrumb">Tickets</BreadcrumbLink>
@@ -90,8 +71,8 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
             </>
           )}
         </BreadcrumbList>
-      </Breadcrumb>
-      <div className="flex flex-col">
+        </Breadcrumb>
+        <div className="flex flex-col">
         <div className={'flex gap-2'}>
           <Input
             placeholder="Suche nach Tickets..."
@@ -122,14 +103,7 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
           )}
         >
           {showFilters && (
-            <FilterBar
-              filtering={filtering}
-              setFiltering={setFiltering}
-              sorting={sorting}
-              setSorting={setSorting}
-              stateFilterSet={isStateFilterSet}
-              scrollable
-            />
+            <FilterBar scrollable/>
           )}
 
           {areFiltersSet && (
@@ -147,7 +121,8 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
           )}</div>
       </div>
 
-      <div>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+        <div>
         <div className={'w-full flex gap-4 items-center my-2'}>
           <span className={'grow h-0.5 bg-muted-foreground'}/>
           <p className={'text-muted-foreground'}>Dieses Semester</p>
@@ -174,22 +149,20 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
             />
             <div className="flex flex-row justify-between w-full gap-3 overflow-x-auto">
               <div
-                className="truncate max-w-[250px] shrink-0"
+                className={`truncate max-w-[28vh] flex-grow`}
                 title={t.title}
                 data-cy={`ticket-title-${t.id}`}
               >
                 {t.title}
               </div>
               <div
-                className="hidden md:flex text-xs items-center text-muted-foreground truncate"
-                title={`Geändert: ${t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}`}
-              >
+                className="hidden md:flex text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
               </div>
             </div>
           </div>
         ))}
-
+ 
         <div className={'w-full flex gap-4 items-center my-2'}>
           <span className={'grow h-0.5 bg-muted-foreground'}/>
           <p className={'text-muted-foreground'}>Frühere Semester</p>
@@ -214,16 +187,16 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
               )}
               data-cy={`ticket-status-${t.id}`}
             />
-            <div className="flex flex-row justify-between w-full">
+            <div className="flex flex-row justify-between w-full gap-3 overflow-x-auto">
               <div
-                className="truncate max-w-[250px]"
+                className="truncate max-w-[28vh] flex-grow"
                 title={t.title}
                 data-cy={`ticket-title-${t.id}`}
               >
                 {t.title}
               </div>
               <div
-                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
+                className="hidden md:flex text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
               </div>
             </div>
@@ -231,6 +204,8 @@ export default function TicketSidebar({selectedTicketId,}: TicketSidebarProps) {
         ))}
 
       </div>
+    </div>
+    </div>
     </div>
   );
 }

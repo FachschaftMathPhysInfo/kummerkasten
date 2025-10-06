@@ -1,6 +1,6 @@
 "use client";
 
-import {Label, Ticket, UpdateTicketDocument, UpdateTicketMutation} from "@/lib/graph/generated/graphql";
+import {Label, Ticket} from "@/lib/graph/generated/graphql";
 import {PageLoader} from "@/components/page-loader";
 import {useSidebar} from "@/components/ui/sidebar";
 import React, {Dispatch, useEffect} from "react";
@@ -8,7 +8,6 @@ import {TicketDialogState} from "@/app/tickets/page";
 import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
 import {Button} from "@/components/ui/button";
 import {Save} from "lucide-react";
-import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
 import {useTickets} from "@/components/providers/ticket-provider";
@@ -28,7 +27,7 @@ export default function TicketDetailView({
                                            setDialogStateAction,
                                          }: TicketDetailViewProps) {
   const {isMobile} = useSidebar()
-  const {triggerTicketRefetch} = useTickets()
+  const {updateTicket} = useTickets()
   const [editMode, setEditMode] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "")
 
@@ -37,23 +36,13 @@ export default function TicketDetailView({
   async function handleTitleChange() {
     if (ticket?.title === newTitle || !ticket) return
 
-    const client = getClient()
+    const error = await updateTicket(ticket.id, {title: newTitle})
 
-    try {
-      await client.request<UpdateTicketMutation>(
-        UpdateTicketDocument,
-        {
-          id: ticket.id,
-          ticket: {title: newTitle}
-        }
-      )
-
-      triggerTicketRefetch()
+    if (!error) {
       setEditMode(false)
       ticket.title = newTitle
-    } catch (error) {
+    } else {
       toast.error("Beim Aktualisieren des Titels ist ein Fehler aufgetreten")
-      console.error(error)
     }
   }
 

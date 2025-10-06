@@ -1,4 +1,3 @@
-import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
 import React from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
@@ -10,19 +9,15 @@ import LabelSelection from "@/components/label-selection";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import SortingSelection from "@/app/tickets/sorting-selection";
 import {useLabels} from "@/components/providers/label-provider";
+import {useTickets} from "@/components/providers/ticket-provider";
 
 interface FilterBarProps {
-  filtering: TicketFiltering;
-  setFiltering: React.Dispatch<React.SetStateAction<TicketFiltering>>;
-  sorting: TicketSorting;
-  setSorting: React.Dispatch<React.SetStateAction<TicketSorting>>;
-  stateFilterSet: boolean;
   scrollable?: boolean;
 }
 
-export default function FilterBar(
-  {filtering, setFiltering, sorting, setSorting, stateFilterSet, scrollable = false}: FilterBarProps) {
+export default function FilterBar({scrollable = false}: FilterBarProps) {
   const {labels} = useLabels()
+  const {filtering, stateFilterSet, setFiltering} = useTickets()
 
   return (
     <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}
@@ -110,7 +105,7 @@ export default function FilterBar(
         endDate={filtering.endDate}
         setEndDate={(date) => setFiltering(prev => ({...prev, endDate: date}))}
       />
-      <SortingSelection setSorting={setSorting} sorting={sorting}/>
+      <SortingSelection/>
     </div>
 
   )

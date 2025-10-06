@@ -4,12 +4,7 @@ import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect, useState} from "react";
-import {getClient} from "@/lib/graph/client";
-import {
-  CreateQuestionAnswerPairDocument,
-  QuestionAnswerPair, UpdateQuestionAnswerPair,
-  UpdateQuestionAnswerPairDocument,
-} from "@/lib/graph/generated/graphql";
+import {QuestionAnswerPair, UpdateQuestionAnswerPair,} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
@@ -29,7 +24,7 @@ const ANSWER_MAX_LENGTH = 700
 
 export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const [loading, setLoading] = useState(false);
-  const {qaps, triggerQAPRefetch} = useQAPs()
+  const {qaps, createQap, updateQap} = useQAPs()
   // maxPosition is the highest OCCUPIED zero-based index
   const [maxPosition, setMaxPosition] = useState(qaps.length - 1)
   const createMode = !qap
@@ -78,37 +73,34 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
       answer: data.answer.trim(),
       position: data.position,
     }
-    if (createMode) ok = await createQAP(trimmedData)
-    else ok = await updateQAP(trimmedData)
+    if (createMode) ok = await createQAPHandler(trimmedData)
+    else ok = await updateQAPHandler(trimmedData)
 
     if (ok) {
       form.reset()
-      triggerQAPRefetch();
       closeDialog();
     }
 
     setLoading(false);
   }
 
-  async function createQAP(data: z.infer<typeof faqFormSchema>) {
-    const client = getClient()
-    try {
-      await client.request(CreateQuestionAnswerPairDocument, {questionAnswerPair: data})
+  async function createQAPHandler(data: z.infer<typeof faqFormSchema>) {
+    const error = await createQap(data)
+
+    if (!error) {
       return true
-    } catch (err) {
-      if(String(err).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+    } else {
+      if (String(error).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
       else toast.error('Beim Erstellen ist ein Fehler aufgetreten')
       return false
     }
   }
 
-  async function updateQAP(data: z.infer<typeof faqFormSchema>) {
-    if(!qap) {
+  async function updateQAPHandler(data: z.infer<typeof faqFormSchema>) {
+    if (!qap) {
       toast.error('Ein Fehler ist aufgetreten')
       return false
     }
-
-    const client = getClient()
 
     const qapObject: UpdateQuestionAnswerPair = {
       question: data.question === qap.question ? null : data.question,
@@ -116,14 +108,12 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
       position: data.position === qap.position ? null : data.position
     }
 
-    try {
-      await client.request(
-        UpdateQuestionAnswerPairDocument,
-        {id: qap.id, questionAnswerPair: qapObject})
+    const error = await updateQap(qap.id, qapObject)
+
+    if (!error) {
       return true
-    } catch (err) {
-      console.log(String(err))
-      if(String(err).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
+    } else {
+      if (String(error).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
       else toast.error('Beim Aktualisieren des FAQ ist ein Fehler aufgetreten')
       return false
     }
@@ -206,7 +196,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
                   value={Number.isNaN(field.value) ? "" : field.value + 1}
                   onChange={e => {
                     const val = e.target.value
-                    if(Number.isNaN(val)) field.onChange("")
+                    if (Number.isNaN(val)) field.onChange("")
                     else field.onChange(parseInt(val) - 1)
                   }}
                 />

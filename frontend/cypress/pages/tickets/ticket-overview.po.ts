@@ -1,4 +1,4 @@
-import {TicketSortingField} from "@/app/tickets/page";
+import {TicketSortingField} from "@/components/providers/ticket-provider";
 import {TicketState} from "@/lib/graph/generated/graphql";
 
 export function getTodaySuffixForCalendar () {

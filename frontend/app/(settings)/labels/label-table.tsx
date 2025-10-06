@@ -9,14 +9,13 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
-import React, {useState, useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import {Input} from "@/components/ui/input";
-import {getClient} from "@/lib/graph/client";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {toast} from "sonner";
-import {DeleteLabelsDocument, DeleteLabelsMutation, Label} from "@/lib/graph/generated/graphql";
+import {Label} from "@/lib/graph/generated/graphql";
 import {Button} from "@/components/ui/button";
-import {PlusCircle, MousePointerClick} from "lucide-react";
+import {MousePointerClick, PlusCircle} from "lucide-react";
 import {LabelColumns} from "@/app/(settings)/labels/label-columns";
 import LabelDialog from "@/app/(settings)/labels/label-dialog";
 import {DataTablePagination} from "@/components/table-utils/data-table-pagination";
@@ -32,7 +31,7 @@ export type LabelTableDialogState = {
 type FormLabelFilter = boolean | null;
 
 export function LabelTable() {
-  const {labels, triggerLabelRefetch} = useLabels();
+  const {labels, deleteLabel} = useLabels();
   const [dialogState, setDialogState] = useState<LabelTableDialogState>({mode: null, currentLabel: null});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -65,7 +64,6 @@ export function LabelTable() {
   });
 
   const searchKey = "name"
-  const client = getClient();
 
   const resetDialogState = () => {
     setDialogState({mode: null, currentLabel: null});
@@ -77,17 +75,17 @@ export function LabelTable() {
       return
     }
 
-    try {
-      await client.request<DeleteLabelsMutation>(DeleteLabelsDocument, {ids: [dialogState.currentLabel.id]})
+    const error = await deleteLabel([dialogState.currentLabel.id])
+
+    if (!error) {
       toast.success("Label wurde erfolgreich gelöscht")
       resetDialogState()
-      triggerLabelRefetch()
-    } catch {
+    } else {
       toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
     }
   }
 
-  const  handleFormLabelFilterClick = () => {
+  const handleFormLabelFilterClick = () => {
     if (formLabelFilter === true) {
       setFormLabelFilter(false);
       table.resetSorting();
@@ -129,14 +127,14 @@ export function LabelTable() {
                     }
                   )}
                 >
-                  <MousePointerClick />
+                  <MousePointerClick/>
 
                   <TooltipContent side="top" sideOffset={5}>
                     {formLabelFilter === null ? (
                       <p>Öffentliche Labels anzeigen</p>
-                      ) : formLabelFilter === true ? (
+                    ) : formLabelFilter ? (
                       <p>Nicht-öffentliche Labels anzeigen</p>
-                      ) : (
+                    ) : (
                       <p>Alle Labels anzeigen</p>
                     )}
                   </TooltipContent>
@@ -165,10 +163,10 @@ export function LabelTable() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead 
-                      className={"text-left"} 
-                      key={header.id} 
-                      style={{ width: header.id == "formLabel" ? 90 : undefined }}>
+                    <TableHead
+                      className={"text-left"}
+                      key={header.id}
+                      style={{width: header.id == "formLabel" ? 90 : undefined}}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -223,7 +221,6 @@ export function LabelTable() {
         createMode={dialogState.mode === "add"}
         label={dialogState.currentLabel}
         closeDialog={resetDialogState}
-        refreshData={triggerLabelRefetch}
       />
 
       <ConfirmationDialog

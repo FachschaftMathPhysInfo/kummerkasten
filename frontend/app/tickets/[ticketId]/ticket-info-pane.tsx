@@ -2,19 +2,7 @@
 
 import {Button} from "@/components/ui/button";
 import {Info, Trash2} from "lucide-react";
-import {
-  AddLabelsToTicketDocument,
-  AddLabelsToTicketMutation,
-  Label,
-  LabelToTicketAssignment,
-  RemoveLabelsFromTicketDocument,
-  RemoveLabelsFromTicketMutation,
-  Ticket,
-  TicketState,
-  UpdateTicketStateDocument,
-  UpdateTicketStateMutation,
-  UserRole
-} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketState, UserRole} from "@/lib/graph/generated/graphql";
 import React, {useEffect} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {toast} from "sonner";
@@ -24,7 +12,6 @@ import {useSidebar} from "@/components/ui/sidebar";
 import TicketLabelArea from "@/app/tickets/[ticketId]/ticket-label-area";
 import TicketMetaDataArea from "@/app/tickets/[ticketId]/ticket-metadata-area";
 import TicketActionsBar from "@/app/tickets/[ticketId]/ticket-action-bar";
-import {getClient} from "@/lib/graph/client";
 import TicketStatusArea from "@/app/tickets/[ticketId]/ticket-status-area";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {useUser} from "@/components/providers/user-provider";
@@ -37,7 +24,7 @@ interface TicketInfoPaneProps {
 
 export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateAction}: TicketInfoPaneProps) {
   const {user} = useUser()
-  const {triggerTicketRefetch} = useTickets()
+  const {updateTicket, addLabelsToTicket, removeLabelsFromTicket} = useTickets()
   const {isMobile} = useSidebar()
   const [ticketLabels, setTicketLabels] = React.useState<Label[]>(initialTicketLabels)
   const [ticketState, setTicketState] = React.useState<TicketState>(ticket?.state ?? TicketState.New);
@@ -59,63 +46,28 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
   const handleLabelsChange = async (labels: Label[]) => {
     if (!ticket) return;
 
-    const ticketsToRemove: LabelToTicketAssignment[] = ticketLabels
+    const labelIdsToRemove: string[] = ticketLabels
       .filter(ticketLabel => !labels.map(l => l.id).includes(ticketLabel.id))
-      .map(ticketLabel => ({
-        ticketID: ticket.id,
-        labelID: ticketLabel.id
-      }))
+      .map(l => l.id)
 
-    const ticketsToAdd: LabelToTicketAssignment[] = labels
+
+    const labelIdsToAdd: string[] = labels
       .filter(label => !ticketLabels.map(l => l.id).includes(label.id))
-      .map(label => ({
-        ticketID: ticket.id,
-        labelID: label.id
-      }))
+      .map(l => l.id)
 
-    if (ticketsToAdd.length === 0 && ticketsToRemove.length === 0) return;
+    const removeError = await removeLabelsFromTicket(ticket.id, labelIdsToRemove)
+    const addError = await addLabelsToTicket(ticket.id, labelIdsToAdd)
 
-    try {
-      const client = getClient();
-      if (ticketsToRemove.length > 0) {
-        await client.request<RemoveLabelsFromTicketMutation>(RemoveLabelsFromTicketDocument,
-          {assignments: ticketsToRemove}
-        )
-      }
-
-      if (ticketsToAdd.length > 0) {
-        await client.request<AddLabelsToTicketMutation>(AddLabelsToTicketDocument,
-          {assignments: ticketsToAdd}
-        )
-      }
-
-
-    } catch (err) {
-      toast.error("Fehler beim Aktualisieren der Labels")
-      console.error(err);
-    } finally {
-      triggerTicketRefetch()
-      setTicketLabels(labels);
-    }
+    if (removeError || addError) toast.error("Fehler beim Aktualisieren der Labels")
+    else setTicketLabels(labels);
   }
 
   const handleStateChange = async (state: TicketState) => {
     if (!ticket) return;
 
-    const client = getClient();
-
-    try {
-      await client.request<UpdateTicketStateMutation>(
-        UpdateTicketStateDocument,
-        {id: ticket.id, state: state}
-      )
-    } catch (err) {
-      toast.error("Fehler beim Aktualisieren des Ticketstatus")
-      console.error(err);
-    } finally {
-      triggerTicketRefetch()
-      setTicketState(state)
-    }
+    const error = await updateTicket(ticket.id, {state: state})
+    if (error) toast.error("Fehler beim Aktualisieren des Ticketstatus")
+    setTicketState(state)
   }
 
   if (!ticket) return null;

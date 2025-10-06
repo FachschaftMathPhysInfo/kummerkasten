@@ -2,21 +2,19 @@ import users from "../fixtures/users.json"
 import * as accountPage from "../pages/accountsettings.po"
 import * as loginPage from "../pages/login.po"
 import * as sidebar from "../pages/sidebar.po"
-import {User, UserRole} from "../../lib/graph/generated/graphql";
+import {UserRole} from "../../lib/graph/generated/graphql";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
 roles.forEach((role) => {
-  let user: User;
+  let user;
   let currentCorrectPassword: string;
   let currentCorrectMail: string;
   if (role === UserRole.Admin) {
-    // @ts-ignore no need for manual lastModified or createdAt point in the fixtures
     user = users.cypress
     currentCorrectMail = users.cypress.mail;
     currentCorrectPassword = users.cypress.password;
   } else {
-    // @ts-ignore see above
     user = users.fsles1
     currentCorrectMail = users.fsles1.mail;
     currentCorrectPassword = users.fsles1.password;
@@ -290,7 +288,7 @@ roles.forEach((role) => {
       })
 
       after(() => {
-        cy.fixture("users").then((u) => {
+        cy.fixture("users").then(() => {
           cy.visit("/account");
           accountPage.getFirstnameInput().clear();
           accountPage.getLastnameInput().clear();

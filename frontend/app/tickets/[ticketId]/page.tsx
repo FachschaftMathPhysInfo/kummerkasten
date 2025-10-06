@@ -4,14 +4,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {useParams} from "next/navigation";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {getClient} from "@/lib/graph/client";
-import {
-  DeleteTicketDocument,
-  DeleteTicketMutation,
-  Label,
-  Ticket,
-  TicketsByIdsDocument,
-  TicketsByIdsQuery
-} from "@/lib/graph/generated/graphql";
+import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
 import {TicketDialogState} from "@/app/tickets/page";
@@ -26,7 +19,7 @@ const client = getClient();
 
 export default function TicketPage() {
   const {ticketId} = useParams();
-  const {triggerTicketRefetch} = useTickets()
+  const {deleteTickets} = useTickets()
   const {isMobile} = useSidebar()
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
@@ -55,13 +48,13 @@ export default function TicketPage() {
       return
     }
 
-    try {
-      await client.request<DeleteTicketMutation>(DeleteTicketDocument, {ids: [dialogState.currentTicket.id]})
+    const error = await deleteTickets([dialogState.currentTicket.id])
+
+    if (!error) {
       toast.success("Ticket wurde erfolgreich gelöscht")
       resetDialogState()
-      triggerTicketRefetch()
       await fetchTicketDetail();
-    } catch {
+    } else {
       toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
     }
   }
@@ -73,16 +66,16 @@ export default function TicketPage() {
   return (
     <div
       className={cn(
-        "flex flex-col py-5 grow",
+        "flex flex-col py-5 grow overflow-hidden h-full ",
         isMobile ? "max-w-screen" : (state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]")
       )}
     >
-      <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow">
+      <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow h-full">
         <ResizablePanel
           defaultSize={30}
           minSize={20}
-          maxSize={30}
-          className="flex-col hidden md:flex"
+          maxSize={27}
+          className="flex-col hidden md:flex h-full"
         >
           <TicketSidebar
             selectedTicketId={String(ticketId)}
@@ -102,10 +95,7 @@ export default function TicketPage() {
         open={dialogState.mode === "update"}
         ticket={dialogState.currentTicket}
         closeDialog={() => setDialogState({mode: null, currentTicket: null})}
-        refreshData={async () => {
-          triggerTicketRefetch()
-          await fetchTicketDetail();
-        }}
+        refreshData={async () => await fetchTicketDetail()}
       />
       <ConfirmationDialog
         mode="confirmation"

@@ -3,12 +3,21 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {
   AllQuestionAnswerPairDocument,
-  QuestionAnswerPair
+  CreateQuestionAnswerPairDocument,
+  DeleteQuestionAnswerPairDocument,
+  NewQuestionAnswerPair,
+  QuestionAnswerPair,
+  UpdateQuestionAnswerPair,
+  UpdateQuestionAnswerPairDocument, UpdateQuestionAnswerPairPosition, UpdateQuestionAnswerPairPositionsDocument
 } from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
 
 interface QAPContextType {
   qaps: QuestionAnswerPair[];
+  createQap: (qap: NewQuestionAnswerPair) => Promise<string | null>
+  updateQap: (id: string, qap: UpdateQuestionAnswerPair) => Promise<string | null>
+  updateQapPositions: (qap: UpdateQuestionAnswerPairPosition[]) => Promise<string | null>
+  deleteQaps: (ids: string[]) => Promise<string | null>
   triggerQAPRefetch: () => void;
 }
 
@@ -38,9 +47,61 @@ export function QAPProvider({children}: { children: ReactNode }) {
     setRefetchKey(!refetchKey);
   }
 
+  async function createQap(qap: NewQuestionAnswerPair) {
+    const client = getClient()
+
+    try {
+      await client.request(CreateQuestionAnswerPairDocument, {questionAnswerPair: qap})
+      return null
+    } catch (e) {
+      return String(e)
+    } finally {
+      triggerQAPRefetch()
+    }
+  }
+
+  async function updateQap(id: string, qap: UpdateQuestionAnswerPair) {
+    const client = getClient()
+
+    try {
+      await client.request(UpdateQuestionAnswerPairDocument, {id, questionAnswerPair: qap})
+      return null
+    } catch (e) {
+      return String(e)
+    } finally {
+      triggerQAPRefetch()
+    }
+  }
+
+  async function updateQapPositions(qaps: UpdateQuestionAnswerPairPosition[]) {
+    const client = getClient()
+
+    try {
+      await client.request(UpdateQuestionAnswerPairPositionsDocument, {qaps})
+      return null
+    } catch(e) {
+      return String(e)
+    } finally {
+      triggerQAPRefetch()
+    }
+  }
+
+  async function deleteQaps(ids: string[]) {
+    const client = getClient()
+
+    try {
+      await client.request(DeleteQuestionAnswerPairDocument, {ids})
+      return null
+    } catch (e) {
+      return String(e)
+    } finally {
+      triggerQAPRefetch()
+    }
+  }
+
 
   return (
-    <QAPContext.Provider value={{qaps: qaps, triggerQAPRefetch: triggerQAPRefetch}}>
+    <QAPContext.Provider value={{qaps, createQap, updateQap, updateQapPositions, deleteQaps, triggerQAPRefetch}}>
       {children}
     </QAPContext.Provider>
   );
