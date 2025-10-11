@@ -37,7 +37,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 			Scan(ctx)
 		if err != nil {
 			log.Printf("Label not found: %s", labelName)
-			return nil, fmt.Errorf("label not found: %s", labelName)
+			return nil, ErrInternal
 		}
 		labels = append(labels, label)
 	}
@@ -138,7 +138,7 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 		return "", ErrInternal
 	}
 	if len(dbTickets) == 0 {
-		return "", fmt.Errorf("ticket not found")
+		return "", ErrNotFound
 	}
 
 	dbTicket := dbTickets[0]
@@ -267,7 +267,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 
 	if err != nil {
 		log.Printf("Failed to find label with id %v: %v", id, err)
-		return "", fmt.Errorf("label with id %v not found", id)
+		return "", ErrNotFound
 	}
 
 	if label.Name != nil {
@@ -309,7 +309,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 				Where("form_label = ?", true).
 				Scan(ctx); err != nil {
 				log.Printf("Failed to find all form labels for update on labels: %v", err)
-				return "", fmt.Errorf("internal server error")
+				return "", ErrInternal
 			}
 			if len(allFormLabels) == 1 {
 				return "", fmt.Errorf("there must always be at least one formLabel existent")
@@ -390,7 +390,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 
 	if err != nil || len(dbUsers) == 0 {
 		log.Printf("Failed to find user with id %v: %v", id, err)
-		return "", fmt.Errorf("user with id %v not found", id)
+		return "", ErrNotFound
 	}
 
 	originalUser := dbUsers[0]
@@ -431,7 +431,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 			Where("user_id = ?", originalUser.ID).
 			Exec(ctx); err != nil {
 			log.Printf("Failed to delete user sessions on critical data change: %v", err)
-			return "", fmt.Errorf("internal system error")
+			return "", ErrInternal
 		}
 
 		newSid := uuid.New().String()
@@ -447,7 +447,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 
 		if _, err := r.DB.NewInsert().Model(newSession).Exec(ctx); err != nil {
 			log.Printf("Failed to create session: %v", err)
-			return "", fmt.Errorf("internal system error")
+			return "", ErrInternal
 		}
 
 		httpResponseWriter := ctx.Value(middleware.WriterKey).(http.ResponseWriter)
@@ -471,7 +471,7 @@ func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model
 	users, err := r.Query().Users(ctx, []string{id}, make([]string, 0), nil)
 
 	if err != nil || len(users) == 0 {
-		return "", fmt.Errorf("user with id %v not found", id)
+		return "", ErrNotFound
 	}
 
 	updatedUser := users[0]
@@ -491,7 +491,7 @@ func (r *mutationResolver) ChangeRole(ctx context.Context, id string, role model
 		Where("user_id = ?", updatedUser.ID).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to delete user sessions on role change: %v", err)
-		return "", fmt.Errorf("internal system error")
+		return "", ErrInternal
 	}
 
 	return updatedUser.ID, nil
@@ -524,7 +524,7 @@ func (r *mutationResolver) ResetPassword(ctx context.Context, id string, passwor
 		Where("user_id = ?", user.ID).
 		Exec(ctx); err != nil {
 		log.Printf("Failed to delete user sessions on password reset: %v", err)
-		return nil, fmt.Errorf("internal system error")
+		return nil, ErrInternal
 	}
 
 	return nil, nil
@@ -608,7 +608,7 @@ func (r *mutationResolver) UpdateAboutSectionText(ctx context.Context, text stri
 
 	if err != nil {
 		log.Printf("Failed to update setting: %v", err)
-		return "", fmt.Errorf("internal server error")
+		return "", ErrInternal
 	}
 
 	return setting.Value, nil
@@ -847,7 +847,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	questionAnswerPairs, err := r.Query().QuestionAnswerPairs(ctx, []string{id})
 
 	if err != nil || len(questionAnswerPairs) == 0 {
-		return "", fmt.Errorf("QuestionAnswerPair with id %v not found", id)
+		return "", ErrNotFound
 	}
 
 	const MaxQuestionLength = 100
@@ -1023,7 +1023,7 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get tickets: %v", err)
-		return nil, fmt.Errorf("failed to fetch tickets")
+		return nil, ErrInternal
 	}
 
 	var gqlTickets []*model.Ticket
@@ -1067,7 +1067,7 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get labels: %v", err)
-		return nil, fmt.Errorf("failed to fetch labels")
+		return nil, ErrInternal
 	}
 
 	var gqlLabels []*model.Label
@@ -1111,7 +1111,7 @@ func (r *queryResolver) FormLabels(ctx context.Context, ids []string) ([]*model.
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get form labels: %v", err)
-		return nil, fmt.Errorf("failed to fetch form labels")
+		return nil, ErrInternal
 	}
 
 	var gqlLabels []*model.Label
@@ -1159,7 +1159,7 @@ func (r *queryResolver) Users(ctx context.Context, id []string, mail []string, r
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to fetch users: %v", err)
-		return nil, fmt.Errorf("failed to fetch footer users")
+		return nil, ErrInternal
 	}
 
 	return users, nil
@@ -1170,7 +1170,7 @@ func (r *queryResolver) IsMailInUse(ctx context.Context, mail string) (bool, err
 	exists, err := r.DB.NewSelect().Model((*model.User)(nil)).Where("mail = ?", mail).Exists(ctx)
 	if err != nil {
 		log.Printf("Failed to fetch users for isMailInUse check: %v", err)
-		return false, fmt.Errorf("internal server error")
+		return false, ErrInternal
 	}
 
 	return exists, nil
@@ -1188,7 +1188,7 @@ func (r *queryResolver) Settings(ctx context.Context, keys []string) ([]*model.S
 
 	if err := query.Scan(ctx); err != nil {
 		log.Printf("Failed to get settings: %v", err)
-		return nil, fmt.Errorf("failed to fetch settings")
+		return nil, ErrInternal
 	}
 
 	return settings, nil
@@ -1204,7 +1204,7 @@ func (r *queryResolver) FooterSettings(ctx context.Context) ([]*model.Setting, e
 		Where("key LIKE ?", footerSettingsPrefix+"%").
 		Scan(ctx); err != nil {
 		log.Printf("Failed to fetch footer settings: %v", err)
-		return nil, fmt.Errorf("failed to fetch footer settings")
+		return nil, ErrInternal
 	}
 
 	return footerSettings, nil
@@ -1219,7 +1219,7 @@ func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Sett
 		Model(&aboutSetting).
 		Where("key LIKE ?", aboutSettingsPrefix+"%").
 		Scan(ctx); err != nil {
-		return nil, fmt.Errorf("failed to fetch about setting: %v", err)
+		return nil, ErrInternal
 	}
 
 	return aboutSetting, nil
