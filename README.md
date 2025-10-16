@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="https://github.com/Plebysnacc/kummerkasten">
+    <a href="https://github.com/FachschaftMathPhysInfo/kummerkasten">
         <img src="frontend/public/logo_dark.svg" alt="Logo" width="80" height="80" />
     </a>
 

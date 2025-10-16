@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/Plebysnacc/kummerkasten/graph/model"
-	"github.com/Plebysnacc/kummerkasten/middleware"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/middleware"
 )
 
 func HasRole(ctx context.Context, obj interface{}, next graphql.Resolver, role *model.UserRole) (res interface{}, err error) {

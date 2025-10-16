@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 )
 
 func VerifySID(ctx context.Context, sid string, db *bun.DB) (*model.User, error) {

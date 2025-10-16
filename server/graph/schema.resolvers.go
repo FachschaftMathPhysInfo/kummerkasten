@@ -15,11 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Plebysnacc/kummerkasten/auth"
-	"github.com/Plebysnacc/kummerkasten/graph/model"
-	"github.com/Plebysnacc/kummerkasten/graph/utils"
-	"github.com/Plebysnacc/kummerkasten/middleware"
-	"github.com/Plebysnacc/kummerkasten/models"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/utils"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/middleware"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )

@@ -20,11 +20,11 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/Plebysnacc/kummerkasten/db"
-	"github.com/Plebysnacc/kummerkasten/graph"
-	"github.com/Plebysnacc/kummerkasten/graph/directives"
-	"github.com/Plebysnacc/kummerkasten/maintenance"
-	"github.com/Plebysnacc/kummerkasten/middleware"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/directives"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/maintenance"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/middleware"
 	_ "github.com/lib/pq"
 )
 

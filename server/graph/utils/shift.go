@@ -3,7 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
-	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/uptrace/bun"
 	"log"
 )

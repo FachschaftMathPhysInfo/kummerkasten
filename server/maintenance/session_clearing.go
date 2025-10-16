@@ -2,8 +2,8 @@ package maintenance
 
 import (
 	"context"
-	"github.com/Plebysnacc/kummerkasten/graph"
-	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"log"
 	"time"
 )

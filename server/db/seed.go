@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/Plebysnacc/kummerkasten/auth"
-	"github.com/Plebysnacc/kummerkasten/graph/model"
-	"github.com/Plebysnacc/kummerkasten/models"
-	"github.com/Plebysnacc/kummerkasten/utils"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/uptrace/bun"
 )
 

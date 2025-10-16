@@ -73,5 +73,5 @@ die Position in der Reihenfolge festlegen.
 ## Sonstiges
 
 ### Bugs
-Solltet ihr als User einen Bug finden, würde es uns freuen, wenn ihr ihn unter https://github.com/Plebysnacc/kummerkasten/issues
+Solltet ihr als User einen Bug finden, würde es uns freuen, wenn ihr ihn unter https://github.com/FachschaftMathPhysInfo/kummerkasten/issues
 reported.

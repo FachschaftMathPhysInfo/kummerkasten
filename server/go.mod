@@ -1,4 +1,4 @@
-module github.com/Plebysnacc/kummerkasten
+module github.com/FachschaftMathPhysInfo/kummerkasten
 
 go 1.24.3
 

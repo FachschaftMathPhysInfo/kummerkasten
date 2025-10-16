@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"github.com/Plebysnacc/kummerkasten/graph/model"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"log"
