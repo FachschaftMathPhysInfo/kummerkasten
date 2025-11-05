@@ -10,7 +10,12 @@ export async function middleware(request: NextRequest) {
 
   async function checkIsLoggedIn() {
     const sid = request.cookies.get('sid')?.value;
-    if(!sid) return false;
+    if(!sid) {
+      console.log('[middleware] no sid cookie found')
+      return false;
+    } else {
+      console.log('[middleware] sid found: ', sid);
+    }
 
 
     try {
@@ -18,8 +23,11 @@ export async function middleware(request: NextRequest) {
       apiUrl.port = '8080'
       const client = new GraphQLClient(apiUrl.toString())
       const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
+      console.log('[middleware] login check answer: ')
+      console.log(loggedInData.loginCheck)
       return loggedInData.loginCheck !== null
     } catch (err) {
+      console.error('[middleware] login check threw error: ', err)
       return false
     }
   }
