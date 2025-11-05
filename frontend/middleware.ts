@@ -16,11 +16,9 @@ export async function middleware(request: NextRequest) {
     } else {
       console.log('[middleware] sid found: ', sid);
     }
-
-
+    
     try {
-      const apiUrl = new URL("/api", request.nextUrl.origin)
-      apiUrl.port = '8080'
+      const apiUrl = 'http://localhost:8080/api'
       const client = new GraphQLClient(apiUrl.toString())
       const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
       console.log('[middleware] login check answer: ')
@@ -64,3 +62,4 @@ export const config = {
     '/app-settings'
   ],
 }
+
