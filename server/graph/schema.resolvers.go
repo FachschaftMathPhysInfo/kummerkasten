@@ -1268,6 +1268,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		Name:     "sid",
 		Value:    newSid,
 		Path:     "/",
+		Domain:   os.Getenv("PUBLIC_DOMAIN"),
 		HttpOnly: true,
 		Secure:   os.Getenv("ENV") != "DEV",
 		SameSite: http.SameSiteLaxMode,
@@ -1300,6 +1301,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 // LoginCheck is the resolver for the loginCheck field.
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
 	if _, err := uuid.Parse(*sid); err != nil {
+		log.Printf("Failed to parse sid to uuid: %v", err)
 		return nil, nil
 	}
 
@@ -1310,6 +1312,7 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	}
 
 	if sessions == nil {
+		log.Printf("Found no session for %v", *sid)
 		return nil, nil
 	}
 
