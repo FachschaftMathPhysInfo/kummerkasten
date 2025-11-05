@@ -1,4 +1,4 @@
-name: Build & Publish Latest Docker Image
+name: Build & Publish Unstable Docker Image
 
 on:
   workflow_dispatch: {}
@@ -13,10 +13,9 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  testing:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  unstable:
     runs-on: ubuntu-latest
-    name: Build & Push “testing” Tag
+    name: Build & Push “unstable” Tag
 
 
     steps:
@@ -30,13 +29,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & tag as lastest
+      - name: Build & tag as unstable
         run: |
           IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          docker build -t $IMAGE:latest .
+          docker build -t $IMAGE:unstable .
 
-      - name: Push testing tag
+      - name: Push unstable tag
         run: |
           IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          docker push $IMAGE:testing
+          docker push $IMAGE:unstable
 
