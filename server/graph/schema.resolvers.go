@@ -1306,19 +1306,19 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	}
 
 	if _, err := uuid.Parse(*sid); err != nil {
-		log.Printf("Failed to parse sid to uuid: %v", err)
+		log.Printf("Failed to parse sid to uuid in login check: %v", err)
 		return nil, nil
 	}
 
 	var sessions []*model.Session
 
 	if err := r.DB.NewSelect().Model(&sessions).Where("id = ?", sid).Scan(ctx); err != nil {
-		log.Printf("error while selection sessions from db: %v", err)
+		log.Printf("error while selection sessions from db in login check: %v", err)
 		return nil, ErrInternal
 	}
 
 	if sessions == nil {
-		log.Printf("Found no session for %v", *sid)
+		log.Printf("Found no session for user with id: %v", *sid)
 		return nil, nil
 	}
 
@@ -1328,7 +1328,6 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 		Where("id = ?", sessions[0].UserID).
 		Scan(ctx); err != nil {
 		log.Printf("error while selection user from db after having found the session: %v", err)
-
 		return nil, ErrInternal
 	}
 
