@@ -1313,6 +1313,7 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	var sessions []*model.Session
 
 	if err := r.DB.NewSelect().Model(&sessions).Where("id = ?", sid).Scan(ctx); err != nil {
+		log.Printf("error while selection sessions from db: %v", err)
 		return nil, ErrInternal
 	}
 
@@ -1326,6 +1327,8 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	if err := r.DB.NewSelect().Model(&users).
 		Where("id = ?", sessions[0].UserID).
 		Scan(ctx); err != nil {
+		log.Printf("error while selection user from db after having found the session: %v", err)
+
 		return nil, ErrInternal
 	}
 
