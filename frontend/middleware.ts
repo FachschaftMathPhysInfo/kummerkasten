@@ -25,6 +25,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const isLoggedIn = await checkIsLoggedIn()
+  console.log('User login status: ', isLoggedIn)
 
   if (pathname === '/login' && isLoggedIn) {
     return NextResponse.redirect(new URL('/tickets', request.url))
