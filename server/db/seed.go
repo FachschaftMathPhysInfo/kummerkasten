@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
@@ -22,7 +21,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
-	if os.Getenv("ENV") != "DEV" {
+	if envConf.Env != "DEV" {
 		fmt.Printf("Skipping test data seeding (ENV != DEV)")
 		return nil
 	}
@@ -343,9 +342,9 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 func createAdminUser(ctx context.Context, db *bun.DB) error {
 	var err error
-	mail := os.Getenv("ADMIN_MAIL")
-	password := os.Getenv("ADMIN_PASSWORD")
-	envMode := os.Getenv("ENV")
+	mail := envConf.AdminMail
+	password := envConf.AdminPassword
+	envMode := envConf.Env
 	defaultPassword := "admin"
 	defaultMail := "admin@kummer.kasten"
 
@@ -375,7 +374,7 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 				log.Printf("Failed invalidating admin sessions on admin password update")
 				return err
 			}
-			
+
 			newPassword, err := auth.HashPassword(password)
 
 			if err != nil {
