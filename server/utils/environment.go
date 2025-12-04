@@ -52,7 +52,7 @@ func mustGet(key string) string {
 	value := os.Getenv(key)
 
 	if value == "" {
-		log.Fatalf("entry mising but required for environment variable: %s", key)
+		log.Fatalf("entry missing but required for environment variable: %s", key)
 	}
 
 	return value
