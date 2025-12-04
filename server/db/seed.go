@@ -352,7 +352,7 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		mail = defaultMail
 	}
 
-	adminUser := &models.User{}
+	adminUser := new(models.User)
 
 	err = db.NewSelect().
 		Model(adminUser).
@@ -363,7 +363,7 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 	}
 
 	if adminUser != nil {
-		log.Printf("Admin user with email %s already exists, skipping creation\n", mail)
+		log.Printf("Admin user with email %s already exists, skipping creation", mail)
 		isStoredPasswordCorrectErr := auth.VerifyPassword(adminUser.Password, password)
 
 		if isStoredPasswordCorrectErr != nil {
