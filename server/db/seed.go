@@ -343,35 +343,74 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 func createAdminUser(ctx context.Context, db *bun.DB) error {
 	var err error
-
 	mail := os.Getenv("ADMIN_MAIL")
+	password := os.Getenv("ADMIN_PASSWORD")
+	envMode := os.Getenv("ENV")
+	defaultPassword := "admin"
+	defaultMail := "admin@kummer.kasten"
+
 	if mail == "" {
-		mail = "admin@kummer.kasten"
+		mail = defaultMail
 	}
 
-	exists, err := db.NewSelect().
-		Model((*models.User)(nil)).
+	adminUser := &models.User{}
+
+	err = db.NewSelect().
+		Model(adminUser).
 		Where("mail = ?", mail).
-		Exists(ctx)
+		Scan(ctx)
 	if err != nil {
 		return err
 	}
-	if exists {
+
+	if adminUser != nil {
 		log.Printf("Admin user with email %s already exists, skipping creation\n", mail)
+		isStoredPasswordCorrectErr := auth.VerifyPassword(adminUser.Password, password)
+
+		if isStoredPasswordCorrectErr != nil {
+			_, err := db.NewDelete().Model((*models.Session)(nil)).Where("user_id = ?", adminUser.ID).Exec(ctx)
+
+			if err != nil {
+				log.Printf("error: %v", err)
+				log.Printf("Failed invalidating admin sessions on admin password update")
+				return err
+			}
+			
+			newPassword, err := auth.HashPassword(password)
+
+			if err != nil {
+				log.Printf("error: %v", err)
+				log.Printf("Failed updating admin password, aborting")
+				return err
+			}
+
+			adminUser.Password = newPassword
+
+			_, err = db.NewUpdate().Model(adminUser).WherePK().Exec(ctx)
+
+			if err != nil {
+				log.Printf("error: %v", err)
+				log.Printf("Failed updating admin password, aborting")
+				return err
+			}
+
+			log.Printf("Admin password updated successfully")
+		}
+
 		return nil
 	}
 
-	password := "admin"
-
-	if os.Getenv("ADMIN_PASSWORD") != "" {
-		password = os.Getenv("ADMIN_PASSWORD")
-	} else if os.Getenv("ENV") == "PROD" {
-		password, err = utils.RandString(32)
-		if err != nil {
-			return err
+	if password == "" {
+		if envMode == "PROD" {
+			password, err = utils.RandString(32)
+			if err != nil {
+				return err
+			}
+		} else {
+			password = defaultPassword
 		}
 	}
-	
+
 	hash, err := auth.HashPassword(password)
 	if err != nil {
 		return err
