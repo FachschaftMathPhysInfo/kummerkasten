@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -20,6 +19,7 @@ import (
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/utils"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/middleware"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
+	env "github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -457,7 +457,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 			Value:    newSid,
 			Path:     "/",
 			HttpOnly: true,
-			Secure:   os.Getenv("ENV") != "DEV",
+			Secure:   env.EnvConfig.Env != "DEV",
 			SameSite: http.SameSiteLaxMode,
 			Expires:  expiresAt,
 		})
@@ -1268,9 +1268,9 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		Name:     "sid",
 		Value:    newSid,
 		Path:     "/",
-		Domain:   os.Getenv("PUBLIC_DOMAIN"),
+		Domain:   env.EnvConfig.PublicDomain,
 		HttpOnly: true,
-		Secure:   os.Getenv("ENV") != "DEV",
+		Secure:   env.EnvConfig.Env != "DEV",
 		SameSite: http.SameSiteLaxMode,
 		Expires:  expiresAt,
 	})

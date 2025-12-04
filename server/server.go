@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/gorilla/websocket"
 	"github.com/robfig/cron"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -30,8 +30,9 @@ import (
 
 const port = "8080"
 
+var envConf = utils.EnvConfig
+
 var (
-	env            = os.Getenv("ENV")
 	frontendUrl, _ = url.Parse("http://localhost:3000")
 	cronjob        *cron.Cron
 	srv            *handler.Server
@@ -42,7 +43,7 @@ var (
 )
 
 func main() {
-	if env == "DEV" {
+	if envConf.Env == "DEV" {
 		log.Print("====== WARNING ======")
 		log.Print("Software is starting in DEV mode, which is insecure in production")
 		log.Print("====== ======= ======")
@@ -64,7 +65,7 @@ func main() {
 
 	router.Mount("/api", getAPIRouter())
 
-	if env == "DEV" {
+	if envConf.Env == "DEV" {
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/api"))
 	}
 
@@ -95,9 +96,9 @@ func initGraphQL() {
 }
 
 func initCors() {
-	var allowedOrigins = []string{os.Getenv("PUBLIC_DOMAIN")}
+	var allowedOrigins = []string{envConf.PublicDomain}
 
-	if env == "DEV" {
+	if envConf.Env == "DEV" {
 		allowedOrigins = append(allowedOrigins, "localhost:3000", "localhost:8080")
 	}
 
@@ -105,7 +106,7 @@ func initCors() {
 		AllowedOrigins:   allowedOrigins,
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
-		Debug:            os.Getenv("DEBUG") == "true",
+		Debug:            false,
 	})
 }
 
@@ -145,7 +146,7 @@ func initCron() {
 	})
 	srv.Use(extension.Introspection{})
 
-	if os.Getenv("DEBUG") != "" {
+	if envConf.Env != "DEV" {
 		http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 		http.Handle("/query", srv)
 
