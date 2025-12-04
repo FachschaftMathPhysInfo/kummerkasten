@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
@@ -362,7 +363,7 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
-	if adminUser != nil {
+	if !reflect.ValueOf(adminUser).IsZero() {
 		log.Printf("Admin user with email %s already exists, skipping creation", mail)
 		isStoredPasswordCorrectErr := auth.VerifyPassword(adminUser.Password, password)
 
