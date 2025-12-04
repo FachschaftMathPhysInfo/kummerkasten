@@ -362,16 +362,16 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 	}
 
 	password := "admin"
-	if os.Getenv("ENV") == "PROD" {
-		if os.Getenv("ADMIN_PASSWORD") != "" {
-			password = os.Getenv("ADMIN_PASSWORD")
-		} else {
-			password, err = utils.RandString(32)
-			if err != nil {
-				return err
-			}
+
+	if os.Getenv("ADMIN_PASSWORD") != "" {
+		password = os.Getenv("ADMIN_PASSWORD")
+	} else if os.Getenv("ENV") == "PROD" {
+		password, err = utils.RandString(32)
+		if err != nil {
+			return err
 		}
 	}
+	
 	hash, err := auth.HashPassword(password)
 	if err != nil {
 		return err
