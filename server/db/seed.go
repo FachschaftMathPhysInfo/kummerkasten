@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
@@ -20,11 +19,6 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 	}
 	if err := createSettings(ctx, db); err != nil {
 		return err
-	}
-
-	if envConf.Env != "DEV" {
-		fmt.Printf("Skipping test data seeding (ENV != DEV)")
-		return nil
 	}
 
 	if err := seedTestUsers(ctx, db); err != nil {
@@ -353,21 +347,31 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		mail = defaultMail
 	}
 
-	adminUser := new(models.User)
+	exists, err := db.NewSelect().Model((*models.User)(nil)).Where("mail = ?", mail).Exists(ctx)
 
-	err = db.NewSelect().
-		Model(adminUser).
-		Where("mail = ?", mail).
-		Scan(ctx)
 	if err != nil {
+		log.Printf("Error scanning for admin user: %v", err)
 		return err
 	}
 
-	if !reflect.ValueOf(adminUser).IsZero() {
+	if exists {
 		log.Printf("Admin user with email %s already exists, skipping creation", mail)
+
+		adminUser := new(models.User)
+
+		err = db.NewSelect().
+			Model(adminUser).
+			Where("mail = ?", mail).
+			Scan(ctx)
+		if err != nil {
+			return err
+		}
+
 		isStoredPasswordCorrectErr := auth.VerifyPassword(adminUser.Password, password)
 
 		if isStoredPasswordCorrectErr != nil {
+			log.Print("New admin password detected, updating user")
+
 			_, err := db.NewDelete().Model((*models.Session)(nil)).Where("user_id = ?", adminUser.ID).Exec(ctx)
 
 			if err != nil {
