@@ -926,7 +926,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	return qAP.ID, nil
 }
 
-// UpdateQuestionAnswerPairBatchPositons is the resolver for the updateQuestionAnswerPairBatchPositons field.
+// UpdateQuestionAnswerPairBatchPositions  is the resolver for the updateQuestionAnswerPairBatchPositons field.
 func (r *mutationResolver) UpdateQuestionAnswerPairBatchPositions(ctx context.Context, questionAnswerPairs []*model.UpdateQuestionAnswerPairPosition) (bool, error) {
 	amountQAPsInDB, err := r.DB.NewSelect().Model((*model.QuestionAnswerPair)(nil)).Count(ctx)
 	if err != nil {
@@ -1318,7 +1318,6 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	}
 
 	if sessions == nil {
-		log.Printf("Found no session for user with id: %v", *sid)
 		return nil, nil
 	}
 
