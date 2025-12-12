@@ -20,6 +20,199 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 	if err := createSettings(ctx, db); err != nil {
 		return err
 	}
+	if err := createDefaultLabels(ctx, db); err != nil {
+		return err
+	}
+
+	if envConf.Env != "PROD" {
+		if err := seedTestData(ctx, db); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func createAdminUser(ctx context.Context, db *bun.DB) error {
+	var err error
+	mail := envConf.AdminMail
+	password := envConf.AdminPassword
+	envMode := envConf.Env
+	defaultPassword := "admin"
+	defaultMail := "admin@kummer.kasten"
+
+	if mail == "" {
+		mail = defaultMail
+	}
+
+	exists, err := db.NewSelect().Model((*models.User)(nil)).Where("mail = ?", mail).Exists(ctx)
+
+	if err != nil {
+		log.Printf("Error scanning for admin user: %v", err)
+		return err
+	}
+
+	if exists {
+		log.Printf("Admin user with email %s already exists, skipping creation", mail)
+
+		adminUser := new(models.User)
+
+		err = db.NewSelect().
+			Model(adminUser).
+			Where("mail = ?", mail).
+			Scan(ctx)
+		if err != nil {
+			return err
+		}
+
+		isStoredPasswordCorrectErr := auth.VerifyPassword(adminUser.Password, password)
+
+		if isStoredPasswordCorrectErr != nil {
+			log.Print("New admin password detected, updating user")
+
+			_, err := db.NewDelete().Model((*models.Session)(nil)).Where("user_id = ?", adminUser.ID).Exec(ctx)
+
+			if err != nil {
+				log.Printf("error: %v", err)
+				log.Printf("Failed invalidating admin sessions on admin password update")
+				return err
+			}
+
+			newPassword, err := auth.HashPassword(password)
+
+			if err != nil {
+				log.Printf("error: %v", err)
+				log.Printf("Failed updating admin password, aborting")
+				return err
+			}
+
+			adminUser.Password = newPassword
+
+			_, err = db.NewUpdate().Model(adminUser).WherePK().Exec(ctx)
+
+			if err != nil {
+				log.Printf("error: %v", err)
+				log.Printf("Failed updating admin password, aborting")
+				return err
+			}
+
+			log.Printf("Admin password updated successfully")
+		}
+
+		return nil
+	}
+
+	if password == "" {
+		if envMode == "PROD" {
+			password, err = utils.RandString(32)
+			if err != nil {
+				return err
+			}
+		} else {
+			password = defaultPassword
+		}
+	}
+
+	hash, err := auth.HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	admin := &models.User{
+		Mail:         mail,
+		Firstname:    "Admin",
+		Lastname:     "Kummerkasten",
+		Password:     hash,
+		Role:         model.UserRoleAdmin,
+		CreatedAt:    time.Now(),
+		LastModified: time.Now(),
+	}
+
+	if _, err := db.NewInsert().Model(admin).Exec(ctx); err != nil {
+		return fmt.Errorf("failed to create admin user: %w", err)
+	}
+
+	log.Printf("Admin user created with email: %s", mail)
+	log.Printf("Admin user created with password: %s", password)
+	return nil
+}
+
+func createSettings(ctx context.Context, db *bun.DB) error {
+	const contactLinkKey = "FOOTER_CONTACT_LINK"
+	const legalNoticeKey = "FOOTER_LEGAL_NOTICE_LINK"
+	const aboutSectionTextKey = "ABOUT_SECTION_TEXT"
+
+	settings := []*models.Setting{
+		{Key: contactLinkKey, Value: "https://mathphys.stura.uni-heidelberg.de/kontakt/"},
+		{Key: legalNoticeKey, Value: "https://mathphys.stura.uni-heidelberg.de/"},
+		{Key: aboutSectionTextKey, Value: "Der Kummerkasten ist das Feedbacksammlungssystem der Fachschaft. Er hilft bei Problemen in Vorlesungen (und bei Problemen mit anderen Institutionen, denen Studenten im Unialltag begegnen). \nDen Digitalen Kummerkasten findest du hier. Der analoge Kummerkasten steht im Gang vor dem Fachschaftsraum (bei den Flyern vor der Teeküche)."},
+	}
+
+	keys := []string{contactLinkKey, legalNoticeKey, aboutSectionTextKey}
+	existing := make([]*models.Setting, 0)
+
+	if err := db.NewSelect().
+		Model(&existing).
+		Where("key IN (?)", bun.In(keys)).
+		Scan(ctx); err != nil {
+		return fmt.Errorf("failed to fetch settings: %w", err)
+	}
+
+	existingKeys := make(map[string]bool)
+	for _, s := range existing {
+		existingKeys[s.Key] = true
+	}
+
+	toInsert := make([]*models.Setting, 0)
+	for _, s := range settings {
+		if !existingKeys[s.Key] {
+			toInsert = append(toInsert, s)
+		} else {
+			log.Printf("Skipping seeding for existing setting: %s", s.Key)
+		}
+	}
+
+	if len(toInsert) > 0 {
+		if _, err := db.NewInsert().Model(&toInsert).Exec(ctx); err != nil {
+			return fmt.Errorf("failed to insert settings: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func createDefaultLabels(ctx context.Context, db *bun.DB) error {
+	labels := []*models.Label{
+		{
+			Name:      "dozent*in",
+			Color:     "#474770",
+			FormLabel: true,
+		},
+		{
+			Name:      "veranstaltung",
+			Color:     "#47704e",
+			FormLabel: true,
+		},
+		{
+			Name:      "fachschaft",
+			Color:     "#477068",
+			FormLabel: true,
+		},
+		{
+			Name:      "sonstiges",
+			Color:     "#6a4770",
+			FormLabel: true,
+		},
+	}
+
+	if err := insertData(ctx, db, (*models.Label)(nil), labels, "Labels"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func seedTestData(ctx context.Context, db *bun.DB) error {
 
 	if err := seedTestUsers(ctx, db); err != nil {
 		return err
@@ -330,154 +523,6 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 	if err := insertData(ctx, db, (*models.QuestionAnswerPair)(nil), qAPs, "Question Answer Pairs"); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func createAdminUser(ctx context.Context, db *bun.DB) error {
-	var err error
-	mail := envConf.AdminMail
-	password := envConf.AdminPassword
-	envMode := envConf.Env
-	defaultPassword := "admin"
-	defaultMail := "admin@kummer.kasten"
-
-	if mail == "" {
-		mail = defaultMail
-	}
-
-	exists, err := db.NewSelect().Model((*models.User)(nil)).Where("mail = ?", mail).Exists(ctx)
-
-	if err != nil {
-		log.Printf("Error scanning for admin user: %v", err)
-		return err
-	}
-
-	if exists {
-		log.Printf("Admin user with email %s already exists, skipping creation", mail)
-
-		adminUser := new(models.User)
-
-		err = db.NewSelect().
-			Model(adminUser).
-			Where("mail = ?", mail).
-			Scan(ctx)
-		if err != nil {
-			return err
-		}
-
-		isStoredPasswordCorrectErr := auth.VerifyPassword(adminUser.Password, password)
-
-		if isStoredPasswordCorrectErr != nil {
-			log.Print("New admin password detected, updating user")
-
-			_, err := db.NewDelete().Model((*models.Session)(nil)).Where("user_id = ?", adminUser.ID).Exec(ctx)
-
-			if err != nil {
-				log.Printf("error: %v", err)
-				log.Printf("Failed invalidating admin sessions on admin password update")
-				return err
-			}
-
-			newPassword, err := auth.HashPassword(password)
-
-			if err != nil {
-				log.Printf("error: %v", err)
-				log.Printf("Failed updating admin password, aborting")
-				return err
-			}
-
-			adminUser.Password = newPassword
-
-			_, err = db.NewUpdate().Model(adminUser).WherePK().Exec(ctx)
-
-			if err != nil {
-				log.Printf("error: %v", err)
-				log.Printf("Failed updating admin password, aborting")
-				return err
-			}
-
-			log.Printf("Admin password updated successfully")
-		}
-
-		return nil
-	}
-
-	if password == "" {
-		if envMode == "PROD" {
-			password, err = utils.RandString(32)
-			if err != nil {
-				return err
-			}
-		} else {
-			password = defaultPassword
-		}
-	}
-
-	hash, err := auth.HashPassword(password)
-	if err != nil {
-		return err
-	}
-
-	admin := &models.User{
-		Mail:         mail,
-		Firstname:    "Admin",
-		Lastname:     "Kummerkasten",
-		Password:     hash,
-		Role:         model.UserRoleAdmin,
-		CreatedAt:    time.Now(),
-		LastModified: time.Now(),
-	}
-
-	if _, err := db.NewInsert().Model(admin).Exec(ctx); err != nil {
-		return fmt.Errorf("failed to create admin user: %w", err)
-	}
-
-	log.Printf("Admin user created with email: %s", mail)
-	log.Printf("Admin user created with password: %s", password)
-	return nil
-}
-
-func createSettings(ctx context.Context, db *bun.DB) error {
-	const contactLinkKey = "FOOTER_CONTACT_LINK"
-	const legalNoticeKey = "FOOTER_LEGAL_NOTICE_LINK"
-	const aboutSectionTextKey = "ABOUT_SECTION_TEXT"
-
-	settings := []*models.Setting{
-		{Key: contactLinkKey, Value: "https://mathphys.stura.uni-heidelberg.de/kontakt/"},
-		{Key: legalNoticeKey, Value: "https://mathphys.stura.uni-heidelberg.de/"},
-		{Key: aboutSectionTextKey, Value: "Der Kummerkasten ist das Feedbacksammlungssystem der Fachschaft. Er hilft bei Problemen in Vorlesungen (und bei Problemen mit anderen Institutionen, denen Studenten im Unialltag begegnen). \nDen Digitalen Kummerkasten findest du hier. Der analoge Kummerkasten steht im Gang vor dem Fachschaftsraum (bei den Flyern vor der Teeküche)."},
-	}
-
-	keys := []string{contactLinkKey, legalNoticeKey, aboutSectionTextKey}
-	existing := make([]*models.Setting, 0)
-
-	if err := db.NewSelect().
-		Model(&existing).
-		Where("key IN (?)", bun.In(keys)).
-		Scan(ctx); err != nil {
-		return fmt.Errorf("failed to fetch settings: %w", err)
-	}
-
-	existingKeys := make(map[string]bool)
-	for _, s := range existing {
-		existingKeys[s.Key] = true
-	}
-
-	toInsert := make([]*models.Setting, 0)
-	for _, s := range settings {
-		if !existingKeys[s.Key] {
-			toInsert = append(toInsert, s)
-		} else {
-			log.Printf("Skipping seeding for existing setting: %s", s.Key)
-		}
-	}
-
-	if len(toInsert) > 0 {
-		if _, err := db.NewInsert().Model(&toInsert).Exec(ctx); err != nil {
-			return fmt.Errorf("failed to insert settings: %w", err)
-		}
 	}
 
 	return nil
