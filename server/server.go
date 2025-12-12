@@ -146,7 +146,7 @@ func initCron() {
 	})
 	srv.Use(extension.Introspection{})
 
-	if envConf.Env != "DEV" {
+	if envConf.Env == "DEV" {
 		http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 		http.Handle("/query", srv)
 
