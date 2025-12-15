@@ -14,6 +14,17 @@ import (
 	"github.com/uptrace/bun"
 )
 
+var (
+	testEmails = []string{
+		"cheffe@kummerkasten.local",
+		"root@kummerkasten.local",
+		"fsles1@kummerkasten.local",
+		"fsles2@kummerkasten.local",
+		"fsles3@kummerkasten.local",
+		"admin@cypress.kummer",
+	}
+)
+
 func SeedData(ctx context.Context, db *bun.DB) error {
 	if err := seedProductionData(ctx, db); err != nil {
 		return err
@@ -21,6 +32,10 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 	if envConf.Env == "DEV" {
 		if err := seedTestData(ctx, db); err != nil {
+			return err
+		}
+	} else {
+		if err := removeTestUsers(ctx, db); err != nil {
 			return err
 		}
 	}
@@ -54,6 +69,16 @@ func seedTestData(ctx context.Context, db *bun.DB) error {
 	if err := seedTestQuestionAnswerPairs(ctx, db); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func removeTestUsers(ctx context.Context, db *bun.DB) error {
+	log.Printf("Removing test users...")
+	if _, err := db.NewDelete().Model((*models.User)(nil)).Where("mail IN (?)", bun.In(testEmails)).Exec(ctx); err != nil {
+		return err
+	}
+	log.Printf("Test users removed!")
 
 	return nil
 }
@@ -238,15 +263,6 @@ func createDefaultLabels(ctx context.Context, db *bun.DB) error {
 }
 
 func seedTestUsers(ctx context.Context, db *bun.DB) error {
-	testEmails := []string{
-		"cheffe@kummerkasten.local",
-		"root@kummerkasten.local",
-		"fsles1@kummerkasten.local",
-		"fsles2@kummerkasten.local",
-		"fsles3@kummerkasten.local",
-		"admin@cypress.kummer",
-	}
-
 	for _, email := range testEmails {
 		exists, err := db.NewSelect().
 			Model((*models.User)(nil)).
