@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"log"
 	"time"
 
@@ -14,6 +15,20 @@ import (
 )
 
 func SeedData(ctx context.Context, db *bun.DB) error {
+	if err := seedProductionData(ctx, db); err != nil {
+		return err
+	}
+
+	if envConf.Env == "DEV" {
+		if err := seedTestData(ctx, db); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func seedProductionData(ctx context.Context, db *bun.DB) error {
 	if err := createAdminUser(ctx, db); err != nil {
 		return err
 	}
@@ -24,10 +39,20 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
-	if envConf.Env != "PROD" {
-		if err := seedTestData(ctx, db); err != nil {
-			return err
-		}
+	return nil
+}
+
+func seedTestData(ctx context.Context, db *bun.DB) error {
+	if err := seedTestUsers(ctx, db); err != nil {
+		return err
+	}
+
+	if err := seedTestLabelsAndTickets(ctx, db); err != nil {
+		return err
+	}
+
+	if err := seedTestQuestionAnswerPairs(ctx, db); err != nil {
+		return err
 	}
 
 	return nil
@@ -212,12 +237,104 @@ func createDefaultLabels(ctx context.Context, db *bun.DB) error {
 	return nil
 }
 
-func seedTestData(ctx context.Context, db *bun.DB) error {
-
-	if err := seedTestUsers(ctx, db); err != nil {
-		return err
+func seedTestUsers(ctx context.Context, db *bun.DB) error {
+	testEmails := []string{
+		"cheffe@kummerkasten.local",
+		"root@kummerkasten.local",
+		"fsles1@kummerkasten.local",
+		"fsles2@kummerkasten.local",
+		"fsles3@kummerkasten.local",
+		"admin@cypress.kummer",
 	}
 
+	for _, email := range testEmails {
+		exists, err := db.NewSelect().
+			Model((*models.User)(nil)).
+			Where("mail = ?", email).
+			Exists(ctx)
+		if err != nil {
+			return err
+		}
+		if exists {
+			log.Printf("Test users already exist, skipping test user seeding")
+			return nil
+		}
+	}
+
+	users := []*models.User{
+		{
+			Mail:         "cheffe@kummerkasten.local",
+			Firstname:    "Chef",
+			Lastname:     "Fe",
+			Password:     "cheffe",
+			Role:         model.UserRoleAdmin,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "root@kummerkasten.local",
+			Firstname:    "Root",
+			Lastname:     "Ruth",
+			Password:     "root",
+			Role:         model.UserRoleAdmin,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "fsles1@kummerkasten.local",
+			Firstname:    "Fachschaft",
+			Lastname:     "Eins",
+			Password:     "fachschaft",
+			Role:         model.UserRoleUser,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "fsles2@kummerkasten.local",
+			Firstname:    "Fachschaft",
+			Lastname:     "Zwei",
+			Password:     "fachschaft",
+			Role:         model.UserRoleUser,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "fsles3@kummerkasten.local",
+			Firstname:    "Fachschaft",
+			Lastname:     "Drei",
+			Password:     "fachschaft",
+			Role:         model.UserRoleUser,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+		{
+			Mail:         "admin@cypress.kummer",
+			Firstname:    "Admin",
+			Lastname:     "Cypress",
+			Password:     "OriginalPassword1!",
+			Role:         model.UserRoleAdmin,
+			CreatedAt:    time.Now(),
+			LastModified: time.Now(),
+		},
+	}
+
+	for _, user := range users {
+		hash, err := auth.HashPassword(user.Password)
+		if err != nil {
+			return fmt.Errorf("failed to hash password for user %s: %w", user.Mail, err)
+		}
+		user.Password = hash
+	}
+
+	if _, err := db.NewInsert().Model(&users).Exec(ctx); err != nil {
+		return fmt.Errorf("failed to insert test users: %w", err)
+	}
+
+	log.Print("Test users seeded successfully")
+	return nil
+}
+
+func seedTestLabelsAndTickets(ctx context.Context, db *bun.DB) error {
 	labels := []*models.Label{
 		{
 			Name:      "dozent*in",
@@ -290,6 +407,7 @@ func seedTestData(ctx context.Context, db *bun.DB) error {
 
 	labelMap := map[string]*models.Label{}
 	for _, label := range labels {
+		label.ID = uuid.New().String()
 		labelMap[label.Name] = label
 	}
 
@@ -497,22 +615,10 @@ func seedTestData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
-	settings := []*models.Setting{
-		{Key: "logo-url", Value: "http://localhost:8080/fs-logo.png"},
-		{Key: "homepage-url", Value: "https://mathphys.info"},
-		{Key: "copyright-notice", Value: "Copyright © 2024, Fachschaft MathPhysInfo. All rights reserved."},
-		{Key: "email-greeting", Value: "Hey"},
-		{Key: "email-signature", Value: "Dein"},
-		{Key: "email-name", Value: "Kummerkasten"},
-		{Key: "auth-standard-enabled", Value: "1"},
-		{Key: "auth-sso-oidc-enabled", Value: "1"},
-		{Key: "auth-sso-oidc-name", Value: "Fachschaftslogin"},
-	}
+	return nil
+}
 
-	if err := insertData(ctx, db, (*models.Setting)(nil), settings, "Settings"); err != nil {
-		return err
-	}
-
+func seedTestQuestionAnswerPairs(ctx context.Context, db *bun.DB) error {
 	qAPs := []*models.QuestionAnswerPair{
 		{Question: "Was ist der Kummerkasten?", Answer: "Eine anonyme Anlaufstelle für Kummer im und ums Studium.", Position: 0},
 		{Question: "Wofür ist der Kummerkasten?", Answer: "Zu schwere Zettel, Erschwerte Kommunikation mit einer/m Dozierenden, Zu hoher Lernaufwand in einer Veranstaltung, Probleme mit der Fachschaft,...", Position: 1},
@@ -525,103 +631,6 @@ func seedTestData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
-	return nil
-}
-
-func seedTestUsers(ctx context.Context, db *bun.DB) error {
-	testEmails := []string{
-		"cheffe@kummerkasten.local",
-		"root@kummerkasten.local",
-		"fsles1@kummerkasten.local",
-		"fsles2@kummerkasten.local",
-		"fsles3@kummerkasten.local",
-		"admin@cypress.kummer",
-	}
-
-	for _, email := range testEmails {
-		exists, err := db.NewSelect().
-			Model((*models.User)(nil)).
-			Where("mail = ?", email).
-			Exists(ctx)
-		if err != nil {
-			return err
-		}
-		if exists {
-			log.Printf("Test users already exist, skipping test user seeding")
-			return nil
-		}
-	}
-
-	users := []*models.User{
-		{
-			Mail:         "cheffe@kummerkasten.local",
-			Firstname:    "Chef",
-			Lastname:     "Fe",
-			Password:     "cheffe",
-			Role:         model.UserRoleAdmin,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "root@kummerkasten.local",
-			Firstname:    "Root",
-			Lastname:     "Ruth",
-			Password:     "root",
-			Role:         model.UserRoleAdmin,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "fsles1@kummerkasten.local",
-			Firstname:    "Fachschaft",
-			Lastname:     "Eins",
-			Password:     "fachschaft",
-			Role:         model.UserRoleUser,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "fsles2@kummerkasten.local",
-			Firstname:    "Fachschaft",
-			Lastname:     "Zwei",
-			Password:     "fachschaft",
-			Role:         model.UserRoleUser,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "fsles3@kummerkasten.local",
-			Firstname:    "Fachschaft",
-			Lastname:     "Drei",
-			Password:     "fachschaft",
-			Role:         model.UserRoleUser,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-		{
-			Mail:         "admin@cypress.kummer",
-			Firstname:    "Admin",
-			Lastname:     "Cypress",
-			Password:     "OriginalPassword1!",
-			Role:         model.UserRoleAdmin,
-			CreatedAt:    time.Now(),
-			LastModified: time.Now(),
-		},
-	}
-
-	for _, user := range users {
-		hash, err := auth.HashPassword(user.Password)
-		if err != nil {
-			return fmt.Errorf("failed to hash password for user %s: %w", user.Mail, err)
-		}
-		user.Password = hash
-	}
-
-	if _, err := db.NewInsert().Model(&users).Exec(ctx); err != nil {
-		return fmt.Errorf("failed to insert test users: %w", err)
-	}
-
-	log.Print("Test users seeded successfully")
 	return nil
 }
 
