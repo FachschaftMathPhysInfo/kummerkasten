@@ -38,6 +38,9 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		if err := removeTestUsers(ctx, db); err != nil {
 			return err
 		}
+		if err := invalidateAllSessions(ctx, db); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -79,6 +82,16 @@ func removeTestUsers(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 	log.Printf("Test users removed!")
+
+	return nil
+}
+
+func invalidateAllSessions(ctx context.Context, db *bun.DB) error {
+	log.Printf("Invalidating all sessions...")
+	if _, err := db.NewTruncateTable().Model((*models.Session)(nil)).Exec(ctx); err != nil {
+		return err
+	}
+	log.Printf("All sessions removed!")
 
 	return nil
 }
