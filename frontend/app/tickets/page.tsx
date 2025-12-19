@@ -100,7 +100,7 @@ export default function TicketPage() {
   }
 
   return (
-    <div className="space-y-6 grow max-w-screen">
+    <div className="space-y-6 grow max-w-screen flex flex-col">
       <ManagementPageHeader
         title="Tickets"
         description="Bearbeite alle verfügbaren Tickets"
@@ -139,36 +139,64 @@ export default function TicketPage() {
         </div>
       </div>
 
-      <div className={'w-full px-10 flex gap-4 items-center my-2'}>
-        <span className={'grow h-0.5 bg-muted-foreground'}/>
-        <p className={'text-muted-foreground'}>Dieses Semester</p>
-        <span className={'grow h-0.5 bg-muted-foreground'}/>
-      </div>
-
-      {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
-          ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
-              <Link href={`/tickets/${ticket.id}`} passHref>
-                <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
-              </Link>
+      {tickets.length == 0 ?
+        <div className={'mx-5 flex items-center justify-center grow'}>
+          <p className={'text-wrap text-xl text-center text-muted-foreground'}>
+            Es sind noch keine Tickets vorhanden.
+          </p>
+        </div>
+        : sortedTickets.length == 0 ? (
+            <div className={'mx-5 flex items-center justify-center grow'}>
+              <p className={'text-wrap text-xl text-center text-muted-foreground'}>
+                Kein Ticket enstpricht den eingestellten Filtern.
+              </p>
             </div>
-          )
-      )}
+          ) :
+          (
+            <>
+              {getCurrentSemesterTickets(sortedTickets).length > 0 && (
+                <>
+                  {getOlderSemesterTickets(sortedTickets).length > 0 && (
+                    <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+                      <span className={'grow h-0.5 bg-muted-foreground'}/>
+                      <p className={'text-muted-foreground'}>Dieses Semester</p>
+                      <span className={'grow h-0.5 bg-muted-foreground'}/>
+                    </div>
+                  )}
 
-      <div className={'w-full px-10 flex gap-4 items-center my-2'}>
-        <span className={'grow h-0.5 bg-muted-foreground'}/>
-        <p className={'text-muted-foreground'}>Frühere Semester</p>
-        <span className={'grow h-0.5 bg-muted-foreground'}/>
-      </div>
-      {getOlderSemesterTickets(sortedTickets).map((ticket) =>
-          ticket?.id && (
-            <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
-              <Link href={`/tickets/${ticket.id}`} passHref>
-                <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
-              </Link>
-            </div>
+                  {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
+                      ticket?.id && (
+                        <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
+                          <Link href={`/tickets/${ticket.id}`} passHref>
+                            <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
+                          </Link>
+                        </div>
+                      )
+                  )}
+                </>
+              )}
+
+              {getOlderSemesterTickets(sortedTickets).length > 0 && (
+                <>
+                  <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+                    <span className={'grow h-0.5 bg-muted-foreground'}/>
+                    <p className={'text-muted-foreground'}>Frühere Semester</p>
+                    <span className={'grow h-0.5 bg-muted-foreground'}/>
+                  </div>
+                  {getOlderSemesterTickets(sortedTickets).map((ticket) =>
+                      ticket?.id && (
+                        <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
+                          <Link href={`/tickets/${ticket.id}`} passHref>
+                            <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
+                          </Link>
+                        </div>
+                      )
+                  )}
+                </>
+              )}
+            </>
           )
-      )}
+      }
 
       <ConfirmationDialog
         mode="confirmation"
