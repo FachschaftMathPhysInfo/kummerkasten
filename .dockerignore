@@ -1,0 +1,38 @@
+# Dependency directories
+**/node_modules
+**/vendor
+
+# Next.js / Frontend build artifacts
+frontend/.next
+frontend/out
+frontend/build
+frontend/.env*.local
+
+# Testing (Cypress, Jest, Playwright)
+**/cypress
+**/*.cy.ts
+**/*.cy.js
+frontend/cypress.config.ts
+frontend/test-results
+
+# Go artifacts
+server/bin
+server/graphql-server
+**/debug
+
+# Git and IDEs
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Logs and temp files
+**/npm-debug.log*
+**/yarn-error.log*
+**/.npm
