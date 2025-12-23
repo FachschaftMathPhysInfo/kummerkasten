@@ -27,6 +27,10 @@ COPY --from=frontend-build /app/public ./public
 
 COPY --from=server-build /go/src/graphql-server /usr/local/bin/graphql-server
 
+ENV PORT=3000
+ENV HOSTNAME=localhost
+
 EXPOSE 8080
+
 
 CMD ["sh", "-c", "graphql-server & node server.js"]
