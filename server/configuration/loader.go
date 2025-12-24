@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/knadh/koanf/parsers/json"
 	"github.com/knadh/koanf/providers/confmap"
 	"github.com/knadh/koanf/providers/env/v2"
@@ -13,43 +14,22 @@ import (
 	"github.com/knadh/koanf/v2"
 )
 
-var configuration Configuration
-
-type Configuration struct {
-	Admin struct {
-		Mail     string `koanf:"mail"`
-		Password string `koanf:"password"`
-	} `koanf:"admin"`
-	Database struct {
-		Host     string `koanf:"host"`
-		Port     string `koanf:"port"`
-		User     string `koanf:"username"`
-		Password string `koanf:"password"`
-		Name     string `koanf:"name"`
-	} `koanf:"database"`
-	System struct {
-		Domain string `koanf:"domain"`
-		Mode   string `koanf:"mode"`
-		Pepper string `koanf:"pepper"`
-	} `koanf:"system"`
-}
-
 var (
-	envPrefix = "KASTEN_"
-	k         = koanf.New(".")
+	SystemConfiguration Configuration
+	envPrefix           = "KASTEN_"
+	k                   = koanf.New(".")
 )
 
-func GetConfiguration() Configuration {
+func LoadSystemConfiguration() {
 	loadDefaultConfigurationValues()
 	loadConfigurationFromJson()
 	loadConfigurationFromEnv()
+	loadAdminPassword()
 	validateConfiguration()
 
-	if err := k.Unmarshal("/", &configuration); err != nil {
-		log.Print("Error loading configuration, previous configuration will be applied of possible")
+	if err := k.Unmarshal("/", &SystemConfiguration); err != nil {
+		log.Print("Error loading SystemConfiguration, previous SystemConfiguration will be applied of possible")
 	}
-
-	return configuration
 }
 
 func loadDefaultConfigurationValues() {
@@ -60,7 +40,7 @@ func loadDefaultConfigurationValues() {
 		"admin.mail":    "admin@kummer.kasten",
 		"system.pepper": "",
 	}, "."), nil); err != nil {
-		log.Printf("Error loading default configuration: %v", err)
+		log.Printf("Error loading default SystemConfiguration: %v", err)
 	}
 }
 
@@ -82,18 +62,33 @@ func loadConfigurationFromEnv() {
 	}
 }
 
+func loadAdminPassword() {
+	if k.Get("admin.password") == "" {
+		if k.Get("system.mode") == "DEV" {
+			if err := k.Set("admin.password", "admin"); err != nil {
+				log.Fatalf("error setting admin password, aborting")
+			}
+		} else {
+			password, _ := utils.RandString(32)
+			if err := k.Set("admin.password", password); err != nil {
+				log.Fatalf("error setting admin password, aborting")
+			}
+		}
+	}
+}
+
 func validateConfiguration() {
 	var configErrors []error
 
-	if configuration.Database.Password == "" {
+	if SystemConfiguration.Database.Password == "" {
 		configErrors = append(configErrors, fmt.Errorf("database password is empty, please set a password"))
 	}
 
-	if configuration.System.Domain == "" {
+	if SystemConfiguration.System.Domain == "" {
 		configErrors = append(configErrors, fmt.Errorf("system.domain is required"))
 	}
 
-	if !(configuration.System.Mode == "DEV" || configuration.System.Mode == "PROD") {
+	if !(SystemConfiguration.System.Mode == "DEV" || SystemConfiguration.System.Mode == "PROD") {
 		configErrors = append(configErrors, errors.New("system.mode has to be either 'DEV' or 'PROD'"))
 	}
 
@@ -103,6 +98,25 @@ func validateConfiguration() {
 			log.Println(err)
 		}
 
-		log.Fatalf("Software booting aborted due to configuration errors")
+		log.Fatalf("Software booting aborted due to SystemConfiguration errors")
 	}
+}
+
+type Configuration struct {
+	Admin struct {
+		Mail     string `koanf:"mail"`
+		Password string `koanf:"password"`
+	} `koanf:"admin"`
+	Database struct {
+		Host     string `koanf:"host"`
+		Port     string `koanf:"port"`
+		User     string `koanf:"username"`
+		Password string `koanf:"password"`
+		Name     string `koanf:"name"`
+	} `koanf:"database"`
+	System struct {
+		Domain string `koanf:"domain"`
+		Mode   string `koanf:"mode"`
+		Pepper string `koanf:"pepper"`
+	} `koanf:"system"`
 }

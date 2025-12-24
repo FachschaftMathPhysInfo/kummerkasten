@@ -2,23 +2,25 @@ package main
 
 import (
 	"context"
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/handler/extension"
-	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
-	"github.com/gorilla/websocket"
-	"github.com/robfig/cron"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
+	"github.com/gorilla/websocket"
+	"github.com/robfig/cron"
+
+	"net/http/httputil"
+	"net/url"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/cors"
 	"github.com/uptrace/bun"
-	"net/http/httputil"
-	"net/url"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/directives"
@@ -29,7 +31,7 @@ import (
 
 const port = "8080"
 
-var envConf = utils.EnvConfig
+var config configuration.Configuration
 
 var (
 	frontendUrl, _ = url.Parse("http://localhost:3000")
@@ -42,7 +44,9 @@ var (
 )
 
 func main() {
-	if envConf.Env == "DEV" {
+	configuration.LoadSystemConfiguration()
+	config = configuration.SystemConfiguration
+	if config.System.Mode == "DEV" {
 		log.Print("====== WARNING ======")
 		log.Print("Software is starting in DEV mode, which is insecure in production")
 		log.Print("====== ======= ======")
@@ -61,7 +65,7 @@ func main() {
 
 	router.Mount("/api", getAPIRouter())
 
-	if envConf.Env == "DEV" {
+	if config.System.Mode == "DEV" {
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/api"))
 	}
 
@@ -126,9 +130,9 @@ func initGraphQL() {
 
 func initCors() {
 	log.Print("setting up CORS...")
-	var allowedOrigins = []string{envConf.PublicDomain}
+	var allowedOrigins = []string{config.System.Domain}
 
-	if envConf.Env == "DEV" {
+	if config.System.Mode == "DEV" {
 		allowedOrigins = append(allowedOrigins, "localhost:3000", "localhost:8080")
 	}
 

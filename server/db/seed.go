@@ -3,14 +3,14 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"log"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/uptrace/bun"
 )
 
@@ -30,7 +30,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 		return err
 	}
 
-	if envConf.Env == "DEV" {
+	if config.System.Mode == "DEV" {
 		if err := seedTestData(ctx, db); err != nil {
 			return err
 		}
@@ -98,15 +98,8 @@ func invalidateAllSessions(ctx context.Context, db *bun.DB) error {
 
 func createAdminUser(ctx context.Context, db *bun.DB) error {
 	var err error
-	mail := envConf.AdminMail
-	password := envConf.AdminPassword
-	envMode := envConf.Env
-	defaultPassword := "admin"
-	defaultMail := "admin@kummer.kasten"
-
-	if mail == "" {
-		mail = defaultMail
-	}
+	mail := config.Admin.Mail
+	password := config.Admin.Password
 
 	exists, err := db.NewSelect().Model((*models.User)(nil)).Where("mail = ?", mail).Exists(ctx)
 
@@ -163,17 +156,6 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		}
 
 		return nil
-	}
-
-	if password == "" {
-		if envMode == "PROD" {
-			password, err = utils.RandString(32)
-			if err != nil {
-				return err
-			}
-		} else {
-			password = defaultPassword
-		}
 	}
 
 	hash, err := auth.HashPassword(password)
