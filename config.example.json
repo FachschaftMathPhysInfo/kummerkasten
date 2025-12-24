@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "email" : "",
+    "password": ""
+  },
+  "postgres": {
+    "user": "",
+    "password": "",
+    "host": "",
+    "port": "",
+    "name": ""
+  },
+  "system": {
+    "domain": "",
+    "mode": "",
+    "pepper": ""
+  }
+}
