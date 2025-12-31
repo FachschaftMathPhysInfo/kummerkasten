@@ -77,7 +77,7 @@ func main() {
 
 func initDatabase() {
 	log.Print("starting database initialization...")
-	_, DB = db.Init(ctx)
+	_, DB = db.Init(ctx, configuration.SystemConfiguration)
 	log.Print("database initialization completed!")
 
 	log.Print("starting database seeding...")

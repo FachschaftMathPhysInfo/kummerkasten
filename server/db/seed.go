@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/google/uuid"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
@@ -23,6 +24,7 @@ var (
 		"fsles3@kummerkasten.local",
 		"admin@cypress.kummer",
 	}
+	config = configuration.SystemConfiguration
 )
 
 func SeedData(ctx context.Context, db *bun.DB) error {

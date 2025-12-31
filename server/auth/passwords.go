@@ -4,15 +4,16 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
+	"golang.org/x/crypto/bcrypt"
 )
 
-var envConf = utils.EnvConfig
+var config = configuration.SystemConfiguration
 
 func HashPassword(password string) (string, error) {
-	toHash := []byte(password + envConf.Pepper)
+	toHash := []byte(password + config.System.Pepper)
 	secretHmac := hmac.New(sha256.New, toHash)
 	secretHmac.Write(toHash)
 	hash, err := bcrypt.GenerateFromPassword(toHash, bcrypt.DefaultCost)
@@ -25,7 +26,7 @@ func HashPassword(password string) (string, error) {
 }
 
 func VerifyPassword(storedHash, providedPassword string) error {
-	toHash := []byte(providedPassword + envConf.Pepper)
+	toHash := []byte(providedPassword + config.System.Pepper)
 	secretHmac := hmac.New(sha256.New, toHash)
 	secretHmac.Write(toHash)
 

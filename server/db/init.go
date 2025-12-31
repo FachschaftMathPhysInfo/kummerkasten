@@ -17,7 +17,6 @@ import (
 )
 
 var (
-	config = configuration.SystemConfiguration
 	db     *bun.DB
 	sqldb  *sql.DB
 	err    error
@@ -38,7 +37,7 @@ var (
 const MaxDbPings = 10
 const PingIntervalDBConnection = 5 * time.Second
 
-func Init(ctx context.Context) (*sql.DB, *bun.DB) {
+func Init(ctx context.Context, config configuration.Configuration) (*sql.DB, *bun.DB) {
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		config.Database.User,
