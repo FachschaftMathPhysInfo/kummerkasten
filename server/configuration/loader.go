@@ -144,7 +144,7 @@ func validateConfiguration() {
 		configErrors = append(configErrors, fmt.Errorf("system.domain is required"))
 	}
 
-	if !(systemConfiguration.System.Mode == "DEV" || systemConfiguration.System.Mode == "PROD") {
+	if systemConfiguration.System.Mode != "DEV" && systemConfiguration.System.Mode != "PROD" {
 		configErrors = append(configErrors, errors.New("system.mode has to be either 'DEV' or 'PROD'"))
 	}
 
