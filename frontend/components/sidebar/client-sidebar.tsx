@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { clsx } from "clsx";
+import Link from "next/link";
 
 export function ClientSidebar() {
   const { user, logout } = useUser();
@@ -86,10 +87,10 @@ export function ClientSidebar() {
               {userItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} data-cy={item.cypress}>
+                    <Link href={item.url} data-cy={item.cypress}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -97,10 +98,10 @@ export function ClientSidebar() {
                 adminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url} data-cy={item.cypress}>
+                      <Link href={item.url} data-cy={item.cypress}>
                         <item.icon />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
