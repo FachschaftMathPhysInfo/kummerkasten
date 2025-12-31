@@ -57,12 +57,23 @@ func loadConfigurationFromJson() {
 }
 
 func loadConfigurationFromEnv() {
-	envPrefix := "KUMMERKASTEN_"
+	kastenPrefix := "KUMMERKASTEN_"
+	databasePrefix := "POSTGRES_"
 
 	if err := k.Load(env.Provider(".", env.Opt{
-		Prefix: envPrefix,
+		Prefix: kastenPrefix,
 		TransformFunc: func(key, value string) (string, any) {
-			key = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(key, envPrefix)), "_", ".")
+			key = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(key, kastenPrefix)), "_", ".")
+			return key, value
+		},
+	}), nil); err != nil {
+		log.Printf("error loading environment variables: %v", err)
+	}
+
+	if err := k.Load(env.Provider(".", env.Opt{
+		Prefix: databasePrefix,
+		TransformFunc: func(key, value string) (string, any) {
+			key = strings.ReplaceAll(strings.ToLower(strings.Replace(key, "POSTGRES_", "DATABASE_", 1)), "_", ".")
 			return key, value
 		},
 	}), nil); err != nil {
@@ -161,7 +172,7 @@ type Configuration struct {
 		Port     string `koanf:"port"`
 		User     string `koanf:"user"`
 		Password string `koanf:"password"`
-		Name     string `koanf:"name"`
+		Name     string `koanf:"db"`
 	} `koanf:"database"`
 	System struct {
 		Domain string `koanf:"domain"`
