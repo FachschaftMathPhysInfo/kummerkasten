@@ -44,8 +44,9 @@ var (
 )
 
 func main() {
-	configuration.LoadSystemConfiguration()
-	config = configuration.SystemConfiguration
+	configuration.Init()
+	config = configuration.Get()
+
 	if config.System.Mode == "DEV" {
 		log.Print("====== WARNING ======")
 		log.Print("Software is starting in DEV mode, which is insecure in production")
@@ -77,7 +78,7 @@ func main() {
 
 func initDatabase() {
 	log.Print("starting database initialization...")
-	_, DB = db.Init(ctx, configuration.SystemConfiguration)
+	_, DB = db.Init(ctx)
 	log.Print("database initialization completed!")
 
 	log.Print("starting database seeding...")

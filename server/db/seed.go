@@ -24,10 +24,11 @@ var (
 		"fsles3@kummerkasten.local",
 		"admin@cypress.kummer",
 	}
-	config = configuration.SystemConfiguration
 )
 
 func SeedData(ctx context.Context, db *bun.DB) error {
+	config := configuration.Get()
+
 	if err := seedProductionData(ctx, db); err != nil {
 		return err
 	}
@@ -100,6 +101,8 @@ func invalidateAllSessions(ctx context.Context, db *bun.DB) error {
 
 func createAdminUser(ctx context.Context, db *bun.DB) error {
 	var err error
+	config := configuration.Get()
+
 	mail := config.Admin.Mail
 	password := config.Admin.Password
 

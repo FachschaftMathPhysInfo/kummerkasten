@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
-
 	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -37,7 +36,8 @@ var (
 const MaxDbPings = 10
 const PingIntervalDBConnection = 5 * time.Second
 
-func Init(ctx context.Context, config configuration.Configuration) (*sql.DB, *bun.DB) {
+func Init(ctx context.Context) (*sql.DB, *bun.DB) {
+	config := configuration.Get()
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		config.Database.User,

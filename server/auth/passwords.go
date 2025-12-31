@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var config = configuration.SystemConfiguration
+var config = configuration.Get()
 
 func HashPassword(password string) (string, error) {
 	toHash := []byte(password + config.System.Pepper)
