@@ -8,7 +8,6 @@ import (
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/knadh/koanf/parsers/json"
-	"github.com/knadh/koanf/providers/confmap"
 	"github.com/knadh/koanf/providers/env/v2"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
@@ -20,7 +19,6 @@ var (
 )
 
 func LoadSystemConfiguration() {
-	loadDefaultConfigurationValues()
 	loadConfigurationFromJson()
 	loadConfigurationFromEnv()
 	loadAdminPassword()
@@ -30,19 +28,6 @@ func LoadSystemConfiguration() {
 	validateConfiguration()
 
 	log.Printf("Database config: %v", SystemConfiguration.Database)
-}
-
-func loadDefaultConfigurationValues() {
-	if err := k.Load(confmap.Provider(map[string]interface{}{
-		"database.host": "postgres",
-		"database.port": "5432",
-		"database.user": "kummerkasten_user",
-		"database.name": "kummerkasten",
-		"admin.mail":    "admin@kummer.kasten",
-		"system.pepper": "",
-	}, "."), nil); err != nil {
-		log.Printf("Error loading default SystemConfiguration: %v", err)
-	}
 }
 
 func loadConfigurationFromJson() {
@@ -80,28 +65,26 @@ func loadAdminPassword() {
 	}
 }
 
-// FIXME: This is, as you can see, a rather redundant function. In time we might want to add a
-// FIXME: custom parser for the configuration load, so empty strings do not overwrite the default values
 func loadMissingConfigurationValues() {
 	var err error
 
-	if k.Get("database.host") == "" {
+	if k.String("database.host") == "" {
 		err = k.Set("database.host", "localhost")
 	}
 
-	if k.Get("database.port") == "" {
+	if k.String("database.port") == "" {
 		err = k.Set("database.port", "5432")
 	}
 
-	if k.Get("database.user") == "" {
+	if k.String("database.user") == "" {
 		err = k.Set("database.user", "kummerkasten_user")
 	}
 
-	if k.Get("database.name") == "" {
+	if k.String("database.name") == "" {
 		err = k.Set("database.name", "kummerkasten")
 	}
 
-	if k.Get("admin.mail") == "" {
+	if k.String("admin.mail") == "" {
 		err = k.Set("admin.mail", "admin@kummerkasten")
 	}
 
