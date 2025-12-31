@@ -8,7 +8,7 @@
     "password": "",
     "host": "",
     "port": "",
-    "name": ""
+    "db": ""
   },
   "system": {
     "domain": "",
