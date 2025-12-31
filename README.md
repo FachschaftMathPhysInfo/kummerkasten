@@ -10,33 +10,15 @@
 
 ## Getting Started
 >[!CAUTION]
-> The software is currently only available in german but we are working on implementing general i8n
+> The software is currently only available in german but we are working on implementing general i8n.
 
 ### Deployment with docker-compose
-The software is best deployed in a dockerized environment. We provide `docker-compose.example.yml` as a plug and play file,
-which can be used to quickly deploy the software via:
+The software is best deployed in a dockerized environment. We provide `docker-compose.example.yml` and `config.example.json`
+as plug and play files, which can be used to quickly deploy the software via:
 ```
 docker compose up -d
 ```
-The example file can be found in `/docs`
-
-## Environment Variables
-
-| Key                 | Description                                                                  | Default | Example           |
-|---------------------|------------------------------------------------------------------------------|---------|-------------------|
-| `POSTGRES_USER`     | User which the database connects with                                        | -       | `kummer`          |
-| `POSTGRES_PASSWORD` | Password of the postgres user                                                | -       | -                 |
-| `POSTGRES_HOST`     | Host of the database, for docker-compose deployments, use the container name | -       | `postgres`        |
-| `POSTGRES_PORT`     | Postgres-DB Port                                                             | -       | `5432`            |
-| `POSTGRES_DB`       | Name of the database                                                         | -       | `kummerkasten`    |
-| `ENV`               | Mode of environment, either `PROD` or `DEV`                                  | `PROD`  | `DEV`             |
-| `PEPPER`            | Optional pepper for password hashing                                         | -       | -                 |
-| `PUBLIC_DOMAIN`     | domain on which the software is deployed                                     | -       | `kummerkasten.de` |
-
->[!CAUTION]
-> Changing the Pepper value after already having users will inevitably corrupt the hashing and make it impossible to authenticate. 
-> Changing it back will fix already existing hashes but will in turn corrupt new ones again.
-
+The example files can be found in `/docs`
 
 ## Development
 ### Frontend
@@ -46,6 +28,7 @@ npm i
 npm run generate
 npm run dev
 ```
+
 ### Backend
 After installing general golang and dependencies run
 

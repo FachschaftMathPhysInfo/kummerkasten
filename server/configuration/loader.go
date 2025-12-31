@@ -34,18 +34,25 @@ func Init() {
 
 func loadConfigurationFromJson() {
 	localConfigPath := "../config.json"
-	containerConfigPath := "/config.json"
+	containerConfigPath := "/app/config.json"
+	foundAnyConfigFile := false
 
 	if _, err := os.Stat(localConfigPath); err == nil {
 		if err := k.Load(file.Provider(localConfigPath), json.Parser()); err != nil {
 			log.Printf("error: %v", err)
 		}
+		foundAnyConfigFile = true
 	}
 
 	if _, err := os.Stat(containerConfigPath); err == nil {
 		if err := k.Load(file.Provider(containerConfigPath), json.Parser()); err != nil {
 			log.Printf("error: %v", err)
 		}
+		foundAnyConfigFile = true
+	}
+
+	if !foundAnyConfigFile {
+		log.Printf("configuration file not found, trying to use default configuration and ENV variables")
 	}
 }
 
