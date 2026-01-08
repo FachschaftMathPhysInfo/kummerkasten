@@ -3,9 +3,10 @@ package auth
 import (
 	"crypto/sha256"
 	"fmt"
+	"log"
+
 	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 )
 
 var envConf = utils.EnvConfig
