@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"log"
 	"time"
 
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -16,11 +16,10 @@ import (
 )
 
 var (
-	envConf = utils.EnvConfig
-	db      *bun.DB
-	sqldb   *sql.DB
-	err     error
-	tables  = []interface{}{
+	db     *bun.DB
+	sqldb  *sql.DB
+	err    error
+	tables = []interface{}{
 		(*models.User)(nil),
 		(*models.Label)(nil),
 		(*models.Setting)(nil),
@@ -38,13 +37,14 @@ const MaxDbPings = 10
 const PingIntervalDBConnection = 5 * time.Second
 
 func Init(ctx context.Context) (*sql.DB, *bun.DB) {
+	config := configuration.Get()
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		envConf.PostgresUser,
-		envConf.PostgresPassword,
-		envConf.PostgresHost,
-		envConf.PostgresPort,
-		envConf.PostgresDB)
+		config.Database.User,
+		config.Database.Password,
+		config.Database.Host,
+		config.Database.Port,
+		config.Database.Name)
 
 	sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 

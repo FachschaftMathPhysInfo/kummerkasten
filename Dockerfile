@@ -13,6 +13,7 @@ WORKDIR /go/src
 COPY server/go.mod server/go.sum ./
 RUN go mod download
 COPY server/ .
+RUN go run github.com/99designs/gqlgen generate
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o graphql-server server.go
 
 

@@ -15,11 +15,11 @@ import (
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/utils"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/middleware"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
-	env "github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -451,13 +451,14 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 		}
 
 		httpResponseWriter := ctx.Value(middleware.WriterKey).(http.ResponseWriter)
+		config := configuration.Get()
 
 		http.SetCookie(httpResponseWriter, &http.Cookie{
 			Name:     "sid",
 			Value:    newSid,
 			Path:     "/",
 			HttpOnly: true,
-			Secure:   env.EnvConfig.Env != "DEV",
+			Secure:   config.System.Mode != "DEV",
 			SameSite: http.SameSiteLaxMode,
 			Expires:  expiresAt,
 		})
@@ -1263,14 +1264,15 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 	}
 
 	httpResponseWriter := ctx.Value(middleware.WriterKey).(http.ResponseWriter)
+	config := configuration.Get()
 
 	http.SetCookie(httpResponseWriter, &http.Cookie{
 		Name:     "sid",
 		Value:    newSid,
 		Path:     "/",
-		Domain:   env.EnvConfig.PublicDomain,
+		Domain:   config.System.Domain,
 		HttpOnly: true,
-		Secure:   env.EnvConfig.Env != "DEV",
+		Secure:   config.System.Mode != "DEV",
 		SameSite: http.SameSiteLaxMode,
 		Expires:  expiresAt,
 	})

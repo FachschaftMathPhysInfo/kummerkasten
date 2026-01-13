@@ -11,6 +11,8 @@ services:
     build: .
     image: kummerkasten:latest
     env_file: .env.local
+    volumes:
+      - ./config.json:/app/config.json
     ports:
       - "8080:8080"
     depends_on:

@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 )
 
-var envConf = utils.EnvConfig
+var config = configuration.Get()
 
 func HashPassword(password string) (string, error) {
-	spicedPassword := password + envConf.Pepper
+	spicedPassword := password + config.System.Pepper
 	hasher := sha256.New()
 	hasher.Write([]byte(spicedPassword))
 	digest := hasher.Sum(nil)
@@ -27,7 +28,7 @@ func HashPassword(password string) (string, error) {
 }
 
 func VerifyPassword(storedHash string, providedPassword string) error {
-	spicedPassword := providedPassword + envConf.Pepper
+	spicedPassword := providedPassword + config.System.Pepper
 	hasher := sha256.New()
 	hasher.Write([]byte(spicedPassword))
 	digest := hasher.Sum(nil)
