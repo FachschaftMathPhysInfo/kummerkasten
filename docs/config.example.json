@@ -1,6 +1,6 @@
 {
   "admin": {
-    "email" : "",
+    "mail" : "",
     "password": ""
   },
   "postgres": {
