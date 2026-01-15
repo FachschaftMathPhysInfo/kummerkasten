@@ -3,12 +3,12 @@
     "mail" : "",
     "password": ""
   },
-  "postgres": {
+  "database": {
     "user": "",
     "password": "",
     "host": "",
     "port": "",
-    "db": ""
+    "name": ""
   },
   "system": {
     "domain": "",
