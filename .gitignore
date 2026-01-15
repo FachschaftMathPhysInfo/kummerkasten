@@ -4,6 +4,7 @@
 /frontend/.pnp.js
 
 # testing
+/config.json
 /coverage
 /frontend/cypress/screenshots/
 

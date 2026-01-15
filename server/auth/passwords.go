@@ -1,36 +1,41 @@
 package auth
 
 import (
-	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 )
 
-var envConf = utils.EnvConfig
+var config = configuration.Get()
 
 func HashPassword(password string) (string, error) {
-	toHash := []byte(password + envConf.Pepper)
-	secretHmac := hmac.New(sha256.New, toHash)
-	secretHmac.Write(toHash)
-	hash, err := bcrypt.GenerateFromPassword(toHash, bcrypt.DefaultCost)
+	spicedPassword := password + config.System.Pepper
+	hasher := sha256.New()
+	hasher.Write([]byte(spicedPassword))
+	digest := hasher.Sum(nil)
+
+	hash, err := bcrypt.GenerateFromPassword(digest, bcrypt.DefaultCost)
 	if err != nil {
-		log.Printf("Failed hashing password")
+		log.Printf("Failed hashing password: %v", err)
 		return "", err
 	}
 
 	return string(hash), nil
 }
 
-func VerifyPassword(storedHash, providedPassword string) error {
-	toHash := []byte(providedPassword + envConf.Pepper)
-	secretHmac := hmac.New(sha256.New, toHash)
-	secretHmac.Write(toHash)
+func VerifyPassword(storedHash string, providedPassword string) error {
+	spicedPassword := providedPassword + config.System.Pepper
+	hasher := sha256.New()
+	hasher.Write([]byte(spicedPassword))
+	digest := hasher.Sum(nil)
 
-	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), toHash); err != nil {
-		return fmt.Errorf("invalid password: %s", err)
+	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), digest); err != nil {
+		return fmt.Errorf("invalid password: %v", err)
 	}
+
 	return nil
 }

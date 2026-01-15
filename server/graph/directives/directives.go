@@ -3,6 +3,7 @@ package directives
 import (
 	"context"
 	"fmt"
+
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/middleware"

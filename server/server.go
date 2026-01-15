@@ -2,9 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
-	"github.com/gorilla/websocket"
-	"github.com/robfig/cron"
 	"log"
 	"net/http"
 	"time"
@@ -13,14 +10,18 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
+	"github.com/gorilla/websocket"
+	"github.com/robfig/cron"
+
+	"net/http/httputil"
+	"net/url"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/cors"
 	"github.com/uptrace/bun"
-	"net/http/httputil"
-	"net/url"
 
-	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/directives"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/maintenance"
@@ -30,7 +31,7 @@ import (
 
 const port = "8080"
 
-var envConf = utils.EnvConfig
+var config configuration.Configuration
 
 var (
 	frontendUrl, _ = url.Parse("http://localhost:3000")
@@ -43,29 +44,29 @@ var (
 )
 
 func main() {
-	if envConf.Env == "DEV" {
+	configuration.Init()
+	config = configuration.Get()
+
+	if config.System.Mode == "DEV" {
 		log.Print("====== WARNING ======")
 		log.Print("Software is starting in DEV mode, which is insecure in production")
 		log.Print("====== ======= ======")
 	}
 
-	log.Print("starting database initialization...")
-	_, DB = db.Init(ctx)
+	initDatabase()
 	initGraphQL()
 	initCors()
-
-	log.Print("setting up cronjobs")
 	initCron()
 	cronjob.Start()
 	defer cronjob.Stop()
 
-	log.Print("starting server")
+	log.Print("starting server...")
 	router := chi.NewRouter()
 	router.Use(c.Handler)
 
 	router.Mount("/api", getAPIRouter())
 
-	if envConf.Env == "DEV" {
+	if config.System.Mode == "DEV" {
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/api"))
 	}
 
@@ -75,7 +76,22 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
+func initDatabase() {
+	log.Print("starting database initialization...")
+	_, DB = db.Init(ctx)
+	log.Print("database initialization completed!")
+
+	log.Print("starting database seeding...")
+	err := db.SeedData(ctx, DB)
+	if err != nil {
+		log.Fatal("seed failed: ", err)
+	}
+
+	log.Print("database seeding completed!")
+}
+
 func initGraphQL() {
+	log.Print("initializing GraphQL resolvers...")
 	resolver = &graph.Resolver{
 		DB: DB,
 	}
@@ -93,45 +109,9 @@ func initGraphQL() {
 	srv.AddTransport(transport.Websocket{})
 	srv.AddTransport(transport.GET{})
 	srv.Use(extension.Introspection{})
-}
-
-func initCors() {
-	var allowedOrigins = []string{envConf.PublicDomain}
-
-	if envConf.Env == "DEV" {
-		allowedOrigins = append(allowedOrigins, "localhost:3000", "localhost:8080")
-	}
-
-	c = cors.New(cors.Options{
-		AllowedOrigins:   allowedOrigins,
-		AllowedHeaders:   []string{"*"},
-		AllowCredentials: true,
-		Debug:            false,
-	})
-}
-
-func initCron() {
-	cronjob = cron.New()
-	if err := cronjob.AddFunc("@hourly", func() {
-		if err := maintenance.ClearExpiredSessions(ctx, resolver); err != nil {
-			log.Printf("failed cronjob: %v", err)
-		}
-	}); err != nil {
-		log.Printf("failed setting up cronjob: %v", err)
-	}
-
-	cronjob.Start()
-	defer cronjob.Stop()
 
 	es := graph.NewExecutableSchema(graph.Config{Resolvers: resolver})
 	srv := handler.New(es)
-
-	log.Printf("Start Seeding!")
-	err := db.SeedData(ctx, DB)
-	if err != nil {
-		log.Fatal("seed failed: ", err)
-	}
-	log.Printf("End Seeding!")
 
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
@@ -146,13 +126,40 @@ func initCron() {
 	})
 	srv.Use(extension.Introspection{})
 
-	if envConf.Env == "DEV" {
-		http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
-		http.Handle("/query", srv)
-
-		log.Printf("Connect to http://localhost:%s/playground for GraphQL playground", port)
-	}
+	log.Print("GraphQL intialization completed!")
 }
+
+func initCors() {
+	log.Print("setting up CORS...")
+	var allowedOrigins = []string{config.System.Domain}
+
+	if config.System.Mode == "DEV" {
+		allowedOrigins = append(allowedOrigins, "localhost:3000", "localhost:8080")
+	}
+
+	c = cors.New(cors.Options{
+		AllowedOrigins:   allowedOrigins,
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            false,
+	})
+	log.Print("CORS set up!")
+}
+
+func initCron() {
+	log.Print("setting up cronjobs...")
+
+	cronjob = cron.New()
+	if err := cronjob.AddFunc("@hourly", func() {
+		if err := maintenance.ClearExpiredSessions(ctx, resolver); err != nil {
+			log.Printf("failed cronjob: %v", err)
+		}
+	}); err != nil {
+		log.Printf("failed setting up cronjob: %v", err)
+	}
+	log.Print("cronjob set up!")
+}
+
 func getAPIRouter() *chi.Mux {
 	api := chi.NewRouter()
 	api.Use(middleware.InjectWriter)
