@@ -100,7 +100,7 @@ export default function TicketPage() {
   }
 
   return (
-    <div className="space-y-6 grow max-w-screen flex flex-col">
+    <div className="space-y-6 grow max-w-screen flex flex-col mb-3">
       <ManagementPageHeader
         title="Tickets"
         description="Bearbeite alle verfügbaren Tickets"
@@ -157,7 +157,7 @@ export default function TicketPage() {
               {getCurrentSemesterTickets(sortedTickets).length > 0 && (
                 <>
                   {getOlderSemesterTickets(sortedTickets).length > 0 && (
-                    <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+                    <div className={'w-full px-10 flex gap-4 items-center my-4'}>
                       <span className={'grow h-0.5 bg-muted-foreground'}/>
                       <p className={'text-muted-foreground'}>Dieses Semester</p>
                       <span className={'grow h-0.5 bg-muted-foreground'}/>
@@ -166,7 +166,7 @@ export default function TicketPage() {
 
                   {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
                       ticket?.id && (
-                        <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
+                        <div key={ticket.id} className="mx-8 my-1" data-cy={`ticket-card-id-${ticket.id}`}>
                           <Link href={`/tickets/${ticket.id}`} passHref>
                             <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
                           </Link>
@@ -178,14 +178,14 @@ export default function TicketPage() {
 
               {getOlderSemesterTickets(sortedTickets).length > 0 && (
                 <>
-                  <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+                  <div className={'w-full px-10 flex gap-4 items-center my-4'}>
                     <span className={'grow h-0.5 bg-muted-foreground'}/>
                     <p className={'text-muted-foreground'}>Frühere Semester</p>
                     <span className={'grow h-0.5 bg-muted-foreground'}/>
                   </div>
                   {getOlderSemesterTickets(sortedTickets).map((ticket) =>
                       ticket?.id && (
-                        <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
+                        <div key={ticket.id} className="mx-8 my-1" data-cy={`ticket-card-id-${ticket.id}`}>
                           <Link href={`/tickets/${ticket.id}`} passHref>
                             <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
                           </Link>
