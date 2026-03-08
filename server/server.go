@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -12,6 +13,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
+
 	"github.com/gorilla/websocket"
 	"github.com/robfig/cron"
 
@@ -47,10 +50,10 @@ func main() {
 	configuration.Init()
 	config = configuration.Get()
 
+	utils.InitLogger()
+
 	if config.System.Mode == "DEV" {
-		log.Print("====== WARNING ======")
-		log.Print("Software is starting in DEV mode, which is insecure in production")
-		log.Print("====== ======= ======")
+		slog.Warn("Software is starting in DEV mode, which is insecure in production")
 	}
 
 	initDatabase()
@@ -60,7 +63,7 @@ func main() {
 	cronjob.Start()
 	defer cronjob.Stop()
 
-	log.Print("starting server...")
+	slog.Info("Starting...")
 	router := chi.NewRouter()
 	router.Use(c.Handler)
 
@@ -72,26 +75,32 @@ func main() {
 
 	router.Handle("/*", httputil.NewSingleHostReverseProxy(frontendUrl))
 
-	log.Printf("Server is ready!")
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	slog.Info("Server is ready!")
+
+	err := http.ListenAndServe(":"+port, router)
+	if err != nil {
+		slog.Error("Server failed to start", "error", err)
+		os.Exit(1)
+	}
 }
 
 func initDatabase() {
-	log.Print("starting database initialization...")
+	slog.Info("starting database initialization...")
 	_, DB = db.Init(ctx)
-	log.Print("database initialization completed!")
+	slog.Info("database initialization completed!")
 
-	log.Print("starting database seeding...")
+	slog.Info("starting database seeding...")
 	err := db.SeedData(ctx, DB)
 	if err != nil {
-		log.Fatal("seed failed: ", err)
+		slog.Error("seed failed: ", err)
+		os.Exit(1)
 	}
 
-	log.Print("database seeding completed!")
+	slog.Info("database seeding completed!")
 }
 
 func initGraphQL() {
-	log.Print("initializing GraphQL resolvers...")
+	slog.Info("initializing GraphQL resolvers...")
 	resolver = &graph.Resolver{
 		DB: DB,
 	}
@@ -126,11 +135,11 @@ func initGraphQL() {
 	})
 	srv.Use(extension.Introspection{})
 
-	log.Print("GraphQL intialization completed!")
+	slog.Info("GraphQL intialization completed!")
 }
 
 func initCors() {
-	log.Print("setting up CORS...")
+	slog.Info("setting up CORS...")
 	var allowedOrigins = []string{config.System.Domain}
 
 	if config.System.Mode == "DEV" {
@@ -143,21 +152,21 @@ func initCors() {
 		AllowCredentials: true,
 		Debug:            false,
 	})
-	log.Print("CORS set up!")
+	slog.Info("CORS set up!")
 }
 
 func initCron() {
-	log.Print("setting up cronjobs...")
+	slog.Info("setting up cronjobs...")
 
 	cronjob = cron.New()
 	if err := cronjob.AddFunc("@hourly", func() {
 		if err := maintenance.ClearExpiredSessions(ctx, resolver); err != nil {
-			log.Printf("failed cronjob: %v", err)
+			slog.Error("cronjob failed", "error", err)
 		}
 	}); err != nil {
-		log.Printf("failed setting up cronjob: %v", err)
+		slog.Error("setting up cronjob failed", "error", err)
 	}
-	log.Print("cronjob set up!")
+	slog.Info("cronjob set up!")
 }
 
 func getAPIRouter() *chi.Mux {

@@ -4,7 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
+	"log/slog"
+	"os"
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
@@ -49,7 +50,9 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 	sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 
 	for i := 0; i < MaxDbPings; i++ {
-		log.Printf("Try %v of %v: Connecting to database...\n", i+1, MaxDbPings)
+		slog.Info("Connecting to database...",
+			"attempt", i+1,
+			" max_attempts", MaxDbPings)
 		err = sqldb.Ping()
 		if err == nil {
 			break
@@ -59,7 +62,8 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 	}
 
 	if err != nil {
-		log.Fatal("Error connecting to database: ", err)
+		slog.Error("Error connecting to database", "error", err)
+		os.Exit(1)
 	}
 
 	db = bun.NewDB(sqldb, pgdialect.New())
@@ -67,16 +71,18 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 	db.RegisterModel((*models.LabelsToTickets)(nil))
 
 	if err := createTables(ctx, tables); err != nil {
-		log.Panic("Failed to create basic tabels: ", err)
+		slog.Error("Failed to create basic tabels", "error", err)
+		panic("Failed to create basic tables")
 	}
 
-	log.Println("Basic Database Tables successfully initialized")
+	slog.Info("Basic Database Tables successfully initialized")
 
 	if err := createTables(ctx, relations); err != nil {
-		log.Panic("Failed to create basic relations: ", err)
+		slog.Error("Failed to create basic relations", "error", err)
+		panic("Failed to create basic relations")
 	}
 
-	log.Println("Basic Database Relations successfully initialized")
+	slog.Info("Basic Database Relations successfully initialized")
 
 	return sqldb, db
 }
