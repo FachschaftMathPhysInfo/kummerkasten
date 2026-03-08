@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"context"
+	"log/slog"
+	"net/http"
+	"time"
+
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
-	"log"
-	"net/http"
-	"time"
 )
 
 func Auth(db *bun.DB) func(http.Handler) http.Handler {
@@ -36,7 +37,7 @@ func Auth(db *bun.DB) func(http.Handler) http.Handler {
 				Where("id = ?", sessionCookie.Value).
 				Set("last_interaction = ?", now).
 				Exec(context.Background()); err != nil {
-				log.Printf("Error updating session: %v", err)
+				slog.Error("Error updating session", "error", err)
 				next.ServeHTTP(w, r)
 			}
 

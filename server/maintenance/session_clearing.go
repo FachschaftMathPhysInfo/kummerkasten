@@ -2,10 +2,11 @@ package maintenance
 
 import (
 	"context"
+	"log/slog"
+	"time"
+
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
-	"log"
-	"time"
 )
 
 func ClearExpiredSessions(ctx context.Context, r *graph.Resolver) error {
@@ -13,7 +14,7 @@ func ClearExpiredSessions(ctx context.Context, r *graph.Resolver) error {
 	if _, err := r.DB.NewDelete().Model((*model.Session)(nil)).
 		Where("expires_at < ?", now).
 		Exec(ctx); err != nil {
-		log.Printf("Error clearing session IDs: %v", err)
+		slog.Error("Error clearing session IDs", "error", err)
 		return err
 	}
 
@@ -21,7 +22,7 @@ func ClearExpiredSessions(ctx context.Context, r *graph.Resolver) error {
 	if _, err := r.DB.NewDelete().Model((*model.Session)(nil)).
 		Where("last_interaction < ?", anHourAgo).
 		Exec(ctx); err != nil {
-		log.Printf("Error clearing session IDs: %v", err)
+		slog.Error("Error clearing session IDs", "error", err)
 		return err
 	}
 

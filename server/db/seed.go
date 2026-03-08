@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
@@ -80,21 +80,21 @@ func seedTestData(ctx context.Context, db *bun.DB) error {
 }
 
 func removeTestUsers(ctx context.Context, db *bun.DB) error {
-	log.Printf("Removing test users...")
+	slog.Info("Removing test users...")
 	if _, err := db.NewDelete().Model((*models.User)(nil)).Where("mail IN (?)", bun.In(testEmails)).Exec(ctx); err != nil {
 		return err
 	}
-	log.Printf("Test users removed!")
+	slog.Info("Test users removed!")
 
 	return nil
 }
 
 func invalidateAllSessions(ctx context.Context, db *bun.DB) error {
-	log.Printf("Invalidating all sessions...")
+	slog.Info("Invalidating all sessions...")
 	if _, err := db.NewTruncateTable().Model((*models.Session)(nil)).Exec(ctx); err != nil {
 		return err
 	}
-	log.Printf("All sessions removed!")
+	slog.Info("All sessions removed!")
 
 	return nil
 }
@@ -109,12 +109,12 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 	exists, err := db.NewSelect().Model((*models.User)(nil)).Where("mail = ?", mail).Exists(ctx)
 
 	if err != nil {
-		log.Printf("Error scanning for admin user: %v", err)
+		slog.Error("Error scanning for admin user", "error", err)
 		return err
 	}
 
 	if exists {
-		log.Printf("Admin user with email %s already exists, skipping creation", mail)
+		slog.Info("Admin user already exists, skipping creation", "mail", mail)
 
 		adminUser := new(models.User)
 
@@ -129,21 +129,21 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		isStoredPasswordCorrectErr := auth.VerifyPassword(adminUser.Password, password)
 
 		if isStoredPasswordCorrectErr != nil {
-			log.Print("New admin password detected, updating user")
+			slog.Info("New admin password detected, updating user")
 
 			_, err := db.NewDelete().Model((*models.Session)(nil)).Where("user_id = ?", adminUser.ID).Exec(ctx)
 
 			if err != nil {
-				log.Printf("error: %v", err)
-				log.Printf("Failed invalidating admin sessions on admin password update")
+				slog.Error(err.Error())
+				slog.Error("Failed invalidating admin sessions on admin password update")
 				return err
 			}
 
 			newPassword, err := auth.HashPassword(password)
 
 			if err != nil {
-				log.Printf("error: %v", err)
-				log.Printf("Failed updating admin password, aborting")
+				slog.Error(err.Error())
+				slog.Error("Failed updating admin password, aborting")
 				return err
 			}
 
@@ -152,12 +152,12 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 			_, err = db.NewUpdate().Model(adminUser).WherePK().Exec(ctx)
 
 			if err != nil {
-				log.Printf("error: %v", err)
-				log.Printf("Failed updating admin password, aborting")
+				slog.Error(err.Error())
+				slog.Error("Failed updating admin password, aborting")
 				return err
 			}
 
-			log.Printf("Admin password updated successfully")
+			slog.Info("Admin password updated successfully")
 		}
 
 		return nil
@@ -182,8 +182,7 @@ func createAdminUser(ctx context.Context, db *bun.DB) error {
 		return fmt.Errorf("failed to create admin user: %w", err)
 	}
 
-	log.Printf("Admin user created with email: %s", mail)
-	log.Printf("Admin user created with password: %s", password)
+	slog.Info("Admin user created", "mail", mail, "passwword", password)
 	return nil
 }
 
@@ -218,7 +217,8 @@ func createSettings(ctx context.Context, db *bun.DB) error {
 		if !existingKeys[s.Key] {
 			toInsert = append(toInsert, s)
 		} else {
-			log.Printf("Skipping seeding for existing setting: %s", s.Key)
+			slog.Info("Skipping seeding for existing setting",
+				"setting_key", s.Key)
 		}
 	}
 
@@ -272,7 +272,7 @@ func seedTestUsers(ctx context.Context, db *bun.DB) error {
 			return err
 		}
 		if exists {
-			log.Printf("Test users already exist, skipping test user seeding")
+			slog.Info("Test users already exist, skipping test user seeding")
 			return nil
 		}
 	}
@@ -346,7 +346,7 @@ func seedTestUsers(ctx context.Context, db *bun.DB) error {
 		return fmt.Errorf("failed to insert test users: %w", err)
 	}
 
-	log.Print("Test users seeded successfully")
+	slog.Info("Test users seeded successfully")
 	return nil
 }
 
@@ -660,7 +660,7 @@ func insertData[T any](ctx context.Context, db *bun.DB, model T, data []T, descr
 		if _, err := db.NewInsert().Model(&data).Exec(ctx); err != nil {
 			return fmt.Errorf("%s: %s", description, err)
 		}
-		log.Printf("%s seeded successfully\n", description)
+		slog.Info(fmt.Sprintf("%s seeded successfully\n", description))
 	}
 	return nil
 }

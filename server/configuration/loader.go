@@ -3,7 +3,7 @@ package configuration
 import (
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -17,6 +17,15 @@ import (
 var (
 	systemConfiguration Configuration
 	k                   = koanf.New(".")
+	validSystemModes    = map[string]bool{
+		"DEV":  true,
+		"PROD": true,
+	}
+	validSystemLogLevels = map[string]bool{
+		"INFO":  true,
+		"WARN":  true,
+		"ERROR": true,
+	}
 )
 
 func Get() Configuration {
@@ -30,6 +39,8 @@ func Init() {
 
 	loadIntoGlobalStruct()
 	validateConfiguration()
+
+	applyLogLevel()
 }
 
 func loadConfigurationFromJson() {
@@ -39,20 +50,20 @@ func loadConfigurationFromJson() {
 
 	if _, err := os.Stat(localConfigPath); err == nil {
 		if err := k.Load(file.Provider(localConfigPath), json.Parser()); err != nil {
-			log.Printf("error: %v", err)
+			slog.Error("Cannot open local config", "path", localConfigPath, "error", err)
 		}
 		foundAnyConfigFile = true
 	}
 
 	if _, err := os.Stat(containerConfigPath); err == nil {
 		if err := k.Load(file.Provider(containerConfigPath), json.Parser()); err != nil {
-			log.Printf("error: %v", err)
+			slog.Error("Cannot open config in container", "path", containerConfigPath, "error", err)
 		}
 		foundAnyConfigFile = true
 	}
 
 	if !foundAnyConfigFile {
-		log.Printf("configuration file not found, trying to use default configuration and ENV variables")
+		slog.Warn("configuration file not found, trying to use default configuration and ENV variables")
 	}
 }
 
@@ -67,7 +78,7 @@ func loadConfigurationFromEnv() {
 			return key, value
 		},
 	}), nil); err != nil {
-		log.Printf("error loading environment variables: %v", err)
+		slog.Error("error loading environment variables", "error", err)
 	}
 
 	if err := k.Load(env.Provider(".", env.Opt{
@@ -77,7 +88,7 @@ func loadConfigurationFromEnv() {
 			return key, value
 		},
 	}), nil); err != nil {
-		log.Printf("error loading environment variables: %v", err)
+		slog.Error("error loading environment variables", "error", err)
 	}
 }
 
@@ -100,6 +111,10 @@ func loadMissingConfigurationValues() {
 		err = k.Set("database.name", "kummerkasten")
 	}
 
+	if !validSystemLogLevels[k.String("system.loglevel")] {
+		err = k.Set("system.loglevel", "INFO")
+	}
+
 	if k.String("admin.mail") == "" {
 		err = k.Set("admin.mail", "admin@kummer.kasten")
 	}
@@ -109,19 +124,21 @@ func loadMissingConfigurationValues() {
 	}
 
 	if err != nil {
-		log.Printf("error loading missing configuration values: %v", err)
+		slog.Error("error loading missing configuration values", "error", err)
 	}
 }
 
 func loadAdminPassword() {
 	if k.Get("system.mode") == "DEV" {
 		if err := k.Set("admin.password", "admin"); err != nil {
-			log.Fatalf("error setting admin password, aborting")
+			slog.Error("error setting admin password, aborting")
+			os.Exit(1)
 		}
 	} else {
 		password, _ := utils.RandString(32)
 		if err := k.Set("admin.password", password); err != nil {
-			log.Fatalf("error setting admin password, aborting")
+			slog.Error("error setting admin password, aborting")
+			os.Exit(1)
 		}
 	}
 
@@ -129,7 +146,7 @@ func loadAdminPassword() {
 
 func loadIntoGlobalStruct() {
 	if err := k.Unmarshal("", &systemConfiguration); err != nil {
-		log.Print("Error loading SystemConfiguration, previous SystemConfiguration will be applied of possible")
+		slog.Warn("Error loading SystemConfiguration, previous SystemConfiguration will be applied if possible")
 	}
 }
 
@@ -144,8 +161,12 @@ func validateConfiguration() {
 		configErrors = append(configErrors, fmt.Errorf("system.domain is required"))
 	}
 
-	if systemConfiguration.System.Mode != "DEV" && systemConfiguration.System.Mode != "PROD" {
+	if !validSystemModes[systemConfiguration.System.Mode] {
 		configErrors = append(configErrors, errors.New("system.mode has to be either 'DEV' or 'PROD'"))
+	}
+
+	if systemConfiguration.System.LogLevel != "" && !validSystemLogLevels[systemConfiguration.System.LogLevel] {
+		configErrors = append(configErrors, errors.New("system.loglevel has to be either unset, 'INFO', 'WARN' or 'ERROR"))
 	}
 
 	if systemConfiguration.Admin.Password == "" {
@@ -153,12 +174,24 @@ func validateConfiguration() {
 	}
 
 	if len(configErrors) > 0 {
-		log.Println("the configration has several errors:")
-		for index, err := range configErrors {
-			log.Println("[", index+1, "] ", err)
+		slog.Error("the configration has several errors:")
+		for _, err := range configErrors {
+			slog.Error(err.Error())
 		}
 
-		log.Fatalf("Software booting aborted due to configuration errors")
+		slog.Error("Software booting aborted due to configuration errors")
+		os.Exit(1)
+	}
+}
+
+func applyLogLevel() {
+	switch systemConfiguration.System.LogLevel {
+	case "INFO":
+		utils.LogLevel.Set(slog.LevelInfo)
+	case "WARN":
+		utils.LogLevel.Set(slog.LevelWarn)
+	case "ERROR":
+		utils.LogLevel.Set(slog.LevelError)
 	}
 }
 
@@ -175,8 +208,9 @@ type Configuration struct {
 		Name     string `koanf:"db"`
 	} `koanf:"database"`
 	System struct {
-		Domain string `koanf:"domain"`
-		Mode   string `koanf:"mode"`
-		Pepper string `koanf:"pepper"`
+		Domain   string `koanf:"domain"`
+		Mode     string `koanf:"mode"`
+		Pepper   string `koanf:"pepper"`
+		LogLevel string `koanf:"loglevel"`
 	} `koanf:"system"`
 }
