@@ -14,7 +14,6 @@ import (
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
-
 	"github.com/gorilla/websocket"
 	"github.com/robfig/cron"
 
@@ -47,10 +46,9 @@ var (
 )
 
 func main() {
+	utils.InitLogger()
 	configuration.Init()
 	config = configuration.Get()
-
-	utils.InitLogger()
 
 	if config.System.Mode == "DEV" {
 		slog.Warn("Software is starting in DEV mode, which is insecure in production")

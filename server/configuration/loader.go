@@ -21,6 +21,11 @@ var (
 		"DEV":  true,
 		"PROD": true,
 	}
+	validSystemLogLevels = map[string]bool{
+		"INFO":  true,
+		"WARN":  true,
+		"ERROR": true,
+	}
 )
 
 func Get() Configuration {
@@ -34,6 +39,8 @@ func Init() {
 
 	loadIntoGlobalStruct()
 	validateConfiguration()
+
+	applyLogLevel()
 }
 
 func loadConfigurationFromJson() {
@@ -104,6 +111,10 @@ func loadMissingConfigurationValues() {
 		err = k.Set("database.name", "kummerkasten")
 	}
 
+	if !validSystemLogLevels[k.String("system.loglevel")] {
+		err = k.Set("system.loglevel", "INFO")
+	}
+
 	if k.String("admin.mail") == "" {
 		err = k.Set("admin.mail", "admin@kummer.kasten")
 	}
@@ -154,6 +165,10 @@ func validateConfiguration() {
 		configErrors = append(configErrors, errors.New("system.mode has to be either 'DEV' or 'PROD'"))
 	}
 
+	if systemConfiguration.System.LogLevel != "" && !validSystemLogLevels[systemConfiguration.System.LogLevel] {
+		configErrors = append(configErrors, errors.New("system.loglevel has to be either unset, 'INFO', 'WARN' or 'ERROR"))
+	}
+
 	if systemConfiguration.Admin.Password == "" {
 		configErrors = append(configErrors, fmt.Errorf("admin.password is empty, please set a password"))
 	}
@@ -166,6 +181,17 @@ func validateConfiguration() {
 
 		slog.Error("Software booting aborted due to configuration errors")
 		os.Exit(1)
+	}
+}
+
+func applyLogLevel() {
+	switch systemConfiguration.System.LogLevel {
+	case "INFO":
+		utils.LogLevel.Set(slog.LevelInfo)
+	case "WARN":
+		utils.LogLevel.Set(slog.LevelWarn)
+	case "ERROR":
+		utils.LogLevel.Set(slog.LevelError)
 	}
 }
 
@@ -182,8 +208,9 @@ type Configuration struct {
 		Name     string `koanf:"db"`
 	} `koanf:"database"`
 	System struct {
-		Domain string `koanf:"domain"`
-		Mode   string `koanf:"mode"`
-		Pepper string `koanf:"pepper"`
+		Domain   string `koanf:"domain"`
+		Mode     string `koanf:"mode"`
+		Pepper   string `koanf:"pepper"`
+		LogLevel string `koanf:"loglevel"`
 	} `koanf:"system"`
 }

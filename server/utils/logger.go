@@ -5,9 +5,13 @@ import (
 	"os"
 )
 
-var logger *slog.Logger
+var LogLevel = &slog.LevelVar{}
 
 func InitLogger() {
-	logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
+	handlerOptions := &slog.HandlerOptions{
+		Level: LogLevel,
+	}
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, handlerOptions))
 	slog.SetDefault(logger)
 }
