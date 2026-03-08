@@ -17,6 +17,10 @@ import (
 var (
 	systemConfiguration Configuration
 	k                   = koanf.New(".")
+	validSystemModes    = map[string]bool{
+		"DEV":  true,
+		"PROD": true,
+	}
 )
 
 func Get() Configuration {
@@ -146,7 +150,7 @@ func validateConfiguration() {
 		configErrors = append(configErrors, fmt.Errorf("system.domain is required"))
 	}
 
-	if systemConfiguration.System.Mode != "DEV" && systemConfiguration.System.Mode != "PROD" {
+	if !validSystemModes[systemConfiguration.System.Mode] {
 		configErrors = append(configErrors, errors.New("system.mode has to be either 'DEV' or 'PROD'"))
 	}
 
