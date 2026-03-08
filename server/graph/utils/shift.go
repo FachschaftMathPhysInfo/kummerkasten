@@ -18,7 +18,7 @@ func Indices(ctx context.Context, db *bun.DB, newIndex int32, id string) error {
 	}
 
 	if len(qaps) == 0 {
-		slog.Error("QuestionAnswerPair with id %v not found", id)
+		slog.Error("QuestionAnswerPair not found", "id", id)
 		return fmt.Errorf("QuestionAnswerPair with id %v not found", id)
 	}
 

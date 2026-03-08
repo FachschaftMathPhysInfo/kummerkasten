@@ -92,7 +92,7 @@ func initDatabase() {
 	slog.Info("starting database seeding...")
 	err := db.SeedData(ctx, DB)
 	if err != nil {
-		slog.Error("seed failed: ", err)
+		slog.Error("seed failed", "error", err)
 		os.Exit(1)
 	}
 
