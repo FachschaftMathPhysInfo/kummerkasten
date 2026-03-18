@@ -14,6 +14,7 @@ import {
 import {getClient} from "@/lib/graph/client";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
 import {compareStringSets} from "@/lib/utils";
+import {parseAsBoolean, parseAsIsoDate, parseAsStringLiteral, useQueryState} from "nuqs";
 
 
 export type TicketSorting = {
@@ -22,6 +23,7 @@ export type TicketSorting = {
 }
 
 export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
+const sortOrderValues = ['Erstellt', 'Geändert', "Titel"] as const
 
 export type TicketFiltering = {
   searchTerm: string;
@@ -55,6 +57,13 @@ export function TicketsProvider({children}: { children: ReactNode }) {
   const [filtering, setFiltering] = useState(defaultTicketFiltering);
   const [stateFilterSet, setStateFilterSet] = useState(false)
   const [areFiltersSet, setAreFiltersSet] = useState(false)
+
+  const [searchUrlQuery, setSearchUrlQuery] = useQueryState('q');
+  const [fromUrlQuery, setFromUrlQuery] = useQueryState('from', parseAsIsoDate);
+  const [toUrlQuery, setToUrlQuery] = useQueryState('to', parseAsIsoDate);
+  const [orderUrlQuery, setOrderUrlQuery] = useQueryState('desc', parseAsBoolean);
+  const [sortUrlQuery, setSortUrlQuery] = useQueryState('s', parseAsStringLiteral(sortOrderValues).withDefault("Geändert"));
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -91,6 +100,43 @@ export function TicketsProvider({children}: { children: ReactNode }) {
       !!filtering.endDate
     )
   }, [stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
+
+  useEffect(() => {
+    if (initialized) return
+
+    setFiltering(prevState => ({
+      ...prevState,
+      searchTerm: searchUrlQuery ?? "",
+      startDate: fromUrlQuery ? new Date(fromUrlQuery) : null,
+      endDate: toUrlQuery ? new Date(toUrlQuery) : null,
+    }))
+
+    setSorting({
+      field: sortUrlQuery as TicketSortingField,
+      orderAscending: orderUrlQuery ? !orderUrlQuery : true,
+    })
+
+    setInitialized(true);
+  }, [fromUrlQuery, initialized, searchUrlQuery, toUrlQuery, orderUrlQuery, sortUrlQuery])
+
+  useEffect(() => {
+    if (filtering.searchTerm === "") {
+      void setSearchUrlQuery(null)
+    } else {
+      void setSearchUrlQuery(filtering.searchTerm);
+    }
+  }, [filtering.searchTerm, setSearchUrlQuery])
+
+  useEffect(() => { void setFromUrlQuery(filtering.startDate) }, [filtering.startDate, setFromUrlQuery]);
+
+  useEffect(() => { void setToUrlQuery(filtering.endDate) }, [filtering.endDate, setToUrlQuery]);
+
+  useEffect(() => {
+    if (sorting.orderAscending) void setOrderUrlQuery(null)
+    else void setOrderUrlQuery(true)
+  }, [setOrderUrlQuery, sorting.orderAscending]);
+
+  useEffect(() => {void setSortUrlQuery(sorting.field)}, [setSortUrlQuery, sorting.field]);
 
   function triggerTicketRefetch() {
     setRefetchKey(!refetchKey);
