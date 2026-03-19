@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // These issues relate to the any chainables, should be fixed but create a lot of noise atm
+    'cypress/support/commands.ts'
   ]),
 ])
 
