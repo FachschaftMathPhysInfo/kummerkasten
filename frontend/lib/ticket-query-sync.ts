@@ -39,8 +39,19 @@ export function useTicketUrlSync(
     void setSearchUrlQuery(filtering.searchTerm || null);
   }, [filtering.searchTerm, setSearchUrlQuery]);
 
-  useEffect(() => { void setFromUrlQuery(filtering.startDate); }, [filtering.startDate, setFromUrlQuery]);
-  useEffect(() => { void setToUrlQuery(filtering.endDate); }, [filtering.endDate, setToUrlQuery]);
+  useEffect(() => {
+    const startDate = filtering.startDate
+    // else it is 00:00 and gets reset to the day before when removing the timezone (if its not UTM)
+    if (startDate) startDate.setHours(11, 55)
+    void setFromUrlQuery(filtering.startDate);
+    }, [filtering.startDate, setFromUrlQuery]);
+
+  useEffect(() => {
+    const endDate = filtering.endDate;
+    // else it is 00:00 and gets reset to the day before when removing the timezone (if its not UTM)
+    if (endDate) endDate.setHours(11, 55)
+    void setToUrlQuery(endDate);
+    }, [filtering.endDate, setToUrlQuery]);
 
   useEffect(() => {
     void setOrderUrlQuery(sorting.orderAscending ? null : true);
