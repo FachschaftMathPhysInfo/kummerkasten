@@ -90,9 +90,9 @@ roles.forEach(role => {
           })
 
           context('Status Field', () => {
-            it('show tickets with states new or open as default', () => {
+            it.only('show tickets with states new or open as default', () => {
               cy.getTicketsByStateNewOrOpen().then((tickets) => {
-                tickets.forEach((ticket: any) => {
+                tickets.forEach((ticket: Ticket) => {
                   ticketPage.getTicketCard(ticket.id).should('exist').and('be.visible');
                 });
                 cy.get('[data-cy^="ticket-card-id"]').should('have.length', tickets.length);
@@ -569,7 +569,7 @@ roles.forEach(role => {
             cy.url().should('not.contain', `?to=`)
           })
 
-          it.only('resets the sortfield if its "modified', () => {
+          it('resets the sortfield if its "modified', () => {
             filterBar.getSortingSelectionSortButton().click()
             filterBar.getSortingSelectionSortField("Titel").click()
             filterBar.getSortingSelectionSortField("Geändert").click()
@@ -577,7 +577,7 @@ roles.forEach(role => {
             cy.url().should('not.contain', `?s=`)
           })
 
-          it.only('syncs the sorting order to the url', () => {
+          it('syncs the sorting order to the url', () => {
             const field: TicketSortingField = 'Titel'
             filterBar.getSortingSelectionSortButton().click()
             filterBar.getSortingSelectionSortField(field).click()

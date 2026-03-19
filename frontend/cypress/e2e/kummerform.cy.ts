@@ -2,12 +2,13 @@ import * as kummerform from "../pages/kummerform.po";
 import users from "../fixtures/users.json";
 import kummerformstrings from "../fixtures/kummerform.json";
 import * as tickets from "../pages/tickets/ticket-overview.po"
+import {Label, QuestionAnswerPair} from "@/lib/graph/generated/graphql";
 
 describe("Kummerform Page", () => {
-  let formLabels: any[] = [];
-  let qaps: any[] = [];
-  let testTitle = "testtitle";
-  let testText = "testext";
+  let formLabels: Label[] = [];
+  let qaps: QuestionAnswerPair[] = [];
+  const testTitle = "testtitle";
+  const testText = "testext";
 
   beforeEach(() => {
     cy.getFormLabels().then((fetchedFormLabels) => {

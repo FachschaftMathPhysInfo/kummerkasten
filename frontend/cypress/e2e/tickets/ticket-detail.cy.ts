@@ -3,7 +3,7 @@ import * as ticketInfoPane from "../../pages/tickets/ticket-info-pane.po";
 import * as ticketLabelArea from "../../pages/tickets/ticket-label-area.po";
 import * as ticketStatusArea from "../../pages/tickets/ticket-status-area.po";
 import * as confirmationDialog from "../../pages/confirmation-dialog.po";
-import {Label, TicketState, UserRole} from "../../../lib/graph/generated/graphql";
+import {Label, UserRole} from "../../../lib/graph/generated/graphql";
 
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
@@ -13,7 +13,6 @@ roles.forEach(role => {
     let labels: Label[] = [];
     let ticketId: string;
     let originalTitle: string;
-    let originalState: TicketState;
 
     context(`${role} Tests`, () => {
       beforeEach(() => {
@@ -25,7 +24,6 @@ roles.forEach(role => {
         }).then((id) => {
           ticketId = id;
           originalTitle = "Initial Test Title";
-          originalState = TicketState.New;
           cy.visit(`/tickets/${ticketId}`);
         });
         cy.getAllLabels().then((fetchedLabels) => {
