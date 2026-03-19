@@ -14,6 +14,7 @@ import {
 import {getClient} from "@/lib/graph/client";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
 import {compareStringSets} from "@/lib/utils";
+import {useTicketUrlSync} from "@/lib/ticket-query-sync";
 
 
 export type TicketSorting = {
@@ -21,7 +22,8 @@ export type TicketSorting = {
   orderAscending: boolean
 }
 
-export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
+export const SORT_FIELDS = ["Erstellt", "Geändert", "Titel"] as const;
+export type TicketSortingField = (typeof SORT_FIELDS)[number];
 
 export type TicketFiltering = {
   searchTerm: string;
@@ -92,10 +94,13 @@ export function TicketsProvider({children}: { children: ReactNode }) {
     )
   }, [stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
 
+  // This may also be set in the single components, thus letting us use <Suspense> more conservatively.
+  // Issues with preloading pages should be checked someday with bigger instances
+  useTicketUrlSync(filtering, setFiltering, sorting, setSorting)
+
   function triggerTicketRefetch() {
     setRefetchKey(!refetchKey);
   }
-
 
   async function updateTicket(id: string, ticket: UpdateTicket) {
     const client = getClient()
