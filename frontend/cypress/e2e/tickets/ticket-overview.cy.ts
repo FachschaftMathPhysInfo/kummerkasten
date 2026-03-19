@@ -2,6 +2,7 @@ import * as ticketPage from "../../pages/tickets/ticket-overview.po";
 import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "../../pages/tickets/ticket-overview.po";
 import * as filterBar from "../../pages/tickets/filter-bar.po";
 import {Label, Ticket, TicketState, UserRole} from "../../../lib/graph/generated/graphql";
+import {TicketSortingField} from "@/components/providers/ticket-provider";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
@@ -526,6 +527,23 @@ roles.forEach(role => {
             cy.url().should('contain', `?to=${expectedDate}`)
           })
 
+          it('syncs the sortfield values to the url', () => {
+            const field: TicketSortingField = 'Titel'
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField(field).click()
+
+            cy.url().should('contain', `?s=${field}`)
+          })
+
+          it('syncs the sorting order to the url', () => {
+            const field: TicketSortingField = 'Titel'
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField(field).click()
+            filterBar.getSortingSelectionSortField(field).click()
+
+            cy.url().should('contain', `desc=true`)
+          })
+
           it('resets the searchquery if the searchbar is empty', () => {
             const query = "Testing this"
             ticketPage.getDesktopSearchTextInput().clear().type(query)
@@ -550,6 +568,25 @@ roles.forEach(role => {
 
             cy.url().should('not.contain', `?to=`)
           })
+
+          it.only('resets the sortfield if its "modified', () => {
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField("Titel").click()
+            filterBar.getSortingSelectionSortField("Geändert").click()
+
+            cy.url().should('not.contain', `?s=`)
+          })
+
+          it.only('syncs the sorting order to the url', () => {
+            const field: TicketSortingField = 'Titel'
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField(field).click()
+            filterBar.getSortingSelectionSortField(field).click()
+            filterBar.getSortingSelectionSortField(field).click()
+
+            cy.url().should('not.contain', `?desc=`)
+          })
+
         })
       })
     })

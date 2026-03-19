@@ -58,7 +58,8 @@ export function useTicketUrlSync(
   }, [sorting.orderAscending, setOrderUrlQuery]);
 
   useEffect(() => {
-    void setSortUrlQuery(sorting.field);
+    if (sorting.field === "Geändert") void setSortUrlQuery(null)
+    else void setSortUrlQuery(sorting.field);
   }, [sorting.field, setSortUrlQuery]);
 
   return { initialized };
