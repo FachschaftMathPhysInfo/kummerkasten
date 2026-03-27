@@ -1,8 +1,8 @@
 "use client"
 
-import React, {useEffect, useState} from "react";
+import React, {useMemo} from "react";
 import {Card, CardTitle} from "@/components/ui/card";
-import {Label, Ticket, TicketState, UserRole} from "@/lib/graph/generated/graphql";
+import {TicketState, UserRole} from "@/lib/graph/generated/graphql";
 import {Link, MoreHorizontal, MoreVertical, Trash2} from "lucide-react";
 import {Badge} from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
@@ -28,15 +28,15 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
   const {isMobile} = useSidebar()
   const {user} = useUser();
   const {tickets} = useTickets();
-  const [ticket, setTicket] = useState<Ticket>();
-  const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
 
+  const ticket = useMemo(() => {
+    return tickets.find(t => t.id === ticketID)
+    }, [ticketID, tickets]);
 
-  useEffect(() => {
-    const currentTicket = tickets.find(t => t.id === ticketID);
-    setTicket(currentTicket);
-    setTicketLabels(currentTicket?.labels ?? [])
-  }, [ticketID, tickets]);
+  const ticketLabels = useMemo(() => {
+    return ticket?.labels ?? []
+  }, [ticket]);
+
 
   const copyTicketUrl = async () => {
     try {
