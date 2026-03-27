@@ -1,0 +1,37 @@
+{
+  "KummerkastenPage": {
+    "header": "Kummerkasten",
+    "AboutSection" : {
+      "header": "Was ist der Kummerkasten?"
+    },
+    "FormUi": {
+      "header": "Deine anonyme Nachricht",
+      "labels": "Worum geht es in deinem Feedback",
+      "title": "Titel",
+      "text": "Feedback",
+      "submit": "Absenden",
+      "toast": {
+        "fetchFailure": "Das Formular konnte nicht fertig geladen werden. Versuche es später erneut",
+        "sendFailure": "Beim Senden des Feedbacks ist ein Fehler aufgetreten.",
+        "sendSuccess": "Feedback wurde erfolgreich gesendet"
+      },
+      "inputErrors": {
+        "labels": {
+          "empty": "Bitte wähle mindestens ein Label aus."
+        },
+        "title" : {
+          "empty": "Die Zusammenfassung darf nicht leer sein.",
+          "long": "Die Zusammenfassung ist zu lang."
+        },
+        "text": {
+          "empty": "Die Nachricht darf nicht leer sein.",
+          "long": "Die Nachricht ist zu lang"
+        }
+      }
+    },
+    "FaqSection": {
+      "header": "Häufig gestellte Fragen",
+      "noFaqs": "Keine FAQs verfügbar."
+    }
+  }
+}

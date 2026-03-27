@@ -6,9 +6,11 @@ import FormUi from './form-ui';
 import Image from 'next/image';
 import ThemeSwitch from "@/components/theme-switch";
 import {useTheme} from "next-themes";
+import {useTranslations} from "use-intl";
 
 export default function KummerkastenPage() {
   const {resolvedTheme} = useTheme();
+  const t = useTranslations("KummerkastenPage")
 
   return (
     <main className={'min-h-screen w-full relative'}>
@@ -30,7 +32,7 @@ export default function KummerkastenPage() {
           <h1
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground"
           >
-            Kummerkasten
+            {t("header")}
           </h1>
         </div>
 

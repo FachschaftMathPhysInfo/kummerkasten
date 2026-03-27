@@ -10,6 +10,7 @@ import {Footer} from "@/components/footer";
 import {ThemeProvider} from "@/components/providers/theme-provider";
 import ServerSidebar from "@/components/sidebar/server-sidebar";
 import {NuqsAdapter} from "nuqs/adapters/next/app";
+import {NextIntlClientProvider} from "next-intl";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,15 +46,17 @@ export default function UserLayout({
         disableTransitionOnChange
       >
         <UserProvider>
-          <SidebarProvider>
-            <ServerSidebar/>
-            <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
-              <ClientSidebarTrigger/>
-              {children}
-              <Footer/>
-            </main>
-            <Toaster richColors/>
-          </SidebarProvider>
+          <NextIntlClientProvider>
+            <SidebarProvider>
+              <ServerSidebar/>
+              <main className={'w-full h-full flex flex-col justify-between min-h-screen'}>
+                <ClientSidebarTrigger/>
+                {children}
+                <Footer/>
+              </main>
+              <Toaster richColors/>
+            </SidebarProvider>
+          </NextIntlClientProvider>
         </UserProvider>
       </ThemeProvider>
     </NuqsAdapter>

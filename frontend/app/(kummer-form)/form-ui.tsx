@@ -22,20 +22,25 @@ import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
 import {defaultLabel} from "@/lib/graph/defaultTypes";
+import {useTranslations} from "use-intl";
 
 const TITLE_MAX_LENGTH = 70
 const TEXT_MAX_LENGTH = 3000
 
-const formUiSchema = z.object({
-  labels: z.array(z.string())
-    .nonempty({error: "Bitte wähle mindestens ein Label aus."}),
-  title: z.string().nonempty({error: "Die Zusammenfassung darf nicht leer sein."})
-    .max(TITLE_MAX_LENGTH, "Die Zusammenfassung ist zu lang."),
-  text: z.string().nonempty({error: "Die Nachricht darf nicht leer sein."})
-    .max(TEXT_MAX_LENGTH, "Die Nachricht ist zu lang"),
-});
+
 
 export default function FormUi() {
+  const t = useTranslations("KummerkastenPage.FormUi")
+
+  const formUiSchema = z.object({
+    labels: z.array(z.string())
+      .nonempty({error: t("inputErrors.labels.empty")}),
+    title: z.string().nonempty({error: t("inputErrors.title.empty")})
+      .max(TITLE_MAX_LENGTH, t("inputErrors.title.long")),
+    text: z.string().nonempty({error: t("inputErrors.text.empty")})
+      .max(TEXT_MAX_LENGTH, t("inputErrors.text.long")),
+  });
+
   const form = useForm<z.infer<typeof formUiSchema>>({
     resolver: zodResolver(formUiSchema),
     defaultValues: {
@@ -64,15 +69,14 @@ export default function FormUi() {
         setFormLabels(filteredLabels);
 
       } catch (err) {
-        console.error("Failed to fetch form labels:", err);
-        toast.error("Das Formular konnte nicht fertig geladen werden. Versuche es später erneut");
+        toast.error(t("toast.fetchError"));
       } finally {
         setIsLabelsLoading(false);
       }
     };
 
     void fetchPublicLabels();
-  }, [form]);
+  }, [form, t]);
 
   async function onValidSubmit(data: z.infer<typeof formUiSchema>) {
     setLoading(true);
@@ -86,11 +90,11 @@ export default function FormUi() {
 
     try {
       await client.request<CreateTicketMutation>(CreateTicketDocument, {ticket: newTicket});
-      toast.success("Feedback wurde erfolgreich gesendet");
+      toast.success(t("toast.sendSuccess"));
       setHasTriedToSubmit(false);
       form.reset();
     } catch (error) {
-      toast.error("Beim Senden des Feedbacks ist ein Fehler aufgetreten.");
+      toast.error(t("toast.sendError"));
       console.error(error);
     }
     setLoading(false);
@@ -98,7 +102,7 @@ export default function FormUi() {
 
   return (
     <div className="w-full max-w-4xl rounded-lg p-6 my-4 border">
-      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Deine anonyme Nachricht</h2>
+      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">{t("header")}</h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onValidSubmit, () =>
@@ -112,7 +116,7 @@ export default function FormUi() {
             render={() => (
               <FormItem>
                 <FormLabel className={cn('data-[error=true]:text-destructive text-lg ')}>
-                  Worum geht es in deinem Feedback?
+                  {t("labels")}
                 </FormLabel>
                 {isLabelsLoading &&
                   <div className="flex items-center justify-center">
@@ -173,7 +177,7 @@ export default function FormUi() {
             render={({field}) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">Titel</FormLabel>
+                  <FormLabel className="text-lg">{t("title")}</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     field.value.length > TITLE_MAX_LENGTH && "text-destructive"
@@ -200,7 +204,7 @@ export default function FormUi() {
             render={({field}) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">Feedback</FormLabel>
+                  <FormLabel className="text-lg">{t("text")}</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     field.value.length > TEXT_MAX_LENGTH && "text-destructive"
@@ -233,7 +237,7 @@ export default function FormUi() {
             ) : (
               <>
                 <Send/>
-                Absenden
+                {t("submit")}
               </>
             )}
           </Button>

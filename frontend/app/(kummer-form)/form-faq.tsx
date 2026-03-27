@@ -5,11 +5,13 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from "@/c
 import {LoaderCircle} from "lucide-react";
 import {getClient} from "@/lib/graph/client";
 import {AllQuestionAnswerPairDocument, QuestionAnswerPair} from "@/lib/graph/generated/graphql";
+import {useTranslations} from "use-intl";
 
 
 export default function FaqSection() {
   const [faqs, setFaqs] = useState<QuestionAnswerPair[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const t = useTranslations("KummerkastenPage.FaqSection")
 
   useEffect(() => {
     const fetchFaqs = async () => {
@@ -33,7 +35,7 @@ export default function FaqSection() {
 
   return (
     <section className="w-full max-w-4xl mx-auto p-6 my-4 bg-kummerkasten-highlight-bg rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Häufig gestellte Fragen</h2>
+      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">{t("header")}</h2>
       {loading && (
         <div className="flex justify-center items-center py-8">
           <LoaderCircle className="animate-spin h-8 w-8 text-foreground"/>
@@ -54,7 +56,7 @@ export default function FaqSection() {
         </Accordion>
       ) : (
         <div className="text-center text-foreground py-8" data-cy={'kummerform-faq-empty'}>
-          Keine FAQs verfügbar.
+          {t("noFaqs")}
         </div>
       )}
     </section>
