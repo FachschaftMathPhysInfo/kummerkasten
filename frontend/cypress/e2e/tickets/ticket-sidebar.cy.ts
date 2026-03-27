@@ -108,7 +108,7 @@ roles.forEach(role => {
       context(`Status Field`, () => {
         it('show tickets with states new or open as default', () => {
           cy.getTicketsByStateNewOrOpen().then((tickets) => {
-            tickets.forEach((ticket: any) => {
+            tickets.forEach((ticket: Ticket) => {
               ticketSidebar.getTicketCard(ticket.id).should('exist').and('be.visible');
             });
             cy.get('[data-cy^="ticket-card-id"]').should('have.length', tickets.length);

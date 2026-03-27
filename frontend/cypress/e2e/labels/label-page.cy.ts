@@ -113,7 +113,7 @@ describe('Label Management Page Tests', () => {
 
         context('Sorting', () => {
           it('sorts names ascending by default', () => {
-            let names: string[] = []
+            const names: string[] = []
             page.getLabelRows().should("have.length.at.least", 2)
             page.getNameCells()
               .each(($el) => names.push($el.text()))
@@ -126,7 +126,7 @@ describe('Label Management Page Tests', () => {
           })
 
           it('sorts names descending', () => {
-            let names: string[] = []
+            const names: string[] = []
             page.getLabelRows().should("have.length.at.least", 2)
             page.getNameHeader().click()
             page.getNameCells()

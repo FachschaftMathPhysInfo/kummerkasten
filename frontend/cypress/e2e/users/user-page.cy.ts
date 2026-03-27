@@ -50,7 +50,7 @@ describe('User Management Page Tests', () => {
 
   context('User Table - Sorting', () => {
     it('sorts lastnames ascending by default', () => {
-      let names: string[] = []
+      const names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getLastnameCells()
         .each(($el) => names.push($el.text()))
@@ -61,7 +61,7 @@ describe('User Management Page Tests', () => {
     })
 
     it('sorts lastnames descending', () => {
-      let names: string[] = []
+      const names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getLastnameHeader().click()
       page.getLastnameCells()
@@ -73,7 +73,7 @@ describe('User Management Page Tests', () => {
     })
 
     it('sorts firstnames ascending', () => {
-      let names: string[] = []
+      const names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getFirstnameHeader().click()
       page.getFirstnameCells()
@@ -85,7 +85,7 @@ describe('User Management Page Tests', () => {
     })
 
     it('sorts firstnames descending', () => {
-      let names: string[] = []
+      const names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getFirstnameHeader().click()
       page.getFirstnameHeader().click()
@@ -98,7 +98,7 @@ describe('User Management Page Tests', () => {
     })
 
     it('sorts mails ascending', () => {
-      let names: string[] = []
+      const names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getMailHeader().click()
       page.getMailCells()
@@ -110,7 +110,7 @@ describe('User Management Page Tests', () => {
     })
 
     it('sorts mails descending', () => {
-      let names: string[] = []
+      const names: string[] = []
       page.getUserRows().should("have.length.at.least", 2)
       page.getMailHeader().click()
       page.getMailHeader().click()
