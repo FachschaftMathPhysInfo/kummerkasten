@@ -13,27 +13,30 @@ import {Button} from "@/components/ui/button";
 import {BookText, Loader2, RotateCcw, Save} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "use-intl";
 
 export const ABOUT_SECTION_TEXT_KEY = "ABOUT_SECTION_TEXT";
 const MAX_ABOUT_TEXT_LENGTH = 2000;
 
-const aboutSectionSchema = z.object({
-  aboutText: z
-    .string()
-    .min(1, "Bitte gib einen Text ein")
-    .max(
-      MAX_ABOUT_TEXT_LENGTH,
-      `Der Text darf maximal ${MAX_ABOUT_TEXT_LENGTH} Zeichen lang sein`
-    ),
-});
-
-type AboutSectionFormData = z.infer<typeof aboutSectionSchema>;
 
 export default function AboutSectionForm() {
+  const t = useTranslations("Setting.QAPManagementPage.AboutSectionForm")
   const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
+
+  const aboutSectionSchema = z.object({
+    aboutText: z
+      .string()
+      .nonempty(t("inputErrors.text.empty"))
+      .max(
+        MAX_ABOUT_TEXT_LENGTH,
+        t("inputErrors.text.long", {length: MAX_ABOUT_TEXT_LENGTH}),
+      ),
+  });
+
+  type AboutSectionFormData = z.infer<typeof aboutSectionSchema>;
 
   const form = useForm<AboutSectionFormData>({
     resolver: zodResolver(aboutSectionSchema),
@@ -47,7 +50,7 @@ export default function AboutSectionForm() {
     try {
       const data = await client.request(AboutSectionSettingsDocument);
       if (!data?.aboutSectionSettings) {
-        toast.error("Fehler beim Laden der About-Section");
+        toast.error(t("toast.loadingError"));
         setIsLoading(false);
         return;
       }
@@ -60,12 +63,11 @@ export default function AboutSectionForm() {
       });
 
       setIsLoading(false);
-    } catch (error) {
-      toast.error("Fehler beim Laden der About-Section");
-      console.error(error);
+    } catch {
+      toast.error(t("toast.loadingError"));
       setIsLoading(false);
     }
-  }, [form]);
+  }, [form, t]);
 
   useEffect(() => {
     void fetchAboutSection();
@@ -76,7 +78,7 @@ export default function AboutSectionForm() {
     const client = getClient();
 
     if (!user) {
-      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      toast.error(t("toast.loadingError"));
       setIsSaving(false);
       return;
     }
@@ -84,11 +86,11 @@ export default function AboutSectionForm() {
     try {
       await client.request(UpdateAboutSectionTextDocument, {text: data.aboutText});
 
-      toast.success("About-Section erfolgreich aktualisiert");
+      toast.success(t("toast.updateSuccess"));
       await fetchAboutSection();
     } catch (err) {
       console.error(err);
-      toast.error("Ein Fehler beim Speichern ist aufgetreten");
+      toast.error(t("toast.updateFailure"));
     } finally {
       setIsSaving(false);
     }
@@ -103,7 +105,7 @@ export default function AboutSectionForm() {
         )}
       >
         <Loader2 className="animate-spin w-6 h-6"/>
-        Lade About-Section...
+        {t("loading")}
       </div>
       <FormProvider {...form}>
         <form
@@ -115,7 +117,7 @@ export default function AboutSectionForm() {
           <div className="flex items-center gap-2 mb-2">
             <BookText className="w-6 h-6 mx-1 my-1"/>
             <span className="text-lg font-semibold text-foreground-muted">
-              About-Text
+              {t("aboutText.header")}
             </span>
           </div>
           <FormField
@@ -125,7 +127,7 @@ export default function AboutSectionForm() {
               <FormItem>
                 <div className="flex justify-between items-center">
                   <FormLabel className="text-sm font-semibold text-foreground-muted">
-                    Beschreibe, wofür der Kummerkasten da ist.
+                    {t("aboutText.description")}
                   </FormLabel>
                   <span
                     className={cn(
@@ -140,7 +142,7 @@ export default function AboutSectionForm() {
 
                 <FormControl>
                   <Textarea
-                    placeholder="Gib eine Beschreibung für den Kummerkasten an"
+                    placeholder={t("aboutText.placeholder")}
                     rows={4}
                     maxLength={MAX_ABOUT_TEXT_LENGTH}
                     className={cn(
@@ -166,7 +168,7 @@ export default function AboutSectionForm() {
               data-cy={'about-cancel-button'}
             >
               <RotateCcw/>
-              Abbrechen
+              {t("cancel")}
             </Button>
 
             <Button
@@ -183,7 +185,7 @@ export default function AboutSectionForm() {
                 <Loader2 className="animate-spin"/>
               ) : (
                 <>
-                  <Save/> Speichern
+                  <Save/> {t("submit")}
                 </>
               )}
             </Button>

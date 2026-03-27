@@ -8,6 +8,7 @@ import {QAPTableDialogState} from "@/app/(settings)/faq/faq-table";
 import React from "react";
 import {useSidebar} from "@/components/ui/sidebar";
 import {useUser} from "@/components/providers/user-provider";
+import {useTranslations} from "use-intl";
 
 interface QAPColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<QAPTableDialogState>>;
@@ -16,7 +17,7 @@ interface QAPColumnProps {
 export default function QAPColumns({
                                      setDialogState
                                    }: QAPColumnProps): ColumnDef<QuestionAnswerPair>[] {
-
+  const t = useTranslations("Setting.QAPManagementPage.QAPColumns")
   const {isMobile} = useSidebar()
   const {user} = useUser()
 
@@ -40,7 +41,7 @@ export default function QAPColumns({
     },
     {
       accessorKey: "question",
-      header: "Frage",
+      header: t("question"),
       cell: ({getValue}) => (
         <div className="break-words">
           {getValue() as string}
@@ -49,7 +50,7 @@ export default function QAPColumns({
     },
     {
       accessorKey: "answer",
-      header: "Antwort",
+      header: t("answer"),
       cell: ({getValue}) => (
         <div className="break-words flex-2">
           {getValue() as string}

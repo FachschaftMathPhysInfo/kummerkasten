@@ -143,6 +143,79 @@
           "updateSuccess": "Footer Links wurden erfolgreich aktualisiert"
         }
       }
+    },
+    "QAPManagementPage": {
+      "header": "FAQs",
+      "description": "Verwalte die Informationen zum Kummerkasten-Formular",
+      "QAPTable": {
+        "createButton": "Frage erstellen",
+        "searchbar": {
+          "placeholder": "Frage oder Antwort durchsuchen..."
+        },
+        "noResults": "Keine FAQs gefunden.",
+        "deleteConfirmation": "`Dies wird die Frage \"{question}\" unwiderruflich löschen.`",
+        "toast": {
+          "error": "Ein Fehler ist aufgetreten",
+          "deleteSucces": "QAP wurde erfolgreich gelöscht",
+          "deleteFailure": "Fehler beim Löschen der Frage",
+          "updatePositionFailure": "Fehler beim Aktualisieren der Positionen"
+        }
+      },
+      "QAPColumns": {
+        "question": "Frage",
+        "answer": "Answer"
+      },
+      "QAPDialog": {
+        "createQuestion": "Frage erstellen",
+        "editQuestion": "Frage bearbeiten"
+      },
+      "FaqForm": {
+        "question": "Frage",
+        "answer": "Frage",
+        "position": "Position",
+        "cancel": "Abbrechen",
+        "update": "Speichern",
+        "create": "Erstellen",
+        "toast": {
+          "error": "Ein Fehler ist aufgetreten",
+          "creationError": "Beim Erstellen ist ein Fehler aufgetreten",
+          "updateError": "Beim Aktualisieren des FAQ ist ein Fehler aufgetreten"
+        },
+        "inputErrors": {
+          "question": {
+            "empty": "Bitte gib eine Frage an"
+          },
+          "answer": {
+            "empty": "Bitte gib eine Antwort an"
+          },
+          "position": {
+            "format": "Bitte gib eine ganze Zahl an",
+            "minimum": "Bitte gib einen Wert über 0 an"
+          }
+        }
+      },
+      "AboutSectionForm": {
+        "aboutText": {
+          "header": "About-Text",
+          "description": "Beschreibe, wofür der Kummerkasten da ist.",
+          "placeholder": "Gib eine Beschreibung für den Kummerkasten an"
+        },
+        "cancel": "Abbrechen",
+        "submit": "Speichern",
+        "loading": "Lade About-Section...",
+        "toast": {
+          "loginError": "Ein Fehler ist aufgetreten, melde dich erneut an",
+          "loadingError": "Fehler beim Laden der About-Section",
+          "updateFailure": "About-Section erfolgreich aktualisiert",
+          "updateSuccess": "Ein Fehler beim Speichern ist aufgetreten"
+        },
+        "inputError": {
+          "text": {
+            "empty": "Bitte gib einen Text ein",
+            "long": "Der Text darf maximal \"{length}\" Zeichen lang sein"
+          }
+        }
+      }
     }
   }
 }
