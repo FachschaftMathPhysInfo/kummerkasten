@@ -77,7 +77,7 @@ export default function TicketPage() {
       ...prevState,
       orderAscending: true
     }))
-  }, [sorting.field]);
+  }, [setSorting, sorting.field]);
 
   function resetDialogState() {
     setDialogState({mode: null, currentTicket: null})

@@ -3,7 +3,7 @@
 import {Label, Ticket} from "@/lib/graph/generated/graphql";
 import {PageLoader} from "@/components/page-loader";
 import {useSidebar} from "@/components/ui/sidebar";
-import React, {Dispatch, useEffect} from "react";
+import React, {Dispatch} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
 import {Button} from "@/components/ui/button";
@@ -31,8 +31,6 @@ export default function TicketDetailView({
   const [editMode, setEditMode] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "")
 
-  useEffect(() => setNewTitle(ticket?.title ?? ""), [ticket?.title])
-
   async function handleTitleChange() {
     if (ticket?.title === newTitle || !ticket) return
 
@@ -40,7 +38,6 @@ export default function TicketDetailView({
 
     if (!error) {
       setEditMode(false)
-      ticket.title = newTitle
     } else {
       toast.error("Beim Aktualisieren des Titels ist ein Fehler aufgetreten")
     }
@@ -85,7 +82,7 @@ export default function TicketDetailView({
               title={"Original Titel: " + ticket.originalTitle}
               data-cy={'ticket-detail-title'}
             >
-              {ticket.title}
+              {newTitle}
             </h1>
           )}
 
