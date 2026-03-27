@@ -26,18 +26,15 @@ const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({children}: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [sid, setSid] = useState<string | undefined>();
-  const [refetchKey, setRefetchKey] = useState<boolean>(false);
   const router = useRouter();
 
-
-  const fetchSID = useCallback(async () => {
-    const sid = await getSID();
-    setSid(sid);
-  }, [])
-
   const fetchUser = useCallback(async () => {
-    if (!sid) return
+    const sid = await getSID();
+
+    if (!sid) {
+      setUser(null);
+      return null;
+    }
 
     const client = getClient();
     const data = await client.request<LoginCheckQuery>(LoginCheckDocument, {sid: sid})
@@ -47,20 +44,14 @@ export function UserProvider({children}: { children: ReactNode }) {
       ...prevState,
       ...data.loginCheck
     }))
-  }, [sid])
+  }, [])
 
-  // fetch sid
   useEffect(() => {
-    void fetchSID()
-  }, [fetchSID]);
-
-  // fetch user
-  useEffect(() => {
-    void fetchUser();
-  }, [sid, fetchUser, refetchKey]);
+    (async () => await fetchUser())();
+  }, [fetchUser])
 
   const triggerUserRefetch = () => {
-    setRefetchKey(!refetchKey)
+    (async () => await fetchUser())();
   }
 
   const login = async (mail: string, password: string): Promise<boolean | null> => {
@@ -72,7 +63,7 @@ export function UserProvider({children}: { children: ReactNode }) {
       )
 
       if (response.login) {
-        await fetchSID()
+        await fetchUser();
         return true
       } else {
         return false
@@ -85,6 +76,8 @@ export function UserProvider({children}: { children: ReactNode }) {
   }
 
   const logout = async () => {
+    const sid = await getSID();
+
     if (!sid) return
     const client = getClient();
     await client.request<LogoutMutation>(LogoutDocument, {sid: sid})
