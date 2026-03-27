@@ -28,6 +28,7 @@ import {Button} from "@/components/ui/button";
 import {PlusCircle} from "lucide-react";
 import UserDialog from "@/app/(settings)/users/user-dialog";
 import {ResetPasswordDialog} from "@/app/(settings)/users/reset-password-dialog";
+import {useTranslations} from "use-intl";
 
 interface DataTableProps {
   data: TableUser[];
@@ -48,6 +49,7 @@ export type UserTableDialogState = {
 }
 
 export function UserTable(props: DataTableProps) {
+  const t = useTranslations("Settings.UserManagementPage.UserTable")
   const [dialogState, setDialogState] = useState<UserTableDialogState>({mode: null, currentUser: null});
   const columns = UserColumns({setDialogState});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -80,55 +82,49 @@ export function UserTable(props: DataTableProps) {
 
   async function handlePromote() {
     if (!dialogState.currentUser) {
-      toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
-      console.error("failed to promote user: user not provided")
+      toast.error(t("toast.promotionFailure"))
       return
     }
 
     try {
       await client.request<PromoteMutation>(PromoteDocument, {id: dialogState.currentUser.id})
-      toast.success("User wurde erfolgreich zum Admin gemacht")
+      toast.success(t("toast.promotionSuccess"))
       resetDiallogState()
       props.refreshData()
-    } catch (error) {
-      toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
-      console.error(error)
+    } catch {
+      toast.error(t("toast.promotionFailure"))
     }
   }
 
   async function handleDemote() {
     if (!dialogState.currentUser) {
-      toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
-      console.error("failed to demote user: user not provided")
+      toast.error(t("toast.demoteFailure"))
       return
     }
 
     try {
       await client.request<DemoteMutation>(DemoteDocument, {id: dialogState.currentUser.id})
-      toast.success("User wurde erfolgreich zu User gemacht")
+      toast.success(t("toast.demoteSuccess"))
       setDialogState({mode: null, currentUser: null})
       props.refreshData()
-    } catch (error) {
-      toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
-      console.error(error)
+    } catch {
+      toast.error(t("toast.demoteFailure"))
     }
   }
 
   async function handleDelete() {
     if (!dialogState.currentUser) {
-      toast.error("Ein Fehler beim Löschen des Users ist aufgetreten")
-      console.error("failed to delete user: user not provided")
+      toast.error(t("toast.deleteFailure"))
       return
     }
 
     try {
       await client.request<DeleteUsersMutation>(DeleteUsersDocument, {ids: [dialogState.currentUser.id]})
-      toast.success("User wurde erfolgreich gelöscht")
+      toast.success(t("toast.deleteSuccess"))
       resetDiallogState()
       props.refreshData()
-    } catch (error) {
-      toast.error("Ein Fehler beim Löschen des Users ist aufgetreten")
-      console.error(error)
+    } catch {
+      toast.error(t("toast.deleteFailure"))
     }
   }
 
@@ -143,12 +139,12 @@ export function UserTable(props: DataTableProps) {
           }}
         >
           <PlusCircle/>
-          User erstellen
+          {t("create")}
         </Button>
 
         <Input
           data-cy={'user-searchbar'}
-          placeholder="Nachnamen filtern..."
+          placeholder={t("searchbar.placeholder")}
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(searchKey)?.setFilterValue(event.target.value)
@@ -203,7 +199,7 @@ export function UserTable(props: DataTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Keine Ergebnisse.
+                  {t("noResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -225,7 +221,11 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} zum Admin machen`}
+        description={t("confirmation.promote",
+          {
+            firstname: dialogState.currentUser?.firstname ?? "",
+            lastname: dialogState.currentUser?.lastname ?? "",
+          })}
         onConfirm={handlePromote}
         isOpen={dialogState.mode === "promote"}
         closeDialog={resetDiallogState}
@@ -233,7 +233,11 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} zum normalen User machen`}
+        description={t("confirmation.demote",
+          {
+            firstname: dialogState.currentUser?.firstname ?? "",
+            lastname: dialogState.currentUser?.lastname ?? "",
+          })}
         onConfirm={handleDemote}
         isOpen={dialogState.mode === "demote"}
         closeDialog={resetDiallogState}
@@ -241,7 +245,11 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} unwiderruflich löschen`}
+        description={t("confirmation.delete",
+          {
+            firstname: dialogState.currentUser?.firstname ?? "",
+            lastname: dialogState.currentUser?.lastname ?? "",
+          })}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDiallogState}

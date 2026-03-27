@@ -12,39 +12,41 @@ import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/compon
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "use-intl";
 
 interface UserFormProps {
   closeDialog: () => void
   refreshData: () => void
 }
 
-const passwordSchema = z.string()
-  .min(12, "Passwort muss mindestens 12 Zeichen lang sein")
-  .refine((val) => /[a-z]/.test(val), {
-    message: "Passwort muss mindestens einen Kleinbuchstaben enthalten",
-  })
-  .refine((val) => /[A-Z]/.test(val), {
-    message: "Passwort muss mindestens einen Großbuchstaben enthalten",
-  })
-  .refine((val) => /[0-9]/.test(val), {
-    message: "Passwort muss mindestens eine Zahl enthalten",
-  })
-  .refine((val) => /[^A-Za-z0-9]/.test(val), {
-    message: "Passwort muss mindestens ein Sonderzeichen enthalten",
+export default function UserForm(props: UserFormProps) {
+  const t = useTranslations("Settings.UserManagementPage.UserForm")
+  const passwordSchema = z.string()
+    .min(12, t("inputErrors.password.short"))
+    .refine((val) => /[a-z]/.test(val), {
+      message: t("inputErrors.password.lowercase"),
+    })
+    .refine((val) => /[A-Z]/.test(val), {
+      message: t("inputErrors.password.uppercase")
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: t("inputErrors.password.number"),
+    })
+    .refine((val) => /[^A-Za-z0-9]/.test(val), {
+      message: t("inputErrors.password.special"),
+    });
+
+  const userFormSchema = z.object({
+    firstname: z.string().min(2, {error: t("inputErrors.firstname.short")}),
+    lastname: z.string().min(2, {error: "inputErrors.lastname.short"}),
+    mail: z.email({error: t("inputErrors.email.format")}),
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: t("inputErrors.confirmPassword.identical"),
   });
 
-const userFormSchema = z.object({
-  firstname: z.string().min(2, {error: "Bitte verwende mindestens 2 Zeichen"}),
-  lastname: z.string().min(2, {error: "Bitte verwende mindestens 2 Zeichen"}),
-  mail: z.email({error: "Bitte gib ein gültiges Format an"}),
-  password: passwordSchema,
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  path: ["confirmPassword"],
-  message: "Passwörter stimmen nicht überein",
-});
-
-export default function UserForm(props: UserFormProps) {
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -88,7 +90,7 @@ export default function UserForm(props: UserFormProps) {
     setLoading(true)
 
     if (await testIfMailExists(data.mail)) {
-      form.setError('mail', {message: 'Diese E-Mail-Adresse wird bereits verwendet'})
+      form.setError('mail', {message: t("inputErrors.email.unique")})
       return
     }
 
@@ -103,13 +105,12 @@ export default function UserForm(props: UserFormProps) {
 
     try {
       await client.request<CreateUserMutation>(CreateUserDocument, {user: newUser})
-      toast.success("User wurde erfolgreich erstellt")
+      toast.success(t("toast.createSuccess"))
       setHasTriedToSubmit(false)
       props.refreshData()
       props.closeDialog()
-    } catch (error) {
-      toast.error("Beim Erstellen des Users ist ein Fehler aufgetreten");
-      console.error(error)
+    } catch {
+      toast.error(t("toast.createFailure"));
     }
     setLoading(false)
   }
@@ -139,9 +140,9 @@ export default function UserForm(props: UserFormProps) {
           name="firstname"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>Vorname</FormLabel>
+              <FormLabel>{t("firstname.label")}</FormLabel>
               <FormControl>
-                <Input placeholder={"Maxi"} {...field} data-cy={'firstname-input'}/>
+                <Input placeholder={t("firstname.placeholder")} {...field} data-cy={'firstname-input'}/>
               </FormControl>
               <FormMessage data-cy={'firstname-input-message'}/>
             </FormItem>
@@ -153,9 +154,9 @@ export default function UserForm(props: UserFormProps) {
           name="lastname"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>Nachname</FormLabel>
+              <FormLabel>{t("lastname.label")}</FormLabel>
               <FormControl>
-                <Input placeholder={"Musterperson"} {...field} data-cy={'lastname-input'}/>
+                <Input placeholder={t("lastname.placeholder")} {...field} data-cy={'lastname-input'}/>
               </FormControl>
               <FormMessage data-cy={'lastname-input-message'}/>
             </FormItem>
@@ -167,9 +168,9 @@ export default function UserForm(props: UserFormProps) {
           name="mail"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>E-Mail</FormLabel>
+              <FormLabel>{t("email.label")}</FormLabel>
               <FormControl>
-                <Input placeholder={"maxi.musterperson@mail.de"} {...field} data-cy={'mail-input'}/>
+                <Input placeholder={t("email.placeholder")} {...field} data-cy={'mail-input'}/>
               </FormControl>
               <FormMessage data-cy={'mail-input-message'}/>
             </FormItem>
@@ -181,9 +182,9 @@ export default function UserForm(props: UserFormProps) {
           name="password"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>Passwort</FormLabel>
+              <FormLabel>{t("password.label")}</FormLabel>
               <FormControl>
-                <Input placeholder={"Passwort"} type={"password"} {...field} data-cy={'password-input'}/>
+                <Input placeholder={t("password.placeholder")} type={"password"} {...field} data-cy={'password-input'}/>
               </FormControl>
               <FormMessage data-cy={'password-input-message'}/>
             </FormItem>
@@ -197,7 +198,7 @@ export default function UserForm(props: UserFormProps) {
             <FormItem className={"flex-grow"}>
               <FormControl>
                 <Input
-                  placeholder={"Passwort bestätigen"}
+                  placeholder={t("confirmPassword.placeholder")}
                   type={"password"}
                   {...field}
                   className={cn(form.getFieldState('password').invalid && 'border-destructive')}
@@ -217,7 +218,7 @@ export default function UserForm(props: UserFormProps) {
             className={"flex-grow-[0.5]"}
             data-cy={'cancel-button'}
           >
-            Abbrechen
+            {t("cancel")}
           </Button>
 
           <Button
@@ -231,7 +232,7 @@ export default function UserForm(props: UserFormProps) {
             ) : (
               <PlusCircle/>
             )}
-            Erstellen
+            {t("submit")}
           </Button>
         </div>
       </form>
