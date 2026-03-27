@@ -14,23 +14,24 @@ import {Button} from "@/components/ui/button";
 import {ExternalLink, Loader2, RotateCcw, Save} from "lucide-react";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "use-intl";
 
 export const FOOTER_CONTACT_LINK_KEY = "FOOTER_CONTACT_LINK"
 export const FOOTER_LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE_LINK"
 
-const footerSettingsScheme = z.object({
-  contactLink: z.url({error: 'Bitte gib eine gültige URL an'}),
-  legalNoticeLink: z.url({error: 'Bitte gib eine gültige URL an'}),
-});
-
-type FooterSettingsFormData = z.infer<typeof footerSettingsScheme>;
-
 export default function FooterForm() {
+  const t = useTranslations("Settings.AppPage.FooterForm")
   const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
 
+  const footerSettingsScheme = z.object({
+    contactLink: z.url({error: t("inputErrors.urlFormat")}),
+    legalNoticeLink: z.url({error: t("inputErrors.urlFormat")}),
+  });
+
+  type FooterSettingsFormData = z.infer<typeof footerSettingsScheme>;
   const form = useForm<z.infer<typeof footerSettingsScheme>>({
     resolver: zodResolver(footerSettingsScheme),
     defaultValues: {
@@ -46,7 +47,7 @@ export default function FooterForm() {
     try {
       const data = await client.request(FooterSettingsDocument);
       if (!data.footerSettings) {
-        toast.error('Fehler beim Laden der Einstellungen')
+        toast.error(t("toast.fetchError"))
         return;
       }
 
@@ -56,11 +57,10 @@ export default function FooterForm() {
       });
 
       setIsLoading(false);
-    } catch (error) {
-      toast.error("Fehler beim Laden der Einstellungen");
-      console.error(error);
+    } catch  {
+      toast.error(t("toast.fetchError"));
     }
-  }, [form, user]);
+  }, [form, t, user]);
 
   useEffect(() => {
     void fetchFooterSettings();
@@ -71,7 +71,7 @@ export default function FooterForm() {
     const client = getClient();
 
     if (!user) {
-      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      toast.error(t("toast.loginError"));
       return;
     }
 
@@ -82,10 +82,10 @@ export default function FooterForm() {
       await client.request(UpdateSettingDocument, {setting: legalNoticeSetting})
 
       setIsSaving(false);
-      toast.success('Footer Links wurden erfolgreich aktualisiert')
+      toast.success(t("toast.updateSuccess"))
       await fetchFooterSettings();
     } catch {
-      toast.error('Ein Fehler beim Speichern der Einstellungen ist aufgetreten')
+      toast.error(t("toast.updateFailure"))
     } finally {
       setIsSaving(false);
     }
@@ -94,7 +94,7 @@ export default function FooterForm() {
   return (
     <Card className={'w-full'}>
       <CardHeader className={'flex items-center gap-2'}>
-        <ExternalLink/> Footer
+        <ExternalLink/> {t("header")}
       </CardHeader>
       <CardContent className={'relative'}>
         <div
@@ -104,7 +104,7 @@ export default function FooterForm() {
           )}
         >
           <Loader2 className={'animate-spin'}/>
-          Lade Einstellungen
+          {t("loading")}
         </div>
         <Form {...form}>
           <form
@@ -116,9 +116,9 @@ export default function FooterForm() {
               name="contactLink"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>Kontakt-Link</FormLabel>
+                  <FormLabel>{t("contact.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"https://..."} {...field} data-cy={'footer-contact-input'}/>
+                    <Input placeholder={t("contact.placeholder")} {...field} data-cy={'footer-contact-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'footer-contact-input-message'}/>
                 </FormItem>
@@ -130,9 +130,9 @@ export default function FooterForm() {
               name="legalNoticeLink"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>Impressum-Link</FormLabel>
+                  <FormLabel>{t("legalNotice.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"https://..."} {...field} data-cy={'footer-legalnotice-input'}/>
+                    <Input placeholder={t("legalNotice.placeholder")} {...field} data-cy={'footer-legalnotice-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'footer-legalnotice-input-message'}/>
                 </FormItem>
@@ -149,7 +149,7 @@ export default function FooterForm() {
                 data-cy={'footer-cancel-button'}
               >
                 <RotateCcw/>
-                Abbrechen
+                {t("cancel")}
               </Button>
 
               <Button
@@ -163,7 +163,7 @@ export default function FooterForm() {
                 ) : (
                   <>
                     <Save/>
-                    Speichern
+                    {t("submit")}
                   </>
                 )}
               </Button>

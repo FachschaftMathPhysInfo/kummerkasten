@@ -116,6 +116,33 @@
           }
         }
       }
+    },
+    "AppPage": {
+      "header": "App Einstellungen",
+      "description": "Bearbeite hier generelle App Einstellungen",
+      "FooterForm": {
+        "header": "Footer",
+        "loading": "Lade Einstellungen",
+        "contact": {
+          "label": "Kontakt-Link",
+          "placeholder": "https://..."
+        },
+        "legalNotice": {
+          "label": "Impressum",
+          "placeholder": "https://..."
+        },
+        "cancel": "Abbrechen",
+        "submit": "Speichern",
+        "toast": {
+          "fetchError": "Fehler beim Laden der Einstellungen"
+        },
+        "inputErrors": {
+          "urlFormat": "Bitte gib eine gültige URL an",
+          "loginError": "Ein Fehler ist aufgetreten, melde dich erneut an",
+          "updateFailure": "Ein Fehler beim Speichern der Einstellungen ist aufgetreten",
+          "updateSuccess": "Footer Links wurden erfolgreich aktualisiert"
+        }
+      }
     }
   }
 }
