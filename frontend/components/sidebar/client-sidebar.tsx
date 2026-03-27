@@ -25,7 +25,7 @@ import { useUser } from "@/components/providers/user-provider";
 import { UserRole } from "@/lib/graph/generated/graphql";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import {useEffect, useRef} from "react";
 import { clsx } from "clsx";
 import Link from "next/link";
 
@@ -147,14 +147,21 @@ export function ClientSidebarTrigger() {
 }
 
 function SidebarThemeSwitch() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useRef(false);
   const { resolvedTheme, theme, setTheme } = useTheme();
+
   useEffect(() => {
-    setMounted(true);
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
   }, []);
+
   if (!mounted) {
     return null;
   }
+
   return (
     <SidebarMenuButton
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
