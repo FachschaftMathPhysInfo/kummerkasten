@@ -28,7 +28,6 @@ const TITLE_MAX_LENGTH = 70
 const TEXT_MAX_LENGTH = 3000
 
 
-
 export default function FormUi() {
   const t = useTranslations("KummerkastenPage.FormUi")
 
@@ -68,7 +67,7 @@ export default function FormUi() {
 
         setFormLabels(filteredLabels);
 
-      } catch (err) {
+      } catch {
         toast.error(t("toast.fetchError"));
       } finally {
         setIsLabelsLoading(false);

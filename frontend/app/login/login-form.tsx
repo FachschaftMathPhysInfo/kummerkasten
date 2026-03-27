@@ -13,15 +13,17 @@ import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {cn} from "@/lib/utils";
 import PasswordInput from "@/components/password-input";
-
-
-const loginFormSchema = z.object({
-  mail: z.email("Bitte gib eine gültige E-Mail an."),
-  password: z.string("Bitte gib ein Passwort an."),
-});
+import {useTranslations} from "use-intl";
 
 
 export default function LoginForm() {
+  const t = useTranslations("LoginPage.LoginForm")
+
+  const loginFormSchema = z.object({
+    mail: z.email(t("inputErrors.mail.format")),
+    password: z.string(t("inputErrors.password.empty")),
+  });
+
   const router = useRouter();
   const {login} = useUser()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
@@ -51,7 +53,7 @@ export default function LoginForm() {
     const ok = await login(userData.mail, userData.password)
 
     if (ok === null) {
-      toast.error("Fehler beim Anmelden")
+      toast.error(t("toast.loginError"))
       return
     }
 
@@ -80,12 +82,12 @@ export default function LoginForm() {
           name="mail"
           render={({field}) => (
             <FormItem className={'flex-grow'}>
-              <FormLabel hidden>E-Mail</FormLabel>
+              <FormLabel hidden>{t("mail")}</FormLabel>
               <FormControl>
                 {/*Injected Icons by password managers will trigger a warning*/}
                 <Input
                   suppressHydrationWarning
-                  placeholder={'E-Mail'}
+                  placeholder={t("mail")}
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}
                   onChange={(e) => handleInputChange(field, e.target.value)}
@@ -102,10 +104,10 @@ export default function LoginForm() {
           name="password"
           render={({field}) => (
             <FormItem>
-              <FormLabel hidden>Password</FormLabel>
+              <FormLabel hidden>{t("password")}</FormLabel>
               <FormControl>
                 <PasswordInput
-                  placeholder={'Passwort'}
+                  placeholder={t("password")}
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}
                   onChange={(e) => handleInputChange(field, e.target.value)}
@@ -133,8 +135,7 @@ export default function LoginForm() {
             ) : (
               <LogIn/>
             )}
-
-            Anmelden
+            {t("submit")}
           </Button>
         </div>
       </form>

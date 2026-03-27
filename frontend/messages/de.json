@@ -33,5 +33,24 @@
       "header": "Häufig gestellte Fragen",
       "noFaqs": "Keine FAQs verfügbar."
     }
+  },
+  "LoginPage": {
+    "header": "Anmelden",
+    "LoginForm": {
+      "mail": "E-Mail",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "toast": {
+        "loginError": "Fehler beim Anmelden"
+      },
+      "inputErrors": {
+        "mail": {
+          "format": "Bitte gib eine gültige E-Mail an."
+        },
+        "password": {
+          "empty": "Bitte gib ein Passwort an."
+        }
+      }
+    }
   }
 }
