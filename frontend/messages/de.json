@@ -52,5 +52,70 @@
         }
       }
     }
+  },
+  "Settings": {
+    "AccountPage": {
+      "header": "Mein Account",
+      "description": "Bearbeite deine persönlichen Einstellungen",
+      "PasswordDataForm": {
+        "header": "Sicherheit",
+        "currentPassword": "Aktuelles Passwort",
+        "newPassword": "Neues Passwort",
+        "confirmPassword": {
+          "placeholder": "Wiederhole dein neues Passwort"
+        },
+        "toast": {
+          "loginError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an",
+          "changeSuccess": "Passwort aktualisiert. Du wirst jetzt ausgeloggt",
+          "changeFailure": "Fehler beim Aktualisieren der Daten"
+        },
+        "inputErrors": {
+          "currentPassword": {
+            "empty": "Bitte gib dein aktuelles Passwort ein",
+            "wrong": "Falsches aktuelles Passwort"
+          },
+          "newPassword": {
+            "short": "Mindestens 8 Zeichen",
+            "capital": "Mindestens 8 Zeichen",
+            "number": "Mindestens eine Zahl",
+            "special": "Mindestens ein Sonderzeichen.",
+            "notChanged": "Neues Passwort darf nicht dem alten entsprechen"
+          },
+          "confirmPassword": {
+            "match": "Passwörter stimmen nicht überein"
+          }
+        }
+      },
+      "AccountDataForm": {
+        "header": "Account",
+        "firstname": "Vorname",
+        "lastname": "Nachname",
+        "email": {
+          "label": "E-Mail",
+          "placeholder": "max.muster@example.de"
+        },
+        "toast": {
+          "loginError": "Ein Fehler ist aufgetreten, melde dich erneut an",
+          "emailCheckError": "Fehler beim Überprüfen der E-Mail-Adresse",
+          "updateSucces": "Dein Account wurde erfolgreich aktualisiert",
+          "updateFailure": "Ein Fehler beim Aktualisieren der Daten ist aufgetreten",
+          "confirmError": "Ein Fehler ist aufgetreten"
+        },
+        "inputErrors": {
+          "firstName": {
+            "empty": "Vorname ist erforderlich",
+            "long": "Maximale Länge beträgt 50 Charaktere"
+          },
+          "lastName": {
+            "empty": "Nachname ist erforderlich",
+            "long": "Maximale Länge beträgt 50 Charaktere"
+          },
+          "email": {
+            "format": "Ungültige E-Mail-Adresse",
+            "alreadyUsed": "Diese E-Mail-Adresse wird bereits verwendet"
+          }
+        }
+      }
+    }
   }
 }

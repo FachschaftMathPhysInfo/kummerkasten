@@ -18,20 +18,13 @@ import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
 import PasswordDialog from "@/components/dialogs/password-dialog";
+import {useTranslations} from "use-intl";
 
 const MAX_NAME_LENGTH = 50;
 
-const accountDataSchema = z.object({
-  firstname: z.string().nonempty("Vorname ist erforderlich")
-    .max(MAX_NAME_LENGTH, "Maximale Länge beträgt 50 Charaktere"),
-  lastname: z.string().nonempty("Nachname ist erforderlich")
-    .max(MAX_NAME_LENGTH, "Maximale Länge beträgt 50 Charaktere"),
-  mail: z.email("Ungültige E-Mail-Adresse"),
-});
-
-type AccountDataFormData = z.infer<typeof accountDataSchema>;
 
 export default function AccountDataForm() {
+  const t = useTranslations("Settings.AccountPage.AccountDataForm")
   const {user} = useUser()
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +32,15 @@ export default function AccountDataForm() {
   const [pendingUserData, setPendingUserData] = useState<AccountDataFormData>();
   const [passwordInputOpen, setPasswordInputOpen] = useState(false);
 
+  const accountDataSchema = z.object({
+    firstname: z.string().nonempty(t("inputErrors.firstname.empty"))
+      .max(MAX_NAME_LENGTH, t("inputErrors.firstname.long")),
+    lastname: z.string().nonempty(t("inputErrors.lastname.empty"))
+      .max(MAX_NAME_LENGTH, t("inputErrors.lastname.long")),
+    mail: z.email(t("inputErrors.email.format")),
+  });
+
+  type AccountDataFormData = z.infer<typeof accountDataSchema>;
   const form = useForm<AccountDataFormData>({
     resolver: zodResolver(accountDataSchema),
     defaultValues: {
@@ -67,7 +69,7 @@ export default function AccountDataForm() {
     setIsSavingAccount(true);
 
     if (!user) {
-      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      toast.error(t("toast.loginError"));
       return;
     }
 
@@ -79,7 +81,7 @@ export default function AccountDataForm() {
 
         if (emailUsedByOtherUser) {
           form.setError("mail", {
-            message: "Diese E-Mail-Adresse wird bereits verwendet",
+            message: t("inputErrors.email.inUse"),
           });
           return;
         }
@@ -87,7 +89,7 @@ export default function AccountDataForm() {
         setPendingUserData(userData)
         setPasswordInputOpen(true);
       } catch (error) {
-        toast.error("Fehler beim Überprüfen der E-Mail-Adresse");
+        toast.error(t("toast.emailCheckError"));
         console.error(error);
       } finally {
         setIsSavingAccount(false)
@@ -99,7 +101,7 @@ export default function AccountDataForm() {
 
   async function updateProfileData(data: AccountDataFormData) {
     if (!user || !data) {
-      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      toast.error(t("toast.loginError"));
       return;
     }
 
@@ -125,12 +127,12 @@ export default function AccountDataForm() {
         mail: data.mail,
       });
 
-      toast.success("Dein Account wurde erfolgreich aktualisiert")
+      toast.success(t("toast.loginSuccess"));
       setHasTriedToSubmit(false);
 
       if (data.mail !== user.mail) window.location.reload()
     } catch (error) {
-      toast.error("Ein Fehler beim Aktualisieren der Daten ist aufgetreten");
+      toast.error(t("toast.loginError"));
       console.error(error);
     } finally {
       setIsSavingAccount(false);
@@ -149,7 +151,7 @@ export default function AccountDataForm() {
 
           <SettingsBlock
             icon={<User/>}
-            title={"Account"}
+            title={t("header")}
             hasTriedToSubmit={hasTriedToSubmit}
             isDirty={form.formState.isDirty}
             isSaving={isSavingAccount}
@@ -162,9 +164,9 @@ export default function AccountDataForm() {
               name="firstname"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>Vorname</FormLabel>
+                  <FormLabel>{t("firstname")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"Vorname"} {...field} data-cy={'account-firstname-input'}/>
+                    <Input placeholder={t("firstname")} {...field} data-cy={'account-firstname-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-firstname-input-message'}/>
                 </FormItem>
@@ -176,9 +178,9 @@ export default function AccountDataForm() {
               name="lastname"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>Nachname</FormLabel>
+                  <FormLabel>{t("lastname")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"Nachname"} {...field} data-cy={'account-lastname-input'}/>
+                    <Input placeholder={t("lastname")} {...field} data-cy={'account-lastname-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-lastname-input-message'}/>
                 </FormItem>
@@ -190,9 +192,9 @@ export default function AccountDataForm() {
               name="mail"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>E-Mail</FormLabel>
+                  <FormLabel>{t("email.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"vor.nachname@kummerkasten.de"} {...field}
+                    <Input placeholder={t("email.placeholder")} {...field}
                            data-cy={'account-mail-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-mail-input-message'}/>
@@ -208,7 +210,7 @@ export default function AccountDataForm() {
         closeDialogAction={() => setPasswordInputOpen(false)}
         onSuccessfulConfirmationAction={async () => {
           if (pendingUserData) await updateProfileData(pendingUserData)
-          else toast.error("Ein Fehler ist aufgetreten")
+          else toast.error(t("toast.confirmError"))
         }}
       />
     </>

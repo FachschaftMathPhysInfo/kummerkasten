@@ -12,42 +12,44 @@ import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import PasswordInput from "@/components/password-input";
 import {ShieldUser} from "lucide-react";
-
-const passwordFormSchema = z
-  .object({
-    oldPassword: z.string().nonempty("Bitte gib dein aktuelles Passwort ein"),
-    newPassword: z
-      .string()
-      .min(8, {message: "Mindestens 8 Zeichen"})
-      .regex(/[A-Z]/, {message: "Mindestens ein Großbuchstabe"})
-      .regex(/\d/, {message: "Mindestens eine Zahl"})
-      .regex(/[!@#$%^&*(),.?":{}|<>]/, {
-        message: "Mindestens ein Sonderzeichen.",
-      }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwörter stimmen nicht überein",
-    path: ["confirmPassword"],
-  })
-  .refine((data) => data.newPassword !== data.oldPassword, {
-    message: "Neues Passwort darf nicht dem alten entsprechen",
-    path: ["newPassword"],
-  });
-
-type PasswordFormData = z.infer<typeof passwordFormSchema>;
+import {useTranslations} from "use-intl";
 
 
 export default function PasswordDataForm() {
+  const t = useTranslations("AccountPage.PasswordDataForm");
   const {user, logout} = useUser();
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const isItLoading = false;
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
 
+  const passwordFormSchema = z
+    .object({
+      currentPassword: z.string().nonempty(t("inputErrors.currentPassword.empty")),
+      newPassword: z
+        .string()
+        .min(8, {message: t("inputErrors.newPassword.short")})
+        .regex(/[A-Z]/, {message: t("inputErrors.newPassword.capital")})
+        .regex(/\d/, {message: t("inputErrors.newPassword.number")})
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+          message: t("inputErrors.newPassword.special")
+        }),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t("inputErrors.confirmPassword.match"),
+      path: ["confirmPassword"],
+    })
+    .refine((data) => data.newPassword !== data.currentPassword, {
+      message: t("inputErrors.newPassword.notChanged"),
+      path: ["newPassword"],
+    });
+
+  type PasswordFormData = z.infer<typeof passwordFormSchema>;
+
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordFormSchema),
     defaultValues: {
-      oldPassword: "",
+      currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -56,7 +58,7 @@ export default function PasswordDataForm() {
   async function onPasswordSubmit(data: PasswordFormData) {
     setIsSavingPassword(true);
     if (!user) {
-      toast.error("Ein Fehler ist aufgetreten, bitte melde dich erneut an");
+      toast.error(t("toast.loginError"));
       return;
     }
 
@@ -65,7 +67,7 @@ export default function PasswordDataForm() {
     try {
       await client.request(LoginDocument, {
         mail: user.mail,
-        password: data.oldPassword,
+        password: data.currentPassword,
       });
 
 
@@ -74,16 +76,16 @@ export default function PasswordDataForm() {
         user: {password: data.newPassword},
       });
 
-      toast.success("Passwort aktualisiert. Du wirst jetzt ausgeloggt");
+      toast.success(t("toast.changeSuccess"));
       passwordForm.reset();
       setHasTriedToSubmit(false);
       await logout();
 
     } catch (err) {
       if (String(err).includes('credentials')) {
-        passwordForm.setError("oldPassword", {message: "Falsches aktuelles Passwort",});
+        passwordForm.setError("currentPassword", {message: t("inputErrors.currentPassword.wrong")});
       } else {
-        toast.error("Fehler beim Aktualisieren der Daten");
+        toast.error(t("toast.changeFailure"));
       }
 
       return;
@@ -103,7 +105,7 @@ export default function PasswordDataForm() {
       >
         <SettingsBlock
           icon={<ShieldUser/>}
-          title={"Sicherheit"}
+          title={t("header")}
           hasTriedToSubmit={hasTriedToSubmit}
           isDirty={passwordForm.formState.isDirty}
           isLoading={isItLoading}
@@ -113,13 +115,13 @@ export default function PasswordDataForm() {
 
           <FormField
             control={passwordForm.control}
-            name="oldPassword"
+            name="currentPassword"
             render={({field}) => (
               <FormItem className={"flex-grow"}>
-                <FormLabel>Aktuelles Passwort</FormLabel>
+                <FormLabel>{t("currentPassword")}</FormLabel>
                 <FormControl>
                   <PasswordInput
-                    placeholder={"Aktuelles Passwort"}
+                    placeholder={t("currentPassword")}
                     {...field}
                     data-cy={'account-current-password-input'}
                   />
@@ -134,10 +136,10 @@ export default function PasswordDataForm() {
             name="newPassword"
             render={({field}) => (
               <FormItem className={"flex-grow"}>
-                <FormLabel>Neues Passwort</FormLabel>
+                <FormLabel>{t("newPassword")}</FormLabel>
                 <FormControl>
                   <PasswordInput
-                    placeholder={"Neues Passwort"}
+                    placeholder={t("newPassword")}
                     {...field}
                     data-cy={'account-new-password-input'}
                   />
@@ -154,7 +156,7 @@ export default function PasswordDataForm() {
               <FormItem className={"flex-grow"}>
                 <FormControl>
                   <PasswordInput
-                    placeholder={"Wiederhole dein neues Passwort"}
+                    placeholder={t("confirmPassword.placeholder")}
                     {...field}
                     data-cy={'account-confirm-password-input'}
                   />
