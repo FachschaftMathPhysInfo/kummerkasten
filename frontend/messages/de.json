@@ -216,6 +216,61 @@
           }
         }
       }
+    },
+    "LabelManagementPage": {
+      "header": "Label Verwaltung",
+      "description": "Erstelle, lösche und update Labels hier.",
+      "LabelTable": {
+        "noResults": "Keine Ergebnisse.",
+        "deleteConfirmation": "Dies wird das Label \"{name}\" unwiderruflich löschen",
+        "searchbar": {
+          "placeholder": "Namen filtern..."
+        },
+        "labelFilter": {
+          "publicOnly": "Öffentliche Labels anzeigen",
+          "privateOnly": "Nicht-öffentliche Labels anzeigen",
+          "all": "Alle Labels anzeigen"
+        },
+        "toast": {
+          "deleteFailure": "Ein Fehler beim Löschen des Labels ist aufgetreten",
+          "deleteSuccess": "Label wurde erfolgreich gelöscht"
+        }
+      },
+      "LabelForm": {
+        "name": "Name",
+        "color": "Farbe",
+        "publicLabel": {
+          "label": "Öffentliches Label",
+          "lastPublicError": "Dieses Label ist das letzte öffentliche Label. Wenn es privat gemacht werden soll, muss erst mindestens ein anderes Label öffentlich gemacht werden.",
+          "publicInfo": "Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen"
+        },
+        "cancel": "Abbrechen",
+        "create": "Erstellen",
+        "edit": "Speichern",
+        "toast": {
+          "createSuccess": "Label erfolgreich erstellt",
+          "createFailure": "Ein Fehler beim Erstellen des Labels ist aufgetreten",
+          "updateSuccess": "Label erfolgreich aktualisiert",
+          "updateFailure": "Ein Fehler beim Erstellen des Labels ist aufgetreten"
+        },
+        "inputErrors": {
+          "name": {
+            "empty": "Bitte gib dem Label einen Namen",
+            "unique": "Ein Label mit diesem Namen existiert bereits"
+          },
+          "color": {
+            "format": "Bitte gültigen HEX-Code angeben"
+          }
+        }
+      },
+      "LabelDialog": {
+        "create": "Label erstellen",
+        "edit": "Label bearbeiten"
+      },
+      "LabelColumns": {
+        "publicLabel": "Öffentlich",
+        "name": "Name"
+      }
     }
   }
 }

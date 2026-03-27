@@ -22,6 +22,7 @@ import {DataTablePagination} from "@/components/table-utils/data-table-paginatio
 import {useLabels} from "@/components/providers/label-provider";
 import {cn} from "@/lib/utils";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
+import {useTranslations} from "use-intl";
 
 export type LabelTableDialogState = {
   mode: "update" | "delete" | "add" | null;
@@ -31,6 +32,7 @@ export type LabelTableDialogState = {
 type FormLabelFilter = boolean | null;
 
 export function LabelTable() {
+  const t = useTranslations("Setting.LabelManagementPage.LabelTable")
   const {labels, deleteLabel} = useLabels();
   const [dialogState, setDialogState] = useState<LabelTableDialogState>({mode: null, currentLabel: null});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -71,17 +73,17 @@ export function LabelTable() {
 
   async function handleDelete() {
     if (!dialogState.currentLabel) {
-      toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
+      toast.error(t("toast.deleteFailure"))
       return
     }
 
     const error = await deleteLabel([dialogState.currentLabel.id])
 
     if (!error) {
-      toast.success("Label wurde erfolgreich gelöscht")
+      toast.success(t("toast.deleteSuccess"))
       resetDialogState()
     } else {
-      toast.error("Ein Fehler beim Löschen des Labels ist aufgetreten")
+      toast.error(t("toast.deleteFailure"))
     }
   }
 
@@ -131,11 +133,11 @@ export function LabelTable() {
 
                   <TooltipContent side="top" sideOffset={5}>
                     {formLabelFilter === null ? (
-                      <p>Öffentliche Labels anzeigen</p>
+                      <p>{t("labelFilter.publicOnly")}</p>
                     ) : formLabelFilter ? (
-                      <p>Nicht-öffentliche Labels anzeigen</p>
+                      <p>{t("labelFilter.privateOnly")}</p>
                     ) : (
-                      <p>Alle Labels anzeigen</p>
+                      <p>{t("labelFilter.all")}</p>
                     )}
                   </TooltipContent>
                 </Button>
@@ -145,7 +147,7 @@ export function LabelTable() {
 
           <Input
             data-cy={"label-searchbar"}
-            placeholder="Namen filtern..."
+            placeholder={t("searchbar.placeholder")}
             value={
               (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
             }
@@ -207,7 +209,7 @@ export function LabelTable() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Keine Ergebnisse.
+                  {t("noResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -225,7 +227,7 @@ export function LabelTable() {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird das Label ${dialogState.currentLabel?.name} unwiderruflich löschen`}
+        description={t("deleteConfirmation", {name: dialogState.currentLabel?.name ?? ""})}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDialogState}
