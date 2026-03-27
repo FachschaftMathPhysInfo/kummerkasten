@@ -29,7 +29,11 @@ export default function UserManagementPage() {
     }
   }, [])
 
-  useEffect(() => void fetchUsers(), [fetchUsers])
+  useEffect(() => {
+    (async () => {
+      await fetchUsers()
+    })()
+  }, [fetchUsers])
 
   return (
     <div className="w-full h-full flex flex-col grow">

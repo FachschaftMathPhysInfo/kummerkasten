@@ -63,7 +63,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
         position: maxPosition + 1,
       });
     }
-  }, [qap, maxPosition]);
+  }, [qap, maxPosition, form]);
 
   const onValidSubmit = async (data: z.infer<typeof faqFormSchema>) => {
     setLoading(true);

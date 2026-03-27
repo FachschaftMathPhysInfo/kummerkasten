@@ -12,7 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {cn} from "@/lib/utils";
-import React, {useEffect, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {format} from "date-fns";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
@@ -22,7 +22,7 @@ import {
   getOlderSemesterTickets,
   getSortedTickets
 } from "@/lib/ticket-operations";
-import {Ticket, TicketState} from "@/lib/graph/generated/graphql";
+import {TicketState} from "@/lib/graph/generated/graphql";
 import {Button} from "@/components/ui/button";
 import FilterBar from "@/components/filter-bar";
 import {RotateCcw} from "lucide-react";
@@ -34,25 +34,18 @@ interface TicketSidebarProps {
 export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
 
   const router = useRouter();
-  const {tickets, filtering, areFiltersSet, sorting, setFiltering, stateFilterSet} = useTickets()
+  const {tickets, filtering, areFiltersSet, sorting, setFiltering} = useTickets()
   const [showFilters, setShowFilters] = useState(false)
-  const [filteredTickets, setFilteredTickets] = useState<Ticket[]>(getFilteredTickets(filtering, tickets))
-  const [sortedTickets, setSortedTickets] = useState<Ticket[]>(getSortedTickets(sorting, filteredTickets))
 
-  useEffect(() => {
-    const newFilteredTickets = getFilteredTickets(filtering, tickets)
-    setFilteredTickets(newFilteredTickets)
-    setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
-  }, [
-    stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate, filtering.searchTerm,
-    sorting.field, sorting.orderAscending, filtering, sorting, tickets
-  ])
+  const filteredTickets = useMemo(
+    () => getFilteredTickets(filtering, tickets),
+    [filtering, tickets]
+  )
 
-  useEffect(() => {
-    const newFilteredTickets = getFilteredTickets(filtering, tickets)
-    setFilteredTickets(newFilteredTickets)
-    setSortedTickets(getSortedTickets(sorting, newFilteredTickets))
-  }, [tickets, filtering, sorting])
+  const sortedTickets = useMemo(
+    () => getSortedTickets(sorting, filteredTickets),
+    [sorting, filteredTickets]
+  )
 
   return (
     <div className="h-[95vh] max-h-[95vh] flex flex-col overflow-hidden">

@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {useParams} from "next/navigation";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {getClient} from "@/lib/graph/client";
-import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
+import {Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
 import {TicketDialogState} from "@/app/tickets/page";
@@ -22,7 +22,7 @@ export default function TicketPage() {
   const {deleteTickets} = useTickets()
   const {isMobile} = useSidebar()
   const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
+  const ticketLabels = ticket?.labels ?? [];
   const {state} = useSidebar()
 
   const [dialogState, setDialogState] = useState<TicketDialogState>({
@@ -33,9 +33,7 @@ export default function TicketPage() {
   const fetchTicketDetail = useCallback(async () => {
     if (!ticketId) return;
     const data = await client.request<TicketsByIdsQuery>(TicketsByIdsDocument, {id: ticketId});
-    const ticketData = data?.tickets?.[0];
-    setTicket(ticketData ?? null);
-    setTicketLabels(ticketData?.labels ?? []);
+    return data?.tickets?.[0] ?? null
   }, [ticketId]);
 
   const resetDialogState = () => {
@@ -60,7 +58,9 @@ export default function TicketPage() {
   }
 
   useEffect(() => {
-    void fetchTicketDetail();
+    fetchTicketDetail().then(ticket => {
+      setTicket(ticket == undefined ? null : ticket)
+    })
   }, [fetchTicketDetail, ticketId]);
 
   return (
@@ -84,6 +84,7 @@ export default function TicketPage() {
         <ResizableHandle/>
         <ResizablePanel defaultSize={50}>
           <TicketDetailView
+            key={ticket?.id}
             ticket={ticket}
             ticketLabels={ticketLabels}
             setDialogStateAction={setDialogState}

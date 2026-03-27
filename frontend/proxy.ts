@@ -17,7 +17,7 @@ export async function proxy(request: NextRequest) {
       const client = new GraphQLClient(apiUrl.toString())
       const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
       return loggedInData.loginCheck !== null
-    } catch (err) {
+    } catch {
       return false
     }
   }
