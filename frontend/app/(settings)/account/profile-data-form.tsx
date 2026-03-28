@@ -25,6 +25,7 @@ const MAX_NAME_LENGTH = 50;
 
 export default function AccountDataForm() {
   const t = useTranslations("Settings.AccountPage.AccountDataForm")
+  const tc = useTranslations("Commons")
   const {user} = useUser()
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,11 +34,11 @@ export default function AccountDataForm() {
   const [passwordInputOpen, setPasswordInputOpen] = useState(false);
 
   const accountDataSchema = z.object({
-    firstname: z.string().nonempty(t("inputErrors.firstname.empty"))
-      .max(MAX_NAME_LENGTH, t("inputErrors.firstname.long")),
-    lastname: z.string().nonempty(t("inputErrors.lastname.empty"))
-      .max(MAX_NAME_LENGTH, t("inputErrors.lastname.long")),
-    mail: z.email(t("inputErrors.email.format")),
+    firstname: z.string().nonempty(tc("fields.errors.empty", {item: tc("fields.firstname.errorInfix")}))
+      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {item: MAX_NAME_LENGTH + " " + tc("words.character")})),
+    lastname: z.string().nonempty(tc("fields.errors.empty", {item: tc("fields.lastname.errorInfix")}))
+      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {item: MAX_NAME_LENGTH + " " + tc("words.character")})),
+    mail: z.email(tc("fields.email.errors.format")),
   });
 
   type AccountDataFormData = z.infer<typeof accountDataSchema>;
@@ -69,7 +70,7 @@ export default function AccountDataForm() {
     setIsSavingAccount(true);
 
     if (!user) {
-      toast.error(t("toast.loginError"));
+      toast.error(tc("toasts.loginAgainError"));
       return;
     }
 
@@ -81,7 +82,7 @@ export default function AccountDataForm() {
 
         if (emailUsedByOtherUser) {
           form.setError("mail", {
-            message: t("inputErrors.email.inUse"),
+            message: tc("fields.email.errors.inUse"),
           });
           return;
         }
@@ -89,7 +90,7 @@ export default function AccountDataForm() {
         setPendingUserData(userData)
         setPasswordInputOpen(true);
       } catch (error) {
-        toast.error(t("toast.emailCheckError"));
+        toast.error(t("toasts.emailCheckError"));
         console.error(error);
       } finally {
         setIsSavingAccount(false)
@@ -101,7 +102,7 @@ export default function AccountDataForm() {
 
   async function updateProfileData(data: AccountDataFormData) {
     if (!user || !data) {
-      toast.error(t("toast.loginError"));
+      toast.error(tc("toasts.loginAgainError"));
       return;
     }
 
@@ -127,13 +128,12 @@ export default function AccountDataForm() {
         mail: data.mail,
       });
 
-      toast.success(t("toast.loginSuccess"));
+      toast.success(tc("toasts.updateSuccess", {item: "Dein Account"}));
       setHasTriedToSubmit(false);
 
       if (data.mail !== user.mail) window.location.reload()
-    } catch (error) {
-      toast.error(t("toast.loginError"));
-      console.error(error);
+    } catch {
+      toast.error(tc("toasts.loginAgain"));
     } finally {
       setIsSavingAccount(false);
     }
@@ -151,7 +151,7 @@ export default function AccountDataForm() {
 
           <SettingsBlock
             icon={<User/>}
-            title={t("header")}
+            title={t("title")}
             hasTriedToSubmit={hasTriedToSubmit}
             isDirty={form.formState.isDirty}
             isSaving={isSavingAccount}
@@ -164,9 +164,9 @@ export default function AccountDataForm() {
               name="firstname"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>{t("firstname")}</FormLabel>
+                  <FormLabel>{tc("fields.firstname.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("firstname")} {...field} data-cy={'account-firstname-input'}/>
+                    <Input placeholder={tc("fields.firstname.placeholer")} {...field} data-cy={'account-firstname-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-firstname-input-message'}/>
                 </FormItem>
@@ -178,9 +178,9 @@ export default function AccountDataForm() {
               name="lastname"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>{t("lastname")}</FormLabel>
+                  <FormLabel>{tc("fields.lastname.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("lastname")} {...field} data-cy={'account-lastname-input'}/>
+                    <Input placeholder={tc("fields.lastname.placeholder")} {...field} data-cy={'account-lastname-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-lastname-input-message'}/>
                 </FormItem>
@@ -192,9 +192,9 @@ export default function AccountDataForm() {
               name="mail"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>{t("email.label")}</FormLabel>
+                  <FormLabel>{tc("fields.email.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("email.placeholder")} {...field}
+                    <Input placeholder={tc("fields.email.placeholder")} {...field}
                            data-cy={'account-mail-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-mail-input-message'}/>
@@ -210,7 +210,7 @@ export default function AccountDataForm() {
         closeDialogAction={() => setPasswordInputOpen(false)}
         onSuccessfulConfirmationAction={async () => {
           if (pendingUserData) await updateProfileData(pendingUserData)
-          else toast.error(t("toast.confirmError"))
+          else toast.error(tc("toasts.generalError"))
         }}
       />
     </>

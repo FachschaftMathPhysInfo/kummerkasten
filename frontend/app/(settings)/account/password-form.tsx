@@ -17,6 +17,7 @@ import {useTranslations} from "next-intl";
 
 export default function PasswordDataForm() {
   const t = useTranslations("AccountPage.PasswordDataForm");
+  const tc = useTranslations("Commons")
   const {user, logout} = useUser();
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const isItLoading = false;
@@ -27,20 +28,20 @@ export default function PasswordDataForm() {
       currentPassword: z.string().nonempty(t("inputErrors.currentPassword.empty")),
       newPassword: z
         .string()
-        .min(8, {message: t("inputErrors.newPassword.short")})
-        .regex(/[A-Z]/, {message: t("inputErrors.newPassword.capital")})
-        .regex(/\d/, {message: t("inputErrors.newPassword.number")})
+        .min(8, {message: tc("fields.errors.short", {item: `8 ${t("words.character")}`})})
+        .regex(/[A-Z]/, {message: tc("fields.errors.uppercase")})
+        .regex(/\d/, {message: tc("fields.errors.number")})
         .regex(/[!@#$%^&*(),.?":{}|<>]/, {
-          message: t("inputErrors.newPassword.special")
+          message: tc("fields.errors.special")
         }),
       confirmPassword: z.string(),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
-      message: t("inputErrors.confirmPassword.match"),
+      message: t("fields.confirmPassword.errors.match"),
       path: ["confirmPassword"],
     })
     .refine((data) => data.newPassword !== data.currentPassword, {
-      message: t("inputErrors.newPassword.notChanged"),
+      message: t("fields.newPassword.errors.unique"),
       path: ["newPassword"],
     });
 
@@ -58,7 +59,7 @@ export default function PasswordDataForm() {
   async function onPasswordSubmit(data: PasswordFormData) {
     setIsSavingPassword(true);
     if (!user) {
-      toast.error(t("toast.loginError"));
+      toast.error(tc("toasts.loginAgainError"));
       return;
     }
 
@@ -76,16 +77,16 @@ export default function PasswordDataForm() {
         user: {password: data.newPassword},
       });
 
-      toast.success(t("toast.changeSuccess"));
+      toast.success(t("toasts.changeSuccess"));
       passwordForm.reset();
       setHasTriedToSubmit(false);
       await logout();
 
     } catch (err) {
       if (String(err).includes('credentials')) {
-        passwordForm.setError("currentPassword", {message: t("inputErrors.currentPassword.wrong")});
+        passwordForm.setError("currentPassword", {message: tc("fields.errors.wrong", {item: tc("words.password")})});
       } else {
-        toast.error(t("toast.changeFailure"));
+        toast.error(tc("toasts.updateError", {item: t("data")}));
       }
 
       return;
@@ -105,7 +106,7 @@ export default function PasswordDataForm() {
       >
         <SettingsBlock
           icon={<ShieldUser/>}
-          title={t("header")}
+          title={t("title")}
           hasTriedToSubmit={hasTriedToSubmit}
           isDirty={passwordForm.formState.isDirty}
           isLoading={isItLoading}
@@ -118,10 +119,10 @@ export default function PasswordDataForm() {
             name="currentPassword"
             render={({field}) => (
               <FormItem className={"flex-grow"}>
-                <FormLabel>{t("currentPassword")}</FormLabel>
+                <FormLabel>{t("fields.currentPassword.label")}</FormLabel>
                 <FormControl>
                   <PasswordInput
-                    placeholder={t("currentPassword")}
+                    placeholder={t("fields.currentPassword.placeholder")}
                     {...field}
                     data-cy={'account-current-password-input'}
                   />
@@ -136,10 +137,10 @@ export default function PasswordDataForm() {
             name="newPassword"
             render={({field}) => (
               <FormItem className={"flex-grow"}>
-                <FormLabel>{t("newPassword")}</FormLabel>
+                <FormLabel>{t("fields.newPassword.label")}</FormLabel>
                 <FormControl>
                   <PasswordInput
-                    placeholder={t("newPassword")}
+                    placeholder={t("fields.newPassword.placeholder")}
                     {...field}
                     data-cy={'account-new-password-input'}
                   />
@@ -156,7 +157,7 @@ export default function PasswordDataForm() {
               <FormItem className={"flex-grow"}>
                 <FormControl>
                   <PasswordInput
-                    placeholder={t("confirmPassword.placeholder")}
+                    placeholder={t("fields.confirmPassword.placeholder")}
                     {...field}
                     data-cy={'account-confirm-password-input'}
                   />

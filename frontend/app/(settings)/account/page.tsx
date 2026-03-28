@@ -5,13 +5,13 @@ import PasswordDataForm from "@/app/(settings)/account/password-form";
 import {useTranslations} from "next-intl";
 
 export default function Page() {
-  const t = useTranslations("Settings.AccountPage")
+  const t = useTranslations("Settings.AccountPage.Root")
 
   return (
     <div className="w-full h-full">
       <ManagementPageHeader
         icon={<SettingsIcon/>}
-        title={t("header")}
+        title={t("title")}
         description={t("description")}
       />
       <AccountDataForm/>

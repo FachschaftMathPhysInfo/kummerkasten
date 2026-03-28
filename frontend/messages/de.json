@@ -13,14 +13,16 @@
       "fields": {
         "title": {
           "label": "Titel",
-          "placeholder": "Vorlesung..."
+          "placeholder": "Vorlesung...",
+          "errorInfix": "einen Titel"
         },
         "labels": {
           "label": "Worum geht es in deinem Feedback"
         },
         "text": {
           "label": "Feedback",
-          "placeholder": "Deine anonyme Nachricht"
+          "placeholder": "Deine anonyme Nachricht",
+          "errorInfix": "einFeedback"
         }
       },
       "toasts": {
@@ -48,65 +50,40 @@
   },
   "Settings": {
     "AccountPage": {
-      "header": "Mein Account",
-      "description": "Bearbeite deine persönlichen Einstellungen",
+      "Root": {
+        "title": "Mein Account",
+        "description": "Bearbeite deine persönlichen Einstellungen"
+      },
       "PasswordDataForm": {
-        "header": "Sicherheit",
-        "currentPassword": "Aktuelles Passwort",
-        "newPassword": "Neues Passwort",
-        "confirmPassword": {
-          "placeholder": "Wiederhole dein neues Passwort"
-        },
-        "toast": {
-          "loginError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an",
-          "changeSuccess": "Passwort aktualisiert. Du wirst jetzt ausgeloggt",
-          "changeFailure": "Fehler beim Aktualisieren der Daten"
-        },
-        "inputErrors": {
+        "title": "Sicherheit",
+        "data": "der Daten",
+        "fields": {
           "currentPassword": {
-            "empty": "Bitte gib dein aktuelles Passwort ein",
-            "wrong": "Falsches aktuelles Passwort"
+            "label": "Aktuelles Passwort",
+            "placeholder": "Aktuelles Passwort"
           },
           "newPassword": {
-            "short": "Mindestens 8 Zeichen",
-            "capital": "Mindestens 8 Zeichen",
-            "number": "Mindestens eine Zahl",
-            "special": "Mindestens ein Sonderzeichen.",
-            "notChanged": "Neues Passwort darf nicht dem alten entsprechen"
+            "label": "Neues Passwort",
+            "placeholder": "Neues Passwort",
+            "errors": {
+              "new": "Neues Passwort darf nicht dem alten entsprechen"
+            }
           },
           "confirmPassword": {
-            "match": "Passwörter stimmen nicht überein"
+            "placeholder": "Wiederhole dein neues Passwort",
+            "errors": {
+              "match": "Passwörter stimmen nicht überein"
+            }
           }
+        },
+        "toasts": {
+          "changeSuccess": "Passwort aktualisiert. Du wirst jetzt ausgeloggt"
         }
       },
       "AccountDataForm": {
-        "header": "Account",
-        "firstname": "Vorname",
-        "lastname": "Nachname",
-        "email": {
-          "label": "E-Mail",
-          "placeholder": "max.muster@example.de"
-        },
-        "toast": {
-          "loginError": "Ein Fehler ist aufgetreten, melde dich erneut an",
-          "emailCheckError": "Fehler beim Überprüfen der E-Mail-Adresse",
-          "updateSucces": "Dein Account wurde erfolgreich aktualisiert",
-          "updateFailure": "Ein Fehler beim Aktualisieren der Daten ist aufgetreten",
-          "confirmError": "Ein Fehler ist aufgetreten"
-        },
-        "inputErrors": {
-          "firstName": {
-            "empty": "Vorname ist erforderlich",
-            "long": "Maximale Länge beträgt 50 Charaktere"
-          },
-          "lastName": {
-            "empty": "Nachname ist erforderlich",
-            "long": "Maximale Länge beträgt 50 Charaktere"
-          },
-          "email": {
-            "format": "Ungültige E-Mail-Adresse",
-            "alreadyUsed": "Diese E-Mail-Adresse wird bereits verwendet"
-          }
+        "title": "Account",
+        "toasts": {
+          "emailCheckError": "Fehler beim Überprüfen der E-Mail-Adresse"
         }
       }
     },
@@ -642,6 +619,11 @@
       "created": "Erstellt",
       "title": "Title"
     },
+    "words": {
+      "characters": "Zeichen",
+      "filter": "Filter",
+      "password": "Passwort"
+    },
     "inputs": {
       "searchbarPlaceholder": "\"{item}\" suchen..."
     },
@@ -656,6 +638,7 @@
       "ok": "Verstanden"
     },
     "toasts": {
+      "generalError": "Ein Fehler ist aufgetreten",
       "createSuccess": "\"{item}\" wurde erfolgreich erstellt",
       "updateSuccess": "\"{item}\" wurde erfolgreich aktualisiert",
       "deleteSuccess": "\"{item\" wurde erfolgreich gelöscht",
@@ -668,22 +651,32 @@
     "fields": {
       "firstname": {
         "label": "Vorname",
-        "placeholder": "Maxi"
+        "placeholder": "Maxi",
+        "errorInfix": "einen Vornamen"
       },
       "lastname": {
         "label": "Nachname",
-        "placeholder": "Person"
+        "placeholder": "Person",
+        "errorInfix": "einen Nachnamen"
       },
       "email": {
         "label": "E-Mail",
         "placeholder": "maxi.person@example.de",
+        "errorInfix": "eine E-Mail",
         "errors": {
-          "format": "Bitte gib ein gültiges Format an"
+          "format": "Bitte gib ein gültiges E-Mail Format an",
+          "inUse": "Diese E-Mail wird schon verwendet"
         }
       },
       "password": {
         "label": "Passwort",
-        "placeholder": "Passwort"
+        "placeholder": "Passwort",
+        "errorInfix": "ein Passwort"
+      },
+      "label": {
+        "label": "Label",
+        "placeholder": "Label",
+        "errorInfix": "ein Label"
       },
       "errors": {
         "empty": "Bitte gib \"{item}\" an",
