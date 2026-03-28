@@ -5,8 +5,10 @@ import {useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {FooterSettingsDocument} from "@/lib/graph/generated/graphql";
 import {FOOTER_CONTACT_LINK_KEY, FOOTER_LEGAL_NOTICE_KEY} from "@/app/(settings)/app-settings/footer-form";
+import {useTranslations} from "next-intl";
 
 export function Footer() {
+  const t = useTranslations("Components.Footer")
   const {user} = useUser();
   const [legalNoticeLink, setLegalNoticeLink] = useState("")
   const [contactLink, setContactLink] = useState("")
@@ -42,7 +44,7 @@ export function Footer() {
           className="cursor-pointer underline"
           href={contactLink}
         >
-          Kontakt
+          {t("contact")}
         </a>
       </span>
       )}
@@ -54,7 +56,7 @@ export function Footer() {
           className={"cursor-pointer underline"}
           href={legalNoticeLink}
         >
-          Impressum
+          {t("legalNotice")}
         </a>
       </span>
       )}
@@ -65,7 +67,7 @@ export function Footer() {
           className="cursor-pointer underline"
           href="https://github.com/FachschaftMathPhysInfo/kummerkasten"
         >
-          Source Code
+          {t("sourceCode")}
         </a>
       </span>
     </footer>

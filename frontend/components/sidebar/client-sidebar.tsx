@@ -28,26 +28,28 @@ import { useTheme } from "next-themes";
 import {useEffect, useRef} from "react";
 import { clsx } from "clsx";
 import Link from "next/link";
+import {useTranslations} from "next-intl";
 
 export function ClientSidebar() {
+  const t = useTranslations("Components.Sidebar.ClientSidebar")
   const { user, logout } = useUser();
   const router = useRouter();
   const { open, isMobile } = useSidebar();
   const userItems = [
     {
-      title: "Tickets",
+      title: t("tickets"),
       url: "/tickets",
       icon: Tickets,
       cypress: "sidebar-tickets",
     },
     {
-      title: "Labels",
+      title: t("labels"),
       url: "/labels",
       icon: Tags,
       cypress: "sidebar-labels",
     },
     {
-      title: "FAQs",
+      title: t("faqs"),
       url: "/faq",
       icon: MessageCircleQuestionMark,
       cypress: "sidebar-faq",
@@ -55,13 +57,13 @@ export function ClientSidebar() {
   ];
   const adminItems = [
     {
-      title: "Users",
+      title: t("users"),
       url: "/users",
       icon: Users,
       cypress: "sidebar-users",
     },
     {
-      title: "App",
+      title: t("app"),
       url: "/app-settings",
       icon: SlidersVertical,
       cypress: "sidebar-app-settings",
@@ -120,7 +122,7 @@ export function ClientSidebar() {
               onClick={() => router.push("/account")}
               className={"flex items-center"}
             >
-              <CircleUserRound /> Account
+              <CircleUserRound /> {t("buttons.account")}
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -129,7 +131,7 @@ export function ClientSidebar() {
               onClick={() => logout()}
               className={"flex items-center text-destructive"}
             >
-              <LogOut className={"stroke-destructive"} /> Logout
+              <LogOut className={"stroke-destructive"} /> {t("buttons.logout")}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -147,6 +149,7 @@ export function ClientSidebarTrigger() {
 }
 
 function SidebarThemeSwitch() {
+  const t = useTranslations("Components.Sidebar.ClientSidebar")
   const mounted = useRef(false);
   const { resolvedTheme, theme, setTheme } = useTheme();
 
@@ -171,12 +174,12 @@ function SidebarThemeSwitch() {
       {theme === "light" ? (
         <>
           <Sun />
-          Hell
+          {t("buttons.light")}
         </>
       ) : (
         <>
           <Moon />
-          Dunkel
+          {t("buttons.dark")}
         </>
       )}
     </SidebarMenuButton>

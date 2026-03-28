@@ -2,6 +2,7 @@ import React, {cloneElement, isValidElement} from "react";
 import {Card, CardContent, CardFooter, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {PageLoader} from "@/components/page-loader";
+import {useTranslations} from "next-intl";
 
 type SettingsBlockProps = {
   icon: React.ReactNode,
@@ -26,6 +27,7 @@ export function SettingsBlock({
                                 isDirty,
                                 dataCy
                               }: SettingsBlockProps) {
+  const t = useTranslations("Components.SettingsBlock")
   const sizedIcon =
     icon && isValidElement(icon)
       ? cloneElement(icon as React.ReactElement<{ className?: string }>, {
@@ -42,7 +44,7 @@ export function SettingsBlock({
         </CardTitle>
         <CardContent>
           <div className="py-8 flex justify-center">
-            <PageLoader compact message="Daten werden geladen..."/>
+            <PageLoader compact message={t("loaders.fetching")}/>
           </div>
         </CardContent>
       </Card>
@@ -59,7 +61,7 @@ export function SettingsBlock({
       <CardContent>
         {isSaving ? (
           <div className="py-8 flex justify-center">
-            <PageLoader compact={true} message="Speichern..."/>
+            <PageLoader compact={true} message={t("loaders.saving")}/>
           </div>
         ) : (
           <div className="space-y-4">
@@ -73,7 +75,7 @@ export function SettingsBlock({
           disabled={!isDirty || !isValid && hasTriedToSubmit}
           data-cy={dataCy}
         >
-          Speichern
+          {t("buttons.submit")}
         </Button>
       </CardFooter>
     </Card>

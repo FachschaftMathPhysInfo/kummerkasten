@@ -531,6 +531,113 @@
       }
     }
   },
+  "Components": {
+    "Dialogs": {
+      "ConfirmationDialog": {
+        "title": "Bist du sicher?",
+        "buttons": {
+          "cancel": "Abbrechen",
+          "ok": "Verstanden",
+          "submit": "Bestätigen"
+        }
+      },
+      "PasswordDialog": {
+        "title": "E-Mail ändern bestätigen",
+        "description": "Bitte gib dein Passwort ein, um deine E-Mail-Adresse zu ändern.",
+        "fields": {
+          "password": {
+            "placeholder": "Passwort eingeben",
+            "errors": {
+              "wrong": "Passwort ist inkorrekt"
+            }
+          }
+        },
+        "buttons": {
+          "cancel": "Abbrechen",
+          "submit": "Bestätigen"
+        },
+        "toasts": {
+          "updateError": "Ein Fehler beim Aktualisieren ist aufgetreten, melde dich erneut an"
+        }
+      }
+    },
+    "Sidebar": {
+      "ClientSidebar": {
+        "tickets": "Tickets",
+        "labels": "Labels",
+        "faqs": "FAQs",
+        "user": "User",
+        "app": "App",
+        "buttons": {
+          "account": "Account",
+          "logout": "Logout",
+          "light": "Hell",
+          "dark": "Dunkel"
+        }
+      }
+    },
+    "TabelUtils": {
+      "DataTablePagination": {
+        "elementsPerPage": "Elemente pro Seite",
+        "page": "Seite",
+        "of": "von",
+        "buttons": {
+          "goToFirstPage": "Zur ersten Seite springen",
+          "goToLastPage": "Zur letzten Seite springen",
+          "goToNextPage": "Zur nächsten Seite springen",
+          "goToPreviousPage": "Zur vorherigen Seite springen"
+        }
+      }
+    },
+    "SettingsBlock": {
+      "loaders": {
+        "fetching": "Daten werden geladen...",
+        "saving": "Speichern..."
+      },
+      "buttons": {
+        "submit": "Speichern"
+      }
+    },
+    "PageLoader": {
+      "message": "Lade Inhalte..."
+    },
+    "LabelSelection": {
+      "searchbar": {
+        "placeholder": "Labels suchen..."
+      },
+      "buttons": {
+        "reset": "Zurücksetzen"
+      }
+    },
+    "Footer": {
+      "contact": "Kontakt",
+      "legalNotice": "Impressum",
+      "sourceCode": "Source Code"
+    },
+    "FilterBar": {
+      "buttons": {
+        "stateFilter": {
+          "empty": "Status",
+          "nonEmpty": "\"{length}\" Status",
+          "searchbar": {
+            "placeholder": "Status suchen..."
+          }
+        },
+        "labelFilter": {
+          "empty": "Labels",
+          "nonEmpty": "\"{length}\" Labels"
+        }
+      }
+    },
+    "DateRangeFilter": {
+      "sheetTitle": "Zeitraumauswahl",
+      "start": "Start",
+      "end": "Ende",
+      "buttons": {
+        "reset": "Zurücksetzen"
+      }
+    }
+  },
   "Commons": {
     "ticketStates": {
       "new": "Neu",
