@@ -630,7 +630,7 @@
       }
     },
     "DateRangeFilter": {
-      "sheetTitle": "Zeitraumauswahl",
+      "sheetTitle": "Datumsauswahl",
       "start": "Start",
       "end": "Ende",
       "buttons": {
@@ -648,6 +648,40 @@
       "modified": "Geändert",
       "created": "Erstellt",
       "title": "Title"
+    },
+    "inputs": {
+      "searchbarPlaceholder": "\"{item}\" suchen..."
+    },
+    "buttons": {
+      "cancel": "Abbrechen",
+      "create": "Erstellen",
+      "save": "Speichern",
+      "confirm": "Bestätigen",
+      "reset": "Zurücksetzen",
+      "resetFilter": "Filter zurücksetzen",
+      "ok": "Verstanden"
+    },
+    "toasts": {
+      "createSuccess": "\"{item}\" wurde erfolgreich erstellt",
+      "updateSuccess": "\"{item}\" wurde erfolgreich aktualisiert",
+      "deleteSuccess": "\"{item\" wurde erfolgreich gelöscht",
+      "createFailure": "Fehler beim Erstellen des \"{item}\" \"{value}\"",
+      "updateFailure": "Fehler beim Aktualisieren des \"{item}\" \"{value}\"",
+      "deleteFailure": "Fehler beim Löschen des \"{item}\" \"{value}\"",
+      "fetchFailure": "Fehler beim Laden der \"{item}\"",
+      "loginAgainError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an"
+    },
+    "fields": {
+      "errors": {
+        "empty": "Bitte gib \"{item}\" an",
+        "short": "Bitte gib mindestens \"{condition}\"",
+        "long": "Bitte gib maximal \"{condition}\"",
+        "lowercase": "Bitte gib mindestens einen Kleinbuchstaben an",
+        "uppercase": "Bitte gib mindestens einen Großbuchstaben an",
+        "number": "Bitte gib mindestens eine Zahl an",
+        "specialChar": "Bitte gib mindestens ein Sonderzeichen an",
+        "wrong": "\"{item}\" inkorrekt"
+      }
     }
   }
 }
