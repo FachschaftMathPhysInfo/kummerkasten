@@ -34,21 +34,15 @@
     }
   },
   "LoginPage": {
-    "header": "Anmelden",
+    "Root": {
+      "title": "Anmelden"
+    },
     "LoginForm": {
-      "mail": "E-Mail",
-      "password": "Passwort",
-      "submit": "Anmelden",
-      "toast": {
-        "loginError": "Fehler beim Anmelden"
+      "buttons": {
+        "login": "Anmelden"
       },
-      "inputErrors": {
-        "mail": {
-          "format": "Bitte gib eine gültige E-Mail an."
-        },
-        "password": {
-          "empty": "Bitte gib ein Passwort an."
-        }
+      "toasts": {
+        "loginError": "Fehler beim Anmelden"
       }
     }
   },
@@ -672,6 +666,25 @@
       "loginAgainError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an"
     },
     "fields": {
+      "firstname": {
+        "label": "Vorname",
+        "placeholder": "Maxi"
+      },
+      "lastname": {
+        "label": "Nachname",
+        "placeholder": "Person"
+      },
+      "email": {
+        "label": "E-Mail",
+        "placeholder": "maxi.person@example.de",
+        "errors": {
+          "format": "Bitte gib ein gültiges Format an"
+        }
+      },
+      "password": {
+        "label": "Passwort",
+        "placeholder": "Passwort"
+      },
       "errors": {
         "empty": "Bitte gib \"{item}\" an",
         "short": "Bitte gib mindestens \"{condition}\" an",

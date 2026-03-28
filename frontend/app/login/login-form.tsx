@@ -18,10 +18,11 @@ import {useTranslations} from "next-intl";
 
 export default function LoginForm() {
   const t = useTranslations("LoginPage.LoginForm")
+  const tc = useTranslations("Commons")
 
   const loginFormSchema = z.object({
-    mail: z.email(t("inputErrors.mail.format")),
-    password: z.string(t("inputErrors.password.empty")),
+    mail: z.email(tc("fields.email.errors.format")),
+    password: z.string(tc("fields.errors.empty", {item: "ein Passwort"})),
   });
 
   const router = useRouter();
@@ -53,7 +54,7 @@ export default function LoginForm() {
     const ok = await login(userData.mail, userData.password)
 
     if (ok === null) {
-      toast.error(t("toast.loginError"))
+      toast.error(t("toasts.loginError"))
       return
     }
 
@@ -82,12 +83,12 @@ export default function LoginForm() {
           name="mail"
           render={({field}) => (
             <FormItem className={'flex-grow'}>
-              <FormLabel hidden>{t("mail")}</FormLabel>
+              <FormLabel hidden>{tc("fields.email.label")}</FormLabel>
               <FormControl>
                 {/*Injected Icons by password managers will trigger a warning*/}
                 <Input
                   suppressHydrationWarning
-                  placeholder={t("mail")}
+                  placeholder={tc("fields.email.label")}
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}
                   onChange={(e) => handleInputChange(field, e.target.value)}
@@ -104,10 +105,10 @@ export default function LoginForm() {
           name="password"
           render={({field}) => (
             <FormItem>
-              <FormLabel hidden>{t("password")}</FormLabel>
+              <FormLabel hidden>{tc("fields.password.label")}</FormLabel>
               <FormControl>
                 <PasswordInput
-                  placeholder={t("password")}
+                  placeholder={tc("fields.password.placeholder")}
                   className={cn(!correctCredentials && "border-destructive")}
                   {...field}
                   onChange={(e) => handleInputChange(field, e.target.value)}
@@ -115,7 +116,7 @@ export default function LoginForm() {
                 />
               </FormControl>
               <FormMessage className={'text-destructive'} data-cy={'password-message'}>
-                {!correctCredentials && hasTriedToSubmit && "Anmeldedaten inkorrekt"}
+                {!correctCredentials && hasTriedToSubmit && tc("fields.errors.wrong", {item: "Anmeldedaten sind"})}
               </FormMessage>
             </FormItem>
           )}
@@ -135,7 +136,7 @@ export default function LoginForm() {
             ) : (
               <LogIn/>
             )}
-            {t("submit")}
+            {t("buttons.login")}
           </Button>
         </div>
       </form>

@@ -6,14 +6,14 @@ import {useTranslations} from "next-intl";
 
 
 export default function LoginPage() {
-  const t = useTranslations("LoginPage");
+  const t = useTranslations("LoginPage.Root");
 
   return (
     <div className={'flex justify-center items-center grow'}>
       <Card>
         <CardContent>
           <CardTitle className={'w-full flex justify-center'}>
-            {t("header")}
+            {t("title")}
           </CardTitle>
           <LoginForm/>
         </CardContent>
