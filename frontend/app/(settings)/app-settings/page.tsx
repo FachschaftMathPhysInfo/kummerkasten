@@ -4,13 +4,13 @@ import FooterForm from "@/app/(settings)/app-settings/footer-form";
 import {useTranslations} from "next-intl";
 
 export default function AppPage() {
-  const t = useTranslations("Settings.AppPage")
+  const t = useTranslations("Settings.AppPage.Root")
 
   return (
     <div className="w-full h-full flex-col grow">
       <ManagementPageHeader
         icon={<SlidersVertical/>}
-        title={t("header")}
+        title={t("title")}
         description={t("description")}
       />
 

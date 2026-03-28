@@ -21,14 +21,15 @@ export const FOOTER_LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE_LINK"
 
 export default function FooterForm() {
   const t = useTranslations("Settings.AppPage.FooterForm")
+  const tc = useTranslations("Commons")
   const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
 
   const footerSettingsScheme = z.object({
-    contactLink: z.url({error: t("inputErrors.urlFormat")}),
-    legalNoticeLink: z.url({error: t("inputErrors.urlFormat")}),
+    contactLink: z.url({error: t("fields.errors.urlFormat")}),
+    legalNoticeLink: z.url({error: t("fields.errors.urlFormat")}),
   });
 
   type FooterSettingsFormData = z.infer<typeof footerSettingsScheme>;
@@ -47,7 +48,7 @@ export default function FooterForm() {
     try {
       const data = await client.request(FooterSettingsDocument);
       if (!data.footerSettings) {
-        toast.error(t("toast.fetchError"))
+        toast.error(tc("toasts.fetchError", {item: t("settings")}))
         return;
       }
 
@@ -58,9 +59,9 @@ export default function FooterForm() {
 
       setIsLoading(false);
     } catch  {
-      toast.error(t("toast.fetchError"));
+      toast.error(tc("toasts.fetchError", {item: t("settings")}));
     }
-  }, [form, t, user]);
+  }, [form, t, tc, user]);
 
   useEffect(() => {
     void fetchFooterSettings();
@@ -71,7 +72,7 @@ export default function FooterForm() {
     const client = getClient();
 
     if (!user) {
-      toast.error(t("toast.loginError"));
+      toast.error(tc("toasts.loginAgainError"));
       return;
     }
 
@@ -82,10 +83,10 @@ export default function FooterForm() {
       await client.request(UpdateSettingDocument, {setting: legalNoticeSetting})
 
       setIsSaving(false);
-      toast.success(t("toast.updateSuccess"))
+      toast.success(tc("toasts.updateSuccess", {item: t("links")}))
       await fetchFooterSettings();
     } catch {
-      toast.error(t("toast.updateFailure"))
+      toast.error(tc("toasts.updateError", {item: t("links")}))
     } finally {
       setIsSaving(false);
     }
@@ -94,7 +95,7 @@ export default function FooterForm() {
   return (
     <Card className={'w-full'}>
       <CardHeader className={'flex items-center gap-2'}>
-        <ExternalLink/> {t("header")}
+        <ExternalLink/> {t("title")}
       </CardHeader>
       <CardContent className={'relative'}>
         <div
@@ -116,9 +117,9 @@ export default function FooterForm() {
               name="contactLink"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>{t("contact.label")}</FormLabel>
+                  <FormLabel>{t("fields.contact.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("contact.placeholder")} {...field} data-cy={'footer-contact-input'}/>
+                    <Input placeholder={t("fields.contact.placeholder")} {...field} data-cy={'footer-contact-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'footer-contact-input-message'}/>
                 </FormItem>
@@ -130,9 +131,9 @@ export default function FooterForm() {
               name="legalNoticeLink"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>{t("legalNotice.label")}</FormLabel>
+                  <FormLabel>{t("fields.legalNotice.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("legalNotice.placeholder")} {...field} data-cy={'footer-legalnotice-input'}/>
+                    <Input placeholder={t("fields.legalNotice.placeholder")} {...field} data-cy={'footer-legalnotice-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'footer-legalnotice-input-message'}/>
                 </FormItem>
@@ -149,7 +150,7 @@ export default function FooterForm() {
                 data-cy={'footer-cancel-button'}
               >
                 <RotateCcw/>
-                {t("cancel")}
+                {tc("buttons.cancel")}
               </Button>
 
               <Button
@@ -163,7 +164,7 @@ export default function FooterForm() {
                 ) : (
                   <>
                     <Save/>
-                    {t("submit")}
+                    {tc("buttons.save")}
                   </>
                 )}
               </Button>
