@@ -387,5 +387,74 @@
         }
       }
     }
+  },
+  "TicketPage": {
+    "Root": {
+      "title": "Tickets",
+      "description": "Bearbeite alle verfügbaren Tickets",
+      "searchbar": {
+        "placeholder": "Suche nach Inhalt..."
+      },
+      "thisSemester": "Dieses Semester",
+      "oldSemester": "Frühere Semester",
+      "noResults": "Es sind noch keine Tickets vorhanden.",
+      "noFilteredResults": "Kein Ticket entspricht dem verwendeten Filter.",
+      "buttons": {
+        "resetFilters": "Filter zurücksetzen"
+      },
+      "confirmations": {
+        "delete": "Dies wird das Ticket \"{title}\" unwiderruflich löschen"
+      },
+      "toast": {
+        "deleteError": "Beim Löschen des Tickets ist ein Fehler aufgetreten",
+        "deleteSuccess": "Ticket wurde erfolgreich gelöscht"
+      }
+    },
+    "TicketCard": {
+      "changed": "Geändert",
+      "buttons": {
+        "copyLink": "Link kopieren",
+        "delete": "Löschen"
+      },
+      "toasts": {
+        "copyError": "Kopieren fehlgeschlagen",
+        "copySuccess": "Link kopiert"
+      }
+    },
+    "MobileFilterSheet": {
+      "filter": "Filter",
+      "labels": "Labels",
+      "date": "Datum",
+      "sort": "Sortieren",
+      "order": "Reihenfolge",
+      "ascending": "Aufsteigend",
+      "descending": "Absteigend",
+      "searchbar": {
+        "placeholder": "Labels suchen..."
+      },
+      "buttons": {
+        "resetFilters": "Filter zurücksetzen",
+        "stateSorting": {
+          "empty": "Status filtern",
+          "nonEmpty": "\"{length}\" ausgewählt"
+        },
+        "labelFiltering": {
+          "empty": "Labels filern",
+          "nonEmpty": "\"{length}\" ausgewählt"
+        }
+      }
+    }
+  },
+  "Commons": {
+    "ticketStates": {
+      "new": "Neu",
+      "open": "Offen",
+      "done": "Fertig"
+    },
+    "ticketSortingFields": {
+      "modified": "Geändert",
+      "created": "Erstellt",
+      "title": "Title"
+    }
   }
 }

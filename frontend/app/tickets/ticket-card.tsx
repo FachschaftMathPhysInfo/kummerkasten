@@ -16,6 +16,7 @@ import {getTicketStateColor} from "@/lib/ticket-operations";
 import LabelBadge from "@/components/label-badge";
 import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
+import {useTranslations} from "use-intl";
 
 
 type TicketCardProps = {
@@ -25,6 +26,8 @@ type TicketCardProps = {
 
 
 export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
+  const t = useTranslations("TicketPage.TicketCard")
+  const tCommons = useTranslations("Commons")
   const {isMobile} = useSidebar()
   const {user} = useUser();
   const {tickets} = useTickets();
@@ -42,9 +45,9 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
     try {
       const url = `${window.location.origin}/tickets/${ticketID}`;
       await navigator.clipboard.writeText(url);
-      toast.success("Link kopiert!");
+      toast.success(t("toasts.copySuccess"));
     } catch {
-      toast.error("Kopieren fehlgeschlagen");
+      toast.error(t("toasts.copyError"));
     }
   };
 
@@ -66,10 +69,10 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
             style={{color: calculateFontColor(getTicketStateColor(ticket.state))}}
           >
             {ticket.state === TicketState.New
-              ? "Neu"
+              ? tCommons("ticketStates.new")
               : ticket.state === TicketState.Open
-                ? "Offen"
-                : "Fertig"}
+                ? tCommons("ticketStates.open")
+                : tCommons("ticketStates.done")}
           </Badge>
           <p className="leading-normal"
             data-cy={`ticket-card-title-${ticket.originalTitle}`}
@@ -101,7 +104,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
               <div
                 className="hidden shrink-0 md:flex flex-col text-xs items-center justify-center text-muted-foreground"
                 ata-cy={`ticket-card-changed-${ticket.lastModified}`}>
-                Geändert: {format(new Date(ticket.lastModified), "dd.MM.yy")}
+                {t("changed")}: {format(new Date(ticket.lastModified), "dd.MM.yy")}
               </div>
             </>
           )}
@@ -130,7 +133,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                 }}
                 data-cy={`ticket-card-copy-${ticket.id}`}
               >
-                <Link/> Link kopieren
+                <Link/> {t("buttons.copyLink")}
               </DropdownMenuItem>
               {user?.role === UserRole.Admin && (
                 <DropdownMenuItem
@@ -143,7 +146,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                   className="text-destructive"
                   data-cy={`ticket-card-delete-${ticket.id}`}
                 >
-                  <Trash2 className="text-destructive"/> Löschen
+                  <Trash2 className="text-destructive"/> {t("buttons.delete")}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

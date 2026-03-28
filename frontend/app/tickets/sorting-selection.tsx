@@ -7,8 +7,10 @@ import {ArrowDown, ArrowUp} from "lucide-react";
 import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
 import {TicketSortingField, useTickets} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "use-intl";
 
 export default function SortingSelection() {
+  const tc = useTranslations("Commons")
   const {sorting, setSorting} = useTickets()
 
   return (
@@ -46,7 +48,12 @@ export default function SortingSelection() {
                 }))}
                 data-cy={`sorting-selection-sort-${field}`}
               >
-                {field}
+                {field === "Erstellt"
+                  ? tc("ticketSortingFields.created")
+                  : field === "Geändert"
+                    ? tc("ticketSortingFields.modified")
+                    : tc("ticketSortingFields.titel")
+                }
               </CommandItem>
             ))}
           </CommandGroup>
