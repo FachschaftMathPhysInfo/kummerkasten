@@ -1,36 +1,35 @@
 {
   "KummerkastenPage": {
-    "header": "Kummerkasten",
+    "Root": {
+      "title": "Kummerkasten",
+      "logoAlt": "Kummerkasten Logo"
+    },
     "AboutSection" : {
-      "header": "Was ist der Kummerkasten?"
+      "title": "Was ist der Kummerkasten?",
+      "noConfig": "Eine Beschreibung wurde nicht konfiguriert"
     },
     "FormUi": {
-      "header": "Deine anonyme Nachricht",
-      "labels": "Worum geht es in deinem Feedback",
-      "title": "Titel",
-      "text": "Feedback",
-      "submit": "Absenden",
-      "toast": {
-        "fetchFailure": "Das Formular konnte nicht fertig geladen werden. Versuche es später erneut",
-        "sendFailure": "Beim Senden des Feedbacks ist ein Fehler aufgetreten.",
-        "sendSuccess": "Feedback wurde erfolgreich gesendet"
-      },
-      "inputErrors": {
-        "labels": {
-          "empty": "Bitte wähle mindestens ein Label aus."
+      "title": "Deine anonyme Nachricht",
+      "fields": {
+        "title": {
+          "label": "Titel",
+          "placeholder": "Vorlesung..."
         },
-        "title" : {
-          "empty": "Die Zusammenfassung darf nicht leer sein.",
-          "long": "Die Zusammenfassung ist zu lang."
+        "labels": {
+          "label": "Worum geht es in deinem Feedback"
         },
         "text": {
-          "empty": "Die Nachricht darf nicht leer sein.",
-          "long": "Die Nachricht ist zu lang"
+          "label": "Feedback",
+          "placeholder": "Deine anonyme Nachricht"
         }
+      },
+      "toasts": {
+        "sendFailure": "Beim Senden des Feedbacks ist ein Fehler aufgetreten.",
+        "sendSuccess": "Feedback wurde erfolgreich gesendet"
       }
     },
     "FaqSection": {
-      "header": "Häufig gestellte Fragen",
+      "title": "Häufig gestellte Fragen",
       "noFaqs": "Keine FAQs verfügbar."
     }
   },
@@ -656,6 +655,7 @@
       "cancel": "Abbrechen",
       "create": "Erstellen",
       "save": "Speichern",
+      "send": "Absenden",
       "confirm": "Bestätigen",
       "reset": "Zurücksetzen",
       "resetFilter": "Filter zurücksetzen",
@@ -665,17 +665,17 @@
       "createSuccess": "\"{item}\" wurde erfolgreich erstellt",
       "updateSuccess": "\"{item}\" wurde erfolgreich aktualisiert",
       "deleteSuccess": "\"{item\" wurde erfolgreich gelöscht",
-      "createFailure": "Fehler beim Erstellen des \"{item}\" \"{value}\"",
-      "updateFailure": "Fehler beim Aktualisieren des \"{item}\" \"{value}\"",
-      "deleteFailure": "Fehler beim Löschen des \"{item}\" \"{value}\"",
-      "fetchFailure": "Fehler beim Laden der \"{item}\"",
+      "createError": "Fehler beim Erstellen des \"{item}\" \"{value}\"",
+      "updateError": "Fehler beim Aktualisieren des \"{item}\" \"{value}\"",
+      "deleteError": "Fehler beim Löschen des \"{item}\" \"{value}\"",
+      "fetchError": "Fehler beim Laden der \"{item}\"",
       "loginAgainError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an"
     },
     "fields": {
       "errors": {
         "empty": "Bitte gib \"{item}\" an",
-        "short": "Bitte gib mindestens \"{condition}\"",
-        "long": "Bitte gib maximal \"{condition}\"",
+        "short": "Bitte gib mindestens \"{condition}\" an",
+        "long": "Bitte gib maximal \"{condition}\" an",
         "lowercase": "Bitte gib mindestens einen Kleinbuchstaben an",
         "uppercase": "Bitte gib mindestens einen Großbuchstaben an",
         "number": "Bitte gib mindestens eine Zahl an",

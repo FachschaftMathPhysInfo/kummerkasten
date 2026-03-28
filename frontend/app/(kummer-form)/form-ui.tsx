@@ -30,14 +30,15 @@ const TEXT_MAX_LENGTH = 3000
 
 export default function FormUi() {
   const t = useTranslations("KummerkastenPage.FormUi")
+  const tc = useTranslations("Commons")
 
   const formUiSchema = z.object({
     labels: z.array(z.string())
-      .nonempty({error: t("inputErrors.labels.empty")}),
-    title: z.string().nonempty({error: t("inputErrors.title.empty")})
-      .max(TITLE_MAX_LENGTH, t("inputErrors.title.long")),
-    text: z.string().nonempty({error: t("inputErrors.text.empty")})
-      .max(TEXT_MAX_LENGTH, t("inputErrors.text.long")),
+      .nonempty({error: tc("fields.errors.short", {condition: "ein Label"})}),
+    title: z.string().nonempty({error: tc("fields.errors.short", {item: "einen Titel"})})
+      .max(TITLE_MAX_LENGTH, tc("fields.errors.long", {condition: `${TITLE_MAX_LENGTH} Zeichen`})),
+    text: z.string().nonempty({error: tc("fields.errors.short", {item: "ein Feedback"})})
+      .max(TEXT_MAX_LENGTH, tc("fields.errors.long", {condition: `${TEXT_MAX_LENGTH} Zeichen`})),
   });
 
   const form = useForm<z.infer<typeof formUiSchema>>({
@@ -68,14 +69,14 @@ export default function FormUi() {
         setFormLabels(filteredLabels);
 
       } catch {
-        toast.error(t("toast.fetchError"));
+        toast.error(tc("toasts.fetchError", {item: "Labels"}));
       } finally {
         setIsLabelsLoading(false);
       }
     };
 
     void fetchPublicLabels();
-  }, [form, t]);
+  }, [form, tc]);
 
   async function onValidSubmit(data: z.infer<typeof formUiSchema>) {
     setLoading(true);
@@ -89,11 +90,11 @@ export default function FormUi() {
 
     try {
       await client.request<CreateTicketMutation>(CreateTicketDocument, {ticket: newTicket});
-      toast.success(t("toast.sendSuccess"));
+      toast.success(t("toasts.sendSuccess"));
       setHasTriedToSubmit(false);
       form.reset();
     } catch (error) {
-      toast.error(t("toast.sendError"));
+      toast.error(t("toasts.sendError"));
       console.error(error);
     }
     setLoading(false);
@@ -101,7 +102,7 @@ export default function FormUi() {
 
   return (
     <div className="w-full max-w-4xl rounded-lg p-6 my-4 border">
-      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">{t("header")}</h2>
+      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">{t("title")}</h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onValidSubmit, () =>
@@ -115,7 +116,7 @@ export default function FormUi() {
             render={() => (
               <FormItem>
                 <FormLabel className={cn('data-[error=true]:text-destructive text-lg ')}>
-                  {t("labels")}
+                  {t("fields.labels.label")}
                 </FormLabel>
                 {isLabelsLoading &&
                   <div className="flex items-center justify-center">
@@ -176,7 +177,7 @@ export default function FormUi() {
             render={({field}) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">{t("title")}</FormLabel>
+                  <FormLabel className="text-lg">{t("fields.title.label")}</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     field.value.length > TITLE_MAX_LENGTH && "text-destructive"
@@ -187,7 +188,7 @@ export default function FormUi() {
                 <FormControl>
                   <Input
                     className={cn("bg-background text-foreground")}
-                    placeholder="Vorlesung ..."
+                    placeholder={t("fields.title.placeholder")}
                     maxLength={TITLE_MAX_LENGTH}
                     data-cy={'kummerform-title-input'}
                     {...field}
@@ -203,7 +204,7 @@ export default function FormUi() {
             render={({field}) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">{t("text")}</FormLabel>
+                  <FormLabel className="text-lg">{t("fields.text.label")}</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     field.value.length > TEXT_MAX_LENGTH && "text-destructive"
@@ -213,7 +214,7 @@ export default function FormUi() {
                 </div>
                 <FormControl>
                   <Textarea
-                    placeholder="Deine anonyme Nachricht"
+                    placeholder={t("fields.text.placeholder")}
                     maxLength={TEXT_MAX_LENGTH}
                     className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
                       "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
@@ -236,7 +237,7 @@ export default function FormUi() {
             ) : (
               <>
                 <Send/>
-                {t("submit")}
+                {tc("buttons.send")}
               </>
             )}
           </Button>
