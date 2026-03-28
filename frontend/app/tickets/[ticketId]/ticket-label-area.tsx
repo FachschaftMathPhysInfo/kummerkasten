@@ -8,6 +8,7 @@ import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/
 import {cn} from "@/lib/utils";
 import {useLabels} from "@/components/providers/label-provider";
 import LabelBadge from "@/components/label-badge";
+import {useTranslations} from "next-intl";
 
 
 interface TicketLabelAreaProps {
@@ -16,6 +17,7 @@ interface TicketLabelAreaProps {
 }
 
 export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: TicketLabelAreaProps) {
+  const t = useTranslations("TicketId.TicketLabelArea")
   const [editMode, setEditMode] = React.useState(false);
   const {labels} = useLabels();
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -41,7 +43,7 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
           onClick={() => setEditMode(!editMode)}
           className="w-full flex items-center justify-between"
           data-cy={'label-settings-button'}>
-          <p>Labels</p>
+          <p>{t("labels")}</p>
           <Settings size={18} className={'stroke-muted-foreground'}/>
         </Button>
       </div>
@@ -80,7 +82,7 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
           </CommandGroup>
           <Button onClick={handleSave} variant={'secondary'} data-cy={'label-area-save'}>
             <Save className={'mr-2'}/>
-            Speichern
+            {t("submit")}
           </Button>
         </Command>
       ) : (

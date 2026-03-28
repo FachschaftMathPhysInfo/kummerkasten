@@ -12,6 +12,7 @@ import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 interface TicketDetailViewProps {
   ticket: Ticket | null;
@@ -26,6 +27,7 @@ export default function TicketDetailView({
                                            ticketLabels,
                                            setDialogStateAction,
                                          }: TicketDetailViewProps) {
+  const t = useTranslations("TicketId.TicketDetailView");
   const {isMobile} = useSidebar()
   const {updateTicket} = useTickets()
   const [editMode, setEditMode] = React.useState(false);
@@ -39,14 +41,14 @@ export default function TicketDetailView({
     if (!error) {
       setEditMode(false)
     } else {
-      toast.error("Beim Aktualisieren des Titels ist ein Fehler aufgetreten")
+      toast.error(t("toasts.updateTitleError"))
     }
   }
 
   if (!ticket) {
     return (
       <div className="flex flex-grow items-center justify-center">
-        <PageLoader message="Bitte wähle ein Ticket aus der Übersicht." loading={false}/>
+        <PageLoader message={t("chooseTicket")} loading={false}/>
       </div>
     )
   }
@@ -79,7 +81,7 @@ export default function TicketDetailView({
           ) : (
             <h1
               className="text-4xl font-semibold text-wrap whitespace-nowrap truncate"
-              title={"Original Titel: " + ticket.originalTitle}
+              title={t("firstTitle") + ": " + ticket.originalTitle}
               data-cy={'ticket-detail-title'}
             >
               {newTitle}
@@ -94,7 +96,7 @@ export default function TicketDetailView({
                   onClick={() => setEditMode(false)}
                   data-cy={'ticket-detail-title-cancel'}
                 >
-                  Cancel
+                  {t("buttons.cancel")}
                 </Button>
                 <Button
                   type={"submit"}
@@ -104,7 +106,7 @@ export default function TicketDetailView({
                   data-cy={'ticket-detail-title-save'}
                 >
                   <Save/>
-                  Speichern
+                  {t("buttons.submit")}
                 </Button>
               </span>
             ) : (
@@ -117,7 +119,7 @@ export default function TicketDetailView({
         <span className="flex items-center justify-between gap-2">
             <h1
               className="text-2xl font-semibold text-wrap whitespace-nowrap"
-              title={"Originaltitel: " + ticket.originalTitle}
+              title={t("firstTitle") + ": " + ticket.originalTitle}
             >
               {ticket.title}
             </h1>

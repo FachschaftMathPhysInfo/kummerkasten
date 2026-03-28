@@ -1,6 +1,7 @@
 import {format} from "date-fns";
 import React from "react";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 interface TicketMetadataArea {
   createdAt: Date
@@ -8,6 +9,8 @@ interface TicketMetadataArea {
 }
 
 export default function TicketMetadataArea({createdAt, lastModified}: TicketMetadataArea) {
+  const t = useTranslations("TicketId.TicketMetadataArea")
+
   return (
     <div
       className={cn(
@@ -16,12 +19,12 @@ export default function TicketMetadataArea({createdAt, lastModified}: TicketMeta
       )}
     >
       <div className="w-full flex justify-between items-center px-5">
-        <span>Erstellt:</span>
+        <span>{t("created")}:</span>
         <div>{format(createdAt, "dd.MM.yy")}</div>
       </div>
 
       <div className="w-full flex justify-between items-center px-5">
-        <span>Geändert:</span>
+        <span>{t("modified")}</span>
         <div>{format(lastModified, "dd.MM.yy")}</div>
       </div>
     </div>
