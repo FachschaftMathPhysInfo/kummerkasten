@@ -8,7 +8,7 @@ import {QAPTableDialogState} from "@/app/(settings)/faq/faq-table";
 import React from "react";
 import {useSidebar} from "@/components/ui/sidebar";
 import {useUser} from "@/components/providers/user-provider";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface QAPColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<QAPTableDialogState>>;

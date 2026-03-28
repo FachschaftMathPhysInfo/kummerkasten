@@ -1,7 +1,7 @@
 import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
 import UserForm from "@/app/(settings)/users/user-form";
 import {UserPlus} from "lucide-react";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface UserDialogProps {
   open: boolean;

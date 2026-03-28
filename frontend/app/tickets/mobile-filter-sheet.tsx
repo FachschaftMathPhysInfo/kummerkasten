@@ -9,7 +9,7 @@ import React, {useState} from "react";
 import {TicketSortingField, useTickets} from "@/components/providers/ticket-provider";
 import {Input} from "@/components/ui/input";
 import {useLabels} from "@/components/providers/label-provider";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function MobileFilterSheet() {
   const t = useTranslations("TicketPage.MobileFilterSheet");

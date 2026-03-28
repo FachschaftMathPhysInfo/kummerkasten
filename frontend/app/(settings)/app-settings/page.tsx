@@ -1,7 +1,7 @@
 import {ManagementPageHeader} from "@/components/management-page-header";
 import {SlidersVertical} from "lucide-react";
 import FooterForm from "@/app/(settings)/app-settings/footer-form";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function AppPage() {
   const t = useTranslations("Settings.AppPage")

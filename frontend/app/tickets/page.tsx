@@ -21,7 +21,7 @@ import {
   getSortedTickets
 } from "@/lib/ticket-operations";
 import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 
 export type TicketDialogState = {

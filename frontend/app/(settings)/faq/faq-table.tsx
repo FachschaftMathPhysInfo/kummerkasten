@@ -19,7 +19,7 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import QAPColumns from "@/app/(settings)/faq/faq-columns";
 import {useQAPs} from "@/components/providers/qap-provider";
 import {DndTableRow} from "@/app/(settings)/faq/qap-dnd-row";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export interface QAPTableDialogState {
   mode: "create" | "update" | "delete" | null;

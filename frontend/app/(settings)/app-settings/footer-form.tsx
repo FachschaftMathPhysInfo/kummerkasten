@@ -14,7 +14,7 @@ import {Button} from "@/components/ui/button";
 import {ExternalLink, Loader2, RotateCcw, Save} from "lucide-react";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {cn} from "@/lib/utils";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export const FOOTER_CONTACT_LINK_KEY = "FOOTER_CONTACT_LINK"
 export const FOOTER_LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE_LINK"

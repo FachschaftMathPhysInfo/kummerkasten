@@ -8,7 +8,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/compo
 import {useUser} from "@/components/providers/user-provider";
 import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-header";
 import {TableUser, UserTableDialogState} from "@/app/(settings)/users/user-table";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<UserTableDialogState>>;

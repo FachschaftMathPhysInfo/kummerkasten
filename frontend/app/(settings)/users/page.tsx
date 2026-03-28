@@ -7,7 +7,7 @@ import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {Users} from "lucide-react";
 import {ManagementPageHeader} from "@/components/management-page-header";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function UserManagementPage() {
   const t = useTranslations("Settings.UserManagementPage")

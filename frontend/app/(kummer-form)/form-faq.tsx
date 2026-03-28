@@ -5,7 +5,7 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from "@/c
 import {LoaderCircle} from "lucide-react";
 import {getClient} from "@/lib/graph/client";
 import {AllQuestionAnswerPairDocument, QuestionAnswerPair} from "@/lib/graph/generated/graphql";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 
 export default function FaqSection() {

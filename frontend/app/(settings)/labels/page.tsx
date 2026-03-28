@@ -4,7 +4,7 @@ import {Tags} from "lucide-react";
 import {LabelTable} from "@/app/(settings)/labels/label-table";
 import {ManagementPageHeader} from "@/components/management-page-header";
 import {LabelProvider} from "@/components/providers/label-provider";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function LabelManagementPage() {
   const t = useTranslations("Settings.LabelManagementPage")

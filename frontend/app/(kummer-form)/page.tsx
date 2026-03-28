@@ -6,7 +6,7 @@ import FormUi from './form-ui';
 import Image from 'next/image';
 import ThemeSwitch from "@/components/theme-switch";
 import {useTheme} from "next-themes";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function KummerkastenPage() {
   const {resolvedTheme} = useTheme();

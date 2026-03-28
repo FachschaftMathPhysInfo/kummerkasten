@@ -22,7 +22,7 @@ import {DataTablePagination} from "@/components/table-utils/data-table-paginatio
 import {useLabels} from "@/components/providers/label-provider";
 import {cn} from "@/lib/utils";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export type LabelTableDialogState = {
   mode: "update" | "delete" | "add" | null;

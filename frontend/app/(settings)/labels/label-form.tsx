@@ -14,7 +14,7 @@ import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
 import {cn} from "@/lib/utils";
 import {useLabels} from "@/components/providers/label-provider";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 const LabelMaxLength = 50;
 

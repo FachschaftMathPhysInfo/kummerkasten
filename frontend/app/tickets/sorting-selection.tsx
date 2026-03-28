@@ -7,7 +7,7 @@ import {ArrowDown, ArrowUp} from "lucide-react";
 import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
 import {TicketSortingField, useTickets} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function SortingSelection() {
   const tc = useTranslations("Commons")

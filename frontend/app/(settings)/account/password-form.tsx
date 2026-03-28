@@ -12,7 +12,7 @@ import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import PasswordInput from "@/components/password-input";
 import {ShieldUser} from "lucide-react";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 
 export default function PasswordDataForm() {

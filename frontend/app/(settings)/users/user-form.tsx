@@ -12,7 +12,7 @@ import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/compon
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface UserFormProps {
   closeDialog: () => void

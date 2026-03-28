@@ -22,7 +22,7 @@ import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
 import {defaultLabel} from "@/lib/graph/defaultTypes";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 const TITLE_MAX_LENGTH = 70
 const TEXT_MAX_LENGTH = 3000

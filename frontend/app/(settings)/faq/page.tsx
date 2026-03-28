@@ -5,7 +5,7 @@ import {QAPTable} from "@/app/(settings)/faq/faq-table";
 import {ManagementPageHeader} from "@/components/management-page-header";
 import AboutSectionForm from "@/app/(settings)/faq/about-section-form";
 import {QAPProvider} from "@/components/providers/qap-provider";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function QAPManagementPage() {
   const t = useTranslations("Settings.QAPManagement.Page")

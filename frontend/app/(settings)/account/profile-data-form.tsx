@@ -18,7 +18,7 @@ import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
 import PasswordDialog from "@/components/dialogs/password-dialog";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 const MAX_NAME_LENGTH = 50;
 

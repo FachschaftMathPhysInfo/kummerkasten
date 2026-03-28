@@ -13,7 +13,7 @@ import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {cn} from "@/lib/utils";
 import PasswordInput from "@/components/password-input";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 
 export default function LoginForm() {

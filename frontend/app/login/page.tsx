@@ -2,7 +2,7 @@
 
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
 import LoginForm from "@/app/login/login-form";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 
 export default function LoginPage() {

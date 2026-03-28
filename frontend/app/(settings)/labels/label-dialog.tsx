@@ -2,7 +2,7 @@ import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
 import {Edit2, PlusCircle} from "lucide-react";
 import {Label} from "@/lib/graph/generated/graphql";
 import LabelForm from "@/app/(settings)/labels/label-form";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface LabelDialogProps {
   open: boolean;

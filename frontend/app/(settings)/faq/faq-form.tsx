@@ -12,7 +12,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useQAPs} from "@/components/providers/qap-provider";
 import {CirclePlus, Save} from "lucide-react";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface FaqFormProps {
   qap: QuestionAnswerPair | null;

@@ -16,7 +16,7 @@ import {getTicketStateColor} from "@/lib/ticket-operations";
 import LabelBadge from "@/components/label-badge";
 import {useSidebar} from "@/components/ui/sidebar";
 import {useTickets} from "@/components/providers/ticket-provider";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 
 type TicketCardProps = {

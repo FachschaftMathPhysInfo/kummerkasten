@@ -28,7 +28,7 @@ import {Button} from "@/components/ui/button";
 import {PlusCircle} from "lucide-react";
 import UserDialog from "@/app/(settings)/users/user-dialog";
 import {ResetPasswordDialog} from "@/app/(settings)/users/reset-password-dialog";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface DataTableProps {
   data: TableUser[];

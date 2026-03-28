@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { getClient } from "@/lib/graph/client";
 import { AboutSectionSettingsDocument } from "@/lib/graph/generated/graphql";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export default function AboutSection() {
   const [text, setText] = useState<string>("");

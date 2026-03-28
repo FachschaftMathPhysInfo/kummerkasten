@@ -13,7 +13,7 @@ import {Button} from "@/components/ui/button";
 import {BookText, Loader2, RotateCcw, Save} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea";
 import {cn} from "@/lib/utils";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 export const ABOUT_SECTION_TEXT_KEY = "ABOUT_SECTION_TEXT";
 const MAX_ABOUT_TEXT_LENGTH = 2000;

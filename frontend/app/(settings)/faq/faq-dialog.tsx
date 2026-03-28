@@ -5,7 +5,7 @@ import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
 import {Edit2, PlusCircle} from "lucide-react";
 import {QuestionAnswerPair} from "@/lib/graph/generated/graphql";
 import QAPForm from "@/app/(settings)/faq/faq-form";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface QAPDialogProps {
   open: boolean;

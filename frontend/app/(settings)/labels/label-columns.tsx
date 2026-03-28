@@ -9,7 +9,7 @@ import {Badge} from "@/components/ui/badge";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {compareRowsInLowercase} from "@/lib/utils";
 import {useUser} from "@/components/providers/user-provider";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<LabelTableDialogState>>;

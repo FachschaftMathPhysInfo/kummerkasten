@@ -26,7 +26,7 @@ import {TicketState} from "@/lib/graph/generated/graphql";
 import {Button} from "@/components/ui/button";
 import FilterBar from "@/components/filter-bar";
 import {RotateCcw} from "lucide-react";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface TicketSidebarProps {
   selectedTicketId?: string;

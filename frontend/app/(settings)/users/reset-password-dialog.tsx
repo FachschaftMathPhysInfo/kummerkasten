@@ -18,7 +18,7 @@ import {TableUser} from "@/app/(settings)/users/user-table";
 import PasswordInput from "@/components/password-input";
 import {testPasswordFormat} from "@/lib/password";
 import {cn} from "@/lib/utils";
-import {useTranslations} from "use-intl";
+import {useTranslations} from "next-intl";
 
 interface ResetPasswordDialogProps {
   user: TableUser | null
