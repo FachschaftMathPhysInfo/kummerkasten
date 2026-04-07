@@ -26,8 +26,7 @@
         }
       },
       "toasts": {
-        "sendFailure": "Beim Senden des Feedbacks ist ein Fehler aufgetreten.",
-        "sendSuccess": "Feedback wurde erfolgreich gesendet"
+        "sendSuccess": "Dein Feedback wurde erfolgreich eingereicht."
       }
     },
     "FaqSection": {
@@ -118,8 +117,10 @@
       }
     },
     "QAPManagementPage": {
-      "header": "FAQs",
-      "description": "Verwalte die Informationen zum Kummerkasten-Formular",
+      "Root": {
+        "title": "FAQs",
+        "description": "Verwalte die Informationen zum Kummerkasten-Formular"
+      },
       "QAPTable": {
         "createButton": "Frage erstellen",
         "searchbar": {
@@ -169,7 +170,7 @@
       },
       "AboutSectionForm": {
         "aboutText": {
-          "header": "About-Text",
+          "title": "About-Text",
           "description": "Beschreibe, wofür der Kummerkasten da ist.",
           "placeholder": "Gib eine Beschreibung für den Kummerkasten an"
         },
@@ -641,15 +642,11 @@
       "ok": "Verstanden"
     },
     "toasts": {
-      "generalError": "Ein Fehler ist aufgetreten",
-      "createSuccess": "\"{item}\" wurde erfolgreich erstellt",
-      "updateSuccess": "\"{item}\" wurde erfolgreich aktualisiert",
-      "deleteSuccess": "\"{item\" wurde erfolgreich gelöscht",
-      "createError": "Fehler beim Erstellen des \"{item}\" \"{value}\"",
-      "updateError": "Fehler beim Aktualisieren des \"{item}\" \"{value}\"",
-      "deleteError": "Fehler beim Löschen des \"{item}\" \"{value}\"",
-      "fetchError": "Fehler beim Laden der \"{item}\"",
-      "loginAgainError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an"
+      "generalError": "Ein Fehler ist aufgetreten. Versuche es später erneut oder kontaktiere die Systemadmins.",
+      "fetchError": "Fehler beim Laden der Daten. Versuche es später erneut oder kontaktiere die Systemadmins.",
+      "loginAgainError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an.",
+      "updateSuccess": "Änderung erfolgreich gespeichert.",
+      "creationSuccess": "Eintrag erfolgreich erstellt."
     },
     "fields": {
       "firstname": {
@@ -682,7 +679,7 @@
         "errorInfix": "ein Label"
       },
       "errors": {
-        "empty": "Bitte gib \"{item}\" an",
+        "empty": "Bitte angeben",
         "short": "Bitte gib mindestens \"{condition}\" an",
         "long": "Bitte gib maximal \"{condition}\" an",
         "lowercase": "Bitte gib mindestens einen Kleinbuchstaben an",

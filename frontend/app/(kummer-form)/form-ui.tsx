@@ -33,11 +33,10 @@ export default function FormUi() {
   const tc = useTranslations("Commons")
 
   const formUiSchema = z.object({
-    labels: z.array(z.string())
-      .nonempty({error: tc("fields.errors.short", {condition: tc("fields.labels.errorInfix")})}),
-    title: z.string().nonempty({error: tc("fields.errors.short", {item: t("fields.title.errorInfix")})})
+    labels: z.array(z.string()).nonempty({error: tc("fields.errors.empty")}),
+    title: z.string().nonempty({error: tc("fields.errors.empty")})
       .max(TITLE_MAX_LENGTH, tc("fields.errors.long", {condition: `${TITLE_MAX_LENGTH} ${tc("words.character")}`})),
-    text: z.string().nonempty({error: tc("fields.errors.short", {item: t("fields.text.errorInfix")})})
+    text: z.string().nonempty({error: tc("fields.errors.empty")})
       .max(TEXT_MAX_LENGTH, tc("fields.errors.long", {condition: `${TEXT_MAX_LENGTH} ${tc("words.character")}`})),
   });
 
@@ -69,7 +68,7 @@ export default function FormUi() {
         setFormLabels(filteredLabels);
 
       } catch {
-        toast.error(tc("toasts.fetchError", {item: "Labels"}));
+        toast.error(tc("toasts.fetchError"));
       } finally {
         setIsLabelsLoading(false);
       }
@@ -93,9 +92,8 @@ export default function FormUi() {
       toast.success(t("toasts.sendSuccess"));
       setHasTriedToSubmit(false);
       form.reset();
-    } catch (error) {
-      toast.error(t("toasts.sendError"));
-      console.error(error);
+    } catch {
+      toast.error(t("toasts.generalError"));
     }
     setLoading(false);
   }

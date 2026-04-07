@@ -26,7 +26,7 @@ export default function FaqSection() {
 
         setFaqs(filteredFaqs);
       } catch {
-        toast.error(tc("toasts.fetchError", {item: "FAQs"}))
+        toast.error(tc("toasts.fetchError"))
       } finally {
         setLoading(false);
       }
