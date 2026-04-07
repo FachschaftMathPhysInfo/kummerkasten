@@ -8,13 +8,13 @@ import {QAPProvider} from "@/components/providers/qap-provider";
 import {useTranslations} from "next-intl";
 
 export default function QAPManagementPage() {
-  const t = useTranslations("Settings.QAPManagement.Page")
+  const t = useTranslations("Settings.QAPManagementPage.Root")
 
   return (
       <div className="w-full h-full flex flex-col grow">
         <ManagementPageHeader
           icon={<MessageCircleQuestionMark />}
-          title={t("header")}
+          title={t("title")}
           description={t("description")}
         />
         <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">

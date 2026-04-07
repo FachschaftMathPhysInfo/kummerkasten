@@ -25,6 +25,7 @@ const ANSWER_MAX_LENGTH = 700
 
 export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const t = useTranslations("Setting.QAPManagementPage.FaqForm")
+  const tc = useTranslations("Commons")
   const [loading, setLoading] = useState(false);
   const {qaps, createQap, updateQap} = useQAPs()
   // maxPosition is the highest OCCUPIED zero-based index
@@ -32,10 +33,10 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const createMode = !qap
 
   const faqFormSchema = z.object({
-    question: z.string().nonempty({error: t("inputErrors.question.empty")}),
-    answer: z.string().nonempty({error: t("inputErrors.answer.empty")}),
-    position: z.int({error: t("inputErrors.position.format")})
-      .min(0, {error: t("inputErrors.position.minimum")}),
+    question: z.string().nonempty({error: tc("fields.errors.empty")}),
+    answer: z.string().nonempty({error: tc("fields.errors.empty")}),
+    position: z.int({error: t("fields.position.errors.format")})
+      .min(0, {error: t("fields.position.errors.minimum")}),
   })
 
   const form = useForm<z.infer<typeof faqFormSchema>>({
@@ -92,15 +93,15 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
     if (!error) {
       return true
     } else {
-      if (String(error).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
-      else toast.error(t("toast.creationError"))
+      if (String(error).includes('already exists')) form.setError('question', {message: t("fields.question.errors.unique")})
+      else toast.error(tc("toasts.generalError"))
       return false
     }
   }
 
   async function updateQAPHandler(data: z.infer<typeof faqFormSchema>) {
     if (!qap) {
-      toast.error(t("toast.error"))
+      toast.error(tc("toasts.generalError"))
       return false
     }
 
@@ -115,8 +116,8 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
     if (!error) {
       return true
     } else {
-      if (String(error).includes('already exists')) form.setError('question', {message: 'Diese Frage existiert bereits'})
-      else toast.error(t("toast.updateError"))
+      if (String(error).includes('already exists')) form.setError('question', {message: t("fields.question.errors.unique")})
+      else toast.error(tc("toasts.generalError"))
       return false
     }
   }
@@ -133,10 +134,10 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
           name="question"
           render={({field, fieldState}) => (
             <FormItem>
-              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>{t("question")}</FormLabel>
+              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>{t("fields.question.label")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("question")}
+                  placeholder={t("fields.question.placeholder")}
                   maxLength={QUESTION_MAX_LENGTH}
                   {...field}
                   aria-invalid={fieldState.invalid}
@@ -161,10 +162,10 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
           name="answer"
           render={({field, fieldState}) => (
             <FormItem>
-              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>{t("answer")}</FormLabel>
+              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>{t("fields.answer.label")}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("answer")}
+                  placeholder={t("fields.label.placeholder")}
                   rows={7}
                   maxLength={ANSWER_MAX_LENGTH}
                   {...field}
@@ -191,7 +192,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
           render={({field}) => (
             <FormItem>
               <FormLabel>
-                {t("position")}
+                {t("fields.position.label")}
               </FormLabel>
               <FormControl>
                 <Input
@@ -214,13 +215,13 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
 
         <div className="flex justify-between gap-2 mt-4">
           <Button type="button" variant="outline" className="flex-1" onClick={closeDialog} data-cy={'cancel-button'}>
-            {t("cancel")}
+            {tc("buttons.cancel")}
           </Button>
           <Button type="submit" className="flex-1" disabled={loading} data-cy={'submit-button'}>
             {createMode ? (
-              <><CirclePlus/>{t("create")}</>
+              <><CirclePlus/>{tc("buttons.create")}</>
             ) : (
-              <><Save/>{t("update")}</>
+              <><Save/>{tc("buttons.update")}</>
             )}
           </Button>
         </div>

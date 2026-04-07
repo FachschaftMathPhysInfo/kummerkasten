@@ -21,6 +21,7 @@ const MAX_ABOUT_TEXT_LENGTH = 2000;
 
 export default function AboutSectionForm() {
   const t = useTranslations("Setting.QAPManagementPage.AboutSectionForm")
+  const tc = useTranslations("Commons")
   const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,10 +30,10 @@ export default function AboutSectionForm() {
   const aboutSectionSchema = z.object({
     aboutText: z
       .string()
-      .nonempty(t("inputErrors.text.empty"))
+      .nonempty(tc("fields.error.empty"))
       .max(
         MAX_ABOUT_TEXT_LENGTH,
-        t("inputErrors.text.long", {length: MAX_ABOUT_TEXT_LENGTH}),
+        tc("fields.error.long", {condition: `${MAX_ABOUT_TEXT_LENGTH} ${tc("words.character")}`}),
       ),
   });
 
@@ -50,7 +51,7 @@ export default function AboutSectionForm() {
     try {
       const data = await client.request(AboutSectionSettingsDocument);
       if (!data?.aboutSectionSettings) {
-        toast.error(t("toast.loadingError"));
+        toast.error(tc("toasts.fetchError"));
         setIsLoading(false);
         return;
       }
@@ -64,10 +65,10 @@ export default function AboutSectionForm() {
 
       setIsLoading(false);
     } catch {
-      toast.error(t("toast.loadingError"));
+      toast.error(tc("toasts.fetchError"));
       setIsLoading(false);
     }
-  }, [form, t]);
+  }, [form, tc]);
 
   useEffect(() => {
     void fetchAboutSection();
@@ -78,7 +79,7 @@ export default function AboutSectionForm() {
     const client = getClient();
 
     if (!user) {
-      toast.error(t("toast.loadingError"));
+      toast.error(tc("toasts.fetchError"));
       setIsSaving(false);
       return;
     }
@@ -86,11 +87,10 @@ export default function AboutSectionForm() {
     try {
       await client.request(UpdateAboutSectionTextDocument, {text: data.aboutText});
 
-      toast.success(t("toast.updateSuccess"));
+      toast.success(tc("toasts.updateSuccess"));
       await fetchAboutSection();
-    } catch (err) {
-      console.error(err);
-      toast.error(t("toast.updateFailure"));
+    } catch {
+      toast.error(tc("toasts.generalError"));
     } finally {
       setIsSaving(false);
     }
@@ -168,7 +168,7 @@ export default function AboutSectionForm() {
               data-cy={'about-cancel-button'}
             >
               <RotateCcw/>
-              {t("cancel")}
+              {tc("buttons.cancel")}
             </Button>
 
             <Button
@@ -185,7 +185,7 @@ export default function AboutSectionForm() {
                 <Loader2 className="animate-spin"/>
               ) : (
                 <>
-                  <Save/> {t("submit")}
+                  <Save/> {tc("buttons.save")}
                 </>
               )}
             </Button>

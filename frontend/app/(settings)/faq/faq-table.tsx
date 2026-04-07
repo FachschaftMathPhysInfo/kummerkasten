@@ -28,6 +28,7 @@ export interface QAPTableDialogState {
 
 export function QAPTable() {
   const t = useTranslations("Settings.QAPManagementPage.QAPTable");
+  const tc = useTranslations("Commons")
   const [dialogState, setDialogState] = useState<QAPTableDialogState>({mode: null, currentQAP: null});
   const [searchTerm, setSearchTerm] = useState("");
   const {qaps, deleteQaps, updateQapPositions, triggerQAPRefetch} = useQAPs()
@@ -52,7 +53,7 @@ export function QAPTable() {
 
   async function deleteQAPHandler() {
     if (!dialogState.currentQAP) {
-      toast.error(t("toast.error"))
+      toast.error(tc("toasts.generalError"))
       return
     }
 
@@ -61,9 +62,9 @@ export function QAPTable() {
     if (!error) {
       resetDialogState();
       triggerQAPRefetch();
-      toast.success(t("toast.deleteSuccess"))
+      toast.success(tc("toasts.deleteSuccess"))
     } else {
-      toast.error(t("toast.deleteFailure"));
+      toast.error(tc("toasts.generalError"));
     }
   }
 
@@ -85,11 +86,11 @@ export function QAPTable() {
       }));
 
       const error = await updateQapPositions(reordered)
-      if (error) toast.error(t("toast.updatePositionFailure"));
+      if (error) toast.error(tc("toasts.generalError"));
 
       triggerQAPRefetch();
     },
-    [localData, t, triggerQAPRefetch, updateQapPositions]
+    [localData, tc, triggerQAPRefetch, updateQapPositions]
   );
   return (
     <DndProvider backend={HTML5Backend}>

@@ -144,27 +144,24 @@
         "editQuestion": "Frage bearbeiten"
       },
       "FaqForm": {
-        "question": "Frage",
-        "answer": "Frage",
-        "position": "Position",
-        "cancel": "Abbrechen",
-        "update": "Speichern",
-        "create": "Erstellen",
-        "toast": {
-          "error": "Ein Fehler ist aufgetreten",
-          "creationError": "Beim Erstellen ist ein Fehler aufgetreten",
-          "updateError": "Beim Aktualisieren des FAQ ist ein Fehler aufgetreten"
-        },
-        "inputErrors": {
+        "fields": {
           "question": {
-            "empty": "Bitte gib eine Frage an"
+            "label": "Frage",
+            "placeholder": "Was?",
+            "errors": {
+              "unique": "Diese Frage existiert bereits."
+            }
           },
           "answer": {
-            "empty": "Bitte gib eine Antwort an"
+            "label": "Antwort"
           },
           "position": {
-            "format": "Bitte gib eine ganze Zahl an",
-            "minimum": "Bitte gib einen Wert über 0 an"
+            "label": "Position",
+            "placeholder": "1",
+            "errors": {
+              "format": "Bitte gib eine ganze Zahl an",
+              "minimum": "Bitte gib einen Wert über 0 an"
+            }
           }
         }
       },
@@ -174,21 +171,7 @@
           "description": "Beschreibe, wofür der Kummerkasten da ist.",
           "placeholder": "Gib eine Beschreibung für den Kummerkasten an"
         },
-        "cancel": "Abbrechen",
-        "submit": "Speichern",
-        "loading": "Lade About-Section...",
-        "toast": {
-          "loginError": "Ein Fehler ist aufgetreten, melde dich erneut an",
-          "loadingError": "Fehler beim Laden der About-Section",
-          "updateFailure": "About-Section erfolgreich aktualisiert",
-          "updateSuccess": "Ein Fehler beim Speichern ist aufgetreten"
-        },
-        "inputError": {
-          "text": {
-            "empty": "Bitte gib einen Text ein",
-            "long": "Der Text darf maximal \"{length}\" Zeichen lang sein"
-          }
-        }
+        "loading": "Lade About-Section..."
       }
     },
     "LabelManagementPage": {
@@ -646,7 +629,8 @@
       "fetchError": "Fehler beim Laden der Daten. Versuche es später erneut oder kontaktiere die Systemadmins.",
       "loginAgainError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an.",
       "updateSuccess": "Änderung erfolgreich gespeichert.",
-      "creationSuccess": "Eintrag erfolgreich erstellt."
+      "createSuccess": "Eintrag erfolgreich erstellt.",
+      "deleteSuccess": "Eintrag erfolgreich gelöscht."
     },
     "fields": {
       "firstname": {
