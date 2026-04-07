@@ -50,6 +50,7 @@ export type UserTableDialogState = {
 
 export function UserTable(props: DataTableProps) {
   const t = useTranslations("Settings.UserManagementPage.UserTable")
+  const tc = useTranslations("Commons")
   const [dialogState, setDialogState] = useState<UserTableDialogState>({mode: null, currentUser: null});
   const columns = UserColumns({setDialogState});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -199,7 +200,7 @@ export function UserTable(props: DataTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("noResults")}
+                  {tc("tables.noResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -221,7 +222,7 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={t("confirmation.promote",
+        description={t("confirmations.promote",
           {
             firstname: dialogState.currentUser?.firstname ?? "",
             lastname: dialogState.currentUser?.lastname ?? "",
@@ -233,7 +234,7 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={t("confirmation.demote",
+        description={t("confirmations.demote",
           {
             firstname: dialogState.currentUser?.firstname ?? "",
             lastname: dialogState.currentUser?.lastname ?? "",
@@ -245,7 +246,7 @@ export function UserTable(props: DataTableProps) {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={t("confirmation.delete",
+        description={t("confirmations.delete",
           {
             firstname: dialogState.currentUser?.firstname ?? "",
             lastname: dialogState.currentUser?.lastname ?? "",

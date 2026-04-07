@@ -16,6 +16,7 @@ interface UserColumnProps {
 
 export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
   const t = useTranslations("Settings.UserManagementPage.UserColumns");
+  const tc = useTranslations("Commons")
   const {user} = useUser();
 
   return [
@@ -109,7 +110,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'demote-button'}
                       >
                         <UserMinus className={'inline mr-2'}/>
-                        {t("actions.demote")}
+                        {t("buttons.demote")}
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -120,7 +121,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'reset-password-button'}
                       >
                         <RotateCcw className={'inline mr-2'}/>
-                        {t("actions.resetPassword")}
+                        {t("buttons.resetPassword")}
                       </DropdownMenuItem>
                     </>
                   ) : (
@@ -133,7 +134,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'promote-button'}
                       >
                         <UserCheck className={'inline mr-2'}/>
-                        {t("actions.promote")}
+                        {t("buttons.promote")}
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -144,7 +145,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'reset-password-button'}
                       >
                         <RotateCcw className={'inline mr-2'}/>
-                        {t("actions.resetPassword")}
+                        {t("buttons.resetPassword")}
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -156,7 +157,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'delete-button'}
                       >
                         <Trash className={'stroke-destructive inline mr-2'}/>
-                        {t("actions.delete")}
+                        {tc("buttons.delete")}
                       </DropdownMenuItem>
                     </>
                   )}

@@ -28,6 +28,7 @@ interface ResetPasswordDialogProps {
 
 export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
   const t = useTranslations("Settings.UserManagementPage.ResetPasswordDialog")
+  const tc = useTranslations("Commons")
   const [password, setPassword] = useState<string>("");
   const [isPasswordValid, setIsPasswordValid] = useState<boolean>(false);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false);
@@ -50,10 +51,9 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
       setPassword("")
       setIsPasswordValid(false)
       props.closeDialog();
-      toast.success(t("toast.resetSuccess"))
-    } catch (error) {
-      console.error(error)
-      toast.error(t("toast.resetFailure"))
+      toast.success(tc("toasts.updateSuccess"))
+    } catch {
+      toast.error(tc("toasts.generalError"))
     }
   }
 
@@ -102,7 +102,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
         <DialogHeader>
           <DialogTitle className={'w-full flex items-center gap-2'}>
             <RotateCcw/>
-            {t("header")}
+            {t("title")}
           </DialogTitle>
           <DialogDescription>
             {t("description.one")}<b>{props.user.firstname} {props.user.lastname}</b>{t("description.two")}
@@ -112,7 +112,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
         <div className={'flex flex-col gap-2 w-full'}>
           <PasswordInput
             value={password}
-            placeholder={t("password.placeholder")}
+            placeholder={t("fields.newPassword.placeholder")}
             onChange={(e) => onPasswordChange(e.target.value)}
             className={cn(!isPasswordValid && hasTriedToSubmit && 'border border-destructive')}
           />
@@ -130,7 +130,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
             disabled={!isPasswordValid && hasTriedToSubmit}
           >
             <Save/>
-            {t("submit")}
+            {tc("buttons.save")}
           </Button>
         </DialogFooter>
       </DialogContent>
