@@ -34,9 +34,9 @@ export default function AccountDataForm() {
   const [passwordInputOpen, setPasswordInputOpen] = useState(false);
 
   const accountDataSchema = z.object({
-    firstname: z.string().nonempty(tc("fields.errors.empty", {item: tc("fields.firstname.errorInfix")}))
+    firstname: z.string().nonempty(tc("fields.errors.empty"))
       .max(MAX_NAME_LENGTH, tc("fields.errors.long", {item: MAX_NAME_LENGTH + " " + tc("words.character")})),
-    lastname: z.string().nonempty(tc("fields.errors.empty", {item: tc("fields.lastname.errorInfix")}))
+    lastname: z.string().nonempty(tc("fields.errors.empty"))
       .max(MAX_NAME_LENGTH, tc("fields.errors.long", {item: MAX_NAME_LENGTH + " " + tc("words.character")})),
     mail: z.email(tc("fields.email.errors.format")),
   });
@@ -89,9 +89,8 @@ export default function AccountDataForm() {
 
         setPendingUserData(userData)
         setPasswordInputOpen(true);
-      } catch (error) {
+      } catch {
         toast.error(t("toasts.emailCheckError"));
-        console.error(error);
       } finally {
         setIsSavingAccount(false)
       }
@@ -128,12 +127,12 @@ export default function AccountDataForm() {
         mail: data.mail,
       });
 
-      toast.success(tc("toasts.updateSuccess", {item: "Dein Account"}));
+      toast.success(tc("toasts.updateSuccess"));
       setHasTriedToSubmit(false);
 
       if (data.mail !== user.mail) window.location.reload()
     } catch {
-      toast.error(tc("toasts.loginAgain"));
+      toast.error(tc("toasts.loginAgainError"));
     } finally {
       setIsSavingAccount(false);
     }

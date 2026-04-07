@@ -77,7 +77,7 @@ export default function PasswordDataForm() {
         user: {password: data.newPassword},
       });
 
-      toast.success(t("toasts.changeSuccess"));
+      toast.success(tc("toasts.changeSuccess"));
       passwordForm.reset();
       setHasTriedToSubmit(false);
       await logout();
@@ -86,7 +86,7 @@ export default function PasswordDataForm() {
       if (String(err).includes('credentials')) {
         passwordForm.setError("currentPassword", {message: tc("fields.errors.wrong", {item: tc("words.password")})});
       } else {
-        toast.error(tc("toasts.updateError", {item: t("data")}));
+        toast.error(tc("toasts.generalError"));
       }
 
       return;

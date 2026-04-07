@@ -48,7 +48,7 @@ export default function FooterForm() {
     try {
       const data = await client.request(FooterSettingsDocument);
       if (!data.footerSettings) {
-        toast.error(tc("toasts.fetchError", {item: t("settings")}))
+        toast.error(tc("toasts.fetchError"))
         return;
       }
 
@@ -59,9 +59,9 @@ export default function FooterForm() {
 
       setIsLoading(false);
     } catch  {
-      toast.error(tc("toasts.fetchError", {item: t("settings")}));
+      toast.error(tc("toasts.fetchError"));
     }
-  }, [form, t, tc, user]);
+  }, [form, tc, user]);
 
   useEffect(() => {
     void fetchFooterSettings();
@@ -83,10 +83,10 @@ export default function FooterForm() {
       await client.request(UpdateSettingDocument, {setting: legalNoticeSetting})
 
       setIsSaving(false);
-      toast.success(tc("toasts.updateSuccess", {item: t("links")}))
+      toast.success(tc("toasts.updateSuccess"))
       await fetchFooterSettings();
     } catch {
-      toast.error(tc("toasts.updateError", {item: t("links")}))
+      toast.error(tc("toasts.updateError"))
     } finally {
       setIsSaving(false);
     }
