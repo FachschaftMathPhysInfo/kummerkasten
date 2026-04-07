@@ -26,7 +26,8 @@ interface LabelFormProps {
 
 
 export default function LabelForm(props: LabelFormProps) {
-  const t = useTranslations("Setting.LabelManagementPage.LabelForm")
+  const t = useTranslations("Settings.LabelManagementPage.LabelForm")
+  const tc = useTranslations("Commons")
   const {createLabel, updateLabel} = useLabels()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
@@ -36,11 +37,9 @@ export default function LabelForm(props: LabelFormProps) {
   const labelFormSchema = z.object({
     // This field has a max length of 50, but is already restricted by the input itself and the api,
     // so I did not add further length checks
-    name: z.string().nonempty({
-      message: t("inputErrors.name.empty"),
-    }),
+    name: z.string().nonempty({message: tc("fields.errors.empty"),}),
     color: z.string().regex(
-      new RegExp("^#([A-Fa-f0-9]{6})$"), t("inputErrors.color.format"),
+      new RegExp("^#([A-Fa-f0-9]{6})$"), t("fields.color.errors.format"),
     ),
     isFormLabel: z.boolean(),
   })
@@ -82,13 +81,13 @@ export default function LabelForm(props: LabelFormProps) {
     const error = await createLabel(label)
 
     if (!error) {
-      toast.success(t("toast.createSuccess"))
+      toast.success(tc("toasts.createSuccess"))
       props.closeDialog()
     } else {
       if (String(error).includes('unique constraint')) {
-        form.setError("name", {message: "inputErrors.name.unique"})
+        form.setError("name", {message: t("fields.name.errors.unique")})
       } else {
-        toast.error(t("toast.createFailure"))
+        toast.error(tc("toasts.generalError"))
       }
     }
   }
@@ -98,13 +97,13 @@ export default function LabelForm(props: LabelFormProps) {
     const error = await updateLabel(id, label)
 
     if (!error) {
-      toast.success("Label erfolgreich updated!")
+      toast.success(tc("toasts.updateSuccess"))
       props.closeDialog()
     } else {
       if (String(error).includes('unique constraint')) {
-        form.setError("name", {message: t("inputErrors.name.unique")})
+        form.setError("name", {message: t("fields.name.errors.unique")})
       } else {
-        toast.error("Ein Fehler beim Aktualisieren des Labels ist aufgetreten")
+        toast.error(tc("toasts.updateError"))
       }
     }
   }
@@ -121,7 +120,7 @@ export default function LabelForm(props: LabelFormProps) {
           name="name"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>{t("name")}</FormLabel>
+              <FormLabel>{t("fields.name.label")}</FormLabel>
               <FormControl>
                 <Input
                   data-cy={'name-input'}
@@ -148,7 +147,7 @@ export default function LabelForm(props: LabelFormProps) {
           name="color"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>{t("color")}</FormLabel>
+              <FormLabel>{t("fields.color.label")}</FormLabel>
               <FormControl>
                 <div className={'flex space-x-8 items-center'}>
                   <div className={'h-full min-h-9 aspect-square flex-shrink-0'}>
@@ -190,7 +189,7 @@ export default function LabelForm(props: LabelFormProps) {
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <div className={'flex items-center gap-4 mt-2'}>
-                <FormLabel className={cn(isLastFormLabel && 'text-muted-foreground')}>{t("publicLabel.label")}</FormLabel>
+                <FormLabel className={cn(isLastFormLabel && 'text-muted-foreground')}>{t("fields.publicLabel.label")}</FormLabel>
                 <FormControl>
                   <Checkbox
                     disabled={isLastFormLabel}
@@ -205,9 +204,9 @@ export default function LabelForm(props: LabelFormProps) {
               <FormMessage className={'-mt-1'}/>
               <FormDescription>
                 {isLastFormLabel ? (
-                  t("publicLabel.lastPublicError")
+                  t("fields.publicLabel.errors.lastPublic")
                 ) : (
-                  t("publicLabel.publicInfo")
+                  t("publicLabelInfo")
                 )}
               </FormDescription>
             </FormItem>
@@ -222,7 +221,7 @@ export default function LabelForm(props: LabelFormProps) {
             type={"button"}
             className={"flex-grow-[0.5]"}
           >
-            {t("cancel")}
+            {tc("buttons.cancel")}
           </Button>
 
           <Button
@@ -237,7 +236,7 @@ export default function LabelForm(props: LabelFormProps) {
               ) : (
                 <Save/>
               )}
-            {props.createMode ? t("create") : t("edit")}
+            {props.createMode ? tc("buttons.create") : tc("buttons.save")}
           </Button>
         </div>
       </form>

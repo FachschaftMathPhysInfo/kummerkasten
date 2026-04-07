@@ -20,7 +20,7 @@ export default function LabelDialog(props: LabelDialogProps) {
       <DialogContent className="[&>button]:hidden" data-cy={'create-label-dialog'}>
         <DialogTitle className={'flex items-center gap-2'}>
           {props.createMode ? <PlusCircle/> : <Edit2 size={20}/>}
-          {props.createMode ? t("create") : t("edit")}
+          {props.createMode ? t("buttons.create") : t("buttons.edit")}
         </DialogTitle>
         <LabelForm
           createMode={props.createMode}
