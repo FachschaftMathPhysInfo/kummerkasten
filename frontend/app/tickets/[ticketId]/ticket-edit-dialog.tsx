@@ -33,7 +33,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
   const ticketEditSchema = z.object({
     title: z.string().nonempty(),
     state: z.enum(TicketState),
-    labels: z.array(z.string().min(1, {message: t("inputErrors.labels.empty")})),
+    labels: z.array(z.string().min(1, {message: tc("fields.errors.empty")})),
   })
 
   type TicketEditFormData = z.infer<typeof ticketEditSchema>
@@ -79,11 +79,11 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
     const removeLabelsError = await removeLabelsFromTicket(ticketId, labelsToRemove)
 
     if (!updateError && !addLabelsError && !removeLabelsError) {
-      toast.success(t("toasts.updateSuccess"))
+      toast.success(tc("toasts.updateSuccess"))
       setHasTriedToSubmit(true)
       props.closeDialog()
     } else {
-      toast.error(t("toasts.updateError"))
+      toast.error(tc("toasts.generalError"))
     }
 
     setLoading(false)
@@ -168,7 +168,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
             type={"button"}
             className={"flex-grow-[0.5]"}
           >
-            {t("buttons.cancel")}
+            {tc("buttons.cancel")}
           </Button>
 
           <Button
@@ -181,7 +181,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
             ) : (
               <PlusCircle/>
             )}
-            {t("buttons.submit")}
+            {tc("buttons.save")}
           </Button>
         </div>
       </form>

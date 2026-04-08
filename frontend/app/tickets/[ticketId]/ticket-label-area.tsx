@@ -18,6 +18,7 @@ interface TicketLabelAreaProps {
 
 export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: TicketLabelAreaProps) {
   const t = useTranslations("TicketId.TicketLabelArea")
+  const tc = useTranslations("Commons")
   const [editMode, setEditMode] = React.useState(false);
   const {labels} = useLabels();
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -43,13 +44,13 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
           onClick={() => setEditMode(!editMode)}
           className="w-full flex items-center justify-between"
           data-cy={'label-settings-button'}>
-          <p>{t("labels")}</p>
+          <p>{tc("words.labels")}</p>
           <Settings size={18} className={'stroke-muted-foreground'}/>
         </Button>
       </div>
       {editMode ? (
         <Command>
-          <CommandInput placeholder="Labels suchen..." onValueChange={setSearchTerm} data-cy={'label-settings-search'}/>
+          <CommandInput placeholder={t("searchbar.placeholder")} onValueChange={setSearchTerm} data-cy={'label-settings-search'}/>
           <CommandGroup className={'max-h-[300px] overflow-y-auto'}>
             {labels
               .filter((label) => label && label.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -82,7 +83,7 @@ export default function TicketLabelArea({ticketLabels, setTicketLabelsAction}: T
           </CommandGroup>
           <Button onClick={handleSave} variant={'secondary'} data-cy={'label-area-save'}>
             <Save className={'mr-2'}/>
-            {t("submit")}
+            {tc("buttons.save")}
           </Button>
         </Command>
       ) : (

@@ -28,6 +28,7 @@ export default function TicketDetailView({
                                            setDialogStateAction,
                                          }: TicketDetailViewProps) {
   const t = useTranslations("TicketId.TicketDetailView");
+  const tc = useTranslations("Commons")
   const {isMobile} = useSidebar()
   const {updateTicket} = useTickets()
   const [editMode, setEditMode] = React.useState(false);
@@ -41,7 +42,7 @@ export default function TicketDetailView({
     if (!error) {
       setEditMode(false)
     } else {
-      toast.error(t("toasts.updateTitleError"))
+      toast.error(tc("toasts.generalError"))
     }
   }
 
@@ -96,7 +97,7 @@ export default function TicketDetailView({
                   onClick={() => setEditMode(false)}
                   data-cy={'ticket-detail-title-cancel'}
                 >
-                  {t("buttons.cancel")}
+                  {tc("buttons.cancel")}
                 </Button>
                 <Button
                   type={"submit"}
@@ -106,7 +107,7 @@ export default function TicketDetailView({
                   data-cy={'ticket-detail-title-save'}
                 >
                   <Save/>
-                  {t("buttons.submit")}
+                  {tc("buttons.save")}
                 </Button>
               </span>
             ) : (

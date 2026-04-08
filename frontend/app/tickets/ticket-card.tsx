@@ -27,7 +27,7 @@ type TicketCardProps = {
 
 export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
   const t = useTranslations("TicketPage.TicketCard")
-  const tCommons = useTranslations("Commons")
+  const tc = useTranslations("Commons")
   const {isMobile} = useSidebar()
   const {user} = useUser();
   const {tickets} = useTickets();
@@ -69,10 +69,10 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
             style={{color: calculateFontColor(getTicketStateColor(ticket.state))}}
           >
             {ticket.state === TicketState.New
-              ? tCommons("ticketStates.new")
+              ? tc("ticketStates.new")
               : ticket.state === TicketState.Open
-                ? tCommons("ticketStates.open")
-                : tCommons("ticketStates.done")}
+                ? tc("ticketStates.open")
+                : tc("ticketStates.done")}
           </Badge>
           <p className="leading-normal"
             data-cy={`ticket-card-title-${ticket.originalTitle}`}
@@ -104,7 +104,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
               <div
                 className="hidden shrink-0 md:flex flex-col text-xs items-center justify-center text-muted-foreground"
                 ata-cy={`ticket-card-changed-${ticket.lastModified}`}>
-                {t("changed")}: {format(new Date(ticket.lastModified), "dd.MM.yy")}
+                {tc("words.modified")}: {format(new Date(ticket.lastModified), "dd.MM.yy")}
               </div>
             </>
           )}
@@ -146,7 +146,7 @@ export function TicketCard({ticketID, setDialogStateAction}: TicketCardProps) {
                   className="text-destructive"
                   data-cy={`ticket-card-delete-${ticket.id}`}
                 >
-                  <Trash2 className="text-destructive"/> {t("buttons.delete")}
+                  <Trash2 className="text-destructive"/> {tc("buttons.delete")}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

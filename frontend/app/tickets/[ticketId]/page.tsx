@@ -20,6 +20,7 @@ const client = getClient();
 
 export default function TicketPage() {
   const t = useTranslations("TicketId.Root")
+  const tc = useTranslations("Commons")
   const {ticketId} = useParams();
   const {deleteTickets} = useTickets()
   const {isMobile} = useSidebar()
@@ -44,18 +45,18 @@ export default function TicketPage() {
 
   async function handleDelete() {
     if (!dialogState.currentTicket) {
-      toast.error(t("toasts.deleteError"))
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     const error = await deleteTickets([dialogState.currentTicket.id])
 
     if (!error) {
-      toast.success(t("toasts.deleteSuccess"))
+      toast.success(tc("toasts.deleteSuccess"))
       resetDialogState()
       await fetchTicketDetail();
     } else {
-      toast.error(t("toasts.deleteError"))
+      toast.error(tc("toasts.generalError"))
     }
   }
 

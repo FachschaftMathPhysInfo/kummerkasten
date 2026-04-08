@@ -29,12 +29,12 @@ export default function MobileFilterSheet() {
           variant="outline"
           className={cn(areFiltersSet && 'border !border-accent')}
           data-cy="mobile-filter-button">
-          {t("filter")}
+          {tc("words.filter")}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[85%] sm:w-[400px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{t("filter")}</SheetTitle>
+          <SheetTitle>{tc("words.filter")}</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col mt-0 px-4">
           <div className="flex flex-row gap-2 justify-between">
@@ -42,8 +42,8 @@ export default function MobileFilterSheet() {
             <Button variant="outline" className="w-fit justify-between"
                     onClick={() => setShowFilters((prev) => !prev)}>
               {filtering.state.length > 0
-                ? t("buttons.ticketSorting.nonEmpty", {length: filtering.state.length})
-                : t("buttons.stateSorting.empty")}
+                ? tc("buttons.ticketSorting.nonEmpty", {length: filtering.state.length})
+                : tc("buttons.stateSorting.empty")}
             </Button>
           </div>
           {showFilters && (
@@ -78,15 +78,15 @@ export default function MobileFilterSheet() {
         </div>
         <div className="flex flex-col mt-4">
           <div className="flex flex-row gap-2 px-4 justify-between">
-            <div className="font-semibold mt-1">{t("labels")}:</div>
+            <div className="font-semibold mt-1">{tc("words.labels")}:</div>
             <Button
               variant="outline"
               className="w-fit justify-between"
               onClick={() => setShowLabelFilters((prev) => !prev)}
             >
               {filtering.labels.length > 0
-                ? t("buttons.labelFiltering.nonEmpty", {length: filtering.labels.length})
-                : t("buttons.labelFiltering.empty")}
+                ? tc("buttons.labelFiltering.nonEmpty", {length: filtering.labels.length})
+                : tc("buttons.labelFiltering.empty")}
             </Button>
           </div>
           {showLabelFilters && (
@@ -146,7 +146,7 @@ export default function MobileFilterSheet() {
                     }
                     data-cy="clear-labels"
                   >
-                    <Trash2 className="mr-2 text-destructive"/> {t("buttons.resetFilters")}
+                    <Trash2 className="mr-2 text-destructive"/> {tc("buttons.resetFilters")}
                   </Button>
                 )}
               </div>
@@ -155,7 +155,7 @@ export default function MobileFilterSheet() {
         </div>
         <div className="flex flex-col mt-4 px-4">
           <div className="flex flex-col gap-2">
-            <div className="font-semibold mt-1 mb-1">{t("date")}:</div>
+            <div className="font-semibold mt-1 mb-1">{tc("words.date")}:</div>
             <DateRangeFilter
               startDate={filtering.startDate}
               setStartDate={(date) => setFiltering(prev => ({...prev, startDate: date}))}
@@ -167,7 +167,7 @@ export default function MobileFilterSheet() {
         </div>
         <div className="flex flex-col mt-4 px-4">
           <div className="flex flex-row gap-2 justify-between items-center">
-            <div className="font-semibold mt-1 mb-1">{t("sort")}:</div>
+            <div className="font-semibold mt-1 mb-1">{tc("words.sort")}:</div>
             <Button
               variant="outline"
               size="sm"
@@ -203,7 +203,7 @@ export default function MobileFilterSheet() {
                     </Button>
                   ))}
                 </div>
-                <div className="text-xs mt-1">{t("order")}</div>
+                <div className="text-xs mt-1">{tc("words.order")}</div>
                 <div className="flex flex-row gap-1">
                   <Button
                     variant={sorting.orderAscending ? "secondary" : "outline"}
@@ -214,7 +214,7 @@ export default function MobileFilterSheet() {
                       orderAscending: true
                     }))}
                   >
-                    {t("ascending")}
+                    {tc("words.ascending")}
                   </Button>
                   <Button
                     variant={sorting.orderAscending ? "outline" : "secondary"}
@@ -225,7 +225,7 @@ export default function MobileFilterSheet() {
                       orderAscending: false
                     }))}
                   >
-                    {t("descending")}
+                    {tc("words.descending")}
                   </Button>
                 </div>
               </div>

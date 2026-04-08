@@ -34,6 +34,7 @@ interface TicketSidebarProps {
 
 export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
   const t = useTranslations("TicketId.TicketSidebar");
+  const tc = useTranslations("Commons")
   const router = useRouter();
   const {tickets, filtering, areFiltersSet, sorting, setFiltering} = useTickets()
   const [showFilters, setShowFilters] = useState(false)
@@ -86,7 +87,7 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
               onClick={() => setShowFilters(!showFilters)}
               data-cy="ticket-detail-filter-button"
             >
-              {t("filter")}
+              {tc("words.filter")}
             </Button>
           </div>
 
@@ -110,7 +111,7 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
                 className={'w-full'}
                 data-cy="ticket-detail-reset-filter"
               >
-                <RotateCcw/> {t("buttons.resetFilters")}
+                <RotateCcw/> {tc("buttons.resetFilter")}
               </Button>
             )}
           </div>

@@ -25,6 +25,7 @@ interface TicketInfoPaneProps {
 
 export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateAction}: TicketInfoPaneProps) {
   const t = useTranslations("TicketId.TicketInfoPane")
+  const tc = useTranslations("Commons")
   const {user} = useUser()
   const {updateTicket, addLabelsToTicket, removeLabelsFromTicket} = useTickets()
   const {isMobile} = useSidebar()
@@ -60,7 +61,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
     const removeError = await removeLabelsFromTicket(ticket.id, labelIdsToRemove)
     const addError = await addLabelsToTicket(ticket.id, labelIdsToAdd)
 
-    if (removeError || addError) toast.error(t("toasts.updateLabelError"))
+    if (removeError || addError) toast.error(tc("toasts.generalError"))
     else setTicketLabels(labels);
   }
 
@@ -68,7 +69,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
     if (!ticket) return;
 
     const error = await updateTicket(ticket.id, {state: state})
-    if (error) toast.error(t("toasts.updateStateError"))
+    if (error) toast.error(tc("toasts.generalerror"))
     setTicketState(state)
   }
 

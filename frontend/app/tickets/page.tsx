@@ -41,6 +41,7 @@ export default function TicketPage() {
     triggerTicketRefetch
   } = useTickets();
   const t = useTranslations("TicketPage.Root")
+  const tc = useTranslations("Commons")
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
   const {isMobile} = useSidebar();
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
@@ -87,17 +88,17 @@ export default function TicketPage() {
 
   async function handleDelete() {
     if (!dialogState.currentTicket) {
-      toast.error(t("toast.deleteError"))
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     const error = await deleteTickets([dialogState.currentTicket.id])
 
     if (!error) {
-      toast.success(t("toast.deleteSuccess"))
+      toast.success(tc("toasts.deleteSuccess"))
       resetDialogState()
     } else {
-      toast.error(t("toast.deleteError"))
+      toast.error(tc("toasts.generalError"))
     }
   }
 
@@ -135,7 +136,7 @@ export default function TicketPage() {
               data-cy="desktop-overview-reset-filters"
             >
               <Trash2 className="text-destructive"/>
-              {t("buttons.resetFilters")}
+              {tc("buttons.resetFilters")}
             </Button>
           )}
         </div>

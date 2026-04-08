@@ -296,19 +296,11 @@
       "oldSemester": "Frühere Semester",
       "noResults": "Es sind noch keine Tickets vorhanden.",
       "noFilteredResults": "Kein Ticket entspricht dem verwendeten Filter.",
-      "buttons": {
-        "resetFilters": "Filter zurücksetzen"
-      },
       "confirmations": {
         "delete": "Dies wird das Ticket \"{title}\" unwiderruflich löschen"
-      },
-      "toast": {
-        "deleteError": "Beim Löschen des Tickets ist ein Fehler aufgetreten",
-        "deleteSuccess": "Ticket wurde erfolgreich gelöscht"
       }
     },
     "TicketCard": {
-      "changed": "Geändert",
       "buttons": {
         "copyLink": "Link kopieren",
         "delete": "Löschen"
@@ -319,43 +311,19 @@
       }
     },
     "MobileFilterSheet": {
-      "filter": "Filter",
-      "labels": "Labels",
-      "date": "Datum",
-      "sort": "Sortieren",
-      "order": "Reihenfolge",
-      "ascending": "Aufsteigend",
-      "descending": "Absteigend",
       "searchbar": {
         "placeholder": "Labels suchen..."
-      },
-      "buttons": {
-        "resetFilters": "Filter zurücksetzen",
-        "stateSorting": {
-          "empty": "Status filtern",
-          "nonEmpty": "\"{length}\" ausgewählt"
-        },
-        "labelFiltering": {
-          "empty": "Labels filern",
-          "nonEmpty": "\"{length}\" ausgewählt"
-        }
       }
     }
   },
   "TicketId": {
     "Root": {
-      "toasts": {
-        "deleteError": "Beim Löschen des Tickets ist ein Fehler aufgetreten",
-        "deleteSuccess": "Ticket wurde erfolgreich gelöscht"
-      },
       "confirmations": {
         "delete": "Dies wird das Ticket \"{title}\" unwiderruflich löschen"
       }
     },
     "TicketSidebar": {
       "details": "Details",
-      "modified": "Geändert",
-      "filter": "Filter",
       "tickets": "tickets",
       "searchbar": {
         "placeholder": "Suche nach Tickets..."
@@ -363,26 +331,18 @@
       "noTickets": "Es sind noch keine Tickets vorhanden",
       "noFilteredResults": "Kein Ticket entspricht dem verwendeten Filter",
       "thisSemester": "Dieses Semester",
-      "oldSemester": "Vorherige Semester",
-      "buttons": {
-        "resetFilters": "Filter zurücksetzen"
-      }
-    },
-    "TicketMetaDataArea": {
-      "modified": "Geändert",
-      "created": "Erstellt"
+      "oldSemester": "Vorherige Semester"
     },
     "TicketLabelArea": {
-      "labels": "Labels",
-      "submit": "Speichern"
+      "searchbar": {
+        "placeholder": "Labels suchen..."
+      }
     },
     "TicketInfoPane": {
       "sheetTitle": "Ticket Detail Bereich",
       "toasts": {
         "copyError": "Kopieren fehlgeschlagen",
-        "copySuccess": "Link kopiert",
-        "updateLabelError": "Fehler beim Aktualisieren der Labels",
-        "updateStateError": "Fehler beim Aktualisieren des Status"
+        "copySuccess": "Link kopiert"
       }
     },
     "TicketDialog": {
@@ -400,32 +360,12 @@
         },
         "labels": {
           "label": "Labels"
-        },
-        "buttons": {
-          "cancel": "Abbrechen",
-          "submit": "Speichern"
-        }
-      },
-      "toasts": {
-        "updateError": "Beim Aktualisieren des Tickets ist ein Fehler aufgetreten",
-        "updateSuccess": "Ticket wurde erfolgreich Aktualisiert"
-      },
-      "inputErrors": {
-        "labels": {
-          "empty": "Bitte wähle mindestens ein Label aus."
         }
       }
     },
     "TicketDetailView": {
       "chooseTicket": "Bitte wähle ein Ticket aus der Übersicht",
-      "firstTitle": "Original Titel",
-      "toasts": {
-        "updateTitleError": "Beim Aktualiseren des Titels ist ein Fehler aufgetreten"
-      },
-      "buttons": {
-        "cancel": "Abbrechen",
-        "submit": "Speichern"
-      }
+      "firstTitle": "Original Titel"
     }
   },
   "Components": {
@@ -552,7 +492,16 @@
     "words": {
       "characters": "Zeichen",
       "filter": "Filter",
-      "password": "Passwort"
+      "sort": "Sortieren",
+      "password": "Passwort",
+      "label": "Label",
+      "labels": "Labels",
+      "modified": "Geändert",
+      "created": "Erstellt",
+      "ascending": "Aufsteigend",
+      "descending": "Absteigend",
+      "date": "Datum",
+      "order": "Reihenfolge"
     },
     "inputs": {
       "searchbarPlaceholder": "\"{item}\" suchen..."
@@ -565,7 +514,15 @@
       "confirm": "Bestätigen",
       "reset": "Zurücksetzen",
       "resetFilter": "Filter zurücksetzen",
-      "ok": "Verstanden"
+      "ok": "Verstanden",
+      "stateSorting": {
+        "empty": "Status filtern",
+        "nonEmpty": "\"{length}\" ausgewählt"
+      },
+      "labelFiltering": {
+        "empty": "Labels filern",
+        "nonEmpty": "\"{length}\" ausgewählt"
+      }
     },
     "toasts": {
       "generalError": "Ein Fehler ist aufgetreten. Versuche es später erneut oder kontaktiere die Systemadmins.",

@@ -9,7 +9,7 @@ interface TicketMetadataArea {
 }
 
 export default function TicketMetadataArea({createdAt, lastModified}: TicketMetadataArea) {
-  const t = useTranslations("TicketId.TicketMetadataArea")
+  const tc = useTranslations("Commons")
 
   return (
     <div
@@ -19,12 +19,12 @@ export default function TicketMetadataArea({createdAt, lastModified}: TicketMeta
       )}
     >
       <div className="w-full flex justify-between items-center px-5">
-        <span>{t("created")}:</span>
+        <span>{tc("words.created")}:</span>
         <div>{format(createdAt, "dd.MM.yy")}</div>
       </div>
 
       <div className="w-full flex justify-between items-center px-5">
-        <span>{t("modified")}</span>
+        <span>{tc("words.modified")}</span>
         <div>{format(lastModified, "dd.MM.yy")}</div>
       </div>
     </div>
