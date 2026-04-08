@@ -22,7 +22,12 @@ export default function SortingSelection() {
           data-cy="sorting-selection-sort-button"
         >
           <span className="flex justify-center items-center">
-            {sorting.field}{" "}
+            {sorting.field === "Erstellt"
+              ? tc("ticketSortingFields.created")
+              : sorting.field === "Geändert"
+                ? tc("ticketSortingFields.modified")
+                : tc("ticketSortingFields.title")
+            }{" "}
             {sorting.orderAscending ? (
               <ArrowUp className="inline h-4 w-4 ml-1"/>
             ) : (

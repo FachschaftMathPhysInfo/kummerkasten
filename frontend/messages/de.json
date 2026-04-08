@@ -13,16 +13,14 @@
       "fields": {
         "title": {
           "label": "Titel",
-          "placeholder": "Vorlesung...",
-          "errorInfix": "einen Titel"
+          "placeholder": "Vorlesung..."
         },
         "labels": {
           "label": "Worum geht es in deinem Feedback"
         },
         "text": {
           "label": "Feedback",
-          "placeholder": "Deine anonyme Nachricht",
-          "errorInfix": "einFeedback"
+          "placeholder": "Deine anonyme Nachricht"
         }
       },
       "toasts": {
@@ -108,11 +106,6 @@
           "errors": {
             "urlFormat": "Bitte gib eine gültige URL an"
           }
-        },
-        "inputErrors": {
-          "loginError": "Ein Fehler ist aufgetreten, melde dich erneut an",
-          "updateFailure": "Ein Fehler beim Speichern der Einstellungen ist aufgetreten",
-          "updateSuccess": "Footer Links wurden erfolgreich aktualisiert"
         }
       }
     },
@@ -126,18 +119,11 @@
         "searchbar": {
           "placeholder": "Frage oder Antwort durchsuchen..."
         },
-        "noResults": "Keine FAQs gefunden.",
-        "deleteConfirmation": "`Dies wird die Frage \"{question}\" unwiderruflich löschen.`",
-        "toast": {
-          "error": "Ein Fehler ist aufgetreten",
-          "deleteSucces": "QAP wurde erfolgreich gelöscht",
-          "deleteFailure": "Fehler beim Löschen der Frage",
-          "updatePositionFailure": "Fehler beim Aktualisieren der Positionen"
-        }
+        "deleteConfirmation": "`Dies wird die Frage {question} unwiderruflich löschen.`"
       },
       "QAPColumns": {
         "question": "Frage",
-        "answer": "Answer"
+        "answer": "Antwort"
       },
       "QAPDialog": {
         "createQuestion": "Frage erstellen",
@@ -193,7 +179,7 @@
           }
         },
         "confirmations": {
-          "deleteConfirmation": "Dies wird das Label \"{name}\" unwiderruflich löschen"
+          "deleteConfirmation": "Dies wird das Label {name} unwiderruflich löschen"
         }
       },
       "LabelForm": {
@@ -269,9 +255,9 @@
           "placeholder": "Nachname filtern..."
         },
         "confirmations": {
-          "promote": "Dies wird \"{firstname}\" \"{lastname}\" zum Admin machen",
-          "demote": "Dies wird \"{firstname}\" \"{lastname}\" zum normalen User machen",
-          "delete": "Dies wird \"{firstname}\" \"{lastname}\" unwiderruflich löschen"
+          "promote": "Dies wird {firstname} {lastname} zum Admin machen",
+          "demote": "Dies wird {firstname} {lastname} zum normalen User machen",
+          "delete": "Dies wird {firstname} {lastname} unwiderruflich löschen"
         }
       },
       "UserForm": {
@@ -298,7 +284,7 @@
       "noResults": "Es sind noch keine Tickets vorhanden.",
       "noFilteredResults": "Kein Ticket entspricht dem verwendeten Filter.",
       "confirmations": {
-        "delete": "Dies wird das Ticket \"{title}\" unwiderruflich löschen"
+        "delete": "Dies wird das Ticket {title} unwiderruflich löschen"
       }
     },
     "TicketCard": {
@@ -320,7 +306,7 @@
   "TicketId": {
     "Root": {
       "confirmations": {
-        "delete": "Dies wird das Ticket \"{title}\" unwiderruflich löschen"
+        "delete": "Dies wird das Ticket {title} unwiderruflich löschen"
       }
     },
     "TicketSidebar": {
@@ -431,14 +417,14 @@
       "buttons": {
         "stateFilter": {
           "empty": "Status",
-          "nonEmpty": "\"{length}\" Status",
+          "nonEmpty": "{length} Status",
           "searchbar": {
             "placeholder": "Status suchen..."
           }
         },
         "labelFilter": {
           "empty": "Labels",
-          "nonEmpty": "\"{length}\" Labels"
+          "nonEmpty": "{length} Labels"
         }
       }
     },
@@ -477,7 +463,7 @@
       "order": "Reihenfolge"
     },
     "inputs": {
-      "searchbarPlaceholder": "\"{item}\" suchen..."
+      "searchbarPlaceholder": "{item} suchen..."
     },
     "buttons": {
       "cancel": "Abbrechen",
@@ -491,11 +477,11 @@
       "delete": "Löschen",
       "stateSorting": {
         "empty": "Status filtern",
-        "nonEmpty": "\"{length}\" ausgewählt"
+        "nonEmpty": "{length} ausgewählt"
       },
       "labelFiltering": {
         "empty": "Labels filern",
-        "nonEmpty": "\"{length}\" ausgewählt"
+        "nonEmpty": "{length} ausgewählt"
       }
     },
     "toasts": {
@@ -513,8 +499,7 @@
       },
       "lastname": {
         "label": "Nachname",
-        "placeholder": "Person",
-        "errorInfix": "einen Nachnamen"
+        "placeholder": "Person"
       },
       "email": {
         "label": "E-Mail",
@@ -534,13 +519,13 @@
       },
       "errors": {
         "empty": "Bitte angeben",
-        "short": "Bitte gib mindestens \"{condition}\" an",
-        "long": "Bitte gib maximal \"{condition}\" an",
+        "short": "Bitte gib mindestens {condition} an",
+        "long": "Bitte gib maximal {condition} an",
         "lowercase": "Bitte gib mindestens einen Kleinbuchstaben an",
         "uppercase": "Bitte gib mindestens einen Großbuchstaben an",
         "number": "Bitte gib mindestens eine Zahl an",
         "specialChar": "Bitte gib mindestens ein Sonderzeichen an",
-        "wrong": "\"{item}\" inkorrekt"
+        "wrong": "{item} inkorrekt"
       }
     }
   }
