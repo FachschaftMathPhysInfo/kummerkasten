@@ -12,3 +12,13 @@ export async function deleteSID() {
   const jar = await cookies()
   jar.delete("sid")
 }
+
+export async function setLocale(locale: string) {
+  const jar = await cookies()
+  jar.set("locale", locale)
+}
+
+export async function getLocale() {
+  const jar = await cookies()
+  return jar.get("locale")?.value
+}

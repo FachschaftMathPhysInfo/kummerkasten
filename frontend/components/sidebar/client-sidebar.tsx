@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  CircleUserRound,
+  CircleUserRound, Globe,
   LogOut,
   MessageCircleQuestionMark,
   Moon,
@@ -29,6 +29,15 @@ import {useEffect, useRef} from "react";
 import { clsx } from "clsx";
 import Link from "next/link";
 import {useTranslations} from "next-intl";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import {setLocale} from "@/lib/cookies";
+import {availableLanguages} from "@/components/language-switch";
 
 export function ClientSidebar() {
   const t = useTranslations("Components.Sidebar.ClientSidebar")
@@ -116,6 +125,7 @@ export function ClientSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarThemeSwitch />
+            <SidebarLanguageSwitch />
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -185,4 +195,38 @@ function SidebarThemeSwitch() {
       )}
     </SidebarMenuButton>
   );
+}
+
+function SidebarLanguageSwitch() {
+  const t = useTranslations("Components.Sidebar.ClientSidebar")
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  if (!mounted) {
+    return null
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuButton><Globe/>{t("language")}</SidebarMenuButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuGroup>
+          {availableLanguages.map(language => (
+            <DropdownMenuItem key={language.localeKey} onClick={async() => await setLocale(language.localeKey)}>
+              {language.name}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }

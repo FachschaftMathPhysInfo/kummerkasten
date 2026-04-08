@@ -5,6 +5,7 @@ import FAQSection from './form-faq';
 import FormUi from './form-ui';
 import Image from 'next/image';
 import ThemeSwitch from "@/components/theme-switch";
+import LanguageSwitch from "@/components/language-switch"
 import {useTheme} from "next-themes";
 import {useTranslations} from "next-intl";
 
@@ -16,9 +17,11 @@ export default function KummerkastenPage() {
     <main className={'min-h-screen w-full relative'}>
       <div
         className="flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8 space-y-8">
-        <ThemeSwitch
-          className={'absolute top-1 left-1 mt-2 ml-2 lg:mt-4 lg:ml-4'}
-        />
+        <div className={' w-full flex flex-row items-center justify-start m-0'}>
+          <ThemeSwitch/>
+          <LanguageSwitch/>
+        </div>
+
 
         <div className="flex items-center gap-5">
           <Image
