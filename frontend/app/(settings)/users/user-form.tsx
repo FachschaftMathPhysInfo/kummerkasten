@@ -25,7 +25,7 @@ export default function UserForm(props: UserFormProps) {
   const t = useTranslations("Settings.UserManagementPage.UserForm")
   const tc = useTranslations("Commons")
   const passwordSchema = z.string()
-    .min(MIN_PASSWORD_LENGTH, tc("fields.errors.short", {condition: `${MIN_PASSWORD_LENGTH} ${tc("words.character")}`}))
+    .min(MIN_PASSWORD_LENGTH, tc("fields.errors.short", {condition: `${MIN_PASSWORD_LENGTH} ${tc("words.characters")}`}))
     .refine((val) => /[a-z]/.test(val), {
       message: tc("fields.errors.lowercase"),
     })
@@ -36,12 +36,12 @@ export default function UserForm(props: UserFormProps) {
       message: tc("fields.errors.number"),
     })
     .refine((val) => /[^A-Za-z0-9]/.test(val), {
-      message: tc("fields.errors.special"),
+      message: tc("fields.errors.specialChar"),
     });
 
   const userFormSchema = z.object({
-    firstname: z.string().min(2, {error: tc("fields.errors.short", {condition: `2 ${tc("words.character")}`})}),
-    lastname: z.string().min(2, {error: tc("fields.errors.short", {condition: `2 ${tc("words.character")}`})}),
+    firstname: z.string().min(2, {error: tc("fields.errors.short", {condition: `2 ${tc("words.characters")}`})}),
+    lastname: z.string().min(2, {error: tc("fields.errors.short", {condition: `2 ${tc("words.characters")}`})}),
     mail: z.email({error: tc("fields.email.errors.format")}),
     password: passwordSchema,
     confirmPassword: z.string(),

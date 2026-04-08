@@ -124,7 +124,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               data-cy={'start-calendar-reset'}
             >
               <RotateCcw/>
-              {t("buttons.reset")}
+              {tc("buttons.reset")}
             </Button>
           </div>
         </PopoverContent>
@@ -153,7 +153,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               data-cy={'end-calendar-reset'}
             >
               <RotateCcw/>
-              {t("buttons.reset")}
+              {tc("buttons.reset")}
             </Button>
           </div>
         </PopoverContent>

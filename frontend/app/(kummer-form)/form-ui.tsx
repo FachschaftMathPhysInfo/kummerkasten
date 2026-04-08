@@ -35,9 +35,9 @@ export default function FormUi() {
   const formUiSchema = z.object({
     labels: z.array(z.string()).nonempty({error: tc("fields.errors.empty")}),
     title: z.string().nonempty({error: tc("fields.errors.empty")})
-      .max(TITLE_MAX_LENGTH, tc("fields.errors.long", {condition: `${TITLE_MAX_LENGTH} ${tc("words.character")}`})),
+      .max(TITLE_MAX_LENGTH, tc("fields.errors.long", {condition: `${TITLE_MAX_LENGTH} ${tc("words.characters")}`})),
     text: z.string().nonempty({error: tc("fields.errors.empty")})
-      .max(TEXT_MAX_LENGTH, tc("fields.errors.long", {condition: `${TEXT_MAX_LENGTH} ${tc("words.character")}`})),
+      .max(TEXT_MAX_LENGTH, tc("fields.errors.long", {condition: `${TEXT_MAX_LENGTH} ${tc("words.characters")}`})),
   });
 
   const form = useForm<z.infer<typeof formUiSchema>>({

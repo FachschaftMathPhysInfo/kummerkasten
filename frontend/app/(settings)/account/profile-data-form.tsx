@@ -35,9 +35,9 @@ export default function AccountDataForm() {
 
   const accountDataSchema = z.object({
     firstname: z.string().nonempty(tc("fields.errors.empty"))
-      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {item: MAX_NAME_LENGTH + " " + tc("words.character")})),
+      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {condition: MAX_NAME_LENGTH + " " + tc("words.characters")})),
     lastname: z.string().nonempty(tc("fields.errors.empty"))
-      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {item: MAX_NAME_LENGTH + " " + tc("words.character")})),
+      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {condition: MAX_NAME_LENGTH + " " + tc("words.characters")})),
     mail: z.email(tc("fields.email.errors.format")),
   });
 
@@ -165,7 +165,7 @@ export default function AccountDataForm() {
                 <FormItem className={"flex-grow"}>
                   <FormLabel>{tc("fields.firstname.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={tc("fields.firstname.placeholer")} {...field} data-cy={'account-firstname-input'}/>
+                    <Input placeholder={tc("fields.firstname.placeholder")} {...field} data-cy={'account-firstname-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-firstname-input-message'}/>
                 </FormItem>

@@ -20,7 +20,7 @@ const MAX_ABOUT_TEXT_LENGTH = 2000;
 
 
 export default function AboutSectionForm() {
-  const t = useTranslations("Setting.QAPManagementPage.AboutSectionForm")
+  const t = useTranslations("Settings.QAPManagementPage.AboutSectionForm")
   const tc = useTranslations("Commons")
   const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
@@ -30,10 +30,10 @@ export default function AboutSectionForm() {
   const aboutSectionSchema = z.object({
     aboutText: z
       .string()
-      .nonempty(tc("fields.error.empty"))
+      .nonempty(tc("fields.errors.empty"))
       .max(
         MAX_ABOUT_TEXT_LENGTH,
-        tc("fields.error.long", {condition: `${MAX_ABOUT_TEXT_LENGTH} ${tc("words.character")}`}),
+        tc("fields.errors.long", {condition: `${MAX_ABOUT_TEXT_LENGTH} ${tc("words.characters")}`}),
       ),
   });
 
@@ -117,7 +117,7 @@ export default function AboutSectionForm() {
           <div className="flex items-center gap-2 mb-2">
             <BookText className="w-6 h-6 mx-1 my-1"/>
             <span className="text-lg font-semibold text-foreground-muted">
-              {t("aboutText.header")}
+              {t("aboutText.title")}
             </span>
           </div>
           <FormField

@@ -24,7 +24,7 @@ const ANSWER_MAX_LENGTH = 700
 
 
 export default function FaqForm({qap, closeDialog}: FaqFormProps) {
-  const t = useTranslations("Setting.QAPManagementPage.FaqForm")
+  const t = useTranslations("Settings.QAPManagementPage.FaqForm")
   const tc = useTranslations("Commons")
   const [loading, setLoading] = useState(false);
   const {qaps, createQap, updateQap} = useQAPs()
@@ -165,7 +165,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
               <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>{t("fields.answer.label")}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("fields.label.placeholder")}
+                  placeholder={t("fields.answer.placeholder")}
                   rows={7}
                   maxLength={ANSWER_MAX_LENGTH}
                   {...field}

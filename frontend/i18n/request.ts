@@ -1,8 +1,9 @@
 import {getRequestConfig} from 'next-intl/server';
+import {cookies} from "next/headers";
 
 export default getRequestConfig(async () => {
-  // FIXME: make dynamic
-  const locale = 'de';
+  const store = await cookies();
+  const locale = store.get('locale')?.value || 'de';
 
   return {
     locale,

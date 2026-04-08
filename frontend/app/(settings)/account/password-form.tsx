@@ -16,7 +16,7 @@ import {useTranslations} from "next-intl";
 
 
 export default function PasswordDataForm() {
-  const t = useTranslations("AccountPage.PasswordDataForm");
+  const t = useTranslations("Settings.AccountPage.PasswordDataForm");
   const tc = useTranslations("Commons")
   const {user, logout} = useUser();
   const [isSavingPassword, setIsSavingPassword] = useState(false);
@@ -25,14 +25,14 @@ export default function PasswordDataForm() {
 
   const passwordFormSchema = z
     .object({
-      currentPassword: z.string().nonempty(t("inputErrors.currentPassword.empty")),
+      currentPassword: z.string().nonempty(tc("fields.errors.empty")),
       newPassword: z
         .string()
-        .min(8, {message: tc("fields.errors.short", {item: `8 ${t("words.character")}`})})
+        .min(8, {message: tc("fields.errors.short", {condition: `8 ${tc("words.characters")}`})})
         .regex(/[A-Z]/, {message: tc("fields.errors.uppercase")})
         .regex(/\d/, {message: tc("fields.errors.number")})
         .regex(/[!@#$%^&*(),.?":{}|<>]/, {
-          message: tc("fields.errors.special")
+          message: tc("fields.errors.specialChar")
         }),
       confirmPassword: z.string(),
     })
@@ -41,7 +41,7 @@ export default function PasswordDataForm() {
       path: ["confirmPassword"],
     })
     .refine((data) => data.newPassword !== data.currentPassword, {
-      message: t("fields.newPassword.errors.unique"),
+      message: t("fields.newPassword.errors.new"),
       path: ["newPassword"],
     });
 

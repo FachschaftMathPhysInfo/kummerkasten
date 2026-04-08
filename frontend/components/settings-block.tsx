@@ -76,7 +76,7 @@ export function SettingsBlock({
           disabled={!isDirty || !isValid && hasTriedToSubmit}
           data-cy={dataCy}
         >
-          {tc("buttons.confirm")}
+          {tc("buttons.save")}
         </Button>
       </CardFooter>
     </Card>

@@ -153,7 +153,8 @@
             }
           },
           "answer": {
-            "label": "Antwort"
+            "label": "Antwort",
+            "placeholder": "Das."
           },
           "position": {
             "label": "Position",
@@ -268,9 +269,9 @@
           "placeholder": "Nachname filtern..."
         },
         "confirmations": {
-          "promote": "Dies wird \"{firstname}\" \"{lastname\" zum Admin machen",
-          "demote": "Dies wird \"{firstname}\" \"{lastname\" zum normalen User machen",
-          "delete": "Dies wird \"{firstname}\" \"{lastname\" unwiderruflich löschen"
+          "promote": "Dies wird \"{firstname}\" \"{lastname}\" zum Admin machen",
+          "demote": "Dies wird \"{firstname}\" \"{lastname}\" zum normalen User machen",
+          "delete": "Dies wird \"{firstname}\" \"{lastname}\" unwiderruflich löschen"
         }
       },
       "UserForm": {
@@ -383,7 +384,7 @@
         "tickets": "Tickets",
         "labels": "Labels",
         "faqs": "FAQs",
-        "user": "User",
+        "users": "User",
         "app": "App",
         "buttons": {
           "account": "Account",
@@ -393,7 +394,7 @@
         }
       }
     },
-    "TabelUtils": {
+    "TableUtils": {
       "DataTablePagination": {
         "elementsPerPage": "Elemente pro Seite",
         "page": "Seite",
@@ -486,6 +487,7 @@
       "reset": "Zurücksetzen",
       "resetFilter": "Filter zurücksetzen",
       "ok": "Verstanden",
+      "delete": "Löschen",
       "stateSorting": {
         "empty": "Status filtern",
         "nonEmpty": "\"{length}\" ausgewählt"

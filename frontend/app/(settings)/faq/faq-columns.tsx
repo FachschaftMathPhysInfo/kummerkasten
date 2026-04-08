@@ -17,7 +17,7 @@ interface QAPColumnProps {
 export default function QAPColumns({
                                      setDialogState
                                    }: QAPColumnProps): ColumnDef<QuestionAnswerPair>[] {
-  const t = useTranslations("Setting.QAPManagementPage.QAPColumns")
+  const t = useTranslations("Settings.QAPManagementPage.QAPColumns")
   const {isMobile} = useSidebar()
   const {user} = useUser()
 

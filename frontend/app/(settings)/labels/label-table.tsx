@@ -210,7 +210,7 @@ export function LabelTable() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("noResults")}
+                  {tc("tables.noResults")}
                 </TableCell>
               </TableRow>
             )}

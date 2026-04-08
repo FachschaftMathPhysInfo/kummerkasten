@@ -52,7 +52,7 @@ export default function SortingSelection() {
                   ? tc("ticketSortingFields.created")
                   : field === "Geändert"
                     ? tc("ticketSortingFields.modified")
-                    : tc("ticketSortingFields.titel")
+                    : tc("ticketSortingFields.title")
                 }
               </CommandItem>
             ))}
