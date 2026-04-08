@@ -15,6 +15,7 @@ interface LabelSelectionProps {
 
 export default function LabelSelection({labels, selectedLabels, setLabels}: LabelSelectionProps) {
   const t = useTranslations("Components.LabelSelection")
+  const tc = useTranslations("Commons")
 
   return (
     <Command>
@@ -53,7 +54,7 @@ export default function LabelSelection({labels, selectedLabels, setLabels}: Labe
             data-cy="clear-labels"
           >
             <RotateCcw/>
-            {t("buttons.reset")}
+            {tc("buttons.reset")}
           </Button>
         </div>
       )}

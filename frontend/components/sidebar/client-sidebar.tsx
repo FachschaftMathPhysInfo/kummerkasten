@@ -32,6 +32,7 @@ import {useTranslations} from "next-intl";
 
 export function ClientSidebar() {
   const t = useTranslations("Components.Sidebar.ClientSidebar")
+  const tc = useTranslations("Commons")
   const { user, logout } = useUser();
   const router = useRouter();
   const { open, isMobile } = useSidebar();
@@ -43,7 +44,7 @@ export function ClientSidebar() {
       cypress: "sidebar-tickets",
     },
     {
-      title: t("labels"),
+      title: tc("words.labels"),
       url: "/labels",
       icon: Tags,
       cypress: "sidebar-labels",

@@ -28,6 +28,7 @@ export function SettingsBlock({
                                 dataCy
                               }: SettingsBlockProps) {
   const t = useTranslations("Components.SettingsBlock")
+  const tc = useTranslations("Commons")
   const sizedIcon =
     icon && isValidElement(icon)
       ? cloneElement(icon as React.ReactElement<{ className?: string }>, {
@@ -75,7 +76,7 @@ export function SettingsBlock({
           disabled={!isDirty || !isValid && hasTriedToSubmit}
           data-cy={dataCy}
         >
-          {t("buttons.submit")}
+          {tc("buttons.confirm")}
         </Button>
       </CardFooter>
     </Card>

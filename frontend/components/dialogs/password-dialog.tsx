@@ -17,26 +17,27 @@ interface PasswordDialogProps extends DialogProps {
 
 export default function PasswordDialog(props: PasswordDialogProps) {
   const t = useTranslations("Components.Dialogs.PasswordDialog")
+  const tc = useTranslations("Commons")
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null)
   const {user, login} = useUser()
 
   async function onSubmit() {
     if (!user) {
-      toast.error(t("toasts.updateError"))
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     const ok = await login(user.mail, password)
 
     if (ok === null) {
-      toast.error(t("toasts.updateError"))
+      toast.error(tc("toasts.generalError"))
       return
     } else if (ok) {
       props.onSuccessfulConfirmationAction()
       props.closeDialogAction()
     } else {
-      setError(t("fields.password.errors.wrong"))
+      setError(t("fields.errors.wrong", {item: tc("words.password")}))
     }
   }
 
@@ -52,7 +53,7 @@ export default function PasswordDialog(props: PasswordDialogProps) {
           </p>
           <Input
             type="password"
-            placeholder={t("fields.password.placeholder")}
+            placeholder={tc("fields.password.placeholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={cn(!!error && 'border-destructive')}
@@ -63,10 +64,10 @@ export default function PasswordDialog(props: PasswordDialogProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => props.closeDialogAction()}>
-            {t("buttons.cancel")}
+            {tc("buttons.cancel")}
           </Button>
           <Button variant={'destructive'} onClick={onSubmit} disabled={!password}>
-            {t("buttons.submit")}
+            {tc("buttons.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

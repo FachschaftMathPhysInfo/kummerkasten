@@ -19,6 +19,7 @@ interface DateRangeFilterProps {
 
 export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, mobile}: DateRangeFilterProps) {
   const t = useTranslations("Components.DateRangeFilter")
+  const tc = useTranslations("Commons")
 
   if (mobile) {
     return (
@@ -88,7 +89,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                   setEndDate(null);
                 }}
               >
-                <RotateCcw/> {t("buttons.reset")}
+                <RotateCcw/> {tc("buttons.reset")}
               </Button>
             </div>
           )}

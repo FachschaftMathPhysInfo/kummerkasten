@@ -371,31 +371,11 @@
   "Components": {
     "Dialogs": {
       "ConfirmationDialog": {
-        "title": "Bist du sicher?",
-        "buttons": {
-          "cancel": "Abbrechen",
-          "ok": "Verstanden",
-          "submit": "Bestätigen"
-        }
+        "title": "Bist du sicher?"
       },
       "PasswordDialog": {
         "title": "E-Mail ändern bestätigen",
-        "description": "Bitte gib dein Passwort ein, um deine E-Mail-Adresse zu ändern.",
-        "fields": {
-          "password": {
-            "placeholder": "Passwort eingeben",
-            "errors": {
-              "wrong": "Passwort ist inkorrekt"
-            }
-          }
-        },
-        "buttons": {
-          "cancel": "Abbrechen",
-          "submit": "Bestätigen"
-        },
-        "toasts": {
-          "updateError": "Ein Fehler beim Aktualisieren ist aufgetreten, melde dich erneut an"
-        }
+        "description": "Bitte gib dein Passwort ein, um deine E-Mail-Adresse zu ändern."
       }
     },
     "Sidebar": {
@@ -430,9 +410,6 @@
       "loaders": {
         "fetching": "Daten werden geladen...",
         "saving": "Speichern..."
-      },
-      "buttons": {
-        "submit": "Speichern"
       }
     },
     "PageLoader": {
@@ -441,9 +418,6 @@
     "LabelSelection": {
       "searchbar": {
         "placeholder": "Labels suchen..."
-      },
-      "buttons": {
-        "reset": "Zurücksetzen"
       }
     },
     "Footer": {
@@ -469,10 +443,7 @@
     "DateRangeFilter": {
       "sheetTitle": "Datumsauswahl",
       "start": "Start",
-      "end": "Ende",
-      "buttons": {
-        "reset": "Zurücksetzen"
-      }
+      "end": "Ende"
     }
   },
   "Commons": {
