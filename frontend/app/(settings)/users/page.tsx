@@ -7,8 +7,11 @@ import {getClient} from "@/lib/graph/client";
 import {toast} from "sonner";
 import {Users} from "lucide-react";
 import {ManagementPageHeader} from "@/components/management-page-header";
+import {useTranslations} from "next-intl";
 
 export default function UserManagementPage() {
+  const t = useTranslations("Settings.UserManagementPage.Root")
+  const tc = useTranslations("Commons")
   const [users, setUsers] = useState<TableUser[]>([])
 
   const fetchUsers = useCallback(async () => {
@@ -24,10 +27,10 @@ export default function UserManagementPage() {
 
       setUsers(data.users.filter(user => !!user));
     } catch (error) {
-      toast.error("Fehler beim Laden der User")
+      toast.error(tc("toasts.fetchError"))
       console.error(error)
     }
-  }, [])
+  }, [tc])
 
   useEffect(() => {
     (async () => {
@@ -39,8 +42,8 @@ export default function UserManagementPage() {
     <div className="w-full h-full flex flex-col grow">
       <ManagementPageHeader
         icon={<Users/>}
-        title="User Verwaltung"
-        description="Verwalte hier User und deren Rollen."
+        title={t("title")}
+        description={t("description")}
       />
       <div className={'w-full h-full flex flex-col gap-6 px-10 pt-4 grow'}>
         <UserTable data={users} refreshData={fetchUsers}/>

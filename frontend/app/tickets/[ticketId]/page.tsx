@@ -14,10 +14,13 @@ import {toast} from "sonner";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {useSidebar} from "@/components/ui/sidebar";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 const client = getClient();
 
 export default function TicketPage() {
+  const t = useTranslations("TicketId.Root")
+  const tc = useTranslations("Commons")
   const {ticketId} = useParams();
   const {deleteTickets} = useTickets()
   const {isMobile} = useSidebar()
@@ -42,18 +45,18 @@ export default function TicketPage() {
 
   async function handleDelete() {
     if (!dialogState.currentTicket) {
-      toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     const error = await deleteTickets([dialogState.currentTicket.id])
 
     if (!error) {
-      toast.success("Ticket wurde erfolgreich gelöscht")
+      toast.success(tc("toasts.deleteSuccess"))
       resetDialogState()
       await fetchTicketDetail();
     } else {
-      toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
+      toast.error(tc("toasts.generalError"))
     }
   }
 
@@ -100,7 +103,7 @@ export default function TicketPage() {
       />
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird das Ticket ${dialogState.currentTicket?.title} unwiderruflich löschen`}
+        description={t("confirmations.delete", {title: dialogState.currentTicket?.title ?? ""})}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDialogState}

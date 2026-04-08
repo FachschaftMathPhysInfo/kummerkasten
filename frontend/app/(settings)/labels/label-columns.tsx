@@ -9,6 +9,7 @@ import {Badge} from "@/components/ui/badge";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {compareRowsInLowercase} from "@/lib/utils";
 import {useUser} from "@/components/providers/user-provider";
+import {useTranslations} from "next-intl";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<LabelTableDialogState>>;
@@ -16,6 +17,7 @@ interface UserColumnProps {
 }
 
 export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
+  const t = useTranslations("Settings.LabelManagementPage.LabelColumns")
   const {user} = useUser()
 
   return [
@@ -24,7 +26,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
       size: 70,
       accessorFn: (row) => row.formLabel ? 1 : 0,
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Öffentlich" className="flex items-center justify-center h-full" data-cy={'sort-by-formlabel-button'}/>
+        <DataTableColumnHeader column={column} title={t("publicLabel")} className="flex items-center justify-center h-full" data-cy={'sort-by-formlabel-button'}/>
       ),
       enableSorting: props.formLabelFilter === null,
       sortingFn: (rowA, rowB, columnId) => {
@@ -48,7 +50,7 @@ export function LabelColumns(props: UserColumnProps): ColumnDef<Label>[] {
     {
       accessorKey: "name",
       header: ({column}) => (
-        <DataTableColumnHeader column={column} title="Name" data-cy={'sort-by-name-button'}/>
+        <DataTableColumnHeader column={column} title={t("name")} data-cy={'sort-by-name-button'}/>
       ),
       sortingFn: compareRowsInLowercase,
       cell: ({row}) =>

@@ -18,20 +18,14 @@ import {useUser} from "@/components/providers/user-provider";
 import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
 import PasswordDialog from "@/components/dialogs/password-dialog";
+import {useTranslations} from "next-intl";
 
 const MAX_NAME_LENGTH = 50;
 
-const accountDataSchema = z.object({
-  firstname: z.string().nonempty("Vorname ist erforderlich")
-    .max(MAX_NAME_LENGTH, "Maximale Länge beträgt 50 Charaktere"),
-  lastname: z.string().nonempty("Nachname ist erforderlich")
-    .max(MAX_NAME_LENGTH, "Maximale Länge beträgt 50 Charaktere"),
-  mail: z.email("Ungültige E-Mail-Adresse"),
-});
-
-type AccountDataFormData = z.infer<typeof accountDataSchema>;
 
 export default function AccountDataForm() {
+  const t = useTranslations("Settings.AccountPage.AccountDataForm")
+  const tc = useTranslations("Commons")
   const {user} = useUser()
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +33,15 @@ export default function AccountDataForm() {
   const [pendingUserData, setPendingUserData] = useState<AccountDataFormData>();
   const [passwordInputOpen, setPasswordInputOpen] = useState(false);
 
+  const accountDataSchema = z.object({
+    firstname: z.string().nonempty(tc("fields.errors.empty"))
+      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {condition: MAX_NAME_LENGTH + " " + tc("words.characters")})),
+    lastname: z.string().nonempty(tc("fields.errors.empty"))
+      .max(MAX_NAME_LENGTH, tc("fields.errors.long", {condition: MAX_NAME_LENGTH + " " + tc("words.characters")})),
+    mail: z.email(tc("fields.email.errors.format")),
+  });
+
+  type AccountDataFormData = z.infer<typeof accountDataSchema>;
   const form = useForm<AccountDataFormData>({
     resolver: zodResolver(accountDataSchema),
     defaultValues: {
@@ -67,7 +70,7 @@ export default function AccountDataForm() {
     setIsSavingAccount(true);
 
     if (!user) {
-      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      toast.error(tc("toasts.loginAgainError"));
       return;
     }
 
@@ -79,16 +82,15 @@ export default function AccountDataForm() {
 
         if (emailUsedByOtherUser) {
           form.setError("mail", {
-            message: "Diese E-Mail-Adresse wird bereits verwendet",
+            message: tc("fields.email.errors.inUse"),
           });
           return;
         }
 
         setPendingUserData(userData)
         setPasswordInputOpen(true);
-      } catch (error) {
-        toast.error("Fehler beim Überprüfen der E-Mail-Adresse");
-        console.error(error);
+      } catch {
+        toast.error(t("toasts.emailCheckError"));
       } finally {
         setIsSavingAccount(false)
       }
@@ -99,7 +101,7 @@ export default function AccountDataForm() {
 
   async function updateProfileData(data: AccountDataFormData) {
     if (!user || !data) {
-      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      toast.error(tc("toasts.loginAgainError"));
       return;
     }
 
@@ -125,13 +127,12 @@ export default function AccountDataForm() {
         mail: data.mail,
       });
 
-      toast.success("Dein Account wurde erfolgreich aktualisiert")
+      toast.success(tc("toasts.updateSuccess"));
       setHasTriedToSubmit(false);
 
       if (data.mail !== user.mail) window.location.reload()
-    } catch (error) {
-      toast.error("Ein Fehler beim Aktualisieren der Daten ist aufgetreten");
-      console.error(error);
+    } catch {
+      toast.error(tc("toasts.loginAgainError"));
     } finally {
       setIsSavingAccount(false);
     }
@@ -149,7 +150,7 @@ export default function AccountDataForm() {
 
           <SettingsBlock
             icon={<User/>}
-            title={"Account"}
+            title={t("title")}
             hasTriedToSubmit={hasTriedToSubmit}
             isDirty={form.formState.isDirty}
             isSaving={isSavingAccount}
@@ -162,9 +163,9 @@ export default function AccountDataForm() {
               name="firstname"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>Vorname</FormLabel>
+                  <FormLabel>{tc("fields.firstname.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"Vorname"} {...field} data-cy={'account-firstname-input'}/>
+                    <Input placeholder={tc("fields.firstname.placeholder")} {...field} data-cy={'account-firstname-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-firstname-input-message'}/>
                 </FormItem>
@@ -176,9 +177,9 @@ export default function AccountDataForm() {
               name="lastname"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>Nachname</FormLabel>
+                  <FormLabel>{tc("fields.lastname.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"Nachname"} {...field} data-cy={'account-lastname-input'}/>
+                    <Input placeholder={tc("fields.lastname.placeholder")} {...field} data-cy={'account-lastname-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-lastname-input-message'}/>
                 </FormItem>
@@ -190,9 +191,9 @@ export default function AccountDataForm() {
               name="mail"
               render={({field}) => (
                 <FormItem className={"flex-grow"}>
-                  <FormLabel>E-Mail</FormLabel>
+                  <FormLabel>{tc("fields.email.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={"vor.nachname@kummerkasten.de"} {...field}
+                    <Input placeholder={tc("fields.email.placeholder")} {...field}
                            data-cy={'account-mail-input'}/>
                   </FormControl>
                   <FormMessage data-cy={'account-mail-input-message'}/>
@@ -208,7 +209,7 @@ export default function AccountDataForm() {
         closeDialogAction={() => setPasswordInputOpen(false)}
         onSuccessfulConfirmationAction={async () => {
           if (pendingUserData) await updateProfileData(pendingUserData)
-          else toast.error("Ein Fehler ist aufgetreten")
+          else toast.error(tc("toasts.generalError"))
         }}
       />
     </>

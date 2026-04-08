@@ -8,6 +8,7 @@ import {useUser} from "@/components/providers/user-provider";
 import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 interface PasswordDialogProps extends DialogProps {
   onSuccessfulConfirmationAction: () => void
@@ -15,26 +16,28 @@ interface PasswordDialogProps extends DialogProps {
 }
 
 export default function PasswordDialog(props: PasswordDialogProps) {
+  const t = useTranslations("Components.Dialogs.PasswordDialog")
+  const tc = useTranslations("Commons")
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null)
   const {user, login} = useUser()
 
   async function onSubmit() {
     if (!user) {
-      toast.error('Ein Fehler beim Aktualisieren ist aufgetreten, melde dich erneut an')
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     const ok = await login(user.mail, password)
 
     if (ok === null) {
-      toast.error('Ein Fehler beim Aktualisieren ist aufgetreten, melde dich erneut an')
+      toast.error(tc("toasts.generalError"))
       return
     } else if (ok) {
       props.onSuccessfulConfirmationAction()
       props.closeDialogAction()
     } else {
-      setError("Das Passwort ist inkorrekt")
+      setError(t("fields.errors.wrong", {item: tc("words.password")}))
     }
   }
 
@@ -42,15 +45,15 @@ export default function PasswordDialog(props: PasswordDialogProps) {
     <Dialog open={props.open}>
       <DialogContent className="[&>button]:hidden">
         <DialogHeader>
-          <DialogTitle>E-Mail ändern bestätigen</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            Bitte gib dein Passwort ein, um deine E-Mail-Adresse zu ändern.
+            {t("description")}
           </p>
           <Input
             type="password"
-            placeholder="Passwort eingeben"
+            placeholder={tc("fields.password.placeholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={cn(!!error && 'border-destructive')}
@@ -61,10 +64,10 @@ export default function PasswordDialog(props: PasswordDialogProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => props.closeDialogAction()}>
-            Abbrechen
+            {tc("buttons.cancel")}
           </Button>
           <Button variant={'destructive'} onClick={onSubmit} disabled={!password}>
-            Bestätigen
+            {tc("buttons.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

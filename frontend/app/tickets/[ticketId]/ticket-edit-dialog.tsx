@@ -14,6 +14,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {useLabels} from "@/components/providers/label-provider";
 import LabelSelection from "@/components/label-selection";
 import {useTickets} from "@/components/providers/ticket-provider";
+import {useTranslations} from "next-intl";
 
 
 interface TicketEditDialogProps {
@@ -22,17 +23,20 @@ interface TicketEditDialogProps {
   refreshData: () => void
 }
 
-const ticketEditSchema = z.object({
-  title: z.string().nonempty(),
-  state: z.enum(TicketState),
-  labels: z.array(z.string().min(1, {message: "Bitte wähle mindestens ein Label aus."})),
-})
-
-type TicketEditFormData = z.infer<typeof ticketEditSchema>
 
 export default function TicketEditDialog(props: TicketEditDialogProps) {
+  const t = useTranslations("TicketId.TicketEditDialog")
+  const tc = useTranslations("Commons")
   const {labels} = useLabels()
   const {updateTicket, addLabelsToTicket, removeLabelsFromTicket} = useTickets()
+
+  const ticketEditSchema = z.object({
+    title: z.string().nonempty(),
+    state: z.enum(TicketState),
+    labels: z.array(z.string().min(1, {message: tc("fields.errors.empty")})),
+  })
+
+  type TicketEditFormData = z.infer<typeof ticketEditSchema>
   const form = useForm<TicketEditFormData>({
     resolver: zodResolver(ticketEditSchema),
     defaultValues: {
@@ -75,11 +79,11 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
     const removeLabelsError = await removeLabelsFromTicket(ticketId, labelsToRemove)
 
     if (!updateError && !addLabelsError && !removeLabelsError) {
-      toast.success("Ticket wurde aktualisiert.")
+      toast.success(tc("toasts.updateSuccess"))
       setHasTriedToSubmit(true)
       props.closeDialog()
     } else {
-      toast.error("Beim Aktualisieren des Tickets ist ein Fehler aufgetreten.")
+      toast.error(tc("toasts.generalError"))
     }
 
     setLoading(false)
@@ -96,9 +100,9 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
           name="title"
           render={({field}) => (
             <FormItem className="flex-grow">
-              <FormLabel>Titel</FormLabel>
+              <FormLabel>{t("fields.title.label")}</FormLabel>
               <FormControl>
-                <Input placeholder={"Titel"}{...field}/>
+                <Input placeholder={t("fields.title.placeholder")}{...field}/>
               </FormControl>
               <FormMessage/>
             </FormItem>
@@ -109,23 +113,23 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
           name="state"
           render={({field}) => (
             <FormItem className="flex-grow">
-              <FormLabel>TicketStatus</FormLabel>
+              <FormLabel>{t("fields.state.label")}</FormLabel>
               <FormControl>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Status auswählen"/>
+                    <SelectValue placeholder={t("fields.state.placeholder")}/>
                   </SelectTrigger>
                   <SelectContent>
                     {Object.values(TicketState).map((state) => (
                       <SelectItem key={state} value={state}>
-                        {state === "NEW"
-                          ? "Neu"
-                          : state === "OPEN"
-                            ? "Offen"
-                            : "Fertig"}
+                        {state === TicketState.New
+                          ? tc("ticketStates.new")
+                          : state === TicketState.Open
+                            ? tc("ticketStates.open")
+                            : tc("ticketStates.done")}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -140,7 +144,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
           name="labels"
           render={() => (
             <FormItem className="flex-grow">
-              <FormLabel>Labels</FormLabel>
+              <FormLabel>{t("fields.labels.label")}</FormLabel>
               <FormControl>
                 <LabelSelection
                   labels={labels}
@@ -164,7 +168,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
             type={"button"}
             className={"flex-grow-[0.5]"}
           >
-            Abbrechen
+            {tc("buttons.cancel")}
           </Button>
 
           <Button
@@ -177,7 +181,7 @@ export default function TicketEditDialog(props: TicketEditDialogProps) {
             ) : (
               <PlusCircle/>
             )}
-            Speichern
+            {tc("buttons.save")}
           </Button>
         </div>
       </form>

@@ -5,6 +5,7 @@ import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/
 import {Check, RotateCcw} from "lucide-react";
 import {cn} from "@/lib/utils";
 import LabelBadge from "@/components/label-badge";
+import {useTranslations} from "next-intl";
 
 interface LabelSelectionProps {
   labels: Label[];
@@ -13,9 +14,12 @@ interface LabelSelectionProps {
 }
 
 export default function LabelSelection({labels, selectedLabels, setLabels}: LabelSelectionProps) {
+  const t = useTranslations("Components.LabelSelection")
+  const tc = useTranslations("Commons")
+
   return (
     <Command>
-      <CommandInput placeholder="Labels suchen..." data-cy={'label-search'}/>
+      <CommandInput placeholder={t("searchbar.placeholder")} data-cy={'label-search'}/>
       <CommandGroup className={'max-h-[300px] overflow-y-auto'}>
         {labels.map((label) => {
           const isSelected = selectedLabels.map(l => l.id).includes(label.id);
@@ -50,7 +54,7 @@ export default function LabelSelection({labels, selectedLabels, setLabels}: Labe
             data-cy="clear-labels"
           >
             <RotateCcw/>
-            Zurücksetzen
+            {tc("buttons.reset")}
           </Button>
         </div>
       )}

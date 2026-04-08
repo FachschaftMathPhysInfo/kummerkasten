@@ -14,6 +14,7 @@ import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
 import {cn} from "@/lib/utils";
 import {useLabels} from "@/components/providers/label-provider";
+import {useTranslations} from "next-intl";
 
 const LabelMaxLength = 50;
 
@@ -23,24 +24,25 @@ interface LabelFormProps {
   closeDialog: () => void
 }
 
-const labelFormSchema = z.object({
-  // This field has a max length of 50, but is already restricted by the input itself and the api,
-  // so I did not add further length checks
-  name: z.string().nonempty({
-    message: "Bitte gib dem Label einen Namen",
-  }),
-  color: z.string().regex(
-    new RegExp("^#([A-Fa-f0-9]{6})$"), "Bitte gültigen HEX-Code angeben"
-  ),
-  isFormLabel: z.boolean(),
-})
 
 export default function LabelForm(props: LabelFormProps) {
+  const t = useTranslations("Settings.LabelManagementPage.LabelForm")
+  const tc = useTranslations("Commons")
   const {createLabel, updateLabel} = useLabels()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
   const [loading, setLoading] = useState<boolean>(false)
   const [isLastFormLabel, setIsLastFormLabel] = useState(false)
+
+  const labelFormSchema = z.object({
+    // This field has a max length of 50, but is already restricted by the input itself and the api,
+    // so I did not add further length checks
+    name: z.string().nonempty({message: tc("fields.errors.empty"),}),
+    color: z.string().regex(
+      new RegExp("^#([A-Fa-f0-9]{6})$"), t("fields.color.errors.format"),
+    ),
+    isFormLabel: z.boolean(),
+  })
 
   useEffect(() => {
     const checkIfIsLastFormLabel = async () => {
@@ -79,13 +81,13 @@ export default function LabelForm(props: LabelFormProps) {
     const error = await createLabel(label)
 
     if (!error) {
-      toast.success("Label erstellt!")
+      toast.success(tc("toasts.createSuccess"))
       props.closeDialog()
     } else {
       if (String(error).includes('unique constraint')) {
-        form.setError("name", {message: "Ein Label mit diesem Namen existiert bereits"})
+        form.setError("name", {message: t("fields.name.errors.unique")})
       } else {
-        toast.error("Ein Fehler beim Erstellen des Labels ist aufgetreten")
+        toast.error(tc("toasts.generalError"))
       }
     }
   }
@@ -95,13 +97,13 @@ export default function LabelForm(props: LabelFormProps) {
     const error = await updateLabel(id, label)
 
     if (!error) {
-      toast.success("Label erfolgreich updated!")
+      toast.success(tc("toasts.updateSuccess"))
       props.closeDialog()
     } else {
       if (String(error).includes('unique constraint')) {
-        form.setError("name", {message: "Ein Label mit diesem Namen existiert bereits"})
+        form.setError("name", {message: t("fields.name.errors.unique")})
       } else {
-        toast.error("Ein Fehler beim Aktualisieren des Labels ist aufgetreten")
+        toast.error(tc("toasts.updateError"))
       }
     }
   }
@@ -118,7 +120,7 @@ export default function LabelForm(props: LabelFormProps) {
           name="name"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("fields.name.label")}</FormLabel>
               <FormControl>
                 <Input
                   data-cy={'name-input'}
@@ -145,7 +147,7 @@ export default function LabelForm(props: LabelFormProps) {
           name="color"
           render={({field}) => (
             <FormItem className={"flex-grow"}>
-              <FormLabel>Farbe</FormLabel>
+              <FormLabel>{t("fields.color.label")}</FormLabel>
               <FormControl>
                 <div className={'flex space-x-8 items-center'}>
                   <div className={'h-full min-h-9 aspect-square flex-shrink-0'}>
@@ -187,7 +189,7 @@ export default function LabelForm(props: LabelFormProps) {
           render={({field}) => (
             <FormItem className={"flex-grow"}>
               <div className={'flex items-center gap-4 mt-2'}>
-                <FormLabel className={cn(isLastFormLabel && 'text-muted-foreground')}>Öffentliche Label</FormLabel>
+                <FormLabel className={cn(isLastFormLabel && 'text-muted-foreground')}>{t("fields.publicLabel.label")}</FormLabel>
                 <FormControl>
                   <Checkbox
                     disabled={isLastFormLabel}
@@ -202,9 +204,9 @@ export default function LabelForm(props: LabelFormProps) {
               <FormMessage className={'-mt-1'}/>
               <FormDescription>
                 {isLastFormLabel ? (
-                  "Dieses Label ist das letzte öffentliche Label. Wenn es privat gemacht werden soll, muss erst mindestens ein anderes Label öffentlich gemacht werden."
+                  t("fields.publicLabel.errors.lastPublic")
                 ) : (
-                  "Ist ein Label als öffentliches Label markiert, können Studis es beim Erstellen eines Tickets auswählen"
+                  t("publicLabelInfo")
                 )}
               </FormDescription>
             </FormItem>
@@ -219,7 +221,7 @@ export default function LabelForm(props: LabelFormProps) {
             type={"button"}
             className={"flex-grow-[0.5]"}
           >
-            Abbrechen
+            {tc("buttons.cancel")}
           </Button>
 
           <Button
@@ -234,7 +236,7 @@ export default function LabelForm(props: LabelFormProps) {
               ) : (
                 <Save/>
               )}
-            {props.createMode ? "Erstellen" : "Speichern"}
+            {props.createMode ? tc("buttons.create") : tc("buttons.save")}
           </Button>
         </div>
       </form>

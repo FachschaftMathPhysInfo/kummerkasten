@@ -10,12 +10,15 @@ import {DateRangeFilter} from "@/components/date-range-filter";
 import SortingSelection from "@/app/tickets/sorting-selection";
 import {useLabels} from "@/components/providers/label-provider";
 import {useTickets} from "@/components/providers/ticket-provider";
+import {useTranslations} from "next-intl";
 
 interface FilterBarProps {
   scrollable?: boolean;
 }
 
 export default function FilterBar({scrollable = false}: FilterBarProps) {
+  const t = useTranslations("Components.FilterBar")
+  const tc = useTranslations("Commons")
   const {labels} = useLabels()
   const {filtering, stateFilterSet, setFiltering} = useTickets()
 
@@ -33,13 +36,13 @@ export default function FilterBar({scrollable = false}: FilterBarProps) {
             data-cy="desktop-overview-button-status"
           >
             {filtering.state.length > 0
-              ? `${filtering.state.length} Status`
-              : "Status"}
+              ? t("buttons.stateFilter.nonEmpty", {length: filtering.state.length})
+              : t("buttons.stateFilter.empty")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 w-[170px]">
           <Command>
-            <CommandInput placeholder="Status suchen..." data-cy={'desktop-overview-status-search'}/>
+            <CommandInput placeholder={t("buttons.stateFilter.searchbar.placeholder")} data-cy={'desktop-overview-status-search'}/>
             <CommandGroup>
               {Object.values(TicketState).map((state) => {
                 const isSelected = filtering.state.includes(state);
@@ -63,10 +66,10 @@ export default function FilterBar({scrollable = false}: FilterBarProps) {
                       )}
                     />
                     {state === TicketState.New
-                      ? "Neu"
+                      ? tc("ticketStates.new")
                       : state === TicketState.Open
-                        ? "Offen"
-                        : "Fertig"}
+                        ? tc("ticketStates.open")
+                        : tc("ticketStates.done")}
                   </CommandItem>
                 );
               })}
@@ -84,8 +87,8 @@ export default function FilterBar({scrollable = false}: FilterBarProps) {
             )}
             data-cy="desktop-overview-button-label">
             {filtering.labels.length > 0
-              ? `${filtering.labels.length} Labels`
-              : "Labels"}
+              ? t("buttons.labelFilter.nonEmpty", {length: filtering.labels.length})
+              : t("buttons.labelFilter.empty")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 max-w-[200px]">

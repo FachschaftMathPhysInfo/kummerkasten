@@ -19,6 +19,7 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import QAPColumns from "@/app/(settings)/faq/faq-columns";
 import {useQAPs} from "@/components/providers/qap-provider";
 import {DndTableRow} from "@/app/(settings)/faq/qap-dnd-row";
+import {useTranslations} from "next-intl";
 
 export interface QAPTableDialogState {
   mode: "create" | "update" | "delete" | null;
@@ -26,6 +27,8 @@ export interface QAPTableDialogState {
 }
 
 export function QAPTable() {
+  const t = useTranslations("Settings.QAPManagementPage.QAPTable");
+  const tc = useTranslations("Commons")
   const [dialogState, setDialogState] = useState<QAPTableDialogState>({mode: null, currentQAP: null});
   const [searchTerm, setSearchTerm] = useState("");
   const {qaps, deleteQaps, updateQapPositions, triggerQAPRefetch} = useQAPs()
@@ -50,7 +53,7 @@ export function QAPTable() {
 
   async function deleteQAPHandler() {
     if (!dialogState.currentQAP) {
-      toast.error("Ein Fehler ist aufgetreten")
+      toast.error(tc("toasts.generalError"))
       return
     }
 
@@ -59,9 +62,9 @@ export function QAPTable() {
     if (!error) {
       resetDialogState();
       triggerQAPRefetch();
-      toast.success("QAP wurde erfolgreich gelöscht")
+      toast.success(tc("toasts.deleteSuccess"))
     } else {
-      toast.error("Fehler beim Löschen der Frage");
+      toast.error(tc("toasts.generalError"));
     }
   }
 
@@ -83,11 +86,11 @@ export function QAPTable() {
       }));
 
       const error = await updateQapPositions(reordered)
-      if (error) toast.error("Fehler beim Aktualisieren der Positionen");
+      if (error) toast.error(tc("toasts.generalError"));
 
       triggerQAPRefetch();
     },
-    [localData, triggerQAPRefetch, updateQapPositions]
+    [localData, tc, triggerQAPRefetch, updateQapPositions]
   );
   return (
     <DndProvider backend={HTML5Backend}>
@@ -99,12 +102,12 @@ export function QAPTable() {
             className="flex gap-2"
           >
             <PlusCircle/>
-            Frage erstellen
+            {t("createButton")}
           </Button>
 
           <Input
             data-cy="faq-searchbar"
-            placeholder="Frage oder Antwort durchsuchen..."
+            placeholder={t("searchbar.placeholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
@@ -133,7 +136,7 @@ export function QAPTable() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Keine FAQs gefunden.
+                    {t("noResults")}
                   </TableCell>
                 </TableRow>
               )}
@@ -150,7 +153,7 @@ export function QAPTable() {
 
         <ConfirmationDialog
           mode="confirmation"
-          description={`Dies wird die Frage "${dialogState.currentQAP?.question}" unwiderruflich löschen.`}
+          description={t("deleteConfirmation", {question: dialogState.currentQAP?.question ?? ""})}
           onConfirm={() => deleteQAPHandler()}
           isOpen={dialogState.mode === "delete"}
           closeDialog={resetDialogState}

@@ -7,8 +7,10 @@ import {ArrowDown, ArrowUp} from "lucide-react";
 import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
 import {TicketSortingField, useTickets} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 export default function SortingSelection() {
+  const tc = useTranslations("Commons")
   const {sorting, setSorting} = useTickets()
 
   return (
@@ -20,7 +22,12 @@ export default function SortingSelection() {
           data-cy="sorting-selection-sort-button"
         >
           <span className="flex justify-center items-center">
-            {sorting.field}{" "}
+            {sorting.field === "Erstellt"
+              ? tc("ticketSortingFields.created")
+              : sorting.field === "Geändert"
+                ? tc("ticketSortingFields.modified")
+                : tc("ticketSortingFields.title")
+            }{" "}
             {sorting.orderAscending ? (
               <ArrowUp className="inline h-4 w-4 ml-1"/>
             ) : (
@@ -46,7 +53,12 @@ export default function SortingSelection() {
                 }))}
                 data-cy={`sorting-selection-sort-${field}`}
               >
-                {field}
+                {field === "Erstellt"
+                  ? tc("ticketSortingFields.created")
+                  : field === "Geändert"
+                    ? tc("ticketSortingFields.modified")
+                    : tc("ticketSortingFields.title")
+                }
               </CommandItem>
             ))}
           </CommandGroup>

@@ -22,20 +22,24 @@ import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
 import {defaultLabel} from "@/lib/graph/defaultTypes";
+import {useTranslations} from "next-intl";
 
 const TITLE_MAX_LENGTH = 70
 const TEXT_MAX_LENGTH = 3000
 
-const formUiSchema = z.object({
-  labels: z.array(z.string())
-    .nonempty({error: "Bitte wähle mindestens ein Label aus."}),
-  title: z.string().nonempty({error: "Die Zusammenfassung darf nicht leer sein."})
-    .max(TITLE_MAX_LENGTH, "Die Zusammenfassung ist zu lang."),
-  text: z.string().nonempty({error: "Die Nachricht darf nicht leer sein."})
-    .max(TEXT_MAX_LENGTH, "Die Nachricht ist zu lang"),
-});
 
 export default function FormUi() {
+  const t = useTranslations("KummerkastenPage.FormUi")
+  const tc = useTranslations("Commons")
+
+  const formUiSchema = z.object({
+    labels: z.array(z.string()).nonempty({error: tc("fields.errors.empty")}),
+    title: z.string().nonempty({error: tc("fields.errors.empty")})
+      .max(TITLE_MAX_LENGTH, tc("fields.errors.long", {condition: `${TITLE_MAX_LENGTH} ${tc("words.characters")}`})),
+    text: z.string().nonempty({error: tc("fields.errors.empty")})
+      .max(TEXT_MAX_LENGTH, tc("fields.errors.long", {condition: `${TEXT_MAX_LENGTH} ${tc("words.characters")}`})),
+  });
+
   const form = useForm<z.infer<typeof formUiSchema>>({
     resolver: zodResolver(formUiSchema),
     defaultValues: {
@@ -63,16 +67,15 @@ export default function FormUi() {
 
         setFormLabels(filteredLabels);
 
-      } catch (err) {
-        console.error("Failed to fetch form labels:", err);
-        toast.error("Das Formular konnte nicht fertig geladen werden. Versuche es später erneut");
+      } catch {
+        toast.error(tc("toasts.fetchError"));
       } finally {
         setIsLabelsLoading(false);
       }
     };
 
     void fetchPublicLabels();
-  }, [form]);
+  }, [form, tc]);
 
   async function onValidSubmit(data: z.infer<typeof formUiSchema>) {
     setLoading(true);
@@ -86,19 +89,18 @@ export default function FormUi() {
 
     try {
       await client.request<CreateTicketMutation>(CreateTicketDocument, {ticket: newTicket});
-      toast.success("Feedback wurde erfolgreich gesendet");
+      toast.success(t("toasts.sendSuccess"));
       setHasTriedToSubmit(false);
       form.reset();
-    } catch (error) {
-      toast.error("Beim Senden des Feedbacks ist ein Fehler aufgetreten.");
-      console.error(error);
+    } catch {
+      toast.error(t("toasts.generalError"));
     }
     setLoading(false);
   }
 
   return (
     <div className="w-full max-w-4xl rounded-lg p-6 my-4 border">
-      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">Deine anonyme Nachricht</h2>
+      <h2 className="text-3xl font-semibold text-foreground-muted mb-6 text-center">{t("title")}</h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onValidSubmit, () =>
@@ -112,7 +114,7 @@ export default function FormUi() {
             render={() => (
               <FormItem>
                 <FormLabel className={cn('data-[error=true]:text-destructive text-lg ')}>
-                  Worum geht es in deinem Feedback?
+                  {t("fields.labels.label")}
                 </FormLabel>
                 {isLabelsLoading &&
                   <div className="flex items-center justify-center">
@@ -173,7 +175,7 @@ export default function FormUi() {
             render={({field}) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">Titel</FormLabel>
+                  <FormLabel className="text-lg">{t("fields.title.label")}</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     field.value.length > TITLE_MAX_LENGTH && "text-destructive"
@@ -184,7 +186,7 @@ export default function FormUi() {
                 <FormControl>
                   <Input
                     className={cn("bg-background text-foreground")}
-                    placeholder="Vorlesung ..."
+                    placeholder={t("fields.title.placeholder")}
                     maxLength={TITLE_MAX_LENGTH}
                     data-cy={'kummerform-title-input'}
                     {...field}
@@ -200,7 +202,7 @@ export default function FormUi() {
             render={({field}) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">Feedback</FormLabel>
+                  <FormLabel className="text-lg">{t("fields.text.label")}</FormLabel>
                   <span className={cn(
                     "text-sm text-muted-foreground",
                     field.value.length > TEXT_MAX_LENGTH && "text-destructive"
@@ -210,7 +212,7 @@ export default function FormUi() {
                 </div>
                 <FormControl>
                   <Textarea
-                    placeholder="Deine anonyme Nachricht"
+                    placeholder={t("fields.text.placeholder")}
                     maxLength={TEXT_MAX_LENGTH}
                     className={cn("resize-none text-foreground flex min-h-[180px]  bg-background text-sm",
                       "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
@@ -233,7 +235,7 @@ export default function FormUi() {
             ) : (
               <>
                 <Send/>
-                Absenden
+                {tc("buttons.send")}
               </>
             )}
           </Button>
