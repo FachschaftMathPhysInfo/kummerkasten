@@ -2,7 +2,8 @@ import * as ticketPage from "../../pages/tickets/ticket-overview.po";
 import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "../../pages/tickets/ticket-overview.po";
 import * as filterBar from "../../pages/tickets/filter-bar.po";
 import {Label, Ticket, TicketState, UserRole} from "../../../lib/graph/generated/graphql";
-import {TicketSortingField} from "@/components/providers/ticket-provider";
+
+import {TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 

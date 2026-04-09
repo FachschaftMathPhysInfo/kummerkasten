@@ -1,5 +1,5 @@
-import {TicketSortingField} from "@/components/providers/ticket-provider";
 import {TicketState} from "@/lib/graph/generated/graphql";
+import {TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
 
 export function getTodaySuffixForCalendar () {
   const today = new Date();

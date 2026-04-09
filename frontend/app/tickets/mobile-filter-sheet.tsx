@@ -6,10 +6,11 @@ import {cn} from "@/lib/utils";
 import LabelBadge from "../../components/label-badge";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import React, {useState} from "react";
-import {TicketSortingField, useTickets} from "@/components/providers/ticket-provider";
+import {useTickets} from "@/components/providers/ticket-provider";
 import {Input} from "@/components/ui/input";
 import {useLabels} from "@/components/providers/label-provider";
 import {useTranslations} from "next-intl";
+import {TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
 
 export default function MobileFilterSheet() {
   const t = useTranslations("TicketPage.MobileFilterSheet");

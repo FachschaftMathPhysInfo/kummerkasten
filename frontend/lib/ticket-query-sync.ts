@@ -1,6 +1,6 @@
 import {parseAsBoolean, parseAsIsoDate, parseAsStringLiteral, useQueryState} from "nuqs";
 import {useEffect} from "react";
-import {SORT_FIELDS, TicketFiltering, TicketSorting} from "@/components/providers/ticket-provider";
+import {SORT_FIELDS, TicketFiltering, TicketSorting} from "@/lib/types/ticket-sorting-filtering";
 
 
 export function useTicketUrlSync(
