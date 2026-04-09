@@ -11,18 +11,8 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {setLocale} from "@/lib/cookies";
+import {AVAILABLE_LANGUAGES} from "@/lib/constants/languages";
 
-
-export const availableLanguages = [
-  {
-    name: "German",
-    localeKey: "de"
-  },
-  {
-    name: "English",
-    localeKey: "en"
-  }
-]
 
 export default function LanguageSwitch({className}: { className?: string }) {
   const mounted = useRef(false);
@@ -46,7 +36,7 @@ export default function LanguageSwitch({className}: { className?: string }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          {availableLanguages.map(language => (
+          {AVAILABLE_LANGUAGES.map(language => (
             <DropdownMenuItem key={language.localeKey} onClick={async() => await setLocale(language.localeKey)}>
               {language.name}
             </DropdownMenuItem>

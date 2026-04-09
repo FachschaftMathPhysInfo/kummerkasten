@@ -16,7 +16,8 @@ import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
 import {compareStringSets} from "@/lib/utils";
 import {useTicketUrlSync} from "@/lib/ticket-query-sync";
 import {parseAsBoolean, parseAsIsoDate, parseAsStringLiteral, useQueryState} from "nuqs";
-import {SORT_FIELDS, TicketFiltering, TicketSorting, TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
+import {TicketFiltering, TicketSorting, TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
+import {SORT_FIELDS} from "@/lib/constants/ticket-fields";
 
 
 interface TicketsContextType {

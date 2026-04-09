@@ -14,8 +14,8 @@ import {BookText, Loader2, RotateCcw, Save} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea";
 import {cn} from "@/lib/utils";
 import {useTranslations} from "next-intl";
+import {ABOUT_SECTION_TEXT_KEY} from "@/lib/constants/setting-keys";
 
-export const ABOUT_SECTION_TEXT_KEY = "ABOUT_SECTION_TEXT";
 const MAX_ABOUT_TEXT_LENGTH = 2000;
 
 

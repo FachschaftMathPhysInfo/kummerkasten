@@ -1,11 +1,10 @@
 import {Label, TicketState} from "@/lib/graph/generated/graphql";
+import {SORT_FIELDS} from "@/lib/constants/ticket-fields";
 
 export type TicketSorting = {
   field: TicketSortingField,
   orderAscending: boolean
 }
-
-export const SORT_FIELDS = ["Erstellt", "Geändert", "Titel"] as const;
 
 export type TicketSortingField = (typeof SORT_FIELDS)[number];
 
