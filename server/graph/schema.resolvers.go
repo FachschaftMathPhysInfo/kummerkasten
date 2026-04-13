@@ -1250,6 +1250,7 @@ func (r *queryResolver) FrontendConfig(ctx context.Context) ([]model.Configurati
 		{Key: "max_inputs.private.names", IntValue: int32(frontendConfig.MaxInputs.Private.Names)},
 		{Key: "max_inputs.private.faqs.questions", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Questions)},
 		{Key: "max_inputs.private.faqs.answers", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Answers)},
+		{Key: "max_inputs.private.about", IntValue: int32(frontendConfig.MaxInputs.Private.About)},
 	}
 
 	var allConfigurations []model.Configuration
