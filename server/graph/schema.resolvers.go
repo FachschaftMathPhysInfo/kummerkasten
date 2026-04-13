@@ -27,6 +27,7 @@ import (
 // CreateTicket is the resolver for the createTicket field.
 func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTicket) (*model.Ticket, error) {
 	var labels []*models.Label
+	maxInputLenghts := configuration.Get().System.Frontend.MaxInputs
 
 	for _, labelName := range ticket.Labels {
 		label := &models.Label{}
@@ -42,12 +43,12 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		labels = append(labels, label)
 	}
 
-	const MaxTitleLength = 70
+	MaxTitleLength := maxInputLenghts.Public.Title
 	if len(ticket.OriginalTitle) > MaxTitleLength {
 		return nil, fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
 	}
 
-	const MaxTextLength = 3000
+	MaxTextLength := maxInputLenghts.Public.Content
 	if len(ticket.Text) > MaxTextLength {
 		return nil, fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
 	}
@@ -128,6 +129,7 @@ func (r *mutationResolver) DeleteTicket(ctx context.Context, ids []string) (int3
 // UpdateTicket is the resolver for the updateTicket field.
 func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket model.UpdateTicket) (string, error) {
 	var dbTickets []*models.Ticket
+	maxInputLenghts := configuration.Get().System.Frontend.MaxInputs
 	err := r.DB.NewSelect().
 		Model(&dbTickets).
 		Where("id = ?", id).
@@ -144,7 +146,7 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 	dbTicket := dbTickets[0]
 
 	if ticket.Title != nil {
-		const MaxTitleLength = 70
+		MaxTitleLength := maxInputLenghts.Private.Titles
 		if len(*ticket.Title) > MaxTitleLength {
 			return "", fmt.Errorf("ticket title exceeds max length of %v", MaxTitleLength)
 		}
@@ -190,10 +192,11 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
-	const MAXLABELLENGTH = 50
+	maxInputLenghts := configuration.Get().System.Frontend.MaxInputs
+	maxLabelLength := maxInputLenghts.Private.Labels
 
-	if len(label.Name) > MAXLABELLENGTH {
-		return nil, fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
+	if len(label.Name) > maxLabelLength {
+		return nil, fmt.Errorf("label name exceeds max length of %v", maxLabelLength)
 	}
 
 	var labels []*models.Label
@@ -262,6 +265,7 @@ func (r *mutationResolver) DeleteLabel(ctx context.Context, ids []string) (int32
 
 // UpdateLabel is the resolver for the updateLabel field.
 func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label model.UpdateLabel) (string, error) {
+	maxInputLenghts := configuration.Get().System.Frontend.MaxInputs
 	dbLabel := &models.Label{}
 	err := r.DB.NewSelect().Model(dbLabel).Where("id = ?", id).Scan(ctx)
 
@@ -271,9 +275,9 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	}
 
 	if label.Name != nil {
-		const MAXLABELLENGTH = 50
-		if len(*label.Name) > MAXLABELLENGTH {
-			return "", fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
+		maxLabelLength := maxInputLenghts.Private.Labels
+		if len(*label.Name) > maxLabelLength {
+			return "", fmt.Errorf("label name exceeds max length of %v", maxLabelLength)
 		}
 
 		var labels []*models.Label
@@ -328,6 +332,7 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (*model.User, error) {
+	// FIXME: name lengths are not enforced here... have to think about this
 	hashedPassword, err := auth.HashPassword(user.Password)
 
 	if err != nil {
@@ -590,7 +595,8 @@ func (r *mutationResolver) UpdateSetting(ctx context.Context, setting model.NewS
 
 // UpdateAboutSectionText is the resolver for the updateAboutSectionText field.
 func (r *mutationResolver) UpdateAboutSectionText(ctx context.Context, text string) (string, error) {
-	const maxLengthAboutSectionText = 3000
+	maxInputLenghts := configuration.Get().System.Frontend.MaxInputs
+	maxLengthAboutSectionText := maxInputLenghts.Private.About
 
 	if len(text) > maxLengthAboutSectionText || len(text) == 0 {
 		slog.Error("failed updating about section text: message too long or too short")
@@ -707,15 +713,16 @@ func (r *mutationResolver) CreateQuestionAnswerPair(ctx context.Context, questio
 	var maxPositionNullable sql.NullInt32
 	var maxPosition int32
 	var questionExists bool
-	const MaxQuestionLength = 100
-	const MaxAnswerLength = 700
+	maxInputLenghts := configuration.Get().System.Frontend.MaxInputs
+	maxQuestionLength := maxInputLenghts.Private.Faqs.Questions
+	maxAnswerLength := maxInputLenghts.Private.Faqs.Answers
 
-	if len(questionAnswerPair.Question) > MaxQuestionLength {
-		return nil, fmt.Errorf("question exceeds max length of %v", MaxQuestionLength)
+	if len(questionAnswerPair.Question) > maxQuestionLength {
+		return nil, fmt.Errorf("question exceeds max length of %v", maxQuestionLength)
 	}
 
-	if len(questionAnswerPair.Answer) > MaxAnswerLength {
-		return nil, fmt.Errorf("answer exceeds max length of %v", MaxAnswerLength)
+	if len(questionAnswerPair.Answer) > maxAnswerLength {
+		return nil, fmt.Errorf("answer exceeds max length of %v", maxAnswerLength)
 	}
 
 	questionExists, err := r.DB.NewSelect().Model((*models.QuestionAnswerPair)(nil)).
@@ -857,15 +864,16 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 		return "", ErrNotFound
 	}
 
-	const MaxQuestionLength = 100
-	const MaxAnswerLength = 700
+	maxInputLenghts := configuration.Get().System.Frontend.MaxInputs
+	maxQuestionLength := maxInputLenghts.Private.Faqs.Questions
+	maxAnswerLength := maxInputLenghts.Private.Faqs.Answers
 
-	if len(*questionAnswerPair.Question) > MaxQuestionLength {
-		return "", fmt.Errorf("question exceeds max length of %v", MaxQuestionLength)
+	if len(*questionAnswerPair.Question) > maxQuestionLength {
+		return "", fmt.Errorf("question exceeds max length of %v", maxQuestionLength)
 	}
 
-	if len(*questionAnswerPair.Answer) > MaxAnswerLength {
-		return "", fmt.Errorf("answer exceeds max length of %v", MaxAnswerLength)
+	if len(*questionAnswerPair.Answer) > maxAnswerLength {
+		return "", fmt.Errorf("answer exceeds max length of %v", maxAnswerLength)
 	}
 
 	qAP := questionAnswerPairs[0]
