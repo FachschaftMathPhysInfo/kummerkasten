@@ -1235,6 +1235,16 @@ func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Sett
 	return aboutSetting, nil
 }
 
+// FrontendConfig is the resolver for the frontendConfig field.
+func (r *queryResolver) FrontendConfig(ctx context.Context) ([]*model.Setting, error) {
+	frontendConfig := configuration.Get().System.Frontend
+	frontendSettings := []*model.Setting{
+		{Key: "default_language", Value: frontendConfig.DefaultLanguage},
+	}
+
+	return frontendSettings, nil
+}
+
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
 	var dbUser = new(models.User)

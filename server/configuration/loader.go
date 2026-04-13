@@ -26,6 +26,10 @@ var (
 		"WARN":  true,
 		"ERROR": true,
 	}
+	validLanguages = map[string]bool{
+		"en": true,
+		"de": true,
+	}
 )
 
 func Get() Configuration {
@@ -123,6 +127,10 @@ func loadMissingConfigurationValues() {
 		loadAdminPassword()
 	}
 
+	if k.String("system.frontend.default_language") == "" {
+		err = k.Set("system.frontend.default_language", "de")
+	}
+
 	if err != nil {
 		slog.Error("error loading missing configuration values", "error", err)
 	}
@@ -173,6 +181,10 @@ func validateConfiguration() {
 		configErrors = append(configErrors, fmt.Errorf("admin.password is empty, please set a password"))
 	}
 
+	if !validLanguages[systemConfiguration.System.Frontend.DefaultLanguage] {
+		configErrors = append(configErrors, fmt.Errorf("system.frontend.default_language has to be either 'en', or 'de'"))
+	}
+
 	if len(configErrors) > 0 {
 		slog.Error("the configration has several errors:")
 		for _, err := range configErrors {
@@ -212,5 +224,8 @@ type Configuration struct {
 		Mode     string `koanf:"mode"`
 		Pepper   string `koanf:"pepper"`
 		LogLevel string `koanf:"loglevel"`
+		Frontend struct {
+			DefaultLanguage string `koanf:"default_language"`
+		}
 	} `koanf:"system"`
 }

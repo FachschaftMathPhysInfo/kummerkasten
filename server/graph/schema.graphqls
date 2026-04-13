@@ -77,6 +77,7 @@ type Query {
     settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
     footerSettings: [Setting]
     aboutSectionSettings: [Setting]
+    frontendConfig: [Setting]
     login(mail: String!, password: String!): Boolean!
     loginCheck(sid: String): User
     questionAnswerPairs(ids: [ID!]): [QuestionAnswerPair]
