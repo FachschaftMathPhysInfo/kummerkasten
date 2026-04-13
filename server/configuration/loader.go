@@ -132,31 +132,31 @@ func loadMissingConfigurationValues() {
 	}
 
 	if k.Int("system.frontend.max_inputs.public.title") == 0 {
-		err = k.Set("system.frontend.max_inputs.public.title", 80)
+		err = k.Set("system.frontend.max_inputs.public.title", 100)
 	}
 
 	if k.Int("system.frontend.max_inputs.public.content") == 0 {
-		err = k.Set("system.frontend.max_inputs.public.content", 300)
+		err = k.Set("system.frontend.max_inputs.public.content", 2000)
 	}
 
 	if k.Int("system.frontend.max_inputs.private.titles") == 0 {
-		err = k.Set("system.frontend.max_inputs.private.titles", 80)
+		err = k.Set("system.frontend.max_inputs.private.titles", 100)
 	}
 
 	if k.Int("system.frontend.max_inputs.private.labels") == 0 {
-		err = k.Set("system.frontend.max_inputs.private.labels", 80)
+		err = k.Set("system.frontend.max_inputs.private.labels", 100)
 	}
 
 	if k.Int("system.frontend.max_inputs.private.names") == 0 {
-		err = k.Set("system.frontend.max_inputs.private.names", 80)
+		err = k.Set("system.frontend.max_inputs.private.names", 50)
 	}
 
 	if k.Int("system.frontend.max_inputs.private.faqs.questions") == 0 {
-		err = k.Set("system.frontend.max_inputs.private.faqs.questions", 80)
+		err = k.Set("system.frontend.max_inputs.private.faqs.questions", 100)
 	}
 
 	if k.Int("system.frontend.max_inputs.private.faqs.answers") == 0 {
-		err = k.Set("system.frontend.max_inputs.private.faqs.answers", 300)
+		err = k.Set("system.frontend.max_inputs.private.faqs.answers", 500)
 	}
 
 	if err != nil {
