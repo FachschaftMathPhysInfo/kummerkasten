@@ -1236,21 +1236,34 @@ func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Sett
 }
 
 // FrontendConfig is the resolver for the frontendConfig field.
-func (r *queryResolver) FrontendConfig(context.Context) ([]*model.Setting, error) {
+func (r *queryResolver) FrontendConfig(ctx context.Context) ([]model.Configuration, error) {
 	frontendConfig := configuration.Get().System.Frontend
-	frontendSettings := []*model.Setting{
-		{Key: "default_language", Value: frontendConfig.DefaultLanguage},
-		{Key: "max_inputs.public.title", Value: string(rune(frontendConfig.MaxInputs.Public.Title))},
-		{Key: "max_inputs.public.content", Value: string(rune(frontendConfig.MaxInputs.Public.Content))},
-		{Key: "max_inputs.private.title", Value: string(rune(frontendConfig.MaxInputs.Private.Title))},
-		{Key: "max_inputs.private.labels", Value: string(rune(frontendConfig.MaxInputs.Private.Labels))},
-		{Key: "max_inputs.private.names", Value: string(rune(frontendConfig.MaxInputs.Private.Names))},
-		{Key: "max_inputs.private.title", Value: string(rune(frontendConfig.MaxInputs.Private.Title))},
-		{Key: "max_inputs.private.faqs.question", Value: string(rune(frontendConfig.MaxInputs.Private.Faqs.Questions))},
-		{Key: "max_inputs.private.faqs.answer", Value: string(rune(frontendConfig.MaxInputs.Private.Faqs.Answers))},
+	stringConfigurations := []*model.StringConfiguration{
+		{Key: "default_language", StringValue: frontendConfig.DefaultLanguage},
 	}
 
-	return frontendSettings, nil
+	intConfigurations := []*model.IntConfiguration{
+		{Key: "max_inputs.public.title", IntValue: int32(frontendConfig.MaxInputs.Public.Title)},
+		{Key: "max_inputs.public.content", IntValue: int32(frontendConfig.MaxInputs.Public.Content)},
+		{Key: "max_inputs.private.title", IntValue: int32(frontendConfig.MaxInputs.Private.Title)},
+		{Key: "max_inputs.private.labels", IntValue: int32(frontendConfig.MaxInputs.Private.Labels)},
+		{Key: "max_inputs.private.names", IntValue: int32(frontendConfig.MaxInputs.Private.Names)},
+		{Key: "max_inputs.private.title", IntValue: int32(frontendConfig.MaxInputs.Private.Title)},
+		{Key: "max_inputs.private.faqs.question", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Questions)},
+		{Key: "max_inputs.private.faqs.answer", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Answers)},
+	}
+
+	var allConfigurations []model.Configuration
+
+	for _, c := range stringConfigurations {
+		allConfigurations = append(allConfigurations, c)
+	}
+
+	for _, c := range intConfigurations {
+		allConfigurations = append(allConfigurations, c)
+	}
+
+	return allConfigurations, nil
 }
 
 // Login is the resolver for the login field.

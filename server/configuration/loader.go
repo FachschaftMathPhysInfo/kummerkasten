@@ -139,7 +139,7 @@ func loadMissingConfigurationValues() {
 		err = k.Set("system.frontend.max_inputs.public.content", 300)
 	}
 
-	if k.Int("system.frontend.max_inputs.private.title") == 0 {
+	if k.Int("system.frontend.max_inputs.private.titles") == 0 {
 		err = k.Set("system.frontend.max_inputs.private.title", 80)
 	}
 
@@ -151,11 +151,11 @@ func loadMissingConfigurationValues() {
 		err = k.Set("system.frontend.max_inputs.private.names", 80)
 	}
 
-	if k.Int("system.frontend.max_inputs.private.faqs.question") == 0 {
+	if k.Int("system.frontend.max_inputs.private.faqs.questions") == 0 {
 		err = k.Set("system.frontend.max_inputs.private.faqs.question", 80)
 	}
 
-	if k.Int("system.frontend.max_inputs.private.faqs.answer") == 0 {
+	if k.Int("system.frontend.max_inputs.private.faqs.answers") == 0 {
 		err = k.Set("system.frontend.max_inputs.faqs.answer", 300)
 	}
 
