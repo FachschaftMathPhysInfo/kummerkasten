@@ -1236,10 +1236,18 @@ func (r *queryResolver) AboutSectionSettings(ctx context.Context) ([]*model.Sett
 }
 
 // FrontendConfig is the resolver for the frontendConfig field.
-func (r *queryResolver) FrontendConfig(ctx context.Context) ([]*model.Setting, error) {
+func (r *queryResolver) FrontendConfig(context.Context) ([]*model.Setting, error) {
 	frontendConfig := configuration.Get().System.Frontend
 	frontendSettings := []*model.Setting{
 		{Key: "default_language", Value: frontendConfig.DefaultLanguage},
+		{Key: "max_inputs.public.title", Value: string(rune(frontendConfig.MaxInputs.Public.Title))},
+		{Key: "max_inputs.public.content", Value: string(rune(frontendConfig.MaxInputs.Public.Content))},
+		{Key: "max_inputs.private.title", Value: string(rune(frontendConfig.MaxInputs.Private.Title))},
+		{Key: "max_inputs.private.labels", Value: string(rune(frontendConfig.MaxInputs.Private.Labels))},
+		{Key: "max_inputs.private.names", Value: string(rune(frontendConfig.MaxInputs.Private.Names))},
+		{Key: "max_inputs.private.title", Value: string(rune(frontendConfig.MaxInputs.Private.Title))},
+		{Key: "max_inputs.private.faqs.question", Value: string(rune(frontendConfig.MaxInputs.Private.Faqs.Questions))},
+		{Key: "max_inputs.private.faqs.answer", Value: string(rune(frontendConfig.MaxInputs.Private.Faqs.Answers))},
 	}
 
 	return frontendSettings, nil

@@ -21,7 +21,13 @@ query aboutSectionSettings {
 
 query frontendConfig {
     frontendConfig {
-        key
-        value
+        ... on StringConfiguration {
+            key
+            stringValue
+        }
+        ... on IntConfiguration {
+            key
+            intValue
+        }
     }
 }

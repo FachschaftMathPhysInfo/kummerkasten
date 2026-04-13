@@ -1,25 +1,25 @@
 "use client"
 
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {FrontendConfigDocument, Setting} from "@/lib/graph/generated/graphql";
+import {Configuration, FrontendConfigDocument} from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
 
 interface ConfigurationContextType {
-  configuration: Setting[];
+  configuration: Configuration[];
   triggerConfigurationRefetch: () => void;
 }
 
 const ConfigurationContext = createContext<ConfigurationContextType | null>(null);
 
 export function ConfigurationProvider({children}: { children: ReactNode }) {
-  const [configuration, setConfiguration] = useState<Setting[]>([]);
+  const [configuration, setConfiguration] = useState<Configuration[]>([]);
   const [refetchKey, setRefetchKey] = useState(false);
 
   useEffect(() => {
     const fetchConfiguration = async () => {
       const client = getClient()
       const data = await client.request(FrontendConfigDocument)
-      setConfiguration(data.frontendConfig as Setting[])
+      setConfiguration(data.frontendConfig as Configuration[])
     }
 
     void fetchConfiguration();

@@ -13,6 +13,24 @@
   "system": {
     "domain": "",
     "mode": "",
-    "pepper": ""
+    "pepper": "",
+    "frontend": {
+      "default_language": "",
+      "max_inputs": {
+        "public": {
+          "title": 0,
+          "content": 0
+        },
+        "private": {
+          "titles": 0,
+          "labels": 0,
+          "names": 0,
+          "faqs" : {
+            "questions": 0,
+            "answers": 0
+          }
+        }
+      }
+    }
   }
 }

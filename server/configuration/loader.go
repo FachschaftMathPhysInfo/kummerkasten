@@ -131,6 +131,34 @@ func loadMissingConfigurationValues() {
 		err = k.Set("system.frontend.default_language", "de")
 	}
 
+	if k.Int("system.frontend.max_inputs.public.title") == 0 {
+		err = k.Set("system.frontend.max_inputs.title", 80)
+	}
+
+	if k.Int("system.frontend.max_inputs.public.content") == 0 {
+		err = k.Set("system.frontend.max_inputs.public.content", 300)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.title") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.title", 80)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.labels") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.labels", 80)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.names") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.names", 80)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.faqs.question") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.faqs.question", 80)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.faqs.answer") == 0 {
+		err = k.Set("system.frontend.max_inputs.faqs.answer", 300)
+	}
+
 	if err != nil {
 		slog.Error("error loading missing configuration values", "error", err)
 	}
@@ -226,6 +254,21 @@ type Configuration struct {
 		LogLevel string `koanf:"loglevel"`
 		Frontend struct {
 			DefaultLanguage string `koanf:"default_language"`
+			MaxInputs       struct {
+				Public struct {
+					Title   int `koanf:"title"`
+					Content int `koanf:"content"`
+				}
+				Private struct {
+					Title  int `koanf:"titles"`
+					Labels int `koanf:"labels"`
+					Names  int `koanf:"names"`
+					Faqs   struct {
+						Questions int `koanf:"questions"`
+						Answers   int `koanf:"answers"`
+					}
+				}
+			}
 		}
 	} `koanf:"system"`
 }
