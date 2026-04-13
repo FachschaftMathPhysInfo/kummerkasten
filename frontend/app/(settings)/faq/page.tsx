@@ -6,24 +6,27 @@ import {ManagementPageHeader} from "@/components/management-page-header";
 import AboutSectionForm from "@/app/(settings)/faq/about-section-form";
 import {QAPProvider} from "@/components/providers/qap-provider";
 import {useTranslations} from "next-intl";
+import {ConfigurationProvider} from "@/components/providers/configuration-provider";
 
 export default function QAPManagementPage() {
   const t = useTranslations("Settings.QAPManagementPage.Root")
 
   return (
-      <div className="w-full h-full flex flex-col grow">
-        <ManagementPageHeader
-          icon={<MessageCircleQuestionMark />}
-          title={t("title")}
-          description={t("description")}
-        />
-        <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
-          <AboutSectionForm />
+    <div className="w-full h-full flex flex-col grow">
+      <ManagementPageHeader
+        icon={<MessageCircleQuestionMark/>}
+        title={t("title")}
+        description={t("description")}
+      />
+      <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
+        <ConfigurationProvider>
+          <AboutSectionForm/>
           <QAPProvider>
-            <QAPTable />
+            <QAPTable/>
           </QAPProvider>
-        </div>
+        </ConfigurationProvider>
       </div>
+    </div>
 
   );
 }

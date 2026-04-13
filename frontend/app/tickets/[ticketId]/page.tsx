@@ -15,6 +15,7 @@ import {useTickets} from "@/components/providers/ticket-provider";
 import {useSidebar} from "@/components/ui/sidebar";
 import {cn} from "@/lib/utils";
 import {useTranslations} from "next-intl";
+import {ConfigurationProvider} from "@/components/providers/configuration-provider";
 
 const client = getClient();
 
@@ -67,47 +68,49 @@ export default function TicketPage() {
   }, [fetchTicketDetail, ticketId]);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col py-5 grow overflow-hidden h-full ",
-        isMobile ? "max-w-screen" : (state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]")
-      )}
-    >
-      <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow h-full">
-        <ResizablePanel
-          defaultSize={30}
-          minSize={20}
-          maxSize={27}
-          className="flex-col hidden md:flex h-full"
-        >
-          <TicketSidebar
-            selectedTicketId={String(ticketId)}
-          />
-        </ResizablePanel>
-        <ResizableHandle/>
-        <ResizablePanel defaultSize={50}>
-          <TicketDetailView
-            key={ticket?.id}
-            ticket={ticket}
-            ticketLabels={ticketLabels}
-            setDialogStateAction={setDialogState}
-          />
-        </ResizablePanel>
-      </ResizablePanelGroup>
+    <ConfigurationProvider>
+      <div
+        className={cn(
+          "flex flex-col py-5 grow overflow-hidden h-full ",
+          isMobile ? "max-w-screen" : (state === "expanded" ? "max-w-[calc(100vw-10rem)]" : "max-w-[calc(100vw-3rem)]")
+        )}
+      >
+        <ResizablePanelGroup direction="horizontal" className="flex md:flex-grow h-full">
+          <ResizablePanel
+            defaultSize={30}
+            minSize={20}
+            maxSize={27}
+            className="flex-col hidden md:flex h-full"
+          >
+            <TicketSidebar
+              selectedTicketId={String(ticketId)}
+            />
+          </ResizablePanel>
+          <ResizableHandle/>
+          <ResizablePanel defaultSize={50}>
+            <TicketDetailView
+              key={ticket?.id}
+              ticket={ticket}
+              ticketLabels={ticketLabels}
+              setDialogStateAction={setDialogState}
+            />
+          </ResizablePanel>
+        </ResizablePanelGroup>
 
-      <TicketDialog
-        open={dialogState.mode === "update"}
-        ticket={dialogState.currentTicket}
-        closeDialog={() => setDialogState({mode: null, currentTicket: null})}
-        refreshData={async () => await fetchTicketDetail()}
-      />
-      <ConfirmationDialog
-        mode="confirmation"
-        description={t("confirmations.delete", {title: dialogState.currentTicket?.title ?? ""})}
-        onConfirm={handleDelete}
-        isOpen={dialogState.mode === "delete"}
-        closeDialog={resetDialogState}
-      />
-    </div>
+        <TicketDialog
+          open={dialogState.mode === "update"}
+          ticket={dialogState.currentTicket}
+          closeDialog={() => setDialogState({mode: null, currentTicket: null})}
+          refreshData={async () => await fetchTicketDetail()}
+        />
+        <ConfirmationDialog
+          mode="confirmation"
+          description={t("confirmations.delete", {title: dialogState.currentTicket?.title ?? ""})}
+          onConfirm={handleDelete}
+          isOpen={dialogState.mode === "delete"}
+          closeDialog={resetDialogState}
+        />
+      </div>
+    </ConfigurationProvider>
   );
 }

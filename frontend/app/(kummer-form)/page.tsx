@@ -8,6 +8,7 @@ import ThemeSwitch from "@/components/theme-switch";
 import LanguageSwitch from "@/components/language-switch"
 import {useTheme} from "next-themes";
 import {useTranslations} from "next-intl";
+import {ConfigurationProvider} from "@/components/providers/configuration-provider";
 
 export default function KummerkastenPage() {
   const {resolvedTheme} = useTheme();
@@ -26,7 +27,7 @@ export default function KummerkastenPage() {
         <div className="flex items-center gap-5">
           <Image
             suppressHydrationWarning
-            src={resolvedTheme === "dark" ? "/logo_dark.svg" :"/logo_light.svg"}
+            src={resolvedTheme === "dark" ? "/logo_dark.svg" : "/logo_light.svg"}
             alt={t("logoAlt")}
             width={512}
             height={512}
@@ -39,11 +40,13 @@ export default function KummerkastenPage() {
           </h1>
         </div>
 
-        <AboutSection/>
+        <ConfigurationProvider>
+          <AboutSection/>
 
-        <FormUi/>
+          <FormUi/>
 
-        <FAQSection/>
+          <FAQSection/>
+        </ConfigurationProvider>
       </div>
     </main>
   );
