@@ -1245,12 +1245,11 @@ func (r *queryResolver) FrontendConfig(ctx context.Context) ([]model.Configurati
 	intConfigurations := []*model.IntConfiguration{
 		{Key: "max_inputs.public.title", IntValue: int32(frontendConfig.MaxInputs.Public.Title)},
 		{Key: "max_inputs.public.content", IntValue: int32(frontendConfig.MaxInputs.Public.Content)},
-		{Key: "max_inputs.private.title", IntValue: int32(frontendConfig.MaxInputs.Private.Title)},
+		{Key: "max_inputs.private.titles", IntValue: int32(frontendConfig.MaxInputs.Private.Titles)},
 		{Key: "max_inputs.private.labels", IntValue: int32(frontendConfig.MaxInputs.Private.Labels)},
 		{Key: "max_inputs.private.names", IntValue: int32(frontendConfig.MaxInputs.Private.Names)},
-		{Key: "max_inputs.private.title", IntValue: int32(frontendConfig.MaxInputs.Private.Title)},
-		{Key: "max_inputs.private.faqs.question", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Questions)},
-		{Key: "max_inputs.private.faqs.answer", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Answers)},
+		{Key: "max_inputs.private.faqs.questions", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Questions)},
+		{Key: "max_inputs.private.faqs.answers", IntValue: int32(frontendConfig.MaxInputs.Private.Faqs.Answers)},
 	}
 
 	var allConfigurations []model.Configuration

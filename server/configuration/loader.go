@@ -132,7 +132,7 @@ func loadMissingConfigurationValues() {
 	}
 
 	if k.Int("system.frontend.max_inputs.public.title") == 0 {
-		err = k.Set("system.frontend.max_inputs.title", 80)
+		err = k.Set("system.frontend.max_inputs.public.title", 80)
 	}
 
 	if k.Int("system.frontend.max_inputs.public.content") == 0 {
@@ -140,7 +140,7 @@ func loadMissingConfigurationValues() {
 	}
 
 	if k.Int("system.frontend.max_inputs.private.titles") == 0 {
-		err = k.Set("system.frontend.max_inputs.private.title", 80)
+		err = k.Set("system.frontend.max_inputs.private.titles", 80)
 	}
 
 	if k.Int("system.frontend.max_inputs.private.labels") == 0 {
@@ -152,11 +152,11 @@ func loadMissingConfigurationValues() {
 	}
 
 	if k.Int("system.frontend.max_inputs.private.faqs.questions") == 0 {
-		err = k.Set("system.frontend.max_inputs.private.faqs.question", 80)
+		err = k.Set("system.frontend.max_inputs.private.faqs.questions", 80)
 	}
 
 	if k.Int("system.frontend.max_inputs.private.faqs.answers") == 0 {
-		err = k.Set("system.frontend.max_inputs.faqs.answer", 300)
+		err = k.Set("system.frontend.max_inputs.private.faqs.answers", 300)
 	}
 
 	if err != nil {
@@ -258,17 +258,17 @@ type Configuration struct {
 				Public struct {
 					Title   int `koanf:"title"`
 					Content int `koanf:"content"`
-				}
+				} `koanf:"public"`
 				Private struct {
-					Title  int `koanf:"titles"`
+					Titles int `koanf:"titles"`
 					Labels int `koanf:"labels"`
 					Names  int `koanf:"names"`
 					Faqs   struct {
 						Questions int `koanf:"questions"`
 						Answers   int `koanf:"answers"`
-					}
-				}
-			}
-		}
+					} `koanf:"faqs"`
+				} `koanf:"private"`
+			} `koanf:"max_inputs"`
+		} `koanf:"frontend"`
 	} `koanf:"system"`
 }
