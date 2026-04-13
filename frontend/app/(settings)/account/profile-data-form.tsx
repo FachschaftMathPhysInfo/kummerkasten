@@ -6,7 +6,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
 import {
-  CheckIfMailExistsDocument,
+  CheckIfMailExistsDocument, IntConfiguration,
   UpdateUserSettingsDocument,
   UpdateUserSettingsMutation,
   UpdateUserSettingsMutationVariables
@@ -19,13 +19,15 @@ import {SettingsBlock} from "@/components/settings-block";
 import {User} from "lucide-react";
 import PasswordDialog from "@/components/dialogs/password-dialog";
 import {useTranslations} from "next-intl";
-
-const MAX_NAME_LENGTH = 50;
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PRIVATE_NAMES_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
 
 export default function AccountDataForm() {
   const t = useTranslations("Settings.AccountPage.AccountDataForm")
   const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration()
+  const MAX_NAME_LENGTH = (configuration.find(c => c.key == PRIVATE_NAMES_LENGTH_KEY) as IntConfiguration).intValue
   const {user} = useUser()
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

@@ -159,6 +159,10 @@ func loadMissingConfigurationValues() {
 		err = k.Set("system.frontend.max_inputs.private.faqs.answers", 500)
 	}
 
+	if k.Int("system.frontend.max_inputs.private.about") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.about", 2000)
+	}
+
 	if err != nil {
 		slog.Error("error loading missing configuration values", "error", err)
 	}
@@ -267,6 +271,7 @@ type Configuration struct {
 						Questions int `koanf:"questions"`
 						Answers   int `koanf:"answers"`
 					} `koanf:"faqs"`
+					About int `koanf:"about"`
 				} `koanf:"private"`
 			} `koanf:"max_inputs"`
 		} `koanf:"frontend"`

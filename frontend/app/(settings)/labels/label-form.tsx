@@ -5,7 +5,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
-import {FormLabelsDocument, Label, NewLabel} from "@/lib/graph/generated/graphql";
+import {FormLabelsDocument, IntConfiguration, Label, NewLabel} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {LoaderCircle, PlusCircle, Save} from "lucide-react";
 import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -15,8 +15,8 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {cn} from "@/lib/utils";
 import {useLabels} from "@/components/providers/label-provider";
 import {useTranslations} from "next-intl";
-
-const LabelMaxLength = 50;
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PRIVATE_LABELS_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
 interface LabelFormProps {
   createMode: boolean;
@@ -28,6 +28,8 @@ interface LabelFormProps {
 export default function LabelForm(props: LabelFormProps) {
   const t = useTranslations("Settings.LabelManagementPage.LabelForm")
   const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration()
+  const LABEL_MAX_LENGTH = (configuration.find(c => c.key == PRIVATE_LABELS_LENGTH_KEY) as IntConfiguration).intValue
   const {createLabel, updateLabel} = useLabels()
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false)
   const [color, setColor] = useState(props.originalLabel?.color ?? "#7A7777")
@@ -135,7 +137,7 @@ export default function LabelForm(props: LabelFormProps) {
                   <FormMessage data-cy={'name-input-message'}/>
                 </div>
                 <div className={'text-xs text-muted-foreground'}>
-                  {field.value.length} / {LabelMaxLength}
+                  {field.value.length} / {LABEL_MAX_LENGTH}
                 </div>
               </div>
             </FormItem>

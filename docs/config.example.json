@@ -28,7 +28,8 @@
           "faqs" : {
             "questions": 0,
             "answers": 0
-          }
+          },
+          "about": 0
         }
       }
     }

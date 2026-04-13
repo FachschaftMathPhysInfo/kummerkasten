@@ -1,0 +1,8 @@
+export const PUBLIC_TITLE_LENGTH_KEY = "max_inputs.public.title"
+export const PUBLIC_CONTENT_LENGTH_KEY = "max_inputs.public.content"
+export const PRIVATE_TITLES_LENGTH_KEY = "max_inputs.public.private.titles"
+export const PRIVATE_LABELS_LENGTH_KEY = "max_inputs.public.private.labels"
+export const PRIVATE_NAMES_LENGTH_KEY = "max_inputs.public.private.names"
+export const PRIVATE_QUESTIONS_LENGTH_KEY = "max_inputs.public.private.faqs.questions"
+export const PRIVATE_ANSWERS_LENGTH_KEY = "max_inputs.public.private.faqs.answers"
+export const PRIVATE_ABOUT_TEXT_LENGTH_KEY = "max_inputs.private.about"
