@@ -3,7 +3,6 @@ import {SettingsIcon} from "lucide-react";
 import AccountDataForm from "@/app/(settings)/account/profile-data-form";
 import PasswordDataForm from "@/app/(settings)/account/password-form";
 import {useTranslations} from "next-intl";
-import {ConfigurationProvider} from "@/components/providers/configuration-provider";
 
 export default function Page() {
   const t = useTranslations("Settings.AccountPage.Root")
@@ -15,10 +14,8 @@ export default function Page() {
         title={t("title")}
         description={t("description")}
       />
-      <ConfigurationProvider>
-        <AccountDataForm/>
-        <PasswordDataForm/>
-      </ConfigurationProvider>
+      <AccountDataForm/>
+      <PasswordDataForm/>
     </div>
   );
 }

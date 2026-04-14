@@ -8,7 +8,6 @@ import {toast} from "sonner";
 import {Users} from "lucide-react";
 import {ManagementPageHeader} from "@/components/management-page-header";
 import {useTranslations} from "next-intl";
-import {ConfigurationProvider} from "@/components/providers/configuration-provider";
 
 export default function UserManagementPage() {
   const t = useTranslations("Settings.UserManagementPage.Root")
@@ -47,9 +46,7 @@ export default function UserManagementPage() {
         description={t("description")}
       />
       <div className={'w-full h-full flex flex-col gap-6 px-10 pt-4 grow'}>
-        <ConfigurationProvider>
-          <UserTable data={users} refreshData={fetchUsers}/>
-        </ConfigurationProvider>
+        <UserTable data={users} refreshData={fetchUsers}/>
       </div>
     </div>
   )

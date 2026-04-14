@@ -6,7 +6,6 @@ import {ManagementPageHeader} from "@/components/management-page-header";
 import AboutSectionForm from "@/app/(settings)/faq/about-section-form";
 import {QAPProvider} from "@/components/providers/qap-provider";
 import {useTranslations} from "next-intl";
-import {ConfigurationProvider} from "@/components/providers/configuration-provider";
 
 export default function QAPManagementPage() {
   const t = useTranslations("Settings.QAPManagementPage.Root")
@@ -19,14 +18,11 @@ export default function QAPManagementPage() {
         description={t("description")}
       />
       <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
-        <ConfigurationProvider>
-          <AboutSectionForm/>
-          <QAPProvider>
-            <QAPTable/>
-          </QAPProvider>
-        </ConfigurationProvider>
+        <AboutSectionForm/>
+        <QAPProvider>
+          <QAPTable/>
+        </QAPProvider>
       </div>
     </div>
-
   );
 }
