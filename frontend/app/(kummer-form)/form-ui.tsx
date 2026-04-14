@@ -30,6 +30,7 @@ export default function FormUi() {
   const t = useTranslations("KummerkastenPage.FormUi")
   const tc = useTranslations("Commons")
   const {configuration} = useConfiguration()
+
   const TITLE_MAX_LENGTH = (configuration.find(c => c.key == PUBLIC_TITLE_LENGTH_KEY) as IntConfiguration).intValue
   const TEXT_MAX_LENGTH = (configuration.find(c => c.key == PUBLIC_CONTENT_LENGTH_KEY) as IntConfiguration).intValue
 
