@@ -3,21 +3,22 @@ package utils
 import (
 	"context"
 	"fmt"
+	"log/slog"
+
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/uptrace/bun"
-	"log"
 )
 
 func Indices(ctx context.Context, db *bun.DB, newIndex int32, id string) error {
 	var qaps []*model.QuestionAnswerPair
 
 	if err := db.NewSelect().Model(&qaps).Where("id = ?", id).Scan(ctx); err != nil {
-		log.Printf("Failed to get qap with id %v: %v", id, err)
+		slog.Error("Failed to get qap", "id", id, "error", err)
 		return err
 	}
 
 	if len(qaps) == 0 {
-		log.Printf("QuestionAnswerPair with id %v not found", id)
+		slog.Error("QuestionAnswerPair not found", "id", id)
 		return fmt.Errorf("QuestionAnswerPair with id %v not found", id)
 	}
 
@@ -42,7 +43,7 @@ func shiftIndecesUp(ctx context.Context, db *bun.DB, newIndex int32, qap *model.
 
 	amountQaps, err := db.NewSelect().Model((*model.QuestionAnswerPair)(nil)).Count(ctx)
 	if err != nil {
-		log.Printf("Failed to get amountQaps: %v", err)
+		slog.Error("Failed to get amountQaps", "error", err)
 		return err
 	}
 
@@ -51,7 +52,7 @@ func shiftIndecesUp(ctx context.Context, db *bun.DB, newIndex int32, qap *model.
 		Where("position <= ?", qap.Position).
 		Set(`"position" = "position" + ?`, amountQaps).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to set update offset: %v", err)
+		slog.Error("Failed to set update offset", "error", err)
 		return err
 	}
 
@@ -59,7 +60,7 @@ func shiftIndecesUp(ctx context.Context, db *bun.DB, newIndex int32, qap *model.
 		Where("id = ?", qap.ID).
 		Set("position = ?", newIndex).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to set new index: %v", err)
+		slog.Error("Failed to set new index", "error", err)
 		return err
 	}
 
@@ -67,7 +68,7 @@ func shiftIndecesUp(ctx context.Context, db *bun.DB, newIndex int32, qap *model.
 		Where("position > ?", amountQaps-1).
 		Set(`"position" = "position" - ?`, amountQaps-1).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to reset update offset: %v", err)
+		slog.Error("Failed to reset update offset", "error", err)
 		return err
 	}
 
@@ -77,7 +78,7 @@ func shiftIndecesUp(ctx context.Context, db *bun.DB, newIndex int32, qap *model.
 func shiftIndecesDown(ctx context.Context, db *bun.DB, newIndex int32, qap *model.QuestionAnswerPair) error {
 	amountQaps, err := db.NewSelect().Model((*model.QuestionAnswerPair)(nil)).Count(ctx)
 	if err != nil {
-		log.Printf("Failed to get amountQaps: %v", err)
+		slog.Error("Failed to get amountQaps", "error", err)
 		return err
 	}
 
@@ -86,7 +87,7 @@ func shiftIndecesDown(ctx context.Context, db *bun.DB, newIndex int32, qap *mode
 		Where("position >= ?", qap.Position).
 		Set(`"position" = "position" + ?`, amountQaps).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to set update offset: %v", err)
+		slog.Error("Failed to set update offset", "error", err)
 		return err
 	}
 
@@ -94,7 +95,7 @@ func shiftIndecesDown(ctx context.Context, db *bun.DB, newIndex int32, qap *mode
 		Where("id = ?", qap.ID).
 		Set("position = ?", newIndex).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to set new index: %v", err)
+		slog.Error("Failed to set new index", "error", err)
 		return err
 	}
 
@@ -102,7 +103,7 @@ func shiftIndecesDown(ctx context.Context, db *bun.DB, newIndex int32, qap *mode
 		Where("position > ?", amountQaps-1).
 		Set(`"position" = "position" - ?`, amountQaps+1).
 		Exec(ctx); err != nil {
-		log.Printf("Failed to reset update offset: %v", err)
+		slog.Error("Failed to reset update offset", "error", err)
 		return err
 	}
 

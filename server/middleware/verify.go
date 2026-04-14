@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"context"
-	"github.com/uptrace/bun"
-	"log"
+	"log/slog"
 	"time"
+
+	"github.com/uptrace/bun"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 )
@@ -29,7 +30,7 @@ func VerifySID(ctx context.Context, sid string, db *bun.DB) (*model.User, error)
 
 	err := db.NewSelect().Model(&users).Where("id = ?", sessions[0].UserID).Scan(ctx)
 	if err != nil || len(users) == 0 {
-		log.Printf("User could not be verified. SID not found in database")
+		slog.Error("User could not be verified. SID not found in database")
 		return nil, err
 	}
 

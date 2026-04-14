@@ -1,4 +1,5 @@
 import {Loader2} from "lucide-react";
+import {useTranslations} from "next-intl";
 
 type PageLoaderProps = {
   message?: string;
@@ -7,10 +8,13 @@ type PageLoaderProps = {
 };
 
 export function PageLoader({
-                             message = "Lade Inhalte...",
+                             message,
                              compact = false,
                              loading = true
                            }: PageLoaderProps) {
+  const t = useTranslations("Components.PageLoader")
+  const defaultMessage = t("message")
+
   return (
     <div
       className={`flex flex-col items-center justify-center  ${
@@ -20,7 +24,7 @@ export function PageLoader({
       {loading && (
         <Loader2 className="w-10 h-10 animate-spin text-primary"/>
       )}
-      <p className="text-2xl font-semibold">{message}</p>
+      <p className="text-2xl font-semibold">{message ?? defaultMessage}</p>
     </div>
   );
 }

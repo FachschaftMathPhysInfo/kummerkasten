@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {useParams} from "next/navigation";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {getClient} from "@/lib/graph/client";
-import {Label, Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
+import {Ticket, TicketsByIdsDocument, TicketsByIdsQuery} from "@/lib/graph/generated/graphql";
 import TicketSidebar from "@/app/tickets/[ticketId]/ticket-sidebar";
 import TicketDetailView from "@/app/tickets/[ticketId]/ticket-detail-view";
 import {TicketDialogState} from "@/app/tickets/page";
@@ -14,15 +14,18 @@ import {toast} from "sonner";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {useSidebar} from "@/components/ui/sidebar";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 const client = getClient();
 
 export default function TicketPage() {
+  const t = useTranslations("TicketId.Root")
+  const tc = useTranslations("Commons")
   const {ticketId} = useParams();
   const {deleteTickets} = useTickets()
   const {isMobile} = useSidebar()
   const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [ticketLabels, setTicketLabels] = useState<Label[]>([]);
+  const ticketLabels = ticket?.labels ?? [];
   const {state} = useSidebar()
 
   const [dialogState, setDialogState] = useState<TicketDialogState>({
@@ -33,9 +36,7 @@ export default function TicketPage() {
   const fetchTicketDetail = useCallback(async () => {
     if (!ticketId) return;
     const data = await client.request<TicketsByIdsQuery>(TicketsByIdsDocument, {id: ticketId});
-    const ticketData = data?.tickets?.[0];
-    setTicket(ticketData ?? null);
-    setTicketLabels(ticketData?.labels ?? []);
+    return data?.tickets?.[0] ?? null
   }, [ticketId]);
 
   const resetDialogState = () => {
@@ -44,23 +45,25 @@ export default function TicketPage() {
 
   async function handleDelete() {
     if (!dialogState.currentTicket) {
-      toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     const error = await deleteTickets([dialogState.currentTicket.id])
 
     if (!error) {
-      toast.success("Ticket wurde erfolgreich gelöscht")
+      toast.success(tc("toasts.deleteSuccess"))
       resetDialogState()
       await fetchTicketDetail();
     } else {
-      toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
+      toast.error(tc("toasts.generalError"))
     }
   }
 
   useEffect(() => {
-    void fetchTicketDetail();
+    fetchTicketDetail().then(ticket => {
+      setTicket(ticket == undefined ? null : ticket)
+    })
   }, [fetchTicketDetail, ticketId]);
 
   return (
@@ -84,6 +87,7 @@ export default function TicketPage() {
         <ResizableHandle/>
         <ResizablePanel defaultSize={50}>
           <TicketDetailView
+            key={ticket?.id}
             ticket={ticket}
             ticketLabels={ticketLabels}
             setDialogStateAction={setDialogState}
@@ -99,7 +103,7 @@ export default function TicketPage() {
       />
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird das Ticket ${dialogState.currentTicket?.title} unwiderruflich löschen`}
+        description={t("confirmations.delete", {title: dialogState.currentTicket?.title ?? ""})}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDialogState}

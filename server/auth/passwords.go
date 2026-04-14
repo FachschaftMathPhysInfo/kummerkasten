@@ -3,7 +3,7 @@ package auth
 import (
 	"crypto/sha256"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -20,7 +20,7 @@ func HashPassword(password string) (string, error) {
 
 	hash, err := bcrypt.GenerateFromPassword(digest, bcrypt.DefaultCost)
 	if err != nil {
-		log.Printf("Failed hashing password: %v", err)
+		slog.Warn("Failed hashing password", "error", err)
 		return "", err
 	}
 

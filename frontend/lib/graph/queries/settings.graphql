@@ -18,3 +18,16 @@ query aboutSectionSettings {
         value
     }
 }
+
+query frontendConfig {
+    frontendConfig {
+        ... on StringConfiguration {
+            key
+            stringValue
+        }
+        ... on IntConfiguration {
+            key
+            intValue
+        }
+    }
+}

@@ -5,6 +5,7 @@ import {cn} from "@/lib/utils";
 import {Select, SelectContent, SelectItem, SelectTrigger} from "@/components/ui/select";
 import {calculateFontColor} from "@/lib/calculate-colors";
 import {getTicketStateColor} from "@/lib/ticket-operations";
+import { useTranslations } from "next-intl";
 
 interface TicketStatusAreaProps {
   state: TicketState;
@@ -13,6 +14,8 @@ interface TicketStatusAreaProps {
 
 
 export default function TicketStatusArea({state, setStatusAction}: TicketStatusAreaProps) {
+  const tc = useTranslations("Commons")
+
   return (
     <div className={'w-full'}>
       <Select defaultValue={state} onValueChange={(val) => setStatusAction(val as TicketState)}>
@@ -29,10 +32,10 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
           data-cy={'ticket-status-area'}
         >
           {state === TicketState.New
-            ? "Neu"
+            ? tc("ticketStates.new")
             : state === TicketState.Open
-              ? "Offen"
-              : "Fertig"}
+              ? tc("ticketStates.open")
+              : tc("ticketStates.done")}
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="NEW">
@@ -41,7 +44,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
               style={{color: calculateFontColor(getTicketStateColor(TicketState.New))}}
               data-cy={'ticket-status-new'}
             >
-              Neu
+              {tc("ticketStates.new")}
             </Badge>
           </SelectItem>
           <SelectItem value="OPEN">
@@ -50,7 +53,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
               style={{color: calculateFontColor(getTicketStateColor(TicketState.Open))}}
               data-cy={'ticket-status-open'}
             >
-              Offen
+              {tc("ticketStates.open")}
             </Badge>
           </SelectItem>
           <SelectItem value="CLOSED">
@@ -59,7 +62,7 @@ export default function TicketStatusArea({state, setStatusAction}: TicketStatusA
               style={{color: calculateFontColor(getTicketStateColor(TicketState.Closed))}}
               data-cy={'ticket-status-closed'}
             >
-              Fertig
+              {tc("ticketStates.done")}
             </Badge>
           </SelectItem>
         </SelectContent>

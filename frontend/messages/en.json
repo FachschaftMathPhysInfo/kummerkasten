@@ -1,0 +1,532 @@
+{
+  "KummerkastenPage": {
+    "Root": {
+      "title": "Kummerkasten",
+      "logoAlt": "Kummerkasten Logo"
+    },
+    "AboutSection" : {
+      "title": "What is the Kummerkasten?",
+      "noConfig": "A description was not yet configured"
+    },
+    "FormUi": {
+      "title": "Your anonymous message",
+      "fields": {
+        "title": {
+          "label": "Title",
+          "placeholder": "Course... sucks"
+        },
+        "labels": {
+          "label": "What is your feedback about?"
+        },
+        "text": {
+          "label": "Feedback",
+          "placeholder": "your anonymous feedback"
+        }
+      },
+      "toasts": {
+        "sendSuccess": "Your feedback was successfuly sent."
+      }
+    },
+    "FaqSection": {
+      "title": "Frequently Asked Questions",
+      "noFaqs": "No FAQs available."
+    }
+  },
+  "LoginPage": {
+    "Root": {
+      "title": "Login"
+    },
+    "LoginForm": {
+      "buttons": {
+        "login": "Login"
+      },
+      "toasts": {
+        "loginError": "Login Error."
+      }
+    }
+  },
+  "Settings": {
+    "AccountPage": {
+      "Root": {
+        "title": "My Account",
+        "description": "Edit your personal account data"
+      },
+      "PasswordDataForm": {
+        "title": "security",
+        "data": "der Daten",
+        "fields": {
+          "currentPassword": {
+            "label": "Current password",
+            "placeholder": "Current password"
+          },
+          "newPassword": {
+            "label": "New password",
+            "placeholder": "New password",
+            "errors": {
+              "new": "The new password must not be the old one"
+            }
+          },
+          "confirmPassword": {
+            "placeholder": "Repeat your new password",
+            "errors": {
+              "match": "The passwords do not match."
+            }
+          }
+        },
+        "toasts": {
+          "changeSuccess": "Password was changed. You will now be logged out."
+        }
+      },
+      "AccountDataForm": {
+        "title": "Account",
+        "toasts": {
+          "emailCheckError": "Failed checking the e-mail"
+        }
+      }
+    },
+    "AppPage": {
+      "Root": {
+        "title": "App Settings",
+        "description": "Edit general app settings"
+      },
+      "FooterForm": {
+        "title": "Footer",
+        "loading": "Loading Settings",
+        "links": "Footer Links",
+        "settings": "der Einstellungen",
+        "fields": {
+          "contact": {
+            "label": "Contact Links",
+            "placeholder": "https://..."
+          },
+          "legalNotice": {
+            "label": "Imprint",
+            "placeholder": "https://..."
+          },
+          "errors": {
+            "urlFormat": "Please provide a valid URL."
+          }
+        }
+      }
+    },
+    "QAPManagementPage": {
+      "Root": {
+        "title": "FAQs",
+        "description": "Manage the informations provided in the FAQ area."
+      },
+      "QAPTable": {
+        "createButton": "Create question",
+        "searchbar": {
+          "placeholder": "Search for quesiton or answer"
+        },
+        "deleteConfirmation": "`This will delete the question \"{question}\". The process is not reversible`"
+      },
+      "QAPColumns": {
+        "question": "Question",
+        "answer": "Answer"
+      },
+      "QAPDialog": {
+        "createQuestion": "Create question",
+        "editQuestion": "Edit question"
+      },
+      "FaqForm": {
+        "fields": {
+          "question": {
+            "label": "Question",
+            "placeholder": "What?",
+            "errors": {
+              "unique": "This question already exists."
+            }
+          },
+          "answer": {
+            "label": "Answer",
+            "placeholder": "This."
+          },
+          "position": {
+            "label": "Position",
+            "placeholder": "1",
+            "errors": {
+              "format": "Please enter an integer.",
+              "minimum": "Please provide a value greater than 0."
+            }
+          }
+        }
+      },
+      "AboutSectionForm": {
+        "aboutText": {
+          "title": "About Text",
+          "description": "Describe, what your Kummerkasten is used for.",
+          "placeholder": "Provide a description for the Kummerkasten."
+        },
+        "loading": "Loading about section..."
+      }
+    },
+    "LabelManagementPage": {
+      "Root": {
+        "title": "Label Management",
+        "description": "Create, delete or edit labels."
+      },
+      "LabelTable": {
+        "searchbar": {
+          "placeholder": "Filter label names..."
+        },
+        "buttons": {
+          "create": "Create label",
+          "labelFilter": {
+            "publicOnly": "Show public labels",
+            "privateOnly": "Show private labels",
+            "all": "Show all labels"
+          }
+        },
+        "confirmations": {
+          "deleteConfirmation": "This will delete the label \"{name}\". The process is irreversible"
+        }
+      },
+      "LabelForm": {
+        "publicLabelInfo": "If a label is marked as public, users can use it when sending feedback.",
+        "fields": {
+          "name": {
+            "label": "Name",
+            "errors": {
+              "unique": "A label with this name already exists."
+            }
+          },
+          "color": {
+            "label": "Color",
+            "errors": {
+              "format": "Please provide a valid HEX format."
+            }
+          },
+          "publicLabel": {
+            "label": "Public label",
+            "errors": {
+              "lastPublic": "This label is the last public one. If you want it to be private, make another one public first."
+            }
+          }
+        }
+      },
+      "LabelDialog": {
+        "buttons": {
+          "create": "Create label",
+          "edit": "Edit label"
+        }
+      },
+      "LabelColumns": {
+        "publicLabel": "Public",
+        "name": "Name"
+      }
+    },
+    "UserManagementPage": {
+      "Root": {
+        "title": "User Mangement",
+        "description": "Manage users and their roles."
+      },
+      "ResetPasswordDialog": {
+        "title": "Reset password",
+        "description": {
+          "one": "This will change the password for ",
+          "two": ""
+        },
+        "fields": {
+          "newPassword": {
+            "placeholder": "New password"
+          }
+        }
+      },
+      "UserColumns": {
+        "admin": {
+          "tooltip": "Admin"
+        },
+        "firstname": "Firstname",
+        "lastname": "Lastname",
+        "email": "E-Mail",
+        "buttons": {
+          "promote": "Promote",
+          "demote": "Demote",
+          "resetPassword": "Reset password"
+        }
+      },
+      "UserDialog": {
+        "create": "Create user"
+      },
+      "UserTable": {
+        "create": "Create user",
+        "searchbar": {
+          "placeholder": "Filter lastnames..."
+        },
+        "confirmations": {
+          "promote": "This will promote \"{firstname}\" \"{lastname}\"",
+          "demote": "This will demote \"{firstname}\" \"{lastname}\"",
+          "delete": "This will delete \"{firstname}\" \"{lastname}\". This process is irreversible"
+        }
+      },
+      "UserForm": {
+        "fields": {
+          "confirmPassword": {
+            "placeholder": "Repeat password",
+            "errors": {
+              "identical": "The new password matches the provided old one"
+            }
+          }
+        }
+      }
+    }
+  },
+  "TicketPage": {
+    "Root": {
+      "title": "Tickets",
+      "description": "Manage all existing Tickets",
+      "searchbar": {
+        "placeholder": "Search for content..."
+      },
+      "thisSemester": "This semester",
+      "oldSemester": "Past semesters",
+      "noResults": "There are no tickets yet.",
+      "noFilteredResults": "No tickets match the given filters.",
+      "confirmations": {
+        "delete": "This will delete the ticket \"{title}\". This process is irreversible"
+      }
+    },
+    "TicketCard": {
+      "buttons": {
+        "copyLink": "Copy link",
+        "delete": "delete"
+      },
+      "toasts": {
+        "copyError": "Failed copying",
+        "copySuccess": "Copy Link"
+      }
+    },
+    "MobileFilterSheet": {
+      "searchbar": {
+        "placeholder": "Search labels..."
+      }
+    }
+  },
+  "TicketId": {
+    "Root": {
+      "confirmations": {
+        "delete": "This will delete the ticket \"{title}\". This process is irreversible"
+      }
+    },
+    "TicketSidebar": {
+      "details": "Details",
+      "tickets": "Tickets",
+      "searchbar": {
+        "placeholder": "Search for tickets..."
+      },
+      "noTickets": "There are no tickets yet.",
+      "noFilteredResults": "No tickets match the given filters.",
+      "thisSemester": "This semester",
+      "oldSemester": "Past semesters"
+    },
+    "TicketLabelArea": {
+      "searchbar": {
+        "placeholder": "Search for labels..."
+      }
+    },
+    "TicketInfoPane": {
+      "sheetTitle": "Ticket Details",
+      "toasts": {
+        "copyError": "Failed copying",
+        "copySuccess": "Copied link"
+      }
+    },
+    "TicketDialog": {
+      "title": "Edit ticket"
+    },
+    "TicketEditDialog": {
+      "fields": {
+        "title": {
+          "label": "Title",
+          "placeholder": "Title"
+        },
+        "state": {
+          "label": "Ticket State",
+          "placeholder": "Choose State"
+        },
+        "labels": {
+          "label": "Labels"
+        }
+      }
+    },
+    "TicketDetailView": {
+      "chooseTicket": "Please choose another ticket from the overview",
+      "firstTitle": "Original Titel"
+    }
+  },
+  "Components": {
+    "Dialogs": {
+      "ConfirmationDialog": {
+        "title": "Are you sure?"
+      },
+      "PasswordDialog": {
+        "title": "Confirm change of e-mail",
+        "description": "Please enter your password to change your e-mail"
+      }
+    },
+    "Sidebar": {
+      "ClientSidebar": {
+        "language": "Language",
+        "tickets": "Tickets",
+        "labels": "Labels",
+        "faqs": "FAQs",
+        "users": "User",
+        "app": "App",
+        "buttons": {
+          "account": "Account",
+          "logout": "Logout",
+          "light": "Light",
+          "dark": "Dark"
+        }
+      }
+    },
+    "TableUtils": {
+      "DataTablePagination": {
+        "elementsPerPage": "Elements per Page",
+        "page": "Page",
+        "of": "of",
+        "buttons": {
+          "goToFirstPage": "Jump to first page",
+          "goToLastPage": "Jump to last page",
+          "goToNextPage": "Jump to next page",
+          "goToPreviousPage": "Jump to previous page"
+        }
+      }
+    },
+    "SettingsBlock": {
+      "loaders": {
+        "fetching": "Data is loading...",
+        "saving": "Saving..."
+      }
+    },
+    "PageLoader": {
+      "message": "Loading content..."
+    },
+    "LabelSelection": {
+      "searchbar": {
+        "placeholder": "Search labels..."
+      }
+    },
+    "Footer": {
+      "contact": "Contact",
+      "legalNotice": "Imprint",
+      "sourceCode": "Source Code"
+    },
+    "FilterBar": {
+      "buttons": {
+        "stateFilter": {
+          "empty": "State",
+          "nonEmpty": "\"{length}\" States",
+          "searchbar": {
+            "placeholder": "Search states..."
+          }
+        },
+        "labelFilter": {
+          "empty": "Labels",
+          "nonEmpty": "\"{length}\" Labels"
+        }
+      }
+    },
+    "DateRangeFilter": {
+      "sheetTitle": "Choose Date",
+      "start": "Start",
+      "end": "End"
+    }
+  },
+  "Commons": {
+    "tables": {
+      "noResults": "No results."
+    },
+    "ticketStates": {
+      "new": "New",
+      "open": "Open",
+      "done": "Done"
+    },
+    "ticketSortingFields": {
+      "modified": "Modified",
+      "created": "Created",
+      "title": "Title"
+    },
+    "words": {
+      "characters": "Characters",
+      "filter": "Filter",
+      "sort": "Sort",
+      "password": "Password",
+      "label": "Label",
+      "labels": "Labels",
+      "modified": "Modified",
+      "created": "Created",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "date": "Date",
+      "order": "Order"
+    },
+    "inputs": {
+      "searchbarPlaceholder": "\"{item}\" search..."
+    },
+    "buttons": {
+      "cancel": "Cance",
+      "create": "Create",
+      "save": "Save",
+      "send": "Send",
+      "confirm": "Confirm",
+      "reset": "Reset",
+      "resetFilter": "Reset filters",
+      "ok": "Ok",
+      "delete": "Delete",
+      "stateSorting": {
+        "empty": "Filter states",
+        "nonEmpty": "\"{length}\" states"
+      },
+      "labelFiltering": {
+        "empty": "Filter labels",
+        "nonEmpty": "\"{length}\" labels"
+      }
+    },
+    "toasts": {
+      "generalError": "An error occured. Try it again later or contact the admins.",
+      "fetchError": "An error occured while loading data. Try it again later or contact the admins.",
+      "loginAgainError": "An error occured. Please login again.",
+      "updateSuccess": "Changes were saved successfuly",
+      "createSuccess": "Entry created successfuly",
+      "deleteSuccess": "Entry deleted successfuly"
+    },
+    "fields": {
+      "firstname": {
+        "label": "Firstname",
+        "placeholder": "Maxi"
+      },
+      "lastname": {
+        "label": "Lastname",
+        "placeholder": "Person"
+      },
+      "email": {
+        "label": "E-Mail",
+        "placeholder": "maxi.person@example.de",
+        "errors": {
+          "format": "Please provide a valid e-mail",
+          "inUse": "This e-mail is already in use"
+        }
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Password"
+      },
+      "label": {
+        "label": "Label",
+        "placeholder": "Label"
+      },
+      "errors": {
+        "empty": "Please provide something",
+        "short": "Please provide at least \"{condition}\"",
+        "long": "Please provide less than \"{condition}\"",
+        "lowercase": "Please provide a lowercase character",
+        "uppercase": "Please provide an uppercase character",
+        "number": "Please provide at least one number",
+        "specialChar": "Please provide at least one special symbol",
+        "wrong": "\"{item}\" incorrect"
+      }
+    }
+  }
+}

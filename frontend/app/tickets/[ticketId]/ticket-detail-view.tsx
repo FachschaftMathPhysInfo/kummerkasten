@@ -1,9 +1,9 @@
 "use client";
 
-import {Label, Ticket} from "@/lib/graph/generated/graphql";
+import {IntConfiguration, Label, Ticket} from "@/lib/graph/generated/graphql";
 import {PageLoader} from "@/components/page-loader";
 import {useSidebar} from "@/components/ui/sidebar";
-import React, {Dispatch, useEffect} from "react";
+import React, {Dispatch} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
 import {Button} from "@/components/ui/button";
@@ -12,6 +12,9 @@ import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PRIVATE_TITLES_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
 interface TicketDetailViewProps {
   ticket: Ticket | null;
@@ -19,19 +22,20 @@ interface TicketDetailViewProps {
   setDialogStateAction: Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-const MAX_TITLE_LENGTH = 70;
 
 export default function TicketDetailView({
                                            ticket,
                                            ticketLabels,
                                            setDialogStateAction,
                                          }: TicketDetailViewProps) {
+  const t = useTranslations("TicketId.TicketDetailView");
+  const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration();
+  const MAX_TITLE_LENGTH = (configuration.find(c => c.key == PRIVATE_TITLES_LENGTH_KEY) as IntConfiguration).intValue
   const {isMobile} = useSidebar()
   const {updateTicket} = useTickets()
   const [editMode, setEditMode] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "")
-
-  useEffect(() => setNewTitle(ticket?.title ?? ""), [ticket?.title])
 
   async function handleTitleChange() {
     if (ticket?.title === newTitle || !ticket) return
@@ -40,16 +44,15 @@ export default function TicketDetailView({
 
     if (!error) {
       setEditMode(false)
-      ticket.title = newTitle
     } else {
-      toast.error("Beim Aktualisieren des Titels ist ein Fehler aufgetreten")
+      toast.error(tc("toasts.generalError"))
     }
   }
 
   if (!ticket) {
     return (
       <div className="flex flex-grow items-center justify-center">
-        <PageLoader message="Bitte wähle ein Ticket aus der Übersicht." loading={false}/>
+        <PageLoader message={t("chooseTicket")} loading={false}/>
       </div>
     )
   }
@@ -82,10 +85,10 @@ export default function TicketDetailView({
           ) : (
             <h1
               className="text-4xl font-semibold text-wrap whitespace-nowrap truncate"
-              title={"Original Titel: " + ticket.originalTitle}
+              title={t("firstTitle") + ": " + ticket.originalTitle}
               data-cy={'ticket-detail-title'}
             >
-              {ticket.title}
+              {newTitle}
             </h1>
           )}
 
@@ -97,7 +100,7 @@ export default function TicketDetailView({
                   onClick={() => setEditMode(false)}
                   data-cy={'ticket-detail-title-cancel'}
                 >
-                  Cancel
+                  {tc("buttons.cancel")}
                 </Button>
                 <Button
                   type={"submit"}
@@ -107,7 +110,7 @@ export default function TicketDetailView({
                   data-cy={'ticket-detail-title-save'}
                 >
                   <Save/>
-                  Speichern
+                  {tc("buttons.save")}
                 </Button>
               </span>
             ) : (
@@ -120,7 +123,7 @@ export default function TicketDetailView({
         <span className="flex items-center justify-between gap-2">
             <h1
               className="text-2xl font-semibold text-wrap whitespace-nowrap"
-              title={"Originaltitel: " + ticket.originalTitle}
+              title={t("firstTitle") + ": " + ticket.originalTitle}
             >
               {ticket.title}
             </h1>

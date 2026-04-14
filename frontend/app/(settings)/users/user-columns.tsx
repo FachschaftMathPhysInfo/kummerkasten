@@ -8,12 +8,15 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/compo
 import {useUser} from "@/components/providers/user-provider";
 import {DataTableColumnHeader} from "@/components/table-utils/data-table-column-header";
 import {TableUser, UserTableDialogState} from "@/app/(settings)/users/user-table";
+import {useTranslations} from "next-intl";
 
 interface UserColumnProps {
   setDialogState: React.Dispatch<React.SetStateAction<UserTableDialogState>>;
 }
 
 export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
+  const t = useTranslations("Settings.UserManagementPage.UserColumns");
+  const tc = useTranslations("Commons")
   const {user} = useUser();
 
   return [
@@ -28,7 +31,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                   <Shield data-cy={'admin-icon'}/>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Admin</p>
+                  <p>{t("admin.tooltip")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -46,7 +49,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
       },
       header: ({column}) => (
         <span data-cy={'lastname-header'}>
-          <DataTableColumnHeader column={column} title="Nachname"/>
+          <DataTableColumnHeader column={column} title={t("lastname")}/>
         </span>
       ),
       cell: ({row}) => <span data-cy={'lastname-cell'}>{row.original.lastname}</span>,
@@ -60,7 +63,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
       },
       header: ({column}) => (
         <span data-cy={'firstname-header'}>
-          <DataTableColumnHeader column={column} title="Vorname"/>
+          <DataTableColumnHeader column={column} title={t("firstname")}/>
         </span>
       ),
       cell: ({row}) => <span data-cy={'firstname-cell'}>{row.original.firstname}</span>,
@@ -74,7 +77,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
       },
       header: ({column}) => (
         <span data-cy={'mail-header'}>
-          <DataTableColumnHeader column={column} title="E-Mail"/>
+          <DataTableColumnHeader column={column} title={t("email")}/>
         </span>
       ),
       cell: ({row}) => <span data-cy={'mail-cell'}>{row.original.mail}</span>,
@@ -107,7 +110,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'demote-button'}
                       >
                         <UserMinus className={'inline mr-2'}/>
-                        Admin entfernen
+                        {t("buttons.demote")}
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -118,7 +121,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'reset-password-button'}
                       >
                         <RotateCcw className={'inline mr-2'}/>
-                        Password zurücksetzen
+                        {t("buttons.resetPassword")}
                       </DropdownMenuItem>
                     </>
                   ) : (
@@ -131,7 +134,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'promote-button'}
                       >
                         <UserCheck className={'inline mr-2'}/>
-                        Admin machen
+                        {t("buttons.promote")}
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -142,7 +145,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'reset-password-button'}
                       >
                         <RotateCcw className={'inline mr-2'}/>
-                        Password zurücksetzen
+                        {t("buttons.resetPassword")}
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -154,7 +157,7 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
                         data-cy={'delete-button'}
                       >
                         <Trash className={'stroke-destructive inline mr-2'}/>
-                        Löschen
+                        {tc("buttons.delete")}
                       </DropdownMenuItem>
                     </>
                   )}

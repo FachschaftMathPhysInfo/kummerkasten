@@ -1,25 +1,21 @@
 "use client";
 
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
 import {Eye, EyeOff} from "lucide-react"
 import {cn} from "@/lib/utils";
 
+function shouldShowToggle(): boolean {
+  const ua = navigator.userAgent.toLowerCase()
+  const isMac = ua.includes("macintosh") || ua.includes("mac os x")
+  const isWaterfox = ua.includes("waterfox")
+  return !(isMac && isWaterfox)
+}
+
 export default function PasswordInput(props: React.ComponentProps<typeof Input>) {
   const [visible, setVisible] = useState(false)
-  const [showToggle, setShowToggle] = useState(true)
-
-  // On MacOs + Waterfox the vendor implements its own toggle.
-  useEffect(() => {
-    const ua = navigator.userAgent.toLowerCase()
-    const isMac = ua.includes("macintosh") || ua.includes("mac os x")
-    const isWaterfox = ua.includes("waterfox")
-
-    if (isMac && isWaterfox) {
-      setShowToggle(false)
-    }
-  }, [])
+  const showToggle = shouldShowToggle()
 
   return (
     <div className="relative w-full">

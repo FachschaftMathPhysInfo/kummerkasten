@@ -15,6 +15,7 @@ import TicketActionsBar from "@/app/tickets/[ticketId]/ticket-action-bar";
 import TicketStatusArea from "@/app/tickets/[ticketId]/ticket-status-area";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {useUser} from "@/components/providers/user-provider";
+import {useTranslations} from "next-intl";
 
 interface TicketInfoPaneProps {
   ticket: Ticket | null;
@@ -23,6 +24,8 @@ interface TicketInfoPaneProps {
 }
 
 export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateAction}: TicketInfoPaneProps) {
+  const t = useTranslations("TicketId.TicketInfoPane")
+  const tc = useTranslations("Commons")
   const {user} = useUser()
   const {updateTicket, addLabelsToTicket, removeLabelsFromTicket} = useTickets()
   const {isMobile} = useSidebar()
@@ -37,9 +40,9 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
   const copyCurrentUrl = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      toast.success("Link kopiert!");
+      toast.success(t("toasts.copySuccess"));
     } catch {
-      toast.error("Kopieren fehlgeschlagen");
+      toast.error(t("toasts.copyError"));
     }
   };
 
@@ -58,7 +61,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
     const removeError = await removeLabelsFromTicket(ticket.id, labelIdsToRemove)
     const addError = await addLabelsToTicket(ticket.id, labelIdsToAdd)
 
-    if (removeError || addError) toast.error("Fehler beim Aktualisieren der Labels")
+    if (removeError || addError) toast.error(tc("toasts.generalError"))
     else setTicketLabels(labels);
   }
 
@@ -66,7 +69,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
     if (!ticket) return;
 
     const error = await updateTicket(ticket.id, {state: state})
-    if (error) toast.error("Fehler beim Aktualisieren des Ticketstatus")
+    if (error) toast.error(tc("toasts.generalerror"))
     setTicketState(state)
   }
 
@@ -85,7 +88,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
         </SheetTrigger>
         <SheetContent side="right" className="w-[85%] overflow-y-auto px-10 pt-15 gap-10 [&>button]:hidden">
           <VisuallyHidden>
-            <SheetTitle>Ticket Detail Bereich</SheetTitle>
+            <SheetTitle>{t("sheetTitle")}</SheetTitle>
           </VisuallyHidden>
 
           <TicketActionsBar

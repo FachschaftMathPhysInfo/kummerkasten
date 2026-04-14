@@ -1,6 +1,6 @@
 import {ColumnDef, flexRender, type Row as TanStackRow} from "@tanstack/react-table";
 import {QuestionAnswerPair} from "@/lib/graph/generated/graphql";
-import {useRef} from "react";
+import {useCallback} from "react";
 import {useDrag, useDrop} from "react-dnd";
 import {TableCell, TableRow} from "@/components/ui/table";
 
@@ -23,8 +23,6 @@ export function DndTableRow({
   savePosition: (draggedId: string) => void;
 }) {
   const {original} = row;
-  const dropRef = useRef<HTMLTableRowElement | null>(null);
-  const dragHandleRef = useRef<HTMLDivElement | null>(null);
 
   const [{handlerId, isOver}, drop] = useDrop<
     DragItem,
@@ -60,15 +58,26 @@ export function DndTableRow({
     },
   });
 
-  drop(dropRef);
-  preview(dropRef);
-  drag(dragHandleRef);
+  const rowRef = useCallback(
+    (node: HTMLTableRowElement | null) => {
+      drop(node);
+      preview(node);
+    },
+    [drop, preview],
+  );
+
+  const dragHandleRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      drag(node);
+    },
+    [drag],
+  );
 
   const handlerIdAttr = handlerId ?? undefined;
 
   return (
     <TableRow
-      ref={dropRef}
+      ref={rowRef}
       style={{opacity: isDragging ? 0 : 1}}
       className={`${isDragging ? "shadow-lg bg-background cursor-grabbing" : ""} ${
         isOver ? "bg-accent/20 border-t-2 border-b-2 border-primary" : ""

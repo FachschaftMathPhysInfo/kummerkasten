@@ -18,6 +18,7 @@ import {TableUser} from "@/app/(settings)/users/user-table";
 import PasswordInput from "@/components/password-input";
 import {testPasswordFormat} from "@/lib/password";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 interface ResetPasswordDialogProps {
   user: TableUser | null
@@ -26,6 +27,8 @@ interface ResetPasswordDialogProps {
 }
 
 export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
+  const t = useTranslations("Settings.UserManagementPage.ResetPasswordDialog")
+  const tc = useTranslations("Commons")
   const [password, setPassword] = useState<string>("");
   const [isPasswordValid, setIsPasswordValid] = useState<boolean>(false);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState<boolean>(false);
@@ -48,10 +51,9 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
       setPassword("")
       setIsPasswordValid(false)
       props.closeDialog();
-      toast.success("Password wurde erfolgreich zurückgesetzt")
-    } catch (error) {
-      console.error(error)
-      toast.error("Beim Zurücksetzen des Passworts ist ein Fehler aufgetreten")
+      toast.success(tc("toasts.updateSuccess"))
+    } catch {
+      toast.error(tc("toasts.generalError"))
     }
   }
 
@@ -67,23 +69,23 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
 
     switch (false) {
       case newPassword.length >= 8: {
-        setErrorMessage("Das Passwort muss mindestens 8 Zeichen haben")
+        setErrorMessage(t("inputErrors.short"))
         return
       }
       case hasLowercaseLetter.test(newPassword): {
-        setErrorMessage('Das Passwort muss mindestens einen Kleinbuchstaben enthalten')
+        setErrorMessage(t("inputErrors.lowercase"))
         return
       }
       case hasUppercaseLetter.test(newPassword): {
-        setErrorMessage('Das Passwort muss mindestens einen Großbuchstaben enthalten')
+        setErrorMessage(t("inputErrors.uppercase"))
         return
       }
       case hasNumber.test(newPassword): {
-        setErrorMessage('Das Passwort muss mindestens eine Nummer enthalten')
+        setErrorMessage(t("inputErrors.number"))
         return
       }
       case hasSymbol.test(newPassword): {
-        setErrorMessage('Das Passwort muss mindestens ein Sonderzeichen enthalten')
+        setErrorMessage(t("inputErrors.special"))
         return
       }
     }
@@ -100,17 +102,17 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
         <DialogHeader>
           <DialogTitle className={'w-full flex items-center gap-2'}>
             <RotateCcw/>
-            Password zurücksetzen
+            {t("title")}
           </DialogTitle>
           <DialogDescription>
-            Dies wird das Passwort für <b>{props.user.firstname} {props.user.lastname}</b> ändern.
+            {t("description.one")}<b>{props.user.firstname} {props.user.lastname}</b>{t("description.two")}
           </DialogDescription>
         </DialogHeader>
 
         <div className={'flex flex-col gap-2 w-full'}>
           <PasswordInput
             value={password}
-            placeholder={'Neues Passwort'}
+            placeholder={t("fields.newPassword.placeholder")}
             onChange={(e) => onPasswordChange(e.target.value)}
             className={cn(!isPasswordValid && hasTriedToSubmit && 'border border-destructive')}
           />
@@ -128,7 +130,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
             disabled={!isPasswordValid && hasTriedToSubmit}
           >
             <Save/>
-            Speichern
+            {tc("buttons.save")}
           </Button>
         </DialogFooter>
       </DialogContent>

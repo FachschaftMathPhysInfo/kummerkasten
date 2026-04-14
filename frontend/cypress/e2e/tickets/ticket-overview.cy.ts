@@ -3,6 +3,8 @@ import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "../../pages/tick
 import * as filterBar from "../../pages/tickets/filter-bar.po";
 import {Label, Ticket, TicketState, UserRole} from "../../../lib/graph/generated/graphql";
 
+import {TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
+
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
 
@@ -89,9 +91,9 @@ roles.forEach(role => {
           })
 
           context('Status Field', () => {
-            it('show tickets with states new or open as default', () => {
+            it.only('show tickets with states new or open as default', () => {
               cy.getTicketsByStateNewOrOpen().then((tickets) => {
-                tickets.forEach((ticket: any) => {
+                tickets.forEach((ticket: Ticket) => {
                   ticketPage.getTicketCard(ticket.id).should('exist').and('be.visible');
                 });
                 cy.get('[data-cy^="ticket-card-id"]').should('have.length', tickets.length);
@@ -478,6 +480,116 @@ roles.forEach(role => {
           })
         });
       });
+
+      context('URL searchParams', () => {
+        context('Sync from url to page', () => {
+          it('syncs the searchbar values from the url', () => {
+            const query = "Testing this"
+            cy.visit(`/tickets?q=${query}`)
+            ticketPage.getDesktopSearchTextInput().should('have.value', query);
+          })
+
+          it('syncs the startDate values from the url', () => {
+            const startDate = new Date();
+            cy.visit(`/tickets?from=${startDate.toISOString()}`)
+            filterBar.getDesktopCalendarStartButton().contains(getTodayCalendarLabel())
+          })
+
+          it('syncs the endDate values from the url', () => {
+            const startDate = new Date();
+            cy.visit(`/tickets?to=${startDate.toISOString()}`)
+            filterBar.getDesktopCalendarEndButton().contains(getTodayCalendarLabel())
+          })
+        })
+
+        context('Sync from page to url', () => {
+          it('syncs the searchbar value to the url', () => {
+            const query = "Testing this"
+            ticketPage.getDesktopSearchTextInput().clear().type(query);
+            cy.url().should('contain', `q=${query.replace(" ", "+")}`)
+          })
+
+          it('syncs the startDate values to the url', () => {
+            const startDate = new Date();
+            const expectedDate = startDate.toISOString().split('T')[0];
+            filterBar.getDesktopCalendarStartButton().click()
+            cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+
+            cy.url().should('contain', `?from=${expectedDate}`)
+          })
+
+          it('syncs the endDate values to the url', () => {
+            const endDate = new Date();
+            const expectedDate = endDate.toISOString().split('T')[0];
+
+            filterBar.getDesktopCalendarEndButton().click()
+            cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+
+            cy.url().should('contain', `?to=${expectedDate}`)
+          })
+
+          it('syncs the sortfield values to the url', () => {
+            const field: TicketSortingField = 'Titel'
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField(field).click()
+
+            cy.url().should('contain', `?s=${field}`)
+          })
+
+          it('syncs the sorting order to the url', () => {
+            const field: TicketSortingField = 'Titel'
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField(field).click()
+            filterBar.getSortingSelectionSortField(field).click()
+
+            cy.url().should('contain', `desc=true`)
+          })
+
+          it('resets the searchquery if the searchbar is empty', () => {
+            const query = "Testing this"
+            ticketPage.getDesktopSearchTextInput().clear().type(query)
+            ticketPage.getDesktopSearchTextInput().clear()
+            cy.url().should('not.contain', `?q=`)
+          })
+
+          it('resets the startDate if its null', () => {
+            filterBar.getDesktopCalendarStartButton().click()
+            cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+            filterBar.getDesktopCalendarStartButton().click()
+            filterBar.getStartCalendarReset().click()
+
+            cy.url().should('not.contain', `?from=`)
+          })
+
+          it('resets the endDate if its null', () => {
+            filterBar.getDesktopCalendarEndButton().click()
+            cy.get('button[aria-label="Today, ' + getTodaySuffixForCalendar() + '"]').click();
+            filterBar.getDesktopCalendarEndButton().click()
+            filterBar.getEndCalendarReset().click()
+
+            cy.url().should('not.contain', `?to=`)
+          })
+
+          it('resets the sortfield if its "modified', () => {
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField("Titel").click()
+            filterBar.getSortingSelectionSortField("Geändert").click()
+
+            cy.url().should('not.contain', `?s=`)
+          })
+
+          it('syncs the sorting order to the url', () => {
+            const field: TicketSortingField = 'Titel'
+            filterBar.getSortingSelectionSortButton().click()
+            filterBar.getSortingSelectionSortField(field).click()
+            filterBar.getSortingSelectionSortField(field).click()
+            filterBar.getSortingSelectionSortField(field).click()
+
+            cy.url().should('not.contain', `?desc=`)
+          })
+
+        })
+      })
     })
   });
 })

@@ -7,6 +7,7 @@ import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import * as React from "react"
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
 
 interface DateRangeFilterProps {
   startDate: Date | null
@@ -17,6 +18,9 @@ interface DateRangeFilterProps {
 }
 
 export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, mobile}: DateRangeFilterProps) {
+  const t = useTranslations("Components.DateRangeFilter")
+  const tc = useTranslations("Commons")
+
   if (mobile) {
     return (
       <div className="flex flex-col w-full">
@@ -25,7 +29,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
             <Sheet>
               <SheetHeader className="m-0 p-0">
                 <SheetTitle className="m-0 p-0">
-                  <VisuallyHidden>Date Picker</VisuallyHidden>
+                  <VisuallyHidden>{t("sheetTitle")}</VisuallyHidden>
                 </SheetTitle>
               </SheetHeader>
               <SheetTrigger asChild>
@@ -34,7 +38,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                   className={"w-fit justify-between"}
                   data-cy={'calendar-start'}
                 >
-                  {startDate ? format(startDate, "dd.MM.yy") : "Start"}
+                  {startDate ? format(startDate, "dd.MM.yy") : t("start")}
                 </Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[350px] p-2 items-center">
@@ -51,7 +55,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
             <Sheet>
               <SheetHeader className="m-0 p-0">
                 <SheetTitle className="m-0 p-0">
-                  <VisuallyHidden>Date Picker</VisuallyHidden>
+                  <VisuallyHidden>t{"sheetTitle"}</VisuallyHidden>
                 </SheetTitle>
               </SheetHeader>
               <SheetTrigger asChild>
@@ -60,7 +64,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                   className={"w-fit justify-between"}
                   data-cy={'calendar-end'}
                 >
-                  {endDate ? format(endDate, "dd.MM.yy") : "Ende"}
+                  {endDate ? format(endDate, "dd.MM.yy") : t("end")}
                 </Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[350px] p-2 items-center">
@@ -85,7 +89,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
                   setEndDate(null);
                 }}
               >
-                <RotateCcw/> Zurücksetzen
+                <RotateCcw/> {tc("buttons.reset")}
               </Button>
             </div>
           )}
@@ -101,7 +105,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
           <Button variant="outline" className={cn(!!startDate && "border !border-accent")}
                   data-cy="desktop-calendar-start">
             <CalendarIcon className="mr-1 h-4 w-4"/>
-            {startDate ? format(startDate, "dd.MM.yy") : <span>Start</span>}
+            {startDate ? format(startDate, "dd.MM.yy") : <span>{t("start")}</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent>
@@ -120,7 +124,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               data-cy={'start-calendar-reset'}
             >
               <RotateCcw/>
-              Zurücksetzen
+              {tc("buttons.reset")}
             </Button>
           </div>
         </PopoverContent>
@@ -130,7 +134,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
         <PopoverTrigger asChild>
           <Button variant="outline" className={cn(!!endDate && "border !border-accent")} data-cy="desktop-calendar-end">
             <CalendarIcon className="mr-1 h-4 w-4"/>
-            {endDate ? format(endDate, "dd.MM.yy") : <span>Ende</span>}
+            {endDate ? format(endDate, "dd.MM.yy") : <span>{t("end")}</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent>
@@ -149,7 +153,7 @@ export function DateRangeFilter({startDate, setStartDate, endDate, setEndDate, m
               data-cy={'end-calendar-reset'}
             >
               <RotateCcw/>
-              Zurücksetzen
+              {tc("buttons.reset")}
             </Button>
           </div>
         </PopoverContent>

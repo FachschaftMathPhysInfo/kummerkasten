@@ -1,9 +1,7 @@
 package configuration
 
 import (
-	"errors"
-	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -14,23 +12,7 @@ import (
 	"github.com/knadh/koanf/v2"
 )
 
-var (
-	systemConfiguration Configuration
-	k                   = koanf.New(".")
-)
-
-func Get() Configuration {
-	return systemConfiguration
-}
-
-func Init() {
-	loadConfigurationFromJson()
-	loadConfigurationFromEnv()
-	loadMissingConfigurationValues()
-
-	loadIntoGlobalStruct()
-	validateConfiguration()
-}
+var k = koanf.New(".")
 
 func loadConfigurationFromJson() {
 	localConfigPath := "../config.json"
@@ -39,20 +21,20 @@ func loadConfigurationFromJson() {
 
 	if _, err := os.Stat(localConfigPath); err == nil {
 		if err := k.Load(file.Provider(localConfigPath), json.Parser()); err != nil {
-			log.Printf("error: %v", err)
+			slog.Error("Cannot open local config", "path", localConfigPath, "error", err)
 		}
 		foundAnyConfigFile = true
 	}
 
 	if _, err := os.Stat(containerConfigPath); err == nil {
 		if err := k.Load(file.Provider(containerConfigPath), json.Parser()); err != nil {
-			log.Printf("error: %v", err)
+			slog.Error("Cannot open config in container", "path", containerConfigPath, "error", err)
 		}
 		foundAnyConfigFile = true
 	}
 
 	if !foundAnyConfigFile {
-		log.Printf("configuration file not found, trying to use default configuration and ENV variables")
+		slog.Warn("configuration file not found, trying to use default configuration and ENV variables")
 	}
 }
 
@@ -67,7 +49,7 @@ func loadConfigurationFromEnv() {
 			return key, value
 		},
 	}), nil); err != nil {
-		log.Printf("error loading environment variables: %v", err)
+		slog.Error("error loading environment variables", "error", err)
 	}
 
 	if err := k.Load(env.Provider(".", env.Opt{
@@ -77,7 +59,7 @@ func loadConfigurationFromEnv() {
 			return key, value
 		},
 	}), nil); err != nil {
-		log.Printf("error loading environment variables: %v", err)
+		slog.Error("error loading environment variables", "error", err)
 	}
 }
 
@@ -100,6 +82,10 @@ func loadMissingConfigurationValues() {
 		err = k.Set("database.name", "kummerkasten")
 	}
 
+	if !validSystemLogLevels[k.String("system.loglevel")] {
+		err = k.Set("system.loglevel", "INFO")
+	}
+
 	if k.String("admin.mail") == "" {
 		err = k.Set("admin.mail", "admin@kummer.kasten")
 	}
@@ -108,20 +94,58 @@ func loadMissingConfigurationValues() {
 		loadAdminPassword()
 	}
 
+	if k.String("system.frontend.default_language") == "" {
+		err = k.Set("system.frontend.default_language", "de")
+	}
+
+	if k.Int("system.frontend.max_inputs.public.title") == 0 {
+		err = k.Set("system.frontend.max_inputs.public.title", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.public.content") == 0 {
+		err = k.Set("system.frontend.max_inputs.public.content", 2000)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.titles") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.titles", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.labels") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.labels", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.names") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.names", 50)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.faqs.questions") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.faqs.questions", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.faqs.answers") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.faqs.answers", 500)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.about") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.about", 2000)
+	}
+
 	if err != nil {
-		log.Printf("error loading missing configuration values: %v", err)
+		slog.Error("error loading missing configuration values", "error", err)
 	}
 }
 
 func loadAdminPassword() {
 	if k.Get("system.mode") == "DEV" {
 		if err := k.Set("admin.password", "admin"); err != nil {
-			log.Fatalf("error setting admin password, aborting")
+			slog.Error("error setting admin password, aborting")
+			os.Exit(1)
 		}
 	} else {
 		password, _ := utils.RandString(32)
 		if err := k.Set("admin.password", password); err != nil {
-			log.Fatalf("error setting admin password, aborting")
+			slog.Error("error setting admin password, aborting")
+			os.Exit(1)
 		}
 	}
 
@@ -129,54 +153,17 @@ func loadAdminPassword() {
 
 func loadIntoGlobalStruct() {
 	if err := k.Unmarshal("", &systemConfiguration); err != nil {
-		log.Print("Error loading SystemConfiguration, previous SystemConfiguration will be applied of possible")
+		slog.Warn("Error loading SystemConfiguration, previous SystemConfiguration will be applied if possible")
 	}
 }
 
-func validateConfiguration() {
-	var configErrors []error
-
-	if systemConfiguration.Database.Password == "" {
-		configErrors = append(configErrors, fmt.Errorf("database.password is empty, please set a password"))
+func applyLogLevel() {
+	switch systemConfiguration.System.LogLevel {
+	case "INFO":
+		utils.LogLevel.Set(slog.LevelInfo)
+	case "WARN":
+		utils.LogLevel.Set(slog.LevelWarn)
+	case "ERROR":
+		utils.LogLevel.Set(slog.LevelError)
 	}
-
-	if systemConfiguration.System.Domain == "" {
-		configErrors = append(configErrors, fmt.Errorf("system.domain is required"))
-	}
-
-	if systemConfiguration.System.Mode != "DEV" && systemConfiguration.System.Mode != "PROD" {
-		configErrors = append(configErrors, errors.New("system.mode has to be either 'DEV' or 'PROD'"))
-	}
-
-	if systemConfiguration.Admin.Password == "" {
-		configErrors = append(configErrors, fmt.Errorf("admin.password is empty, please set a password"))
-	}
-
-	if len(configErrors) > 0 {
-		log.Println("the configration has several errors:")
-		for index, err := range configErrors {
-			log.Println("[", index+1, "] ", err)
-		}
-
-		log.Fatalf("Software booting aborted due to configuration errors")
-	}
-}
-
-type Configuration struct {
-	Admin struct {
-		Mail     string `koanf:"mail"`
-		Password string `koanf:"password"`
-	} `koanf:"admin"`
-	Database struct {
-		Host     string `koanf:"host"`
-		Port     string `koanf:"port"`
-		User     string `koanf:"user"`
-		Password string `koanf:"password"`
-		Name     string `koanf:"db"`
-	} `koanf:"database"`
-	System struct {
-		Domain string `koanf:"domain"`
-		Mode   string `koanf:"mode"`
-		Pepper string `koanf:"pepper"`
-	} `koanf:"system"`
 }

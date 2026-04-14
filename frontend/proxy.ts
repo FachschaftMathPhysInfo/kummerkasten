@@ -1,11 +1,11 @@
 import type {NextRequest} from 'next/server'
 import {NextResponse} from 'next/server'
 import {LoginCheckDocument, LoginCheckQuery} from "@/lib/graph/generated/graphql";
-import {GraphQLClient} from "graphql-request";
+import {getServerClient} from "@/lib/graph/client";
 
 const PUBLIC_ROUTES = ['/', '/login']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const {pathname} = request.nextUrl
 
   async function checkIsLoggedIn() {
@@ -13,11 +13,10 @@ export async function middleware(request: NextRequest) {
     if(!sid) return false;
 
     try {
-      const apiUrl = 'http://localhost:8080/api'
-      const client = new GraphQLClient(apiUrl.toString())
+      const client = getServerClient();
       const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
       return loggedInData.loginCheck !== null
-    } catch (err) {
+    } catch {
       return false
     }
   }

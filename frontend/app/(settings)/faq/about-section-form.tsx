@@ -5,7 +5,11 @@ import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
-import {AboutSectionSettingsDocument, UpdateAboutSectionTextDocument,} from "@/lib/graph/generated/graphql";
+import {
+  AboutSectionSettingsDocument,
+  IntConfiguration,
+  UpdateAboutSectionTextDocument,
+} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
 import {useUser} from "@/components/providers/user-provider";
@@ -13,27 +17,33 @@ import {Button} from "@/components/ui/button";
 import {BookText, Loader2, RotateCcw, Save} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea";
 import {cn} from "@/lib/utils";
+import {useTranslations} from "next-intl";
+import {ABOUT_SECTION_TEXT_KEY} from "@/lib/constants/setting-keys";
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PRIVATE_ABOUT_TEXT_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
-export const ABOUT_SECTION_TEXT_KEY = "ABOUT_SECTION_TEXT";
-const MAX_ABOUT_TEXT_LENGTH = 2000;
-
-const aboutSectionSchema = z.object({
-  aboutText: z
-    .string()
-    .min(1, "Bitte gib einen Text ein")
-    .max(
-      MAX_ABOUT_TEXT_LENGTH,
-      `Der Text darf maximal ${MAX_ABOUT_TEXT_LENGTH} Zeichen lang sein`
-    ),
-});
-
-type AboutSectionFormData = z.infer<typeof aboutSectionSchema>;
 
 export default function AboutSectionForm() {
+  const t = useTranslations("Settings.QAPManagementPage.AboutSectionForm")
+  const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration();
+  const MAX_ABOUT_TEXT_LENGTH = (configuration.find(c => c.key == PRIVATE_ABOUT_TEXT_LENGTH_KEY) as IntConfiguration).intValue
   const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTriedToSubmit, setHasTriedToSubmit] = useState(false);
+
+  const aboutSectionSchema = z.object({
+    aboutText: z
+      .string()
+      .nonempty(tc("fields.errors.empty"))
+      .max(
+        MAX_ABOUT_TEXT_LENGTH,
+        tc("fields.errors.long", {condition: `${MAX_ABOUT_TEXT_LENGTH} ${tc("words.characters")}`}),
+      ),
+  });
+
+  type AboutSectionFormData = z.infer<typeof aboutSectionSchema>;
 
   const form = useForm<AboutSectionFormData>({
     resolver: zodResolver(aboutSectionSchema),
@@ -47,7 +57,7 @@ export default function AboutSectionForm() {
     try {
       const data = await client.request(AboutSectionSettingsDocument);
       if (!data?.aboutSectionSettings) {
-        toast.error("Fehler beim Laden der About-Section");
+        toast.error(tc("toasts.fetchError"));
         setIsLoading(false);
         return;
       }
@@ -60,12 +70,11 @@ export default function AboutSectionForm() {
       });
 
       setIsLoading(false);
-    } catch (error) {
-      toast.error("Fehler beim Laden der About-Section");
-      console.error(error);
+    } catch {
+      toast.error(tc("toasts.fetchError"));
       setIsLoading(false);
     }
-  }, [form]);
+  }, [form, tc]);
 
   useEffect(() => {
     void fetchAboutSection();
@@ -76,7 +85,7 @@ export default function AboutSectionForm() {
     const client = getClient();
 
     if (!user) {
-      toast.error("Ein Fehler ist aufgetreten, melde dich erneut an");
+      toast.error(tc("toasts.fetchError"));
       setIsSaving(false);
       return;
     }
@@ -84,11 +93,10 @@ export default function AboutSectionForm() {
     try {
       await client.request(UpdateAboutSectionTextDocument, {text: data.aboutText});
 
-      toast.success("About-Section erfolgreich aktualisiert");
+      toast.success(tc("toasts.updateSuccess"));
       await fetchAboutSection();
-    } catch (err) {
-      console.error(err);
-      toast.error("Ein Fehler beim Speichern ist aufgetreten");
+    } catch {
+      toast.error(tc("toasts.generalError"));
     } finally {
       setIsSaving(false);
     }
@@ -103,7 +111,7 @@ export default function AboutSectionForm() {
         )}
       >
         <Loader2 className="animate-spin w-6 h-6"/>
-        Lade About-Section...
+        {t("loading")}
       </div>
       <FormProvider {...form}>
         <form
@@ -115,7 +123,7 @@ export default function AboutSectionForm() {
           <div className="flex items-center gap-2 mb-2">
             <BookText className="w-6 h-6 mx-1 my-1"/>
             <span className="text-lg font-semibold text-foreground-muted">
-              About-Text
+              {t("aboutText.title")}
             </span>
           </div>
           <FormField
@@ -125,7 +133,7 @@ export default function AboutSectionForm() {
               <FormItem>
                 <div className="flex justify-between items-center">
                   <FormLabel className="text-sm font-semibold text-foreground-muted">
-                    Beschreibe, wofür der Kummerkasten da ist.
+                    {t("aboutText.description")}
                   </FormLabel>
                   <span
                     className={cn(
@@ -140,7 +148,7 @@ export default function AboutSectionForm() {
 
                 <FormControl>
                   <Textarea
-                    placeholder="Gib eine Beschreibung für den Kummerkasten an"
+                    placeholder={t("aboutText.placeholder")}
                     rows={4}
                     maxLength={MAX_ABOUT_TEXT_LENGTH}
                     className={cn(
@@ -166,7 +174,7 @@ export default function AboutSectionForm() {
               data-cy={'about-cancel-button'}
             >
               <RotateCcw/>
-              Abbrechen
+              {tc("buttons.cancel")}
             </Button>
 
             <Button
@@ -183,7 +191,7 @@ export default function AboutSectionForm() {
                 <Loader2 className="animate-spin"/>
               ) : (
                 <>
-                  <Save/> Speichern
+                  <Save/> {tc("buttons.save")}
                 </>
               )}
             </Button>

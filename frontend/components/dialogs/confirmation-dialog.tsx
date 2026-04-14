@@ -9,6 +9,7 @@ import {
 import {Button} from '@/components/ui/button';
 import React from 'react';
 import {cn} from '@/lib/utils';
+import {useTranslations} from "next-intl";
 
 interface ConfirmationDialogUnconditionalProps {
   description: string;
@@ -32,6 +33,8 @@ type ConfirmationDialogProps = ConfirmationDialogUnconditionalProps &
   ConfirmationDialogConditionalProps;
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
+  const t = useTranslations("Components.Dialogs.ConfirmationDialog")
+  const tc = useTranslations("Commons")
   const {description, isOpen, closeDialog} = props;
   return (
     <Dialog open={isOpen}>
@@ -39,7 +42,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
         <DialogHeader>
           <DialogTitle data-cy={'confirmation-dialog-title'}>
             {props.mode === 'confirmation'
-              ? 'Bist du sicher?'
+              ? t("title")
               : props.information}
           </DialogTitle>
           <DialogDescription data-cy={'confirmation-dialog-description'}>{description}</DialogDescription>
@@ -56,7 +59,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
               variant={props.mode === 'confirmation' ? 'outline' : 'default'}
               data-cy={'confirmation-dialog-cancel-button'}
             >
-              {props.mode === 'confirmation' ? 'Abbrechen' : 'Verstanden'}
+              {props.mode === 'confirmation' ? tc("buttons.cancel") : tc("buttons.ok")}
             </Button>
             {props.mode === 'confirmation' && (
               <Button
@@ -67,7 +70,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
                 variant={'destructive'}
                 data-cy={'confirmation-dialog-confirm-button'}
               >
-                Bestätigen
+                {tc("buttons.confirm")}
               </Button>
             )}
           </div>

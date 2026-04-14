@@ -21,6 +21,7 @@ import {
   getSortedTickets
 } from "@/lib/ticket-operations";
 import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
+import {useTranslations} from "next-intl";
 
 
 export type TicketDialogState = {
@@ -39,6 +40,8 @@ export default function TicketPage() {
     deleteTickets,
     triggerTicketRefetch
   } = useTickets();
+  const t = useTranslations("TicketPage.Root")
+  const tc = useTranslations("Commons")
   const [dialogState, setDialogState] = useState<TicketDialogState>({mode: null, currentTicket: null});
   const {isMobile} = useSidebar();
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
@@ -77,7 +80,7 @@ export default function TicketPage() {
       ...prevState,
       orderAscending: true
     }))
-  }, [sorting.field]);
+  }, [setSorting, sorting.field]);
 
   function resetDialogState() {
     setDialogState({mode: null, currentTicket: null})
@@ -85,32 +88,32 @@ export default function TicketPage() {
 
   async function handleDelete() {
     if (!dialogState.currentTicket) {
-      toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     const error = await deleteTickets([dialogState.currentTicket.id])
 
     if (!error) {
-      toast.success("Ticket wurde erfolgreich gelöscht")
+      toast.success(tc("toasts.deleteSuccess"))
       resetDialogState()
     } else {
-      toast.error("Ein Fehler beim Löschen des Tickets ist aufgetreten")
+      toast.error(tc("toasts.generalError"))
     }
   }
 
   return (
-    <div className="space-y-6 grow max-w-screen flex flex-col">
+    <div className="space-y-6 grow max-w-screen flex flex-col mb-3">
       <ManagementPageHeader
-        title="Tickets"
-        description="Bearbeite alle verfügbaren Tickets"
+        title={t("title")}
+        description={t("description")}
         icon={<TicketIcon/>}
       />
       <div className="px-8 flex gap-4">
         <div className="flex flex-col gap-2 w-full">
           <div className="flex gap-2">
             <Input
-              placeholder="Suche nach Inhalt..."
+              placeholder={t("searchbar.placeholder")}
               value={filtering.searchTerm}
               onChange={(e) => setFiltering(prev => ({
                 ...prev,
@@ -133,7 +136,7 @@ export default function TicketPage() {
               data-cy="desktop-overview-reset-filters"
             >
               <Trash2 className="text-destructive"/>
-              Filter zurücksetzen
+              {tc("buttons.resetFilters")}
             </Button>
           )}
         </div>
@@ -142,13 +145,13 @@ export default function TicketPage() {
       {tickets.length == 0 ?
         <div className={'mx-5 flex items-center justify-center grow'}>
           <p className={'text-wrap text-xl text-center text-muted-foreground'}>
-            Es sind noch keine Tickets vorhanden.
+            {t("noResults")}
           </p>
         </div>
         : sortedTickets.length == 0 ? (
             <div className={'mx-5 flex items-center justify-center grow'}>
               <p className={'text-wrap text-xl text-center text-muted-foreground'}>
-                Kein Ticket enstpricht den eingestellten Filtern.
+                {t("noFilteredResults")}
               </p>
             </div>
           ) :
@@ -157,16 +160,16 @@ export default function TicketPage() {
               {getCurrentSemesterTickets(sortedTickets).length > 0 && (
                 <>
                   {getOlderSemesterTickets(sortedTickets).length > 0 && (
-                    <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+                    <div className={'w-full px-10 flex gap-4 items-center my-4'}>
                       <span className={'grow h-0.5 bg-muted-foreground'}/>
-                      <p className={'text-muted-foreground'}>Dieses Semester</p>
+                      <p className={'text-muted-foreground'}>{t("thisSemester")}</p>
                       <span className={'grow h-0.5 bg-muted-foreground'}/>
                     </div>
                   )}
 
                   {getCurrentSemesterTickets(sortedTickets).map((ticket) =>
                       ticket?.id && (
-                        <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
+                        <div key={ticket.id} className="mx-8 my-1" data-cy={`ticket-card-id-${ticket.id}`}>
                           <Link href={`/tickets/${ticket.id}`} passHref>
                             <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
                           </Link>
@@ -178,14 +181,14 @@ export default function TicketPage() {
 
               {getOlderSemesterTickets(sortedTickets).length > 0 && (
                 <>
-                  <div className={'w-full px-10 flex gap-4 items-center my-2'}>
+                  <div className={'w-full px-10 flex gap-4 items-center my-4'}>
                     <span className={'grow h-0.5 bg-muted-foreground'}/>
-                    <p className={'text-muted-foreground'}>Frühere Semester</p>
+                    <p className={'text-muted-foreground'}>{t("oldSemester")}</p>
                     <span className={'grow h-0.5 bg-muted-foreground'}/>
                   </div>
                   {getOlderSemesterTickets(sortedTickets).map((ticket) =>
                       ticket?.id && (
-                        <div key={ticket.id} className="mx-8 my-4" data-cy={`ticket-card-id-${ticket.id}`}>
+                        <div key={ticket.id} className="mx-8 my-1" data-cy={`ticket-card-id-${ticket.id}`}>
                           <Link href={`/tickets/${ticket.id}`} passHref>
                             <TicketCard ticketID={ticket.id} setDialogStateAction={setDialogState}/>
                           </Link>
@@ -200,7 +203,7 @@ export default function TicketPage() {
 
       <ConfirmationDialog
         mode="confirmation"
-        description={`Dies wird das Ticket ${dialogState.currentTicket?.title} unwiderruflich löschen`}
+        description={t("confirmations.delete", {title: dialogState.currentTicket?.title ?? ""})}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
         closeDialog={resetDialogState}

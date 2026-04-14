@@ -4,32 +4,21 @@ import React, {createContext, ReactNode, SetStateAction, useContext, useEffect, 
 import {
   AddLabelsToTicketDocument,
   AllTicketsDocument,
-  DeleteTicketDocument, Label,
+  DeleteTicketDocument,
   LabelToTicketAssignment,
   RemoveLabelsFromTicketDocument,
-  Ticket, TicketState,
+  Ticket,
   UpdateTicket,
   UpdateTicketDocument
 } from "@/lib/graph/generated/graphql";
 import {getClient} from "@/lib/graph/client";
-import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
+import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
 import {compareStringSets} from "@/lib/utils";
+import {useTicketUrlSync} from "@/lib/ticket-query-sync";
+import {parseAsBoolean, parseAsIsoDate, parseAsStringLiteral, useQueryState} from "nuqs";
+import {TicketFiltering, TicketSorting, TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
+import {SORT_FIELDS} from "@/lib/constants/ticket-fields";
 
-
-export type TicketSorting = {
-  field: TicketSortingField,
-  orderAscending: boolean
-}
-
-export type TicketSortingField = "Erstellt" | "Geändert" | "Titel"
-
-export type TicketFiltering = {
-  searchTerm: string;
-  state: TicketState[];
-  labels: Label[];
-  startDate: Date | null;
-  endDate: Date | null;
-}
 
 interface TicketsContextType {
   tickets: Ticket[];
@@ -51,10 +40,26 @@ const TicketsContext = createContext<TicketsContextType | null>(null);
 export function TicketsProvider({children}: { children: ReactNode }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [refetchKey, setRefetchKey] = useState(false);
-  const [sorting, setSorting] = useState(defaultTicketSorting);
-  const [filtering, setFiltering] = useState(defaultTicketFiltering);
   const [stateFilterSet, setStateFilterSet] = useState(false)
   const [areFiltersSet, setAreFiltersSet] = useState(false)
+
+  const [searchUrlQuery] = useQueryState('q');
+  const [fromUrlQuery] = useQueryState('from', parseAsIsoDate);
+  const [toUrlQuery] = useQueryState('to', parseAsIsoDate);
+  const [orderUrlQuery] = useQueryState('desc', parseAsBoolean);
+  const [sortUrlQuery] = useQueryState('s', parseAsStringLiteral(SORT_FIELDS).withDefault("Geändert"));
+
+  const [filtering, setFiltering] = useState<TicketFiltering>(() => ({
+    ...defaultTicketFiltering,
+    searchTerm: searchUrlQuery ?? "",
+    startDate: fromUrlQuery,
+    endDate: toUrlQuery,
+  }));
+
+  const [sorting, setSorting] = useState<TicketSorting>(() => ({
+    field: sortUrlQuery as TicketSortingField,
+    orderAscending: !orderUrlQuery,
+  }));
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -92,10 +97,13 @@ export function TicketsProvider({children}: { children: ReactNode }) {
     )
   }, [stateFilterSet, filtering.labels.length, filtering.startDate, filtering.endDate]);
 
+  // This may also be set in the single components, thus letting us use <Suspense> more conservatively.
+  // Issues with preloading pages should be checked someday with bigger instances
+  useTicketUrlSync(filtering, sorting)
+
   function triggerTicketRefetch() {
     setRefetchKey(!refetchKey);
   }
-
 
   async function updateTicket(id: string, ticket: UpdateTicket) {
     const client = getClient()
