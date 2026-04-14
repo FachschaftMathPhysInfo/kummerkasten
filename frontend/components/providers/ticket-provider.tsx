@@ -4,10 +4,10 @@ import React, {createContext, ReactNode, SetStateAction, useContext, useEffect, 
 import {
   AddLabelsToTicketDocument,
   AllTicketsDocument,
-  DeleteTicketDocument, Label,
+  DeleteTicketDocument,
   LabelToTicketAssignment,
   RemoveLabelsFromTicketDocument,
-  Ticket, TicketState,
+  Ticket,
   UpdateTicket,
   UpdateTicketDocument
 } from "@/lib/graph/generated/graphql";
@@ -16,23 +16,9 @@ import {defaultTicketFiltering} from "@/lib/graph/defaultTypes";
 import {compareStringSets} from "@/lib/utils";
 import {useTicketUrlSync} from "@/lib/ticket-query-sync";
 import {parseAsBoolean, parseAsIsoDate, parseAsStringLiteral, useQueryState} from "nuqs";
+import {TicketFiltering, TicketSorting, TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
+import {SORT_FIELDS} from "@/lib/constants/ticket-fields";
 
-
-export type TicketSorting = {
-  field: TicketSortingField,
-  orderAscending: boolean
-}
-
-export const SORT_FIELDS = ["Erstellt", "Geändert", "Titel"] as const;
-export type TicketSortingField = (typeof SORT_FIELDS)[number];
-
-export type TicketFiltering = {
-  searchTerm: string;
-  state: TicketState[];
-  labels: Label[];
-  startDate: Date | null;
-  endDate: Date | null;
-}
 
 interface TicketsContextType {
   tickets: Ticket[];

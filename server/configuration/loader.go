@@ -1,8 +1,6 @@
 package configuration
 
 import (
-	"errors"
-	"fmt"
 	"log/slog"
 	"os"
 	"strings"
@@ -14,34 +12,7 @@ import (
 	"github.com/knadh/koanf/v2"
 )
 
-var (
-	systemConfiguration Configuration
-	k                   = koanf.New(".")
-	validSystemModes    = map[string]bool{
-		"DEV":  true,
-		"PROD": true,
-	}
-	validSystemLogLevels = map[string]bool{
-		"INFO":  true,
-		"WARN":  true,
-		"ERROR": true,
-	}
-)
-
-func Get() Configuration {
-	return systemConfiguration
-}
-
-func Init() {
-	loadConfigurationFromJson()
-	loadConfigurationFromEnv()
-	loadMissingConfigurationValues()
-
-	loadIntoGlobalStruct()
-	validateConfiguration()
-
-	applyLogLevel()
-}
+var k = koanf.New(".")
 
 func loadConfigurationFromJson() {
 	localConfigPath := "../config.json"
@@ -123,6 +94,42 @@ func loadMissingConfigurationValues() {
 		loadAdminPassword()
 	}
 
+	if k.String("system.frontend.default_language") == "" {
+		err = k.Set("system.frontend.default_language", "de")
+	}
+
+	if k.Int("system.frontend.max_inputs.public.title") == 0 {
+		err = k.Set("system.frontend.max_inputs.public.title", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.public.content") == 0 {
+		err = k.Set("system.frontend.max_inputs.public.content", 2000)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.titles") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.titles", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.labels") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.labels", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.names") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.names", 50)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.faqs.questions") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.faqs.questions", 100)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.faqs.answers") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.faqs.answers", 500)
+	}
+
+	if k.Int("system.frontend.max_inputs.private.about") == 0 {
+		err = k.Set("system.frontend.max_inputs.private.about", 2000)
+	}
+
 	if err != nil {
 		slog.Error("error loading missing configuration values", "error", err)
 	}
@@ -150,40 +157,6 @@ func loadIntoGlobalStruct() {
 	}
 }
 
-func validateConfiguration() {
-	var configErrors []error
-
-	if systemConfiguration.Database.Password == "" {
-		configErrors = append(configErrors, fmt.Errorf("database.password is empty, please set a password"))
-	}
-
-	if systemConfiguration.System.Domain == "" {
-		configErrors = append(configErrors, fmt.Errorf("system.domain is required"))
-	}
-
-	if !validSystemModes[systemConfiguration.System.Mode] {
-		configErrors = append(configErrors, errors.New("system.mode has to be either 'DEV' or 'PROD'"))
-	}
-
-	if systemConfiguration.System.LogLevel != "" && !validSystemLogLevels[systemConfiguration.System.LogLevel] {
-		configErrors = append(configErrors, errors.New("system.loglevel has to be either unset, 'INFO', 'WARN' or 'ERROR"))
-	}
-
-	if systemConfiguration.Admin.Password == "" {
-		configErrors = append(configErrors, fmt.Errorf("admin.password is empty, please set a password"))
-	}
-
-	if len(configErrors) > 0 {
-		slog.Error("the configration has several errors:")
-		for _, err := range configErrors {
-			slog.Error(err.Error())
-		}
-
-		slog.Error("Software booting aborted due to configuration errors")
-		os.Exit(1)
-	}
-}
-
 func applyLogLevel() {
 	switch systemConfiguration.System.LogLevel {
 	case "INFO":
@@ -193,24 +166,4 @@ func applyLogLevel() {
 	case "ERROR":
 		utils.LogLevel.Set(slog.LevelError)
 	}
-}
-
-type Configuration struct {
-	Admin struct {
-		Mail     string `koanf:"mail"`
-		Password string `koanf:"password"`
-	} `koanf:"admin"`
-	Database struct {
-		Host     string `koanf:"host"`
-		Port     string `koanf:"port"`
-		User     string `koanf:"user"`
-		Password string `koanf:"password"`
-		Name     string `koanf:"db"`
-	} `koanf:"database"`
-	System struct {
-		Domain   string `koanf:"domain"`
-		Mode     string `koanf:"mode"`
-		Pepper   string `koanf:"pepper"`
-		LogLevel string `koanf:"loglevel"`
-	} `koanf:"system"`
 }

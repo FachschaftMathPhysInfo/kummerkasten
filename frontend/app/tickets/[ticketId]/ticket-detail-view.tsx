@@ -1,6 +1,6 @@
 "use client";
 
-import {Label, Ticket} from "@/lib/graph/generated/graphql";
+import {IntConfiguration, Label, Ticket} from "@/lib/graph/generated/graphql";
 import {PageLoader} from "@/components/page-loader";
 import {useSidebar} from "@/components/ui/sidebar";
 import React, {Dispatch} from "react";
@@ -13,6 +13,8 @@ import {Input} from "@/components/ui/input";
 import {useTickets} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
 import {useTranslations} from "next-intl";
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PRIVATE_TITLES_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
 interface TicketDetailViewProps {
   ticket: Ticket | null;
@@ -20,7 +22,6 @@ interface TicketDetailViewProps {
   setDialogStateAction: Dispatch<React.SetStateAction<TicketDialogState>>;
 }
 
-const MAX_TITLE_LENGTH = 70;
 
 export default function TicketDetailView({
                                            ticket,
@@ -29,6 +30,8 @@ export default function TicketDetailView({
                                          }: TicketDetailViewProps) {
   const t = useTranslations("TicketId.TicketDetailView");
   const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration();
+  const MAX_TITLE_LENGTH = (configuration.find(c => c.key == PRIVATE_TITLES_LENGTH_KEY) as IntConfiguration).intValue
   const {isMobile} = useSidebar()
   const {updateTicket} = useTickets()
   const [editMode, setEditMode] = React.useState(false);

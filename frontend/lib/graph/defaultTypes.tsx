@@ -1,5 +1,5 @@
 import {Label, QuestionAnswerPair, TicketState, User, UserRole} from "@/lib/graph/generated/graphql";
-import {TicketFiltering, TicketSorting} from "@/components/providers/ticket-provider";
+import {TicketFiltering, TicketSorting} from "@/lib/types/ticket-sorting-filtering";
 
 const now = new Date()
 

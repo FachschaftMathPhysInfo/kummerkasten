@@ -15,9 +15,7 @@ import {ExternalLink, Loader2, RotateCcw, Save} from "lucide-react";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {cn} from "@/lib/utils";
 import {useTranslations} from "next-intl";
-
-export const FOOTER_CONTACT_LINK_KEY = "FOOTER_CONTACT_LINK"
-export const FOOTER_LEGAL_NOTICE_KEY = "FOOTER_LEGAL_NOTICE_LINK"
+import {FOOTER_CONTACT_LINK_KEY, FOOTER_LEGAL_NOTICE_KEY} from "@/lib/constants/setting-keys";
 
 export default function FooterForm() {
   const t = useTranslations("Settings.AppPage.FooterForm")

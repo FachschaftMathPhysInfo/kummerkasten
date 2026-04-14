@@ -4,7 +4,7 @@ import {z} from "zod";
 import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect, useState} from "react";
-import {QuestionAnswerPair, UpdateQuestionAnswerPair,} from "@/lib/graph/generated/graphql";
+import {IntConfiguration, QuestionAnswerPair, UpdateQuestionAnswerPair,} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
@@ -13,19 +13,20 @@ import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/compon
 import {useQAPs} from "@/components/providers/qap-provider";
 import {CirclePlus, Save} from "lucide-react";
 import {useTranslations} from "next-intl";
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PRIVATE_ANSWERS_LENGTH_KEY, PRIVATE_QUESTIONS_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
 interface FaqFormProps {
   qap: QuestionAnswerPair | null;
   closeDialog: () => void;
 }
 
-const QUESTION_MAX_LENGTH = 100
-const ANSWER_MAX_LENGTH = 700
-
-
 export default function FaqForm({qap, closeDialog}: FaqFormProps) {
   const t = useTranslations("Settings.QAPManagementPage.FaqForm")
   const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration()
+  const QUESTION_MAX_LENGTH = (configuration.find(c => c.key == PRIVATE_QUESTIONS_LENGTH_KEY) as IntConfiguration).intValue
+  const ANSWER_MAX_LENGTH = (configuration.find(c => c.key == PRIVATE_ANSWERS_LENGTH_KEY) as IntConfiguration).intValue
   const [loading, setLoading] = useState(false);
   const {qaps, createQap, updateQap} = useQAPs()
   // maxPosition is the highest OCCUPIED zero-based index
@@ -134,7 +135,8 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
           name="question"
           render={({field, fieldState}) => (
             <FormItem>
-              <FormLabel className={fieldState.invalid ? "text-destructive" : ""}>{t("fields.question.label")}</FormLabel>
+              <FormLabel
+                className={fieldState.invalid ? "text-destructive" : ""}>{t("fields.question.label")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder={t("fields.question.placeholder")}

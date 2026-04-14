@@ -10,7 +10,7 @@ import {
   CreateTicketDocument,
   CreateTicketMutation,
   FormLabelsDocument,
-  FormLabelsQuery,
+  FormLabelsQuery, IntConfiguration,
   Label,
   NewTicket
 } from "@/lib/graph/generated/graphql";
@@ -23,14 +23,16 @@ import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
 import {defaultLabel} from "@/lib/graph/defaultTypes";
 import {useTranslations} from "next-intl";
-
-const TITLE_MAX_LENGTH = 70
-const TEXT_MAX_LENGTH = 3000
-
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PUBLIC_CONTENT_LENGTH_KEY, PUBLIC_TITLE_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
 export default function FormUi() {
   const t = useTranslations("KummerkastenPage.FormUi")
   const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration()
+
+  const TITLE_MAX_LENGTH = (configuration.find(c => c.key == PUBLIC_TITLE_LENGTH_KEY) as IntConfiguration).intValue
+  const TEXT_MAX_LENGTH = (configuration.find(c => c.key == PUBLIC_CONTENT_LENGTH_KEY) as IntConfiguration).intValue
 
   const formUiSchema = z.object({
     labels: z.array(z.string()).nonempty({error: tc("fields.errors.empty")}),

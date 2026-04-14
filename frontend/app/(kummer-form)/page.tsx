@@ -26,7 +26,7 @@ export default function KummerkastenPage() {
         <div className="flex items-center gap-5">
           <Image
             suppressHydrationWarning
-            src={resolvedTheme === "dark" ? "/logo_dark.svg" :"/logo_light.svg"}
+            src={resolvedTheme === "dark" ? "/logo_dark.svg" : "/logo_light.svg"}
             alt={t("logoAlt")}
             width={512}
             height={512}

@@ -5,7 +5,11 @@ import {FormProvider, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
-import {AboutSectionSettingsDocument, UpdateAboutSectionTextDocument,} from "@/lib/graph/generated/graphql";
+import {
+  AboutSectionSettingsDocument,
+  IntConfiguration,
+  UpdateAboutSectionTextDocument,
+} from "@/lib/graph/generated/graphql";
 import {toast} from "sonner";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
 import {useUser} from "@/components/providers/user-provider";
@@ -14,14 +18,16 @@ import {BookText, Loader2, RotateCcw, Save} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea";
 import {cn} from "@/lib/utils";
 import {useTranslations} from "next-intl";
-
-export const ABOUT_SECTION_TEXT_KEY = "ABOUT_SECTION_TEXT";
-const MAX_ABOUT_TEXT_LENGTH = 2000;
+import {ABOUT_SECTION_TEXT_KEY} from "@/lib/constants/setting-keys";
+import {useConfiguration} from "@/components/providers/configuration-provider";
+import {PRIVATE_ABOUT_TEXT_LENGTH_KEY} from "@/lib/constants/configuration-keys";
 
 
 export default function AboutSectionForm() {
   const t = useTranslations("Settings.QAPManagementPage.AboutSectionForm")
   const tc = useTranslations("Commons")
+  const {configuration} = useConfiguration();
+  const MAX_ABOUT_TEXT_LENGTH = (configuration.find(c => c.key == PRIVATE_ABOUT_TEXT_LENGTH_KEY) as IntConfiguration).intValue
   const {user} = useUser();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

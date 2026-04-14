@@ -11,19 +11,18 @@ export default function QAPManagementPage() {
   const t = useTranslations("Settings.QAPManagementPage.Root")
 
   return (
-      <div className="w-full h-full flex flex-col grow">
-        <ManagementPageHeader
-          icon={<MessageCircleQuestionMark />}
-          title={t("title")}
-          description={t("description")}
-        />
-        <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
-          <AboutSectionForm />
-          <QAPProvider>
-            <QAPTable />
-          </QAPProvider>
-        </div>
+    <div className="w-full h-full flex flex-col grow">
+      <ManagementPageHeader
+        icon={<MessageCircleQuestionMark/>}
+        title={t("title")}
+        description={t("description")}
+      />
+      <div className="w-full h-full flex flex-col gap-6 px-10 pt-4 grow">
+        <AboutSectionForm/>
+        <QAPProvider>
+          <QAPTable/>
+        </QAPProvider>
       </div>
-
+    </div>
   );
 }

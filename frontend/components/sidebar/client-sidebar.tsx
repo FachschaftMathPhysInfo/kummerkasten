@@ -37,7 +37,8 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {setLocale} from "@/lib/cookies";
-import {availableLanguages} from "@/components/language-switch";
+
+import {AVAILABLE_LANGUAGES} from "@/lib/constants/languages";
 
 export function ClientSidebar() {
   const t = useTranslations("Components.Sidebar.ClientSidebar")
@@ -220,7 +221,7 @@ function SidebarLanguageSwitch() {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          {availableLanguages.map(language => (
+          {AVAILABLE_LANGUAGES.map(language => (
             <DropdownMenuItem key={language.localeKey} onClick={async() => await setLocale(language.localeKey)}>
               {language.name}
             </DropdownMenuItem>

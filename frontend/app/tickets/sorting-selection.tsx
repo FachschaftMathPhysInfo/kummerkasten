@@ -5,9 +5,10 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {Command, CommandGroup, CommandItem} from "@/components/ui/command";
-import {TicketSortingField, useTickets} from "@/components/providers/ticket-provider";
+import {useTickets} from "@/components/providers/ticket-provider";
 import {cn} from "@/lib/utils";
 import {useTranslations} from "next-intl";
+import {TicketSortingField} from "@/lib/types/ticket-sorting-filtering";
 
 export default function SortingSelection() {
   const tc = useTranslations("Commons")
