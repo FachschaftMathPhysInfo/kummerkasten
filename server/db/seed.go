@@ -81,7 +81,7 @@ func seedTestData(ctx context.Context, db *bun.DB) error {
 
 func removeTestUsers(ctx context.Context, db *bun.DB) error {
 	slog.Info("Removing test users...")
-	if _, err := db.NewDelete().Model((*models.User)(nil)).Where("mail IN (?)", bun.In(testEmails)).Exec(ctx); err != nil {
+	if _, err := db.NewDelete().Model((*models.User)(nil)).Where("mail IN (?)", bun.List(testEmails)).Exec(ctx); err != nil {
 		return err
 	}
 	slog.Info("Test users removed!")
@@ -202,7 +202,7 @@ func createSettings(ctx context.Context, db *bun.DB) error {
 
 	if err := db.NewSelect().
 		Model(&existing).
-		Where("key IN (?)", bun.In(keys)).
+		Where("key IN (?)", bun.List(keys)).
 		Scan(ctx); err != nil {
 		return fmt.Errorf("failed to fetch settings: %w", err)
 	}
