@@ -660,7 +660,7 @@ func insertData[T any](ctx context.Context, db *bun.DB, model T, data []T, descr
 		if _, err := db.NewInsert().Model(&data).Exec(ctx); err != nil {
 			return fmt.Errorf("%s: %s", description, err)
 		}
-		slog.Info(fmt.Sprintf("%s seeded successfully\n", description))
+		slog.Info(fmt.Sprintf("%s seeded successfully", description))
 	}
 	return nil
 }

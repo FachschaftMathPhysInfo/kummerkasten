@@ -13,7 +13,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
-	"github.com/FachschaftMathPhysInfo/kummerkasten/migrations"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
 	"github.com/gorilla/websocket"
 	"github.com/robfig/cron"
@@ -56,7 +55,6 @@ func main() {
 	}
 
 	initDatabase()
-	updateDatabase()
 	initGraphQL()
 	initCors()
 	initCron()
@@ -97,14 +95,6 @@ func initDatabase() {
 	}
 
 	slog.Info("database seeding completed!")
-}
-
-func updateDatabase() {
-	migrations.InitMigrator(DB, ctx)
-	if err := migrations.RunMigrations(ctx); err != nil {
-		slog.Error("migrations failed, the app is missing important database changes and will shut down now.", "error", err)
-		panic(err)
-	}
 }
 
 func initGraphQL() {

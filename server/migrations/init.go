@@ -2,33 +2,22 @@ package migrations
 
 import (
 	"context"
-	"embed"
 	"log/slog"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"
 )
 
-//go:embed *.go
-var sqlFiles embed.FS
-
 var Migrations = migrate.NewMigrations()
 var migrator *migrate.Migrator
 
-func InitMigrator(db *bun.DB, ctx context.Context) {
-	if err := Migrations.Discover(sqlFiles); err != nil {
-		slog.Error("Failed to find migration files", "error", err.Error())
-		panic(err)
-	}
-
+func RunMigrations(db *bun.DB, ctx context.Context) error {
 	migrator = migrate.NewMigrator(db, Migrations)
 	if err := migrator.Init(ctx); err != nil {
 		slog.Error("Failed to initialize Migrations", "error", err.Error())
 		panic(err)
 	}
-}
 
-func RunMigrations(ctx context.Context) error {
 	if err := migrator.Lock(ctx); err != nil {
 		slog.Error("Failed to acquire migration lock", "error", err.Error())
 	}
@@ -50,7 +39,7 @@ func RunMigrations(ctx context.Context) error {
 		slog.Info("There were no new Migrations to be done.")
 		return nil
 	}
-	
+
 	slog.Info("Migrations done.", "current_group", group)
 	return nil
 }
