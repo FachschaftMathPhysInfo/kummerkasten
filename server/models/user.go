@@ -16,7 +16,8 @@ type User struct {
 	Lastname     string         `bun:",notnull,type:varchar(255)"`
 	Role         model.UserRole `bun:",notnull"`
 	Password     string         `bun:",notnull"`
-	CreatedAt    time.Time      `bun:",notnull"`
-	LastModified time.Time      `bun:",notnull"`
+	Language     string
+	CreatedAt    time.Time `bun:",notnull"`
+	LastModified time.Time `bun:",notnull"`
 	LastLogin    time.Time
 }
