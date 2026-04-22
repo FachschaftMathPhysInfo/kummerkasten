@@ -9,28 +9,7 @@
 </div>
 
 ## Quick Start
->[!CAUTION]
-> The software is currently only available in german but we are working on implementing general i8n.
-
-### Prepare config
-#### .env
-Take the `/.env` and add your prefered credentials, `host` will most likely be `postgres`
-
-#### config.json
-Use the template at `/docs/config.example.json` and fill out all values but `database`, those can be left empty.
-`system.mode` must be either `DEV` or `PROD`. The first uses default data but as the credentials are public, it is not 
-safe to deploy on a public server.
-
-### Launching the container
-Now take the compose template at `/docs/docker-compose.example.yml` and change the values if needed. If you do not add
-the `env` to the `app`-service, the `database` part of the config must be filled out.
-
-### After Launch
-Login to the software using the admin data provided in the config at `domain/login`. In the `FAQ` section you can change
-texts presented on the root-form. Further users can be added in the `users` tab.
-
-### Further help
-The wiki is expanding and we will add more sophisticated guides and explanations there.
+A quickstart guide can be found in our [wiki](https://github.com/FachschaftMathPhysInfo/kummerkasten/wiki). You can also find a more detailed explanation of the configuration options there. We will shortly add guides for users and admins on how the software itself works - although we feel it its fairly intuitive.
 
 ## Development
 ### Frontend
@@ -66,9 +45,3 @@ We provide E2E tests in `frontend/cypress`, to use them run
 cd frontend
 npm run test
 ```
-
-## Contributing
-1. Create an Issue or assign an existing one to yourself
-2. Create a branch
-3. Open a PR
-5. Be happy <3 

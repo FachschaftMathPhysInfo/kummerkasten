@@ -17,18 +17,18 @@ jobs:
       run:
         working-directory: ./server
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.24.3"
+          go-version: "1.26.2"
 
       - name: Generate GraphQL code
         run: go run github.com/99designs/gqlgen generate
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
           install-mode: "goinstall"
           working-directory: ./server
