@@ -84,7 +84,7 @@ export default function FooterForm() {
       toast.success(tc("toasts.updateSuccess"))
       await fetchFooterSettings();
     } catch {
-      toast.error(tc("toasts.updateError"))
+      toast.error(tc("toasts.generalError"))
     } finally {
       setIsSaving(false);
     }

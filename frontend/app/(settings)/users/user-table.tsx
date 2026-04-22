@@ -83,49 +83,49 @@ export function UserTable(props: DataTableProps) {
 
   async function handlePromote() {
     if (!dialogState.currentUser) {
-      toast.error(t("toast.promotionFailure"))
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     try {
       await client.request<PromoteMutation>(PromoteDocument, {id: dialogState.currentUser.id})
-      toast.success(t("toast.promotionSuccess"))
+      toast.success(tc("toasts.updateSuccess"))
       resetDiallogState()
       props.refreshData()
     } catch {
-      toast.error(t("toast.promotionFailure"))
+      toast.error(tc("toasts.generalError"))
     }
   }
 
   async function handleDemote() {
     if (!dialogState.currentUser) {
-      toast.error(t("toast.demoteFailure"))
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     try {
       await client.request<DemoteMutation>(DemoteDocument, {id: dialogState.currentUser.id})
-      toast.success(t("toast.demoteSuccess"))
+      toast.success(tc("toasts.updateSuccess"))
       setDialogState({mode: null, currentUser: null})
       props.refreshData()
     } catch {
-      toast.error(t("toast.demoteFailure"))
+      toast.error(tc("toasts.generalError"))
     }
   }
 
   async function handleDelete() {
     if (!dialogState.currentUser) {
-      toast.error(t("toast.deleteFailure"))
+      toast.error(tc("toasts.generalError"))
       return
     }
 
     try {
       await client.request<DeleteUsersMutation>(DeleteUsersDocument, {ids: [dialogState.currentUser.id]})
-      toast.success(t("toast.deleteSuccess"))
+      toast.success(tc("toasts.deleteSuccess"))
       resetDiallogState()
       props.refreshData()
     } catch {
-      toast.error(t("toast.deleteFailure"))
+      toast.error(tc("toasts.generalError"))
     }
   }
 
