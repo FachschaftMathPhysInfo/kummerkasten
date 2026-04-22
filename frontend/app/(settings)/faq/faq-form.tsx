@@ -223,7 +223,7 @@ export default function FaqForm({qap, closeDialog}: FaqFormProps) {
             {createMode ? (
               <><CirclePlus/>{tc("buttons.create")}</>
             ) : (
-              <><Save/>{tc("buttons.update")}</>
+              <><Save/>{tc("buttons.save")}</>
             )}
           </Button>
         </div>
