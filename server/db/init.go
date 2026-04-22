@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/migrations"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -17,21 +18,9 @@ import (
 )
 
 var (
-	db     *bun.DB
-	sqldb  *sql.DB
-	err    error
-	tables = []interface{}{
-		(*models.User)(nil),
-		(*models.Label)(nil),
-		(*models.Setting)(nil),
-		(*models.Ticket)(nil),
-		(*models.QuestionAnswerPair)(nil),
-		(*models.Session)(nil),
-	}
-
-	relations = []interface{}{
-		(*models.LabelsToTickets)(nil),
-	}
+	db    *bun.DB
+	sqldb *sql.DB
+	err   error
 )
 
 const MaxDbPings = 10
@@ -67,34 +56,13 @@ func Init(ctx context.Context) (*sql.DB, *bun.DB) {
 	}
 
 	db = bun.NewDB(sqldb, pgdialect.New())
-	db.AddQueryHook(bundebug.NewQueryHook())
+	db.WithQueryHook(bundebug.NewQueryHook())
 	db.RegisterModel((*models.LabelsToTickets)(nil))
 
-	if err := createTables(ctx, tables); err != nil {
-		slog.Error("Failed to create basic tabels", "error", err)
-		panic("Failed to create basic tables")
+	if err := migrations.RunMigrations(db, ctx); err != nil {
+		slog.Error("Error running migrations. To save the data from corruption the service will abort.", "error", err)
+		panic(err)
 	}
-
-	slog.Info("Basic Database Tables successfully initialized")
-
-	if err := createTables(ctx, relations); err != nil {
-		slog.Error("Failed to create basic relations", "error", err)
-		panic("Failed to create basic relations")
-	}
-
-	slog.Info("Basic Database Relations successfully initialized")
 
 	return sqldb, db
-}
-
-func createTables(ctx context.Context, tables []interface{}) error {
-	for _, table := range tables {
-		if _, err := db.NewCreateTable().
-			Model(table).
-			IfNotExists().
-			Exec(ctx); err != nil {
-			return err
-		}
-	}
-	return nil
 }

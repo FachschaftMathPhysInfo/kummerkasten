@@ -466,7 +466,7 @@
       "searchbarPlaceholder": "\"{item}\" search..."
     },
     "buttons": {
-      "cancel": "Cance",
+      "cancel": "Cancel",
       "create": "Create",
       "save": "Save",
       "send": "Send",

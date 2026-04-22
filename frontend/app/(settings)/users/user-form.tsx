@@ -108,12 +108,12 @@ export default function UserForm(props: UserFormProps) {
 
     try {
       await client.request<CreateUserMutation>(CreateUserDocument, {user: newUser})
-      toast.success(t("toast.createSuccess"))
+      toast.success(tc("toasts.createSuccess"))
       setHasTriedToSubmit(false)
       props.refreshData()
       props.closeDialog()
     } catch {
-      toast.error(t("toast.createFailure"));
+      toast.error(tc("toasts.generalError"));
     }
     setLoading(false)
   }

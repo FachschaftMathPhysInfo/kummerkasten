@@ -170,7 +170,7 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
                         </div>
                         <div
                           className="hidden md:flex text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
-                          {t("modified")}: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
+                          {tc("ticketSortingFields.modified")}: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
                         </div>
                       </div>
                     </div>
@@ -213,7 +213,7 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
                         </div>
                         <div
                           className="hidden md:flex text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
-                          {t("modified")}: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
+                          {tc("ticketSortingFields.modified")}: {ticket?.lastModified ? format(new Date(ticket.lastModified), "dd.MM.yy") : ""}
                         </div>
                       </div>
                     </div>
