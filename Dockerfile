@@ -8,7 +8,7 @@ COPY server/graph/schema.graphqls ../server/graph/schema.graphqls
 RUN npm run generate
 RUN npm run build
 
-FROM golang:1.24-alpine AS server-build
+FROM golang:1.26-alpine3.23 AS server-build
 WORKDIR /go/src
 COPY server/go.mod server/go.sum ./
 RUN go mod download
@@ -17,7 +17,7 @@ RUN go run github.com/99designs/gqlgen generate
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o graphql-server server.go
 
 
-FROM alpine:3.23.2 AS final
+FROM alpine:3.23.4 AS final
 WORKDIR /app
 
 RUN apk add --no-cache nodejs
