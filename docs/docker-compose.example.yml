@@ -8,8 +8,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   app:
-    build: .
-    image: kummerkasten:latest
+    image: ghcr.io/fachschaftmathphysinfo/kummerkasten:latest
     env_file: .env.local
     volumes:
       - ./config.json:/app/config.json
