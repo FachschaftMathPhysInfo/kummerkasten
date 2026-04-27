@@ -2,8 +2,10 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": ["cypress"],
+    "baseUrl": ".",
     "paths": {
-      "@/*" : ["../*"]
+      "@/*" : ["../*"],
+      "#/*" : ["./*"]
     }
   },
   "include": ["**/*.ts"]

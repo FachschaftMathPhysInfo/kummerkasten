@@ -1,9 +1,9 @@
-import labels from "../../fixtures/labels.json"
-import * as page from "../../pages/labels/label-management.po"
-import * as confirmationDialog from "../../pages/confirmation-dialog.po"
-import * as kummerform from "../../pages/kummerform.po"
-import {UserRole} from "../../../lib/graph/generated/graphql";
-import {compareStringsInLowerCase} from "../../../lib/utils";
+import labels from "#/fixtures/labels.json"
+import * as page from "#/pages/labels/label-management.po"
+import * as confirmationDialog from "#/pages/confirmation-dialog.po"
+import * as kummerform from "#/pages/kummerform.po"
+import {UserRole} from "@/lib/graph/generated/graphql";
+import {compareStringsInLowerCase} from "@/lib/utils";
 
 const roles: UserRole[] = [UserRole.User, UserRole.Admin]
 const LABELS_PER_PAGE = 10

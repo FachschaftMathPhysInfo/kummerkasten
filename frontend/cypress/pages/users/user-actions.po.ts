@@ -1,7 +1,7 @@
 import * as dialog from "../confirmation-dialog.po"
 import * as page from "./user-management.po"
-import {getClient} from "../../../lib/graph/client";
-import {DeleteUsersDocument, GetUserIdByMailDocument} from "../../../lib/graph/generated/graphql";
+import {getClient} from "@/lib/graph/client";
+import {DeleteUsersDocument, GetUserIdByMailDocument} from "@/lib/graph/generated/graphql";
 
 export function getDeleteButton() {
   return cy.get('[data-cy="delete-button"]');

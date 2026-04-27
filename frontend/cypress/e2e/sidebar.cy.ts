@@ -1,6 +1,6 @@
-import * as sidebar from "../pages/sidebar.po"
-import {getFooter} from "../pages/footer.po";
-import users from "../fixtures/users.json"
+import * as sidebar from "#/pages/sidebar.po"
+import {getFooter} from "#/pages/footer.po";
+import users from "#/fixtures/users.json"
 
 describe('Footer Tests', () => {
 

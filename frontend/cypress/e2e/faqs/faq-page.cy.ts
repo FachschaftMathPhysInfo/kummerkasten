@@ -1,6 +1,6 @@
-import * as page from "../../pages/faqs/faq-page.po"
-import faqs from "../../fixtures/faqs.json"
-import {UserRole} from "../../../lib/graph/generated/graphql";
+import * as page from "#/pages/faqs/faq-page.po"
+import faqs from "#/fixtures/faqs.json"
+import {UserRole} from "@/lib/graph/generated/graphql";
 
 const roles: UserRole[] = [UserRole.User, UserRole.Admin]
 const AMOUNT_FAQ_SEED_DB = 5

@@ -1,5 +1,5 @@
-import users from "../fixtures/users.json"
-import * as appSettings from "../pages/appsettings.po"
+import users from "#/fixtures/users.json"
+import * as appSettings from "#/pages/appsettings.po"
 
 describe('App Settings Tests', () => {
   let initialSettings: { FOOTER_CONTACT_LINK: string; FOOTER_LEGAL_NOTICE_LINK: string }

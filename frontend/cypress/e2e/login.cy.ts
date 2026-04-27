@@ -1,5 +1,5 @@
-import users from "../fixtures/users.json"
-import * as loginPage from "../pages/login.po"
+import users from "#/fixtures/users.json"
+import * as loginPage from "#/pages/login.po"
 
 describe('Login Tests', () => {
   beforeEach(() => {

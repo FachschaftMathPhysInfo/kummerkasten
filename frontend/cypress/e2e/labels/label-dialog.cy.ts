@@ -1,8 +1,8 @@
-import {UserRole} from "../../../lib/graph/generated/graphql";
-import * as page from "../../pages/labels/label-management.po"
-import * as dialog from "../../pages/labels/label-dialog.po";
-import labels from "../../fixtures/labels.json";
-import * as kummerform from "../../pages/kummerform.po";
+import {UserRole} from "@/lib/graph/generated/graphql";
+import * as page from "#/pages/labels/label-management.po"
+import * as dialog from "#/pages/labels/label-dialog.po";
+import labels from "#/fixtures/labels.json";
+import * as kummerform from "#/pages/kummerform.po";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
