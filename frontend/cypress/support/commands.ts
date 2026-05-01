@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 // Add this to cypress/support/commands.js
-import * as sidebar from "../pages/sidebar.po";
+import * as sidebar from "#/pages/sidebar.po";
 import {
   NewLabel,
   NewTicket,
@@ -9,10 +9,10 @@ import {
   TicketState,
   UpdateUser,
   UserRole
-} from "../../lib/graph/generated/graphql";
-import * as users from "../fixtures/users.json";
-import {LabelDialogData} from "../pages/labels/label-management.po";
-import {FAQDialogData} from "../pages/faqs/faq-dialog.po";
+} from "@/lib/graph/generated/graphql";
+import * as users from "#/fixtures/users.json";
+import {LabelDialogData} from "#/pages/labels/label-management.po";
+import {FAQDialogData} from "#/pages/faqs/faq-dialog.po";
 
 Cypress.Commands.add("login", (mail: string, password: string) => {
   cy.session([mail, password], () => {

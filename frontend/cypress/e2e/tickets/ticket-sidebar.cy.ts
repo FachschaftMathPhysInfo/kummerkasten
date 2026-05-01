@@ -1,8 +1,8 @@
-import {Label, Ticket, TicketState, UserRole} from "../../../lib/graph/generated/graphql";
-import * as ticketSidebar from "../../pages/tickets/ticket-sidebar.po";
-import * as filterBar from "../../pages/tickets/filter-bar.po";
-import * as ticketPage from "../../pages/tickets/ticket-overview.po";
-import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "../../pages/tickets/ticket-overview.po";
+import {Label, Ticket, TicketState, UserRole} from "@/lib/graph/generated/graphql";
+import * as ticketSidebar from "#/pages/tickets/ticket-sidebar.po";
+import * as filterBar from "#/pages/tickets/filter-bar.po";
+import * as ticketPage from "#/pages/tickets/ticket-overview.po";
+import {getTodayCalendarLabel, getTodaySuffixForCalendar} from "#/pages/tickets/ticket-overview.po";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 

@@ -1,8 +1,8 @@
-import {UserRole} from "../../../lib/graph/generated/graphql";
-import * as page from "../../pages/faqs/faq-page.po"
-import * as dialog from "../../pages/faqs/faq-dialog.po"
-import * as confirmationDialog from "../../pages/confirmation-dialog.po"
-import * as faqs from "../../fixtures/faqs.json"
+import {UserRole} from "@/lib/graph/generated/graphql";
+import * as page from "#/pages/faqs/faq-page.po"
+import * as dialog from "#/pages/faqs/faq-dialog.po"
+import * as confirmationDialog from "#/pages/confirmation-dialog.po"
+import * as faqs from "#/fixtures/faqs.json"
 
 const roles: UserRole[] = [UserRole.User, UserRole.Admin]
 const AMOUNT_FAQS_SEED_DB = 5

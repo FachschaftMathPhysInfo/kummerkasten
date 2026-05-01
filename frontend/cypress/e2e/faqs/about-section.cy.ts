@@ -1,6 +1,6 @@
-import {UserRole} from "../../../lib/graph/generated/graphql";
-import * as page from "../../pages/faqs/about-page.po"
-import * as kummerform from "../../pages/kummerform.po"
+import {UserRole} from "@/lib/graph/generated/graphql";
+import * as page from "#/pages/faqs/about-page.po"
+import * as kummerform from "#/pages/kummerform.po"
 
 const roles: UserRole[] = [UserRole.User, UserRole.Admin]
 let currentAboutText: string
