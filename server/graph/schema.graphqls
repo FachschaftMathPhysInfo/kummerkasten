@@ -44,6 +44,7 @@ type User {
     firstname: String!
     lastname: String!
     role: UserRole!
+    language: String
     createdAt: Time!
     lastModified: Time!
     lastLogin: Time
@@ -112,6 +113,7 @@ input NewUser {
     firstname: String!
     lastname: String!
     password: String!
+    language: String
 }
 
 input UpdateUser {
@@ -119,6 +121,7 @@ input UpdateUser {
     firstname: String
     lastname: String
     password: String
+    language: String
 }
 
 input UpdateTicket {

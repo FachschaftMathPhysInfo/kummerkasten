@@ -338,6 +338,11 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 
 	if err != nil {
 		slog.Error("Failed to create user")
+		return nil, ErrInternal
+	}
+
+	if user.Language != nil && !configuration.ValidLanguages[*user.Language] {
+		return nil, fmt.Errorf("the language provided is not supported")
 	}
 
 	userId := uuid.New().String()
@@ -347,6 +352,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 		Mail:         strings.TrimSpace(user.Mail),
 		Firstname:    strings.TrimSpace(user.Firstname),
 		Lastname:     strings.TrimSpace(user.Lastname),
+		Language:     *user.Language,
 		Password:     hashedPassword,
 		Role:         model.UserRoleUser,
 		CreatedAt:    time.Now(),
@@ -363,6 +369,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (
 		Mail:         newDbUser.Mail,
 		Firstname:    newDbUser.Firstname,
 		Lastname:     newDbUser.Lastname,
+		Language:     &newDbUser.Language,
 		Role:         newDbUser.Role,
 		CreatedAt:    newDbUser.CreatedAt,
 		LastModified: newDbUser.LastModified,
@@ -410,6 +417,13 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, user model
 	}
 	if user.Lastname != nil {
 		updatedUser.Lastname = strings.TrimSpace(*user.Lastname)
+	}
+	if user.Language != nil {
+		if !configuration.ValidLanguages[*user.Language] {
+			return "", fmt.Errorf("the provided language is supported")
+		}
+
+		updatedUser.Language = *user.Language
 	}
 	if user.Password != nil {
 		hashedPassword, err := auth.HashPassword(*user.Password)

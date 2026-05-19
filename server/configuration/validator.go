@@ -17,7 +17,7 @@ var (
 		"WARN":  true,
 		"ERROR": true,
 	}
-	validLanguages = map[string]bool{
+	ValidLanguages = map[string]bool{
 		"en": true,
 		"de": true,
 	}
@@ -46,7 +46,7 @@ func validateConfiguration() {
 		configErrors = append(configErrors, fmt.Errorf("admin.password is empty, please set a password"))
 	}
 
-	if !validLanguages[systemConfiguration.System.Frontend.DefaultLanguage] {
+	if !ValidLanguages[systemConfiguration.System.Frontend.DefaultLanguage] {
 		configErrors = append(configErrors, fmt.Errorf("system.frontend.default_language has to be either 'en', or 'de'"))
 	}
 
