@@ -487,6 +487,7 @@
     "toasts": {
       "generalError": "Ein Fehler ist aufgetreten. Versuche es später erneut oder kontaktiere die Systemadmins.",
       "fetchError": "Fehler beim Laden der Daten. Versuche es später erneut oder kontaktiere die Systemadmins.",
+      "updateError": "Fehler beim aktualisieren der Daten. Versuche es später erneut oder kontaktiere die Systemadmins.",
       "loginAgainError": "Ein Fehler ist aufgetreten, bitte melde dich erneut an.",
       "updateSuccess": "Änderung erfolgreich gespeichert.",
       "createSuccess": "Eintrag erfolgreich erstellt.",

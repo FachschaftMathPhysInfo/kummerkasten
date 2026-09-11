@@ -136,7 +136,7 @@ export default function TicketPage() {
               data-cy="desktop-overview-reset-filters"
             >
               <Trash2 className="text-destructive"/>
-              {tc("buttons.resetFilters")}
+              {tc("buttons.resetFilter")}
             </Button>
           )}
         </div>

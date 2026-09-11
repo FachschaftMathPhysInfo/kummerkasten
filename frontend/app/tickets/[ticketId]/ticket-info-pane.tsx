@@ -69,7 +69,7 @@ export function TicketInfoPane({ticket, initialTicketLabels, setDialogStateActio
     if (!ticket) return;
 
     const error = await updateTicket(ticket.id, {state: state})
-    if (error) toast.error(tc("toasts.generalerror"))
+    if (error) toast.error(tc("toasts.generalError"))
     setTicketState(state)
   }
 
