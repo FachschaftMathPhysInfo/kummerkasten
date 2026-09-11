@@ -14,7 +14,6 @@ import (
 	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/db"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/utils"
-	"github.com/gorilla/websocket"
 	"github.com/robfig/cron"
 
 	"net/http/httputil"
@@ -123,14 +122,7 @@ func initGraphQL() {
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
-	srv.AddTransport(transport.Websocket{
-		Upgrader: websocket.Upgrader{
-			ReadBufferSize:  1024,
-			WriteBufferSize: 1024,
-			CheckOrigin:     func(r *http.Request) bool { return true },
-		},
-		KeepAlivePingInterval: 10 * time.Second,
-	})
+	srv.AddTransport(&transport.Websocket{KeepAlivePingInterval: 10 * time.Second})
 	srv.Use(extension.Introspection{})
 
 	slog.Info("GraphQL intialization completed!")
