@@ -233,15 +233,40 @@ roles.forEach((role) => {
         });
       });
 
-      // context('Password Form - Correct Input', () => {
-      //   it('accepts valid password and enables save button', () => {
-      //     accountPage.getCurrentPasswordInput().type('StrongPass1!');
-      //     accountPage.getNewPasswordInput().type('StrongPass123!');
-      //     accountPage.getConfirmPasswordInput().type('StrongPass123!');
-      //     accountPage.getPasswordSaveButton().should('not.be.disabled');
-      //   });
-      // })
-      //
+      context('Password Form - Correct Input', () => {
+        it('accepts valid password and enables save button', () => {
+          cy.intercept('POST', '/api', (req) => {
+            if (req.body.operationName == "updateUser") {
+              req.alias = 'updateUserMutation';
+
+              req.reply({
+                statusCode: 200,
+                body: {
+                  data: {
+                    updateUser: {
+                      id: ''
+                    }
+                  }
+                }
+              });
+            }
+
+          })
+
+          const newPassword = 'StrongPass123!';
+          accountPage.getCurrentPasswordInput().type(user.password);
+          accountPage.getNewPasswordInput().type(newPassword);
+          accountPage.getConfirmPasswordInput().type(newPassword);
+          accountPage.getPasswordSaveButton().click();
+
+          cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.password')
+              .should('eq', newPassword);
+
+          cy.url().should('contain', '/login');
+        });
+      })
+
       // context('Account Data Form - Correct Input', () => {
       //   it('accepts new firstname and enables save button', () => {
       //     accountPage.getFirstnameInput().clear();
