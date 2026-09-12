@@ -16,18 +16,18 @@ describe('Login Tests', () => {
 
   it('should show missing mail message', () => {
     loginPage.submit()
-    loginPage.getMailMessage().should('contain.text', "Bitte gib eine gültige E-Mail an.")
+    loginPage.getMailMessage().should('contain.text', "Bitte gib ein gültiges E-Mail Format an")
   })
 
   it('should show incorrect mail format message', () => {
     loginPage.getMailInput().type("Invalid Mail")
     loginPage.submit()
-    loginPage.getMailMessage().should('contain.text', "Bitte gib eine gültige E-Mail an.")
+    loginPage.getMailMessage().should('contain.text', "Bitte gib ein gültiges E-Mail Format an")
   })
 
   it('should show wrong credentials message', () => {
     loginPage.login("test@mail.de", "invalid password")
-    loginPage.getPasswortMessage().should('contain.text', "Anmeldedaten inkorrekt")
+    loginPage.getPasswortMessage().should('contain.text', "Anmeldedaten sind inkorrekt")
   })
 
   it('should log user in',() => {
