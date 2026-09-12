@@ -40,7 +40,7 @@ roles.forEach((role) => {
         });
       });
 
-      context.only('Validation Errors - Empty Fields', () => {
+      context('Validation Errors - Empty Fields', () => {
         const emptyFieldError: string = "Bitte angeben"
         it('shows validation errors for empty field firstname', () => {
           accountPage.getFirstnameInput().should('have.value', user.firstname);
@@ -69,33 +69,38 @@ roles.forEach((role) => {
         });
       })
 
-      // context('Validation Errors - Wrong Inputs', () => {
-      //   it('shows validation errors for field email upon non-unique mail', () => {
-      //     accountPage.getMailInput().should('have.value', user.mail);
-      //     accountPage.getMailInput().clear()
-      //     accountPage.getMailInput().type(users.chef.mail)
-      //     accountPage.getProfileSaveButton().click();
-      //     accountPage.getMailMessage()
-      //       .scrollIntoView()
-      //       .should('contain', 'Diese E-Mail-Adresse wird bereits verwendet');
-      //   });
-      //   it('shows error for invalid email format', () => {
-      //     accountPage.getMailInput().clear().type('this-is-not-an-email');
-      //     accountPage.getProfileSaveButton().click();
-      //     accountPage.getMailMessage().should('contain', 'Ungültige E-Mail-Adresse');
-      //   });
-      //   it('shows error for too long firstname', () => {
-      //     accountPage.getFirstnameInput().clear().type('This is more than 50 Characters, because we need to test this out.');
-      //     accountPage.getProfileSaveButton().click();
-      //     accountPage.getFirstnameMessage().should('contain', 'Maximale Länge beträgt 50 Charaktere');
-      //   });
-      //   it('shows error for too long lastname', () => {
-      //     accountPage.getLastnameInput().clear().type('This is more than 50 Characters, because we need to test this out.');
-      //     accountPage.getProfileSaveButton().click();
-      //     accountPage.getLastnameMessage().should('contain', 'Maximale Länge beträgt 50 Charaktere');
-      //   });
-      // })
-      //
+      context('Validation Errors - Wrong Inputs', () => {
+        const longText = "a".repeat(51);
+        const longError = "Bitte gib maximal 50 Zeichen an"
+
+        it('shows validation errors for field email upon non-unique mail', () => {
+          accountPage.getMailInput().clear()
+          accountPage.getMailInput().type(users.chef.mail)
+          accountPage.getProfileSaveButton().click();
+
+          accountPage.getMailMessage().should('contain', 'Diese E-Mail wird schon verwendet');
+        });
+
+        it('shows error for invalid email format', () => {
+          accountPage.getMailInput().clear().type('this-is-not-an-email');
+          accountPage.getProfileSaveButton().click();
+          accountPage.getMailMessage().should('contain', 'Bitte gib ein gültiges E-Mail Format an');
+        });
+
+        it('shows error for too long firstname', () => {
+          accountPage.getFirstnameInput().clear().type(longText);
+          accountPage.getProfileSaveButton().click();
+          accountPage.getFirstnameMessage().should('contain', longError);
+        });
+
+        it('shows error for too long lastname', () => {
+          accountPage.getLastnameInput().clear().type(longText);
+          accountPage.getProfileSaveButton().click();
+
+          accountPage.getLastnameMessage().should('contain', longError);
+        });
+      })
+
       // context('Account Data - Leading Whitespaces', () => {
       //   it('removes leading whitespaces - firstname', () => {
       //     accountPage.getFirstnameInput().should('have.value', user.firstname);
