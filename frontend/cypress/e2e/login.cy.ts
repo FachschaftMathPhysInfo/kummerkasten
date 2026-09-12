@@ -22,7 +22,7 @@ describe('Login Tests', () => {
   it('should show incorrect mail format message', () => {
     loginPage.getMailInput().type("Invalid Mail")
     loginPage.submit()
-    loginPage.getMailMessage().should('contain.text', "Bitte gib eine gültiges E-Mail Format an")
+    loginPage.getMailMessage().should('contain.text', "Bitte gib ein gültiges E-Mail Format an")
   })
 
   it('should show wrong credentials message', () => {
