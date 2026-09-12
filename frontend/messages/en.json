@@ -487,6 +487,7 @@
     "toasts": {
       "generalError": "An error occured. Try it again later or contact the admins.",
       "fetchError": "An error occured while loading data. Try it again later or contact the admins.",
+      "updateError": "An error occured while updating the data. Try it again later or contact the admins.",
       "loginAgainError": "An error occured. Please login again.",
       "updateSuccess": "Changes were saved successfuly",
       "createSuccess": "Entry created successfuly",

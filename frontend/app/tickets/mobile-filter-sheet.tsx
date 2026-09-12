@@ -43,7 +43,7 @@ export default function MobileFilterSheet() {
             <Button variant="outline" className="w-fit justify-between"
                     onClick={() => setShowFilters((prev) => !prev)}>
               {filtering.state.length > 0
-                ? tc("buttons.ticketSorting.nonEmpty", {length: filtering.state.length})
+                ? tc("buttons.stateSorting.nonEmpty", {length: filtering.state.length.toLocaleString()})
                 : tc("buttons.stateSorting.empty")}
             </Button>
           </div>
@@ -86,7 +86,7 @@ export default function MobileFilterSheet() {
               onClick={() => setShowLabelFilters((prev) => !prev)}
             >
               {filtering.labels.length > 0
-                ? tc("buttons.labelFiltering.nonEmpty", {length: filtering.labels.length})
+                ? tc("buttons.labelFiltering.nonEmpty", {length: filtering.labels.length.toLocaleString()})
                 : tc("buttons.labelFiltering.empty")}
             </Button>
           </div>
@@ -147,7 +147,7 @@ export default function MobileFilterSheet() {
                     }
                     data-cy="clear-labels"
                   >
-                    <Trash2 className="mr-2 text-destructive"/> {tc("buttons.resetFilters")}
+                    <Trash2 className="mr-2 text-destructive"/> {tc("buttons.resetFilter")}
                   </Button>
                 )}
               </div>

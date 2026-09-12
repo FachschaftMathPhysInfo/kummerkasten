@@ -36,7 +36,7 @@ export default function FilterBar({scrollable = false}: FilterBarProps) {
             data-cy="desktop-overview-button-status"
           >
             {filtering.state.length > 0
-              ? t("buttons.stateFilter.nonEmpty", {length: filtering.state.length})
+              ? t("buttons.stateFilter.nonEmpty", {length: filtering.state.length.toLocaleString()})
               : t("buttons.stateFilter.empty")}
           </Button>
         </PopoverTrigger>
@@ -87,7 +87,7 @@ export default function FilterBar({scrollable = false}: FilterBarProps) {
             )}
             data-cy="desktop-overview-button-label">
             {filtering.labels.length > 0
-              ? t("buttons.labelFilter.nonEmpty", {length: filtering.labels.length})
+              ? t("buttons.labelFilter.nonEmpty", {length: filtering.labels.length.toLocaleString()})
               : t("buttons.labelFilter.empty")}
           </Button>
         </PopoverTrigger>

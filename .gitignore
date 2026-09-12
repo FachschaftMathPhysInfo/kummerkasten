@@ -31,6 +31,7 @@
 # typescript
 /frontend/*.tsbuildinfo
 /frontend/next-env.d.ts
+/frontend/messages/de.d.json.ts
 
 # IDE Stuff
 .vscode/
