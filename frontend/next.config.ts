@@ -5,5 +5,10 @@ const nextConfig: NextConfig = {
   output: "standalone"
 };
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin({
+  experimental: {
+    createMessagesDeclaration: './messages/de.json'
+  }
+});
+
 export default withNextIntl(nextConfig);
