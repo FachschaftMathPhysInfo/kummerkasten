@@ -101,49 +101,62 @@ roles.forEach((role) => {
         });
       })
 
-      // context('Account Data - Leading Whitespaces', () => {
-      //   it('removes leading whitespaces - firstname', () => {
-      //     accountPage.getFirstnameInput().should('have.value', user.firstname);
-      //     accountPage.getFirstnameInput().clear()
-      //     accountPage.getFirstnameInput().type(' ' + user.firstname)
-      //     accountPage.getProfileSaveButton().click();
-      //     cy.reload();
-      //     accountPage.getFirstnameInput().should('have.value', user.firstname);
-      //   });
-      //
-      //   it('removes leading whitespaces - lastname', () => {
-      //     accountPage.getLastnameInput().should('have.value', user.lastname);
-      //     accountPage.getLastnameInput().clear()
-      //     accountPage.getLastnameInput().type(' ' + user.lastname)
-      //     accountPage.getProfileSaveButton().click();
-      //     cy.reload();
-      //     accountPage.getLastnameInput().should('have.value', user.lastname);
-      //   });
-      //
-      //   //leading whitespaces on mail do not need to be tested because it counts as invalid mail format
-      // })
-      //
-      // context('Account Data - Trailing Whitespaces', () => {
-      //   it('removes trailing whitespaces - firstname', () => {
-      //     accountPage.getFirstnameInput().should('have.value', user.firstname);
-      //     accountPage.getFirstnameInput().clear()
-      //     accountPage.getFirstnameInput().type(user.firstname + ' ')
-      //     accountPage.getProfileSaveButton().click();
-      //     cy.reload();
-      //     accountPage.getFirstnameInput().should('have.value', user.firstname);
-      //   });
-      //
-      //   it('removes trailing whitespaces - lastname', () => {
-      //     accountPage.getLastnameInput().should('have.value', user.lastname);
-      //     accountPage.getLastnameInput().clear()
-      //     accountPage.getLastnameInput().type(user.lastname + ' ')
-      //     accountPage.getProfileSaveButton().click();
-      //     cy.reload();
-      //     accountPage.getLastnameInput().should('have.value', user.lastname);
-      //   });
-      //   //trailing whitespaces on mail do not need to be tested because it counts as invalid mail format
-      // })
-      //
+      context('Account Data - Whitespaces', () => {
+        it('whitespaces - firstname', () => {
+          cy.intercept('POST', '/api', (req) => {
+            if (req.body.operationName === 'updateUserSettings') {
+              req.alias = "updateUserMutation";
+
+              req.reply({
+                statusCode: 200,
+                body: {
+                  data: {
+                    updateUser: {
+                      id: ''
+                    }
+                  }
+                }
+              });
+            }
+          });
+
+          accountPage.getFirstnameInput().clear();
+          accountPage.getFirstnameInput().type(' Name ');
+          accountPage.getProfileSaveButton().click();
+
+          cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.firstname')
+              .should('eq', 'Name');
+        });
+
+        it('whitespaces - lastname', () => {
+          cy.intercept('POST', '/api', (req) => {
+            if (req.body.operationName === 'updateUserSettings') {
+              req.alias = "updateUserMutation";
+
+              req.reply({
+                statusCode: 200,
+                body: {
+                  data: {
+                    updateUser: {
+                      id: ''
+                    }
+                  }
+                }
+              });
+            }
+          });
+
+          accountPage.getLastnameInput().clear();
+          accountPage.getLastnameInput().type(' Name ');
+          accountPage.getProfileSaveButton().click();
+
+          cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.lastname')
+              .should('eq', 'Name');
+        });
+      })
+
       // context('Breaking Things - Account Data', () => {
       //   it('disables save button during form submission', () => {
       //     accountPage.getFirstnameInput().clear().type('Test');
