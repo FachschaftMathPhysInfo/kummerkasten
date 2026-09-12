@@ -160,6 +160,84 @@ roles.forEach((role) => {
         });
       })
 
+      context('Account Data Form - Correct Input', () => {
+        const successMessage = "Änderung erfolgreich gespeichert";
+
+        beforeEach(() => {
+          cy.intercept('POST', '/api', (req) => {
+            if (req.body.operationName !== 'updateUserSettings') return;
+
+            req.alias = "updateUserMutation";
+            req.reply({
+              statusCode: 200,
+              body: {
+                data: {
+                  updateUser: {
+                    id: ''
+                  }
+                }
+              }
+            })
+          })
+        })
+
+        it('sends valid firstname changes', () => {
+          const newFirstName = "Alfred";
+
+          accountPage.getFirstnameInput().clear();
+          accountPage.getFirstnameInput().type(newFirstName);
+          accountPage.getProfileSaveButton().click();
+
+          cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.firstname')
+              .should('eq', newFirstName);
+
+          cy.contains(successMessage).should('be.visible');
+          accountPage.getFirstnameInput().should('have.value', newFirstName);
+
+        });
+
+        it('sends valid lastname changes', () => {
+          const newLastName = "Barnes";
+
+          accountPage.getLastnameInput().clear();
+          accountPage.getLastnameInput().type(newLastName);
+          accountPage.getProfileSaveButton().click();
+
+          cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.lastname')
+              .should('eq', newLastName);
+
+          cy.contains(successMessage).should('be.visible');
+          accountPage.getLastnameInput().should('have.value', newLastName);
+        });
+
+        it('opens the password confirmation on valid new email', () => {
+          const newEmail = 'alfred.barnes@kummer.kasten';
+
+          accountPage.getMailInput().clear();
+          accountPage.getMailInput().type(newEmail);
+          accountPage.getProfileSaveButton().click();
+
+          accountPage.getEmailChangePasswordConfirmationInput().should('be.visible');
+        });
+
+        it.only('changes email if password confirmation succeeds', () => {
+          const newEmail = 'alfred.barnes@kummer.kasten';
+
+          accountPage.getMailInput().clear();
+          accountPage.getMailInput().type(newEmail);
+          accountPage.getProfileSaveButton().click();
+
+          accountPage.getEmailChangePasswordConfirmationInput().type(user.password);
+          accountPage.getEmailChangePasswordConfirmationSaveButton().click()
+
+          cy.wait('@updateUserMutation')
+            .its('request.body.variables.user.mail')
+            .should('eq', newEmail);
+        })
+      })
+
       context('Password Form - Validation Errors', () => {
         it('shows error if old password is empty', () => {
           accountPage.getNewPasswordInput().type('StrongPass1!');
@@ -266,37 +344,6 @@ roles.forEach((role) => {
           cy.url().should('contain', '/login');
         });
       })
-
-      // context('Account Data Form - Correct Input', () => {
-      //   it('accepts new firstname and enables save button', () => {
-      //     accountPage.getFirstnameInput().clear();
-      //     accountPage.getFirstnameInput().type('Alfred');
-      //     accountPage.getProfileSaveButton().click();
-      //     cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
-      //     accountPage.getFirstnameInput().should('have.value', 'Alfred');
-      //     cy.reload();
-      //     accountPage.getFirstnameInput().should('have.value', 'Alfred');
-      //   });
-      //   it('accepts new lastname and enables save button', () => {
-      //     accountPage.getLastnameInput().clear();
-      //     accountPage.getLastnameInput().type('Barnes');
-      //     accountPage.getProfileSaveButton().click();
-      //     cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
-      //     accountPage.getLastnameInput().should('have.value', 'Barnes');
-      //     cy.reload();
-      //     accountPage.getLastnameInput().should('have.value', 'Barnes');
-      //   });
-      //   //FIXME: #298 (for user)
-      //   it('accepts new mail and enables save button', () => {
-      //     accountPage.getMailInput().clear();
-      //     accountPage.getMailInput().type('alfred.barnes@kummer.kasten');
-      //     accountPage.getProfileSaveButton().click();
-      //     cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
-      //     loginPage.login('alfred.barnes@kummer.kasten', currentCorrectPassword);
-      //     sidebar.getSettingsButton().click();
-      //     currentCorrectMail = 'alfred.barnes@kummer.kasten';
-      //   });
-      // })
     })
   })
 });

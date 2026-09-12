@@ -54,6 +54,22 @@ export function getPasswordSaveButton() {
     return cy.get('[data-cy="input-settings-save"]');
 }
 
+export function getEmailChangePasswordConfirmationInput() {
+    return cy.get('[data-cy="input-password-confirmation"]');
+}
+
+export function getEmailChangePasswordConfirmationMessage() {
+    return cy.get('[data-cy="input-password-confirmation-message"]');
+}
+
+export function getEmailChangePasswordConfirmationSaveButton() {
+    return cy.get('[data-cy="input-password-confirmation-save"]');
+}
+
+export function getEmailChangePasswordConfirmationCancelButton() {
+    return cy.get('[data-cy="input-password-confirmation-cancel"]');
+}
+
 
 
 
