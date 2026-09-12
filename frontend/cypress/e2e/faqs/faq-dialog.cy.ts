@@ -58,7 +58,7 @@ describe('FAQ Manipulation Tests', () => {
           });
 
           it('does not allow too long answers', () => {
-            const MAX_ANSWER_LENGTH = 700
+            const MAX_ANSWER_LENGTH = 500
             const longString = "a".repeat(MAX_ANSWER_LENGTH + 1)
             dialog.getAnswerInput().type(longString, {delay: 0})
             dialog.getAnswerInput().invoke('text').should('have.length', MAX_ANSWER_LENGTH)
