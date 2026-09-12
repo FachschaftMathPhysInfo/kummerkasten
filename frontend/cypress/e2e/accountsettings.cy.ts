@@ -1,309 +1,346 @@
 import users from "#/fixtures/users.json"
 import * as accountPage from "#/pages/accountsettings.po"
-import * as loginPage from "#/pages/login.po"
-import * as sidebar from "#/pages/sidebar.po"
 import {UserRole} from "@/lib/graph/generated/graphql";
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]
 
 roles.forEach((role) => {
-  let user;
-  let currentCorrectPassword: string;
-  let currentCorrectMail: string;
-  if (role === UserRole.Admin) {
-    user = users.cypress
-    currentCorrectMail = users.cypress.mail;
-    currentCorrectPassword = users.cypress.password;
-  } else {
-    user = users.fsles1
-    currentCorrectMail = users.fsles1.mail;
-    currentCorrectPassword = users.fsles1.password;
-  }
+  const user = role === UserRole.Admin ? users.cypress : users.fsles1;
+  const emptyFieldError: string = "Bitte angeben"
+  const invalidEmailError: string = "Bitte gib ein gültiges E-Mail Format an"
+
   context(`As ${role}`, () => {
+
+
     beforeEach(() => {
-      cy.login(currentCorrectMail, currentCorrectPassword);
+      cy.login(user.mail, user.password);
       cy.visit("/account");
     });
+
     describe('Profile Settings Page', () => {
-      context('User Data and Form Format', () => {
-        it('should load existing user data into the form fields', () => {
-          accountPage.getFirstnameInput().should('have.value', user.firstname);
-          accountPage.getLastnameInput().should('have.value', user.lastname);
-          accountPage.getMailInput().should('have.value', user.mail);
-        });
-        it('should load settings page with all fields', () => {
-          accountPage.getFirstnameInput().should('exist');
-          accountPage.getLastnameInput().should('exist')
-          accountPage.getMailInput().should('exist')
-          accountPage.getProfileSaveButton().should('be.visible');
-          accountPage.getCurrentPasswordInput().should('exist')
-          accountPage.getNewPasswordInput().should('exist')
-          accountPage.getConfirmPasswordInput().should('exist')
-          accountPage.getPasswordSaveButton().should('be.visible');
-        });
-        it('profile form - disables save button when form is untouched', () => {
-          accountPage.getProfileSaveButton().should('be.disabled');
-        });
-        it('password form - disables save button when form is untouched', () => {
-          accountPage.getPasswordSaveButton().should('be.disabled');
-        });
-
-      });
-
-      context('Validation Errors - Empty Fields', () => {
-        it('shows validation errors for empty field firstname', () => {
-          accountPage.getFirstnameInput().should('have.value', user.firstname);
-          accountPage.getFirstnameInput().clear()
-          accountPage.getProfileSaveButton().click();
-          accountPage.getFirstnameMessage()
-            .scrollIntoView()
-            .should('contain', 'Vorname ist erforderlich');
-        });
-        it('shows validation errors for empty field lastname', () => {
-          accountPage.getLastnameInput().should('have.value', user.lastname);
-          accountPage.getLastnameInput().clear()
-          accountPage.getProfileSaveButton().click();
-          accountPage.getLastnameMessage()
-            .scrollIntoView()
-            .should('contain', 'Nachname ist erforderlich');
-        });
-        it('shows validation errors for empty field email', () => {
-          accountPage.getMailInput().should('have.value', user.mail);
-          accountPage.getMailInput().clear()
-          accountPage.getProfileSaveButton().click();
-          accountPage.getMailMessage()
-            .scrollIntoView()
-            .should('contain', 'Ungültige E-Mail-Adresse');
-        });
-      })
-
-      context('Validation Errors - Wrong Inputs', () => {
-        it('shows validation errors for field email upon non-unique mail', () => {
-          accountPage.getMailInput().should('have.value', user.mail);
-          accountPage.getMailInput().clear()
-          accountPage.getMailInput().type(users.chef.mail)
-          accountPage.getProfileSaveButton().click();
-          accountPage.getMailMessage()
-            .scrollIntoView()
-            .should('contain', 'Diese E-Mail-Adresse wird bereits verwendet');
-        });
-        it('shows error for invalid email format', () => {
-          accountPage.getMailInput().clear().type('this-is-not-an-email');
-          accountPage.getProfileSaveButton().click();
-          accountPage.getMailMessage().should('contain', 'Ungültige E-Mail-Adresse');
-        });
-        it('shows error for too long firstname', () => {
-          accountPage.getFirstnameInput().clear().type('This is more than 50 Characters, because we need to test this out.');
-          accountPage.getProfileSaveButton().click();
-          accountPage.getFirstnameMessage().should('contain', 'Maximale Länge beträgt 50 Charaktere');
-        });
-        it('shows error for too long lastname', () => {
-          accountPage.getLastnameInput().clear().type('This is more than 50 Characters, because we need to test this out.');
-          accountPage.getProfileSaveButton().click();
-          accountPage.getLastnameMessage().should('contain', 'Maximale Länge beträgt 50 Charaktere');
-        });
-      })
-
-      context('Account Data - Leading Whitespaces', () => {
-        it('removes leading whitespaces - firstname', () => {
-          accountPage.getFirstnameInput().should('have.value', user.firstname);
-          accountPage.getFirstnameInput().clear()
-          accountPage.getFirstnameInput().type(' ' + user.firstname)
-          accountPage.getProfileSaveButton().click();
-          cy.reload();
-          accountPage.getFirstnameInput().should('have.value', user.firstname);
-        });
-
-        it('removes leading whitespaces - lastname', () => {
-          accountPage.getLastnameInput().should('have.value', user.lastname);
-          accountPage.getLastnameInput().clear()
-          accountPage.getLastnameInput().type(' ' + user.lastname)
-          accountPage.getProfileSaveButton().click();
-          cy.reload();
-          accountPage.getLastnameInput().should('have.value', user.lastname);
-        });
-
-        //leading whitespaces on mail do not need to be tested because it counts as invalid mail format
-      })
-
-      context('Account Data - Trailing Whitespaces', () => {
-        it('removes trailing whitespaces - firstname', () => {
-          accountPage.getFirstnameInput().should('have.value', user.firstname);
-          accountPage.getFirstnameInput().clear()
-          accountPage.getFirstnameInput().type(user.firstname + ' ')
-          accountPage.getProfileSaveButton().click();
-          cy.reload();
-          accountPage.getFirstnameInput().should('have.value', user.firstname);
-        });
-
-        it('removes trailing whitespaces - lastname', () => {
-          accountPage.getLastnameInput().should('have.value', user.lastname);
-          accountPage.getLastnameInput().clear()
-          accountPage.getLastnameInput().type(user.lastname + ' ')
-          accountPage.getProfileSaveButton().click();
-          cy.reload();
-          accountPage.getLastnameInput().should('have.value', user.lastname);
-        });
-        //trailing whitespaces on mail do not need to be tested because it counts as invalid mail format
-      })
-
-      context('Breaking Things - Account Data', () => {
-        it('disables save button during form submission', () => {
-          accountPage.getFirstnameInput().clear().type('Test');
-          accountPage.getProfileSaveButton().click();
-          accountPage.getProfileSaveButton().should('be.disabled');
-        });
-      })
-
-      context('Password Form - Input Errors', () => {
-        it('shows error if old password is empty', () => {
-          accountPage.getNewPasswordInput().type('StrongPass1!');
-          accountPage.getConfirmPasswordInput().type('StrongPass1!');
-          accountPage.getPasswordSaveButton().click();
-
-          accountPage.getCurrentPasswordMessage().should('contain', 'Bitte gib dein aktuelles Passwort ein');
-        });
-
-        it('shows error if new password is less than 8 characters', () => {
-          accountPage.getCurrentPasswordInput().type(user.password);
-          accountPage.getNewPasswordInput().type('Ab1!');
-          accountPage.getConfirmPasswordInput().type('Ab1!');
-          accountPage.getPasswordSaveButton().click();
-
-          accountPage.getNewPasswordMessage().should('contain', 'Mindestens 8 Zeichen');
-        });
-
-        it('shows error if new password has no uppercase letter', () => {
-          accountPage.getCurrentPasswordInput().type(user.password);
-          accountPage.getNewPasswordInput().type('strongpass1!');
-          accountPage.getConfirmPasswordInput().type('strongpass1!');
-          accountPage.getPasswordSaveButton().click();
-
-          accountPage.getNewPasswordMessage().should('contain', 'Mindestens ein Großbuchstabe');
-        });
-
-        it('shows error if new password has no number', () => {
-          accountPage.getCurrentPasswordInput().type(user.password);
-          accountPage.getNewPasswordInput().type('StrongPass!');
-          accountPage.getConfirmPasswordInput().type('StrongPass!');
-          accountPage.getPasswordSaveButton().click();
-
-          accountPage.getNewPasswordMessage().should('contain', 'Mindestens eine Zahl');
-        });
-
-        it('shows error if new password has no special character', () => {
-          accountPage.getCurrentPasswordInput().type(user.password);
-          accountPage.getNewPasswordInput().type('StrongPass1');
-          accountPage.getConfirmPasswordInput().type('StrongPass1');
-          accountPage.getPasswordSaveButton().click();
-
-          accountPage.getNewPasswordMessage().should('contain', 'Mindestens ein Sonderzeichen');
-        });
-
-        it('shows error if confirm password does not match', () => {
-          accountPage.getCurrentPasswordInput().type(user.password);
-          accountPage.getNewPasswordInput().type('StrongPass1!');
-          accountPage.getConfirmPasswordInput().type('WrongPass1!');
-          accountPage.getPasswordSaveButton().click();
-          accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein');
-        });
-
-        it('shows error when new password is same as old password', () => {
-          const originalPassword = user.password;
-          const newPassword = 'StrongPass1!';
-          accountPage.getCurrentPasswordInput().type(originalPassword);
-          accountPage.getNewPasswordInput().type(newPassword);
-          accountPage.getConfirmPasswordInput().type(newPassword);
-          accountPage.getPasswordSaveButton().click();
-          cy.contains("Passwort aktualisiert", {timeout: 10000}).should('be.visible');
-          loginPage.login(user.mail, newPassword);
-          sidebar.getSettingsButton().click();
-          accountPage.getCurrentPasswordInput().type(newPassword);
-          accountPage.getNewPasswordInput().type(newPassword);
-          accountPage.getConfirmPasswordInput().type(newPassword);
-          accountPage.getPasswordSaveButton().click();
-          accountPage.getNewPasswordMessage().should('contain', 'Neues Passwort darf nicht dem alten entsprechen');
-          currentCorrectPassword = newPassword;
-        });
-      });
-
-      context('Password Form - Wrong Passwords', () => {
-        //FIXME: #312
-        it('shows an error when the current password is incorrect', () => {
-          const invalidPassword = 'WrongPassword123!';
-          accountPage.getCurrentPasswordInput().type(invalidPassword);
-          accountPage.getNewPasswordInput().type('ValidNewPass1!');
-          accountPage.getConfirmPasswordInput().type('ValidNewPass1!');
-          accountPage.getPasswordSaveButton().click();
-          accountPage.getCurrentPasswordMessage().should('contain', 'Falsches aktuelles Passwort')
-        });
-
-        it('shows an error when the new and repeated passwords do not match', () => {
-          accountPage.getCurrentPasswordInput().type(user.password);
-          accountPage.getNewPasswordInput().type('ValidNewPass1!');
-          accountPage.getConfirmPasswordInput().type('DifferentPass1!');
-          accountPage.getPasswordSaveButton().click();
-          accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein');
-        });
-      })
-
-      context('Password Form - Correct Input', () => {
-        it('accepts valid password and enables save button', () => {
-          accountPage.getCurrentPasswordInput().type('StrongPass1!');
-          accountPage.getNewPasswordInput().type('StrongPass123!');
-          accountPage.getConfirmPasswordInput().type('StrongPass123!');
-          accountPage.getPasswordSaveButton().should('not.be.disabled');
-        });
-      })
-
-      context('Account Data Form - Correct Input', () => {
-        it('accepts new firstname and enables save button', () => {
-          accountPage.getFirstnameInput().clear();
-          accountPage.getFirstnameInput().type('Alfred');
-          accountPage.getProfileSaveButton().click();
-          cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
-          accountPage.getFirstnameInput().should('have.value', 'Alfred');
-          cy.reload();
-          accountPage.getFirstnameInput().should('have.value', 'Alfred');
-        });
-        it('accepts new lastname and enables save button', () => {
-          accountPage.getLastnameInput().clear();
-          accountPage.getLastnameInput().type('Barnes');
-          accountPage.getProfileSaveButton().click();
-          cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
-          accountPage.getLastnameInput().should('have.value', 'Barnes');
-          cy.reload();
-          accountPage.getLastnameInput().should('have.value', 'Barnes');
-        });
-        //FIXME: #298 (for user)
-        it('accepts new mail and enables save button', () => {
-          accountPage.getMailInput().clear();
-          accountPage.getMailInput().type('alfred.barnes@kummer.kasten');
-          accountPage.getProfileSaveButton().click();
-          cy.contains("Dein Account wurde erfolgreich aktualisiert").should('be.visible');
-          loginPage.login('alfred.barnes@kummer.kasten', currentCorrectPassword);
-          sidebar.getSettingsButton().click();
-          currentCorrectMail = 'alfred.barnes@kummer.kasten';
-        });
-      })
-
-      after(() => {
-        cy.fixture("users").then(() => {
-          cy.visit("/account");
-          accountPage.getFirstnameInput().clear();
-          accountPage.getLastnameInput().clear();
-          accountPage.getMailInput().clear();
-          cy.getUserIdByMail(currentCorrectMail).then((uuid) => {
-            cy.updateUserProfile(uuid, {
-              firstname: user.firstname,
-              lastname: user.lastname,
-              mail: user.mail,
-            });
-            cy.updateUserPassword(currentCorrectPassword, user.password);
+      context('Account Data', () => {
+        context('User Data and Form Format', () => {
+          it('should load existing user data into the form fields', () => {
+            accountPage.getFirstnameInput().should('have.value', user.firstname);
+            accountPage.getLastnameInput().should('have.value', user.lastname);
+            accountPage.getMailInput().should('have.value', user.mail);
           });
-          cy.reload();
+
+          it('should load settings page with all fields', () => {
+            accountPage.getFirstnameInput().should('exist');
+            accountPage.getLastnameInput().should('exist')
+            accountPage.getMailInput().should('exist')
+            accountPage.getProfileSaveButton().should('be.visible');
+            accountPage.getCurrentPasswordInput().should('exist')
+            accountPage.getNewPasswordInput().should('exist')
+            accountPage.getConfirmPasswordInput().should('exist')
+            accountPage.getPasswordSaveButton().should('be.visible');
+          });
+
+          it('profile form - disables save button when form is untouched', () => {
+            accountPage.getProfileSaveButton().should('be.disabled');
+          });
+
+          it('password form - disables save button when form is untouched', () => {
+            accountPage.getPasswordSaveButton().should('be.disabled');
+          });
         });
-      })
-    })
-  })
+
+        context('Empty Fields', () => {
+          it('shows validation errors for empty field firstname', () => {
+            accountPage.getFirstnameInput().should('have.value', user.firstname);
+            accountPage.getFirstnameInput().clear()
+            accountPage.getProfileSaveButton().click();
+
+            accountPage.getFirstnameMessage().should('contain', emptyFieldError);
+          });
+
+          it('shows validation errors for empty field lastname', () => {
+            accountPage.getLastnameInput().should('have.value', user.lastname);
+            accountPage.getLastnameInput().clear()
+            accountPage.getProfileSaveButton().click();
+            accountPage.getLastnameMessage()
+              .scrollIntoView()
+              .should('contain', emptyFieldError);
+          });
+
+          it('shows validation errors for empty field email', () => {
+            accountPage.getMailInput().should('have.value', user.mail);
+            accountPage.getMailInput().clear()
+            accountPage.getProfileSaveButton().click();
+            accountPage.getMailMessage()
+              .scrollIntoView()
+              .should('contain', invalidEmailError);
+          });
+        });
+
+        context('Faulty Inputs', () => {
+          const longText = "a".repeat(51);
+          const longError = "Bitte gib maximal 50 Zeichen an"
+
+          it('shows validation errors for field email upon non-unique mail', () => {
+            accountPage.getMailInput().clear()
+            accountPage.getMailInput().type(users.chef.mail)
+            accountPage.getProfileSaveButton().click();
+
+            accountPage.getMailMessage().should('contain', 'Diese E-Mail wird schon verwendet');
+          });
+
+          it('shows error for invalid email format', () => {
+            accountPage.getMailInput().clear().type('this-is-not-an-email');
+            accountPage.getProfileSaveButton().click();
+            accountPage.getMailMessage().should('contain', invalidEmailError);
+          });
+
+          it('shows error for too long firstname', () => {
+            accountPage.getFirstnameInput().clear().type(longText);
+            accountPage.getProfileSaveButton().click();
+            accountPage.getFirstnameMessage().should('contain', longError);
+          });
+
+          it('shows error for too long lastname', () => {
+            accountPage.getLastnameInput().clear().type(longText);
+            accountPage.getProfileSaveButton().click();
+
+            accountPage.getLastnameMessage().should('contain', longError);
+          });
+        });
+
+        context('Whitespaces', () => {
+          beforeEach(() => {
+            cy.intercept('POST', '/api', (req) => {
+              if (req.body.operationName !== 'updateUserSettings') return;
+
+              req.alias = "updateUserMutation";
+
+              req.reply({
+                statusCode: 200,
+                body: {
+                  data: {
+                    updateUser: {
+                      id: ''
+                    }
+                  }
+                }
+              });
+
+            });
+          })
+
+          it('whitespaces - firstname', () => {
+            accountPage.getFirstnameInput().clear();
+            accountPage.getFirstnameInput().type(' Name ');
+            accountPage.getProfileSaveButton().click();
+
+            cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.firstname')
+              .should('eq', 'Name');
+          });
+
+          it('whitespaces - lastname', () => {
+            accountPage.getLastnameInput().clear();
+            accountPage.getLastnameInput().type(' Name ');
+            accountPage.getProfileSaveButton().click();
+
+            cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.lastname')
+              .should('eq', 'Name');
+          });
+        });
+
+        context('Valid Inputs', () => {
+          const successMessage = "Änderung erfolgreich gespeichert";
+
+          beforeEach(() => {
+            cy.intercept('POST', '/api', (req) => {
+              if (req.body.operationName !== 'updateUserSettings') return;
+
+              req.alias = "updateUserMutation";
+              req.reply({
+                statusCode: 200,
+                body: {
+                  data: {
+                    updateUser: {
+                      id: ''
+                    }
+                  }
+                }
+              })
+            })
+          })
+
+          it('sends valid firstname changes', () => {
+            const newFirstName = "Alfred";
+
+            accountPage.getFirstnameInput().clear();
+            accountPage.getFirstnameInput().type(newFirstName);
+            accountPage.getProfileSaveButton().click();
+
+            cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.firstname')
+              .should('eq', newFirstName);
+
+            cy.contains(successMessage).should('be.visible');
+            accountPage.getFirstnameInput().should('have.value', newFirstName);
+
+          });
+
+          it('sends valid lastname changes', () => {
+            const newLastName = "Barnes";
+
+            accountPage.getLastnameInput().clear();
+            accountPage.getLastnameInput().type(newLastName);
+            accountPage.getProfileSaveButton().click();
+
+            cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.lastname')
+              .should('eq', newLastName);
+
+            cy.contains(successMessage).should('be.visible');
+            accountPage.getLastnameInput().should('have.value', newLastName);
+          });
+
+          it('opens the password confirmation on valid new email', () => {
+            const newEmail = 'alfred.barnes@kummer.kasten';
+
+            accountPage.getMailInput().clear();
+            accountPage.getMailInput().type(newEmail);
+            accountPage.getProfileSaveButton().click();
+
+            accountPage.getEmailChangePasswordConfirmationInput().should('be.visible');
+          });
+
+          it('changes email if password confirmation succeeds', () => {
+            const newEmail = 'alfred.barnes@kummer.kasten';
+
+            accountPage.getMailInput().clear();
+            accountPage.getMailInput().type(newEmail);
+            accountPage.getProfileSaveButton().click();
+
+            accountPage.getEmailChangePasswordConfirmationInput().type(user.password);
+            accountPage.getEmailChangePasswordConfirmationSaveButton().click()
+
+            cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.mail')
+              .should('eq', newEmail);
+          })
+        });
+      });
+
+      context('Password Data', () => {
+        context('Validation Errors', () => {
+          it('shows error if old password is empty', () => {
+            accountPage.getNewPasswordInput().type('StrongPass1!');
+            accountPage.getConfirmPasswordInput().type('StrongPass1!');
+            accountPage.getPasswordSaveButton().click();
+
+            accountPage.getCurrentPasswordMessage().should('contain', emptyFieldError);
+          });
+
+          it('shows error if new password is less than 8 characters', () => {
+            const shortPassword = "Ab1!";
+
+            accountPage.getCurrentPasswordInput().type(user.password);
+            accountPage.getNewPasswordInput().type(shortPassword);
+            accountPage.getConfirmPasswordInput().type(shortPassword);
+            accountPage.getPasswordSaveButton().click();
+
+            accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens 8 Zeichen an');
+          });
+
+          it('shows error if new password has no uppercase letter', () => {
+            const lowercasePassword = "strongpass1!";
+
+            accountPage.getCurrentPasswordInput().type(user.password);
+            accountPage.getNewPasswordInput().type(lowercasePassword);
+            accountPage.getConfirmPasswordInput().type(lowercasePassword);
+            accountPage.getPasswordSaveButton().click();
+
+            accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens einen Großbuchstaben an');
+          });
+
+          it('shows error if new password has no number', () => {
+            const noNumberPassword = 'StrongPass!'
+            accountPage.getCurrentPasswordInput().type(user.password);
+            accountPage.getNewPasswordInput().type(noNumberPassword);
+            accountPage.getConfirmPasswordInput().type(noNumberPassword);
+            accountPage.getPasswordSaveButton().click();
+
+            accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens eine Zahl an');
+          });
+
+          it('shows error if new password has no special character', () => {
+            const noSymbolPassword = 'StrongPass1';
+
+            accountPage.getCurrentPasswordInput().type(user.password);
+            accountPage.getNewPasswordInput().type(noSymbolPassword);
+            accountPage.getConfirmPasswordInput().type(noSymbolPassword);
+            accountPage.getPasswordSaveButton().click();
+
+            accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens ein Sonderzeichen an');
+          });
+
+          it('shows error if confirm password does not match', () => {
+            accountPage.getCurrentPasswordInput().type(user.password);
+            accountPage.getNewPasswordInput().type('StrongPass1!');
+            accountPage.getConfirmPasswordInput().type('WrongPass1!');
+            accountPage.getPasswordSaveButton().click();
+            accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein');
+          });
+
+          it('shows error when new password is same as old password', () => {
+            accountPage.getCurrentPasswordInput().type(user.password);
+            accountPage.getNewPasswordInput().type(user.password);
+            accountPage.getConfirmPasswordInput().type(user.password);
+            accountPage.getPasswordSaveButton().click();
+            accountPage.getNewPasswordMessage().should('contain', 'Neues Passwort darf nicht dem alten entsprechen');
+          });
+
+          it('shows an error when the current password is incorrect', () => {
+            const invalidPassword = 'WrongPassword123!';
+            const validPassword = 'ValidPass1!'
+
+            accountPage.getCurrentPasswordInput().type(invalidPassword);
+            accountPage.getNewPasswordInput().type(validPassword);
+            accountPage.getConfirmPasswordInput().type(validPassword);
+            accountPage.getPasswordSaveButton().click();
+            accountPage.getCurrentPasswordMessage().should('contain', 'Passwort inkorrekt')
+          });
+        });
+
+        context('Valid Input', () => {
+          it('accepts valid password and enables save button', () => {
+            cy.intercept('POST', '/api', (req) => {
+              if (req.body.operationName !== "updateUser") return;
+
+              req.alias = 'updateUserMutation';
+
+              req.reply({
+                statusCode: 200,
+                body: {
+                  data: {
+                    updateUser: {
+                      id: ''
+                    }
+                  }
+                }
+              });
+            })
+
+            const newPassword = 'StrongPass123!';
+            accountPage.getCurrentPasswordInput().type(user.password);
+            accountPage.getNewPasswordInput().type(newPassword);
+            accountPage.getConfirmPasswordInput().type(newPassword);
+            accountPage.getPasswordSaveButton().click();
+
+            cy.wait('@updateUserMutation')
+              .its('request.body.variables.user.password')
+              .should('eq', newPassword);
+
+            cy.url().should('contain', '/login');
+          });
+        });
+      });
+    });
+  });
 });

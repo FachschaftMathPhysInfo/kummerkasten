@@ -52,6 +52,7 @@ export default function PasswordDialog(props: PasswordDialogProps) {
             {t("description")}
           </p>
           <Input
+            data-cy={'input-password-confirmation'}
             type="password"
             placeholder={tc("fields.password.placeholder")}
             value={password}
@@ -59,14 +60,22 @@ export default function PasswordDialog(props: PasswordDialogProps) {
             className={cn(!!error && 'border-destructive')}
           />
           {!!error && (
-            <p className={'text-destructive text-sm'}>{error}</p>
+            <p data-cy={'input-password-confirmation-message'} className={'text-destructive text-sm'}>{error}</p>
           )}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => props.closeDialogAction()}>
+          <Button
+            data-cy={'input-password-confirmation-cancel'}
+            variant="outline"
+            onClick={() => props.closeDialogAction()}
+          >
             {tc("buttons.cancel")}
           </Button>
-          <Button variant={'destructive'} onClick={onSubmit} disabled={!password}>
+          <Button
+            data-cy={'input-password-confirmation-save'}
+            variant={'destructive'}
+            onClick={onSubmit} disabled={!password}
+          >
             {tc("buttons.confirm")}
           </Button>
         </DialogFooter>

@@ -300,7 +300,7 @@ func seedTestUsers(ctx context.Context, db *bun.DB) error {
 			Mail:         "fsles1@kummerkasten.local",
 			Firstname:    "Fachschaft",
 			Lastname:     "Eins",
-			Password:     "fachschaft",
+			Password:     "Fachschaft123!",
 			Role:         model.UserRoleUser,
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
