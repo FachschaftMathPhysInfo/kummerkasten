@@ -8,10 +8,12 @@ roles.forEach((role) => {
   const user = role === UserRole.Admin ? users.cypress : users.fsles1;
 
   context(`As ${role}`, () => {
+
     beforeEach(() => {
       cy.login(user.mail, user.password);
       cy.visit("/account");
     });
+
     describe('Profile Settings Page', () => {
       context('User Data and Form Format', () => {
         it('should load existing user data into the form fields', () => {
@@ -40,8 +42,9 @@ roles.forEach((role) => {
         });
       });
 
-      context('Validation Errors - Empty Fields', () => {
+      context('Account Data - Empty Fields', () => {
         const emptyFieldError: string = "Bitte angeben"
+
         it('shows validation errors for empty field firstname', () => {
           accountPage.getFirstnameInput().should('have.value', user.firstname);
           accountPage.getFirstnameInput().clear()
@@ -69,7 +72,7 @@ roles.forEach((role) => {
         });
       })
 
-      context('Validation Errors - Wrong Inputs', () => {
+      context('Account Data - Faulty Inputs', () => {
         const longText = "a".repeat(51);
         const longError = "Bitte gib maximal 50 Zeichen an"
 
@@ -157,106 +160,79 @@ roles.forEach((role) => {
         });
       })
 
-      // context('Breaking Things - Account Data', () => {
-      //   it('disables save button during form submission', () => {
-      //     accountPage.getFirstnameInput().clear().type('Test');
-      //     accountPage.getProfileSaveButton().click();
-      //     accountPage.getProfileSaveButton().should('be.disabled');
-      //   });
-      // })
-      //
-      // context('Password Form - Input Errors', () => {
-      //   it('shows error if old password is empty', () => {
-      //     accountPage.getNewPasswordInput().type('StrongPass1!');
-      //     accountPage.getConfirmPasswordInput().type('StrongPass1!');
-      //     accountPage.getPasswordSaveButton().click();
-      //
-      //     accountPage.getCurrentPasswordMessage().should('contain', 'Bitte gib dein aktuelles Passwort ein');
-      //   });
-      //
-      //   it('shows error if new password is less than 8 characters', () => {
-      //     accountPage.getCurrentPasswordInput().type(user.password);
-      //     accountPage.getNewPasswordInput().type('Ab1!');
-      //     accountPage.getConfirmPasswordInput().type('Ab1!');
-      //     accountPage.getPasswordSaveButton().click();
-      //
-      //     accountPage.getNewPasswordMessage().should('contain', 'Mindestens 8 Zeichen');
-      //   });
-      //
-      //   it('shows error if new password has no uppercase letter', () => {
-      //     accountPage.getCurrentPasswordInput().type(user.password);
-      //     accountPage.getNewPasswordInput().type('strongpass1!');
-      //     accountPage.getConfirmPasswordInput().type('strongpass1!');
-      //     accountPage.getPasswordSaveButton().click();
-      //
-      //     accountPage.getNewPasswordMessage().should('contain', 'Mindestens ein Großbuchstabe');
-      //   });
-      //
-      //   it('shows error if new password has no number', () => {
-      //     accountPage.getCurrentPasswordInput().type(user.password);
-      //     accountPage.getNewPasswordInput().type('StrongPass!');
-      //     accountPage.getConfirmPasswordInput().type('StrongPass!');
-      //     accountPage.getPasswordSaveButton().click();
-      //
-      //     accountPage.getNewPasswordMessage().should('contain', 'Mindestens eine Zahl');
-      //   });
-      //
-      //   it('shows error if new password has no special character', () => {
-      //     accountPage.getCurrentPasswordInput().type(user.password);
-      //     accountPage.getNewPasswordInput().type('StrongPass1');
-      //     accountPage.getConfirmPasswordInput().type('StrongPass1');
-      //     accountPage.getPasswordSaveButton().click();
-      //
-      //     accountPage.getNewPasswordMessage().should('contain', 'Mindestens ein Sonderzeichen');
-      //   });
-      //
-      //   it('shows error if confirm password does not match', () => {
-      //     accountPage.getCurrentPasswordInput().type(user.password);
-      //     accountPage.getNewPasswordInput().type('StrongPass1!');
-      //     accountPage.getConfirmPasswordInput().type('WrongPass1!');
-      //     accountPage.getPasswordSaveButton().click();
-      //     accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein');
-      //   });
-      //
-      //   it('shows error when new password is same as old password', () => {
-      //     const originalPassword = user.password;
-      //     const newPassword = 'StrongPass1!';
-      //     accountPage.getCurrentPasswordInput().type(originalPassword);
-      //     accountPage.getNewPasswordInput().type(newPassword);
-      //     accountPage.getConfirmPasswordInput().type(newPassword);
-      //     accountPage.getPasswordSaveButton().click();
-      //     cy.contains("Passwort aktualisiert", {timeout: 10000}).should('be.visible');
-      //     loginPage.login(user.mail, newPassword);
-      //     sidebar.getSettingsButton().click();
-      //     accountPage.getCurrentPasswordInput().type(newPassword);
-      //     accountPage.getNewPasswordInput().type(newPassword);
-      //     accountPage.getConfirmPasswordInput().type(newPassword);
-      //     accountPage.getPasswordSaveButton().click();
-      //     accountPage.getNewPasswordMessage().should('contain', 'Neues Passwort darf nicht dem alten entsprechen');
-      //     currentCorrectPassword = newPassword;
-      //   });
-      // });
-      //
-      // context('Password Form - Wrong Passwords', () => {
-      //   //FIXME: #312
-      //   it('shows an error when the current password is incorrect', () => {
-      //     const invalidPassword = 'WrongPassword123!';
-      //     accountPage.getCurrentPasswordInput().type(invalidPassword);
-      //     accountPage.getNewPasswordInput().type('ValidNewPass1!');
-      //     accountPage.getConfirmPasswordInput().type('ValidNewPass1!');
-      //     accountPage.getPasswordSaveButton().click();
-      //     accountPage.getCurrentPasswordMessage().should('contain', 'Falsches aktuelles Passwort')
-      //   });
-      //
-      //   it('shows an error when the new and repeated passwords do not match', () => {
-      //     accountPage.getCurrentPasswordInput().type(user.password);
-      //     accountPage.getNewPasswordInput().type('ValidNewPass1!');
-      //     accountPage.getConfirmPasswordInput().type('DifferentPass1!');
-      //     accountPage.getPasswordSaveButton().click();
-      //     accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein');
-      //   });
-      // })
-      //
+      context('Password Form - Validation Errors', () => {
+        it('shows error if old password is empty', () => {
+          accountPage.getNewPasswordInput().type('StrongPass1!');
+          accountPage.getConfirmPasswordInput().type('StrongPass1!');
+          accountPage.getPasswordSaveButton().click();
+
+          accountPage.getCurrentPasswordMessage().should('contain', 'Bitte angeben');
+        });
+
+        it('shows error if new password is less than 8 characters', () => {
+          accountPage.getCurrentPasswordInput().type(user.password);
+          accountPage.getNewPasswordInput().type('Ab1!');
+          accountPage.getConfirmPasswordInput().type('Ab1!');
+          accountPage.getPasswordSaveButton().click();
+
+          accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens 8 Zeichen an');
+        });
+
+        it('shows error if new password has no uppercase letter', () => {
+          accountPage.getCurrentPasswordInput().type(user.password);
+          accountPage.getNewPasswordInput().type('strongpass1!');
+          accountPage.getConfirmPasswordInput().type('strongpass1!');
+          accountPage.getPasswordSaveButton().click();
+
+          accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens einen Großbuchstaben an');
+        });
+
+        it('shows error if new password has no number', () => {
+          accountPage.getCurrentPasswordInput().type(user.password);
+          accountPage.getNewPasswordInput().type('StrongPass!');
+          accountPage.getConfirmPasswordInput().type('StrongPass!');
+          accountPage.getPasswordSaveButton().click();
+
+          accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens eine Zahl an');
+        });
+
+        it('shows error if new password has no special character', () => {
+          accountPage.getCurrentPasswordInput().type(user.password);
+          accountPage.getNewPasswordInput().type('StrongPass1');
+          accountPage.getConfirmPasswordInput().type('StrongPass1');
+          accountPage.getPasswordSaveButton().click();
+
+          accountPage.getNewPasswordMessage().should('contain', 'Bitte gib mindestens ein Sonderzeichen an');
+        });
+
+        it('shows error if confirm password does not match', () => {
+          accountPage.getCurrentPasswordInput().type(user.password);
+          accountPage.getNewPasswordInput().type('StrongPass1!');
+          accountPage.getConfirmPasswordInput().type('WrongPass1!');
+          accountPage.getPasswordSaveButton().click();
+          accountPage.getConfirmPasswordMessage().should('contain', 'Passwörter stimmen nicht überein');
+        });
+
+        it('shows error when new password is same as old password', () => {
+          accountPage.getCurrentPasswordInput().type(user.password);
+          accountPage.getNewPasswordInput().type(user.password);
+          accountPage.getConfirmPasswordInput().type(user.password);
+          accountPage.getPasswordSaveButton().click();
+          accountPage.getNewPasswordMessage().should('contain', 'Neues Passwort darf nicht dem alten entsprechen');
+        });
+
+        it('shows an error when the current password is incorrect', () => {
+          const invalidPassword = 'WrongPassword123!';
+          const validPassword = 'ValidPass1!'
+
+          accountPage.getCurrentPasswordInput().type(invalidPassword);
+          accountPage.getNewPasswordInput().type(validPassword);
+          accountPage.getConfirmPasswordInput().type(validPassword);
+          accountPage.getPasswordSaveButton().click();
+          accountPage.getCurrentPasswordMessage().should('contain', 'Passwort inkorrekt')
+        });
+      });
+
       // context('Password Form - Correct Input', () => {
       //   it('accepts valid password and enables save button', () => {
       //     accountPage.getCurrentPasswordInput().type('StrongPass1!');
