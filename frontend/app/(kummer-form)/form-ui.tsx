@@ -95,7 +95,7 @@ export default function FormUi() {
       setHasTriedToSubmit(false);
       form.reset();
     } catch {
-      toast.error(t("toasts.generalError"));
+      toast.error(tc("toasts.generalError"));
     }
     setLoading(false);
   }

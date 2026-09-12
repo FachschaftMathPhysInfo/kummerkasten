@@ -77,7 +77,7 @@ export default function PasswordDataForm() {
         user: {password: data.newPassword},
       });
 
-      toast.success(tc("toasts.changeSuccess"));
+      toast.success(t("toasts.changeSuccess"));
       passwordForm.reset();
       setHasTriedToSubmit(false);
       await logout();

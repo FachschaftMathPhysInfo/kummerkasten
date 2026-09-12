@@ -37,7 +37,7 @@ export default function PasswordDialog(props: PasswordDialogProps) {
       props.onSuccessfulConfirmationAction()
       props.closeDialogAction()
     } else {
-      setError(t("fields.errors.wrong", {item: tc("words.password")}))
+      setError(tc("fields.errors.wrong", {item: tc("words.password")}))
     }
   }
 

@@ -22,7 +22,7 @@ export default function LoginForm() {
 
   const loginFormSchema = z.object({
     mail: z.email(tc("fields.email.errors.format")),
-    password: z.string(tc("fields.errors.empty", {item: "ein Passwort"})),
+    password: z.string(tc("fields.errors.empty")),
   });
 
   const router = useRouter();
