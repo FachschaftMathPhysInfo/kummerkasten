@@ -1278,8 +1278,13 @@ func (r *queryResolver) FrontendConfig(ctx context.Context) ([]model.Configurati
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, mail string, password string) (bool, error) {
 	var dbUser = new(models.User)
-	err := r.DB.NewSelect().Model(dbUser).Where("mail = ?", mail).Scan(ctx)
-	if err != nil || dbUser == nil {
+
+	if exists, _ := r.DB.NewSelect().Model(dbUser).Where("mail = ?", mail).Exists(ctx); !exists {
+		slog.Warn("Failed login attempt for non existant user", "mail", mail)
+		return false, fmt.Errorf("incorrect credentials")
+	}
+
+	if err := r.DB.NewSelect().Model(dbUser).Where("mail = ?", mail).Scan(ctx); err != nil {
 		slog.Error("Failed to fetch user for login", "error", err)
 		return false, ErrInternal
 	}
@@ -1287,7 +1292,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 	hashedPassword := dbUser.Password
 
 	if err := auth.VerifyPassword(hashedPassword, password); err != nil {
-		slog.Error("Failed login attempt", "mail", mail)
+		slog.Warn("Failed login attempt", "mail", mail)
 		return false, fmt.Errorf("incorrect credentials")
 	}
 
