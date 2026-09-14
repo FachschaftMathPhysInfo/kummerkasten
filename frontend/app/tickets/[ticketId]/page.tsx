@@ -54,7 +54,8 @@ export default function TicketPage() {
     if (!error) {
       toast.success(tc("toasts.deleteSuccess"))
       resetDialogState()
-      await fetchTicketDetail();
+      await fetchTicketDetail()
+        .then(ticket => setTicket(ticket == undefined ? null : ticket));
     } else {
       toast.error(tc("toasts.generalError"))
     }
