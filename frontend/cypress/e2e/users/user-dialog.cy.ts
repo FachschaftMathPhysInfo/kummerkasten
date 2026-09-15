@@ -1,7 +1,7 @@
-import * as page from "../../pages/users/user-management.po"
-import * as dialog from "../../pages/users/user-dialog.po"
-import users from "../../fixtures/users.json"
-import {UserRole} from "../../../lib/graph/generated/graphql";
+import * as page from "#/pages/users/user-management.po"
+import * as dialog from "#/pages/users/user-dialog.po"
+import users from "#/fixtures/users.json"
+import {UserRole} from "@/lib/graph/generated/graphql";
 
 describe('Create User Tests', () => {
   beforeEach(() => {

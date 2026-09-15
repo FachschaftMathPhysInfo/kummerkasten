@@ -1,9 +1,9 @@
-import * as ticketDetail from "../../pages/tickets/ticket-detail.po";
-import * as ticketInfoPane from "../../pages/tickets/ticket-info-pane.po";
-import * as ticketLabelArea from "../../pages/tickets/ticket-label-area.po";
-import * as ticketStatusArea from "../../pages/tickets/ticket-status-area.po";
-import * as confirmationDialog from "../../pages/confirmation-dialog.po";
-import {Label, UserRole} from "../../../lib/graph/generated/graphql";
+import * as ticketDetail from "#/pages/tickets/ticket-detail.po";
+import * as ticketInfoPane from "#/pages/tickets/ticket-info-pane.po";
+import * as ticketLabelArea from "#/pages/tickets/ticket-label-area.po";
+import * as ticketStatusArea from "#/pages/tickets/ticket-status-area.po";
+import * as confirmationDialog from "#/pages/confirmation-dialog.po";
+import {Label, UserRole} from "@/lib/graph/generated/graphql";
 
 
 const roles: UserRole[] = [UserRole.Admin, UserRole.User]

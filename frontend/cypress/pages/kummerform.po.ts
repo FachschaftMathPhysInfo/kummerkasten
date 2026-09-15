@@ -1,4 +1,4 @@
-import {Label} from "../../lib/graph/generated/graphql";
+import {Label} from "@/lib/graph/generated/graphql";
 
 export type KummerFormData = {
   formLabelArray?: Label[];

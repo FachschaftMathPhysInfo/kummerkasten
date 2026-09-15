@@ -3,7 +3,7 @@
 import {IntConfiguration, Label, Ticket} from "@/lib/graph/generated/graphql";
 import {PageLoader} from "@/components/page-loader";
 import {useSidebar} from "@/components/ui/sidebar";
-import React, {Dispatch} from "react";
+import React, {Dispatch, useEffect} from "react";
 import {TicketDialogState} from "@/app/tickets/page";
 import {TicketInfoPane} from "@/app/tickets/[ticketId]/ticket-info-pane";
 import {Button} from "@/components/ui/button";
@@ -35,7 +35,8 @@ export default function TicketDetailView({
   const {isMobile} = useSidebar()
   const {updateTicket} = useTickets()
   const [editMode, setEditMode] = React.useState(false);
-  const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "")
+  const [currentTitle, setCurrentTitle] = React.useState(ticket?.title ?? "");
+  const [newTitle, setNewTitle] = React.useState(ticket?.title ?? "");
 
   async function handleTitleChange() {
     if (ticket?.title === newTitle || !ticket) return
@@ -44,6 +45,7 @@ export default function TicketDetailView({
 
     if (!error) {
       setEditMode(false)
+      setCurrentTitle(() => newTitle)
     } else {
       toast.error(tc("toasts.generalError"))
     }
@@ -75,9 +77,9 @@ export default function TicketDetailView({
                 e.key === "Enter" && handleTitleChange()
               }
               type="text"
-              className={'bg-primary border-none !text-4xl !py-6'}
+              className={'bg-secondary border-none !text-4xl !py-6'}
               maxLength={MAX_TITLE_LENGTH}
-              placeholder={ticket?.title}
+              placeholder={currentTitle}
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               data-cy={'ticket-detail-title-input'}
@@ -88,7 +90,7 @@ export default function TicketDetailView({
               title={t("firstTitle") + ": " + ticket.originalTitle}
               data-cy={'ticket-detail-title'}
             >
-              {newTitle}
+              {currentTitle}
             </h1>
           )}
 
@@ -97,7 +99,10 @@ export default function TicketDetailView({
               <span className={'flex items-center gap-2'}>
                 <Button
                   variant={'secondary'}
-                  onClick={() => setEditMode(false)}
+                  onClick={() => {
+                    setEditMode(false)
+                    setNewTitle(currentTitle)
+                  }}
                   data-cy={'ticket-detail-title-cancel'}
                 >
                   {tc("buttons.cancel")}
@@ -105,7 +110,7 @@ export default function TicketDetailView({
                 <Button
                   type={"submit"}
                   variant={'secondary'}
-                  onClick={handleTitleChange}
+                  onClick={() => handleTitleChange()}
                   className={'bg-accent hover:bg-accent/60'}
                   data-cy={'ticket-detail-title-save'}
                 >
@@ -125,7 +130,7 @@ export default function TicketDetailView({
               className="text-2xl font-semibold text-wrap whitespace-nowrap"
               title={t("firstTitle") + ": " + ticket.originalTitle}
             >
-              {ticket.title}
+              {currentTitle}
             </h1>
             <TicketInfoPane
               ticket={ticket}

@@ -1,6 +1,6 @@
-import users from "../../fixtures/users.json"
-import * as page from "../../pages/users/user-management.po"
-import {UserRole} from "../../../lib/graph/generated/graphql";
+import users from "#/fixtures/users.json"
+import * as page from "#/pages/users/user-management.po"
+import {UserRole} from "@/lib/graph/generated/graphql";
 
 describe('User Management Page Tests', () => {
   beforeEach(() => {

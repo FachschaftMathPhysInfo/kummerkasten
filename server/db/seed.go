@@ -6,10 +6,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
-	"github.com/google/uuid"
-
 	"github.com/FachschaftMathPhysInfo/kummerkasten/auth"
+	"github.com/FachschaftMathPhysInfo/kummerkasten/configuration"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/graph/model"
 	"github.com/FachschaftMathPhysInfo/kummerkasten/models"
 	"github.com/uptrace/bun"
@@ -300,7 +298,7 @@ func seedTestUsers(ctx context.Context, db *bun.DB) error {
 			Mail:         "fsles1@kummerkasten.local",
 			Firstname:    "Fachschaft",
 			Lastname:     "Eins",
-			Password:     "fachschaft",
+			Password:     "Fachschaft123!",
 			Role:         model.UserRoleUser,
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
@@ -352,196 +350,153 @@ func seedTestUsers(ctx context.Context, db *bun.DB) error {
 
 func seedTestLabelsAndTickets(ctx context.Context, db *bun.DB) error {
 	labels := []*models.Label{
-		{
-			Name:      "dozent*in",
-			Color:     "#474770",
-			FormLabel: true,
-		},
-		{
-			Name:  "prof. mathe",
-			Color: "#476870",
-		},
-		{
-			Name:      "veranstaltung",
-			Color:     "#47704e",
-			FormLabel: true,
-		},
-		{
-			Name:  "lineare algebra",
-			Color: "#487047",
-		},
-		{
-			Name:      "fachschaft",
-			Color:     "#477068",
-			FormLabel: true,
-		},
-		{
-			Name:  "gremienwahlen",
-			Color: "#706047",
-		},
-		{
-			Name:      "sonstiges",
-			Color:     "#6a4770",
-			FormLabel: true,
-		},
-		{
-			Name:  "soziales",
-			Color: "#6a4770",
-		},
-		{
-			Name:  "mathematikon",
-			Color: "#797596",
-		},
-		{
-			Name:  "PAP",
-			Color: "#A1869E",
-		},
-		{
-			Name:  "Vorkurs",
-			Color: "#684A52",
-		},
-		{
-			Name:  "Bachelorarbeit",
-			Color: "#87A0B2",
-		},
-		{
-			Name:  "Seminar",
-			Color: "#A4BEF3",
-		},
-		{
-			Name:  "Mittagspause",
-			Color: "#4E8098",
-		},
-		{
-			Name:  "Laptop",
-			Color: "#B6CB9E",
-		}}
-
-	if err := insertData(ctx, db, (*models.Label)(nil), labels, "Labels"); err != nil {
-		return err
+		{Name: "dozent*in", Color: "#474770", FormLabel: true},
+		{Name: "prof. mathe", Color: "#476870"},
+		{Name: "veranstaltung", Color: "#47704e", FormLabel: true},
+		{Name: "lineare algebra", Color: "#487047"},
+		{Name: "fachschaft", Color: "#477068", FormLabel: true},
+		{Name: "gremienwahlen", Color: "#706047"},
+		{Name: "sonstiges", Color: "#6a4770", FormLabel: true},
+		{Name: "soziales", Color: "#6a4770"},
+		{Name: "mathematikon", Color: "#797596"},
+		{Name: "PAP", Color: "#A1869E"},
+		{Name: "Vorkurs", Color: "#684A52"},
+		{Name: "Bachelorarbeit", Color: "#87A0B2"},
+		{Name: "Seminar", Color: "#A4BEF3"},
+		{Name: "Mittagspause", Color: "#4E8098"},
+		{Name: "Laptop", Color: "#B6CB9E"},
 	}
 
-	labelMap := map[string]*models.Label{}
-	for _, label := range labels {
-		label.ID = uuid.New().String()
-		labelMap[label.Name] = label
-	}
+	return db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
+		if _, err := tx.NewInsert().
+			Model(&labels).
+			On("CONFLICT (name) DO UPDATE SET name = EXCLUDED.name").
+			Returning("*").
+			Exec(ctx); err != nil {
+			return fmt.Errorf("failed to upsert labels: %w", err)
+		}
+		slog.Info("Labels seeded/verified successfully")
 
-	tickets := []*models.Ticket{
-		{
-			Title:         "Lineare Algebra",
-			OriginalTitle: "LA1",
-			Text:          "Ich komme mit der Mathe nicht klar :(",
-			Note:          "",
-			State:         model.TicketStateNew,
-			Labels:        []*models.Label{labelMap["lineare algebra"], labelMap["prof. mathe"]},
-			CreatedAt:     time.Now(),
-			LastModified:  time.Now(),
-		},
-		{
-			Title:         "Praktikumsplatz",
-			OriginalTitle: "AP",
-			Text:          "Hilfe! Ich finde keine Dozent*innen die mir einen Pratkikumsplatz anbieten.",
-			Note:          "Vorschlag: Weiterführende Vorlesungen hören, beim DKFZ und ZITI nachfragen.",
-			State:         model.TicketStateOpen,
-			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["veranstaltung"]},
-			CreatedAt:     time.Now(),
-			LastModified:  time.Now(),
-		},
-		{
-			Title:         "alles doof",
-			OriginalTitle: "scheiße",
-			Text:          "ich will nicht mehr studieren wo exmatrikulationsantrag",
-			Note:          "Kann geschlossen werden.",
-			State:         model.TicketStateOpen,
-			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["soziales"]},
-			CreatedAt:     time.Now(),
-			LastModified:  time.Now(),
-		},
-		{
-			Title:         "miau",
-			OriginalTitle: "miau",
-			Text:          "woof",
-			Note:          "Spam",
-			State:         model.TicketStateClosed,
-			Labels:        []*models.Label{labelMap["soziales"], labelMap["fachschaft"]},
-			CreatedAt:     time.Now(),
-			LastModified:  time.Now(),
-		},
-		{
-			Title:         "PAP",
-			OriginalTitle: "PAP",
-			Text:          "Das PAP geht mir zu lange",
-			Note:          "",
-			State:         model.TicketStateOpen,
-			Labels:        []*models.Label{labelMap["veranstaltung"], labelMap["PAP"]},
-			CreatedAt:     time.Now().AddDate(0, -1, -3),
-			LastModified:  time.Now(),
-		},
-		{
-			Title:         "Klausurvorbereitung",
-			OriginalTitle: "Analysis II",
-			Text:          "Ich brauche Hilfe bei den Übungsaufgaben.",
-			Note:          "",
-			State:         model.TicketStateNew,
-			Labels:        []*models.Label{labelMap["prof. mathe"], labelMap["veranstaltung"], labelMap["mathematikon"]},
-			CreatedAt:     time.Now().AddDate(0, -1, -3),
-			LastModified:  time.Now().AddDate(0, -1, -1),
-		},
-		{
-			Title:         "Bibliothek",
-			OriginalTitle: "Bib",
-			Text:          "Die Bibliothek ist immer voll!",
-			Note:          "Weitergeben an Uni-Verwaltung.",
-			State:         model.TicketStateOpen,
-			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["veranstaltung"]},
-			CreatedAt:     time.Now().AddDate(0, -2, 0),
-			LastModified:  time.Now().AddDate(0, -1, 20),
-		},
-		{
-			Title:         "Tutorium",
-			OriginalTitle: "IPK Tut",
-			Text:          "Das Tutorium für Programmieren fällt oft aus.",
-			Note:          "Nachfragen bei Tutor*innen.",
-			State:         model.TicketStateOpen,
-			Labels:        []*models.Label{labelMap["Laptop"], labelMap["veranstaltung"]},
-			CreatedAt:     time.Now().AddDate(-2, 0, -10),
-			LastModified:  time.Now().AddDate(0, 0, -5),
-		},
-		{
-			Title:         "Mentoring",
-			OriginalTitle: "Buddys??",
-			Text:          "Ich verstehe das Buddy-Programm nicht.",
-			Note:          "An Verantwortliche weiterleiten.",
-			State:         model.TicketStateNew,
-			Labels:        []*models.Label{labelMap["soziales"], labelMap["Vorkurs"]},
-			CreatedAt:     time.Now().AddDate(-3, 0, -10),
-			LastModified:  time.Now().AddDate(-3, 0, -10),
-		},
-		{
-			Title:         "Mensa",
-			OriginalTitle: "Essen",
-			Text:          "Das Essen in der Mensa ist zu teuer.",
-			Note:          "Valid",
-			State:         model.TicketStateClosed,
-			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"]},
-			CreatedAt:     time.Now().AddDate(-1, 0, -10),
-			LastModified:  time.Now().AddDate(0, -2, -10),
-		},
-		{
-			Title:         "Ich bin ein sehr sehr langer langer Titel (hoffentlich sehr lang)",
-			OriginalTitle: "jaja",
-			Text:          "das voll smart.",
-			Note:          "Valid",
-			State:         model.TicketStateNew,
-			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"]},
-			CreatedAt:     time.Now().AddDate(-1, -8, -10),
-			LastModified:  time.Now().AddDate(0, -2, -1),
-		},
-		{
-			Title:         "Kurzer Titel!",
-			OriginalTitle: "jaja",
-			Text: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+		labelMap := make(map[string]*models.Label, len(labels))
+		for _, l := range labels {
+			labelMap[l.Name] = l
+		}
+
+		tickets := []*models.Ticket{
+			{
+				Title:         "Lineare Algebra",
+				OriginalTitle: "LA1",
+				Text:          "Ich komme mit der Mathe nicht klar :(",
+				Note:          "",
+				State:         model.TicketStateNew,
+				Labels:        []*models.Label{labelMap["lineare algebra"], labelMap["prof. mathe"]},
+				CreatedAt:     time.Now(),
+				LastModified:  time.Now(),
+			},
+			{
+				Title:         "Praktikumsplatz",
+				OriginalTitle: "AP",
+				Text:          "Hilfe! Ich finde keine Dozent*innen die mir einen Pratkikumsplatz anbieten.",
+				Note:          "Vorschlag: Weiterführende Vorlesungen hören, beim DKFZ und ZITI nachfragen.",
+				State:         model.TicketStateOpen,
+				Labels:        []*models.Label{labelMap["sonstiges"], labelMap["veranstaltung"]},
+				CreatedAt:     time.Now(),
+				LastModified:  time.Now(),
+			},
+			{
+				Title:         "alles doof",
+				OriginalTitle: "scheiße",
+				Text:          "ich will nicht mehr studieren wo exmatrikulationsantrag",
+				Note:          "Kann geschlossen werden.",
+				State:         model.TicketStateOpen,
+				Labels:        []*models.Label{labelMap["sonstiges"], labelMap["soziales"]},
+				CreatedAt:     time.Now(),
+				LastModified:  time.Now(),
+			},
+			{
+				Title:         "miau",
+				OriginalTitle: "miau",
+				Text:          "woof",
+				Note:          "Spam",
+				State:         model.TicketStateClosed,
+				Labels:        []*models.Label{labelMap["soziales"], labelMap["fachschaft"]},
+				CreatedAt:     time.Now(),
+				LastModified:  time.Now(),
+			},
+			{
+				Title:         "PAP",
+				OriginalTitle: "PAP",
+				Text:          "Das PAP geht mir zu lange",
+				Note:          "",
+				State:         model.TicketStateOpen,
+				Labels:        []*models.Label{labelMap["veranstaltung"], labelMap["PAP"]},
+				CreatedAt:     time.Now().AddDate(0, -1, -3),
+				LastModified:  time.Now(),
+			},
+			{
+				Title:         "Klausurvorbereitung",
+				OriginalTitle: "Analysis II",
+				Text:          "Ich brauche Hilfe bei den Übungsaufgaben.",
+				Note:          "",
+				State:         model.TicketStateNew,
+				Labels:        []*models.Label{labelMap["prof. mathe"], labelMap["veranstaltung"], labelMap["mathematikon"]},
+				CreatedAt:     time.Now().AddDate(0, -1, -3),
+				LastModified:  time.Now().AddDate(0, -1, -1),
+			},
+			{
+				Title:         "Bibliothek",
+				OriginalTitle: "Bib",
+				Text:          "Die Bibliothek ist immer voll!",
+				Note:          "Weitergeben an Uni-Verwaltung.",
+				State:         model.TicketStateOpen,
+				Labels:        []*models.Label{labelMap["sonstiges"], labelMap["veranstaltung"]},
+				CreatedAt:     time.Now().AddDate(0, -2, 0),
+				LastModified:  time.Now().AddDate(0, -1, 20),
+			},
+			{
+				Title:         "Tutorium",
+				OriginalTitle: "IPK Tut",
+				Text:          "Das Tutorium für Programmieren fällt oft aus.",
+				Note:          "Nachfragen bei Tutor*innen.",
+				State:         model.TicketStateOpen,
+				Labels:        []*models.Label{labelMap["Laptop"], labelMap["veranstaltung"]},
+				CreatedAt:     time.Now().AddDate(-2, 0, -10),
+				LastModified:  time.Now().AddDate(0, 0, -5),
+			},
+			{
+				Title:         "Mentoring",
+				OriginalTitle: "Buddys??",
+				Text:          "Ich verstehe das Buddy-Programm nicht.",
+				Note:          "An Verantwortliche weiterleiten.",
+				State:         model.TicketStateNew,
+				Labels:        []*models.Label{labelMap["soziales"], labelMap["Vorkurs"]},
+				CreatedAt:     time.Now().AddDate(-3, 0, -10),
+				LastModified:  time.Now().AddDate(-3, 0, -10),
+			},
+			{
+				Title:         "Mensa",
+				OriginalTitle: "Essen",
+				Text:          "Das Essen in der Mensa ist zu teuer.",
+				Note:          "Valid",
+				State:         model.TicketStateClosed,
+				Labels:        []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"]},
+				CreatedAt:     time.Now().AddDate(-1, 0, -10),
+				LastModified:  time.Now().AddDate(0, -2, -10),
+			},
+			{
+				Title:         "Ich bin ein sehr sehr langer langer Titel (hoffentlich sehr lang)",
+				OriginalTitle: "jaja",
+				Text:          "das voll smart.",
+				Note:          "Valid",
+				State:         model.TicketStateNew,
+				Labels:        []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"]},
+				CreatedAt:     time.Now().AddDate(-1, -8, -10),
+				LastModified:  time.Now().AddDate(0, -2, -1),
+			},
+			{
+				Title:         "Kurzer Titel!",
+				OriginalTitle: "jaja",
+				Text: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
                             Aenean massa. Cum sociis natoque penatibus et magnis dis parturient
             		        montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu,
             		        pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel,
@@ -579,59 +534,64 @@ func seedTestLabelsAndTickets(ctx context.Context, db *bun.DB) error {
             		        Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc. Vestibulum
             		        fringilla pede sit amet augue. In turpis. Pellentesque posuere. Praesent turpis.
             		        Aenean posuere, tor`,
-			Note:         "Valid",
-			State:        model.TicketStateNew,
-			Labels:       []*models.Label{labelMap["PAP"], labelMap["fachschaft"]},
-			CreatedAt:    time.Now().AddDate(0, -8, -10),
-			LastModified: time.Now().AddDate(0, -2, -1),
-		},
-		{
-			Title:         "Sehr viele Labels",
-			OriginalTitle: "jaja",
-			Text:          "das voll smart.",
-			Note:          "Valid",
-			State:         model.TicketStateNew,
-			Labels: []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"],
-				labelMap["dozent*in"], labelMap["prof. mathe"],
-				labelMap["lineare algebra"], labelMap["fachschaft"],
-				labelMap["gremienwahlen"], labelMap["soziales"],
-				labelMap["mathematikon"], labelMap["PAP"], labelMap["Vorkurs"],
-				labelMap["Bachelorarbeit"], labelMap["Seminar"],
-				labelMap["Laptop"]},
-			CreatedAt:    time.Now().AddDate(0, -4, -10),
-			LastModified: time.Now().AddDate(0, -2, -1),
-		},
-		{
-			Title:         "Ich bin ein sehr altes Ticket",
-			OriginalTitle: "jaja",
-			Text:          "das voll smart.",
-			Note:          "Valid",
-			State:         model.TicketStateClosed,
-			Labels:        []*models.Label{labelMap["sonstiges"], labelMap["mathematikon"]},
-			CreatedAt:     time.Now().AddDate(-10, -8, -10),
-			LastModified:  time.Now().AddDate(-9, -2, -1),
-		},
-	}
-	if err := insertData(ctx, db, (*models.Ticket)(nil), tickets, "Tickets"); err != nil {
-		return err
-	}
-
-	var labelLinks []*models.LabelsToTickets
-
-	for _, ticket := range tickets {
-		for _, label := range ticket.Labels {
-			labelLinks = append(labelLinks, &models.LabelsToTickets{
-				TicketID: ticket.ID,
-				LabelID:  label.ID,
-			})
+				Note:         "Valid",
+				State:        model.TicketStateNew,
+				Labels:       []*models.Label{labelMap["PAP"], labelMap["fachschaft"]},
+				CreatedAt:    time.Now().AddDate(0, -8, -10),
+				LastModified: time.Now().AddDate(0, -2, -1),
+			},
+			{
+				Title:         "Sehr viele Labels",
+				OriginalTitle: "jaja",
+				Text:          "das voll smart.",
+				Note:          "Valid",
+				State:         model.TicketStateNew,
+				Labels: []*models.Label{labelMap["sonstiges"], labelMap["Mittagspause"],
+					labelMap["dozent*in"], labelMap["prof. mathe"],
+					labelMap["lineare algebra"], labelMap["fachschaft"],
+					labelMap["gremienwahlen"], labelMap["soziales"],
+					labelMap["mathematikon"], labelMap["PAP"], labelMap["Vorkurs"],
+					labelMap["Bachelorarbeit"], labelMap["Seminar"],
+					labelMap["Laptop"]},
+				CreatedAt:    time.Now().AddDate(0, -4, -10),
+				LastModified: time.Now().AddDate(0, -2, -1),
+			},
+			{
+				Title:         "Ich bin ein sehr altes Ticket",
+				OriginalTitle: "jaja",
+				Text:          "das voll smart.",
+				Note:          "Valid",
+				State:         model.TicketStateClosed,
+				Labels:        []*models.Label{labelMap["sonstiges"], labelMap["mathematikon"]},
+				CreatedAt:     time.Now().AddDate(-10, -8, -10),
+				LastModified:  time.Now().AddDate(-9, -2, -1),
+			},
 		}
-	}
 
-	if err := insertData(ctx, db, (*models.LabelsToTickets)(nil), labelLinks, "Label To Tickets"); err != nil {
-		return err
-	}
 
-	return nil
+		if err := insertTicketsTx(ctx, tx, tickets); err != nil {
+			return err
+		}
+
+		var labelLinks []*models.LabelsToTickets
+		for _, ticket := range tickets {
+			for _, label := range ticket.Labels {
+				labelLinks = append(labelLinks, &models.LabelsToTickets{
+					TicketID: ticket.ID,
+					LabelID:  label.ID,
+				})
+			}
+		}
+
+		if len(labelLinks) > 0 {
+			if _, err := tx.NewInsert().Model(&labelLinks).Exec(ctx); err != nil {
+				return fmt.Errorf("label to tickets: %w", err)
+			}
+			slog.Info("Label To Tickets seeded successfully")
+		}
+
+		return nil
+	})
 }
 
 func seedTestQuestionAnswerPairs(ctx context.Context, db *bun.DB) error {
@@ -661,6 +621,20 @@ func insertData[T any](ctx context.Context, db *bun.DB, model T, data []T, descr
 			return fmt.Errorf("%s: %s", description, err)
 		}
 		slog.Info(fmt.Sprintf("%s seeded successfully", description))
+	}
+	return nil
+}
+
+func insertTicketsTx(ctx context.Context, tx bun.Tx, tickets []*models.Ticket) error {
+	count, err := tx.NewSelect().Model((*models.Ticket)(nil)).Count(ctx)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		if _, err := tx.NewInsert().Model(&tickets).Exec(ctx); err != nil {
+			return fmt.Errorf("tickets: %w", err)
+		}
+		slog.Info("Tickets seeded successfully")
 	}
 	return nil
 }

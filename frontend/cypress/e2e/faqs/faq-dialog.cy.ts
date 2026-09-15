@@ -1,8 +1,8 @@
-import {UserRole} from "../../../lib/graph/generated/graphql";
-import * as page from "../../pages/faqs/faq-page.po"
-import * as dialog from "../../pages/faqs/faq-dialog.po"
-import * as confirmationDialog from "../../pages/confirmation-dialog.po"
-import * as faqs from "../../fixtures/faqs.json"
+import {UserRole} from "@/lib/graph/generated/graphql";
+import * as page from "#/pages/faqs/faq-page.po"
+import * as dialog from "#/pages/faqs/faq-dialog.po"
+import * as confirmationDialog from "#/pages/confirmation-dialog.po"
+import * as faqs from "#/fixtures/faqs.json"
 
 const roles: UserRole[] = [UserRole.User, UserRole.Admin]
 const AMOUNT_FAQS_SEED_DB = 5
@@ -58,7 +58,7 @@ describe('FAQ Manipulation Tests', () => {
           });
 
           it('does not allow too long answers', () => {
-            const MAX_ANSWER_LENGTH = 700
+            const MAX_ANSWER_LENGTH = 500
             const longString = "a".repeat(MAX_ANSWER_LENGTH + 1)
             dialog.getAnswerInput().type(longString, {delay: 0})
             dialog.getAnswerInput().invoke('text').should('have.length', MAX_ANSWER_LENGTH)

@@ -69,23 +69,23 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
 
     switch (false) {
       case newPassword.length >= 8: {
-        setErrorMessage(t("inputErrors.short"))
+        setErrorMessage(tc("fields.errors.short", {condition: "8"}))
         return
       }
       case hasLowercaseLetter.test(newPassword): {
-        setErrorMessage(t("inputErrors.lowercase"))
+        setErrorMessage(tc("fields.errors.lowercase"))
         return
       }
       case hasUppercaseLetter.test(newPassword): {
-        setErrorMessage(t("inputErrors.uppercase"))
+        setErrorMessage(tc("fields.errors.uppercase"))
         return
       }
       case hasNumber.test(newPassword): {
-        setErrorMessage(t("inputErrors.number"))
+        setErrorMessage(tc("fields.errors.number"))
         return
       }
       case hasSymbol.test(newPassword): {
-        setErrorMessage(t("inputErrors.special"))
+        setErrorMessage(tc("fields.errors.specialChar"))
         return
       }
     }

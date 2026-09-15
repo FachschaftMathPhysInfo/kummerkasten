@@ -1,7 +1,7 @@
-import * as kummerform from "../pages/kummerform.po";
-import users from "../fixtures/users.json";
-import kummerformstrings from "../fixtures/kummerform.json";
-import * as tickets from "../pages/tickets/ticket-overview.po"
+import * as kummerform from "#/pages/kummerform.po";
+import users from "#/fixtures/users.json";
+import kummerformstrings from "#/fixtures/kummerform.json";
+import * as tickets from "#/pages/tickets/ticket-overview.po"
 import {Label, QuestionAnswerPair} from "@/lib/graph/generated/graphql";
 
 describe("Kummerform Page", () => {
@@ -72,6 +72,7 @@ describe("Kummerform Page", () => {
   });
 
   context("send kummerform", () => {
+    const emptyFieldError: string = "Bitte angeben"
 
     it("shows no error on empty form - no submit", () => {
       kummerform.getLabelsMessage().should("not.exist");
@@ -82,9 +83,9 @@ describe("Kummerform Page", () => {
     it("shows error and disables submit on invalid submit - empty form", () => {
       kummerform.submit();
 
-      kummerform.getLabelsMessage().should("be.visible").and("contain", "Bitte wähle mindestens ein Label aus.");
-      kummerform.getTitleMessage().should("be.visible").and("contain", "Die Zusammenfassung darf nicht leer sein.");
-      kummerform.getTextMessage().should("be.visible").and("contain", "Die Nachricht darf nicht leer sein.");
+      kummerform.getLabelsMessage().should("be.visible").and("contain", emptyFieldError);
+      kummerform.getTitleMessage().should("be.visible").and("contain", emptyFieldError);
+      kummerform.getTextMessage().should("be.visible").and("contain", emptyFieldError);
       kummerform.getSendButton().should("be.disabled");
     });
 
@@ -92,7 +93,7 @@ describe("Kummerform Page", () => {
       kummerform.fillOutForm({title: testTitle, text: testText});
       kummerform.submit();
 
-      kummerform.getLabelsMessage().should("be.visible").and("contain", "Bitte wähle mindestens ein Label aus.");
+      kummerform.getLabelsMessage().should("be.visible").and("contain", emptyFieldError);
       kummerform.getTitleMessage().should("not.exist");
       kummerform.getTextMessage().should("not.exist");
       kummerform.getSendButton().should("be.disabled");
@@ -107,7 +108,7 @@ describe("Kummerform Page", () => {
       kummerform.submit();
 
       kummerform.getLabelsMessage().should("not.exist");
-      kummerform.getTitleMessage().should("be.visible").and("contain", "Die Zusammenfassung darf nicht leer sein.");
+      kummerform.getTitleMessage().should("be.visible").and("contain", emptyFieldError);
       kummerform.getTextMessage().should("not.exist");
       kummerform.getSendButton().should("be.disabled");
     });
@@ -122,19 +123,19 @@ describe("Kummerform Page", () => {
 
       kummerform.getLabelsMessage().should("not.exist");
       kummerform.getTitleMessage().should("not.exist");
-      kummerform.getTextMessage().should("be.visible").and("contain", "Die Nachricht darf nicht leer sein.");
+      kummerform.getTextMessage().should("be.visible").and("contain", emptyFieldError);
       kummerform.getSendButton().should("be.disabled");
     });
 
-    it("does not allow title input size over 70", () => {
+    it("does not allow title input size over 100", () => {
       kummerform.fillOutForm({ title: kummerformstrings.maxLength.title });
-      kummerform.getTitleInputLength().should("have.length", 70);
+      kummerform.getTitleInputLength().should("have.length", 100);
       kummerform.getSendButton().should("not.be.disabled");
     });
 
-    it ('does not allow text input size over 3000', () => {
+    it ('does not allow text input size over 2000', () => {
       kummerform.getTextInput().type(kummerformstrings.maxLength.text, {delay: 0});
-      kummerform.getTextInputLength().should("have.length", 3000);
+      kummerform.getTextInputLength().should("have.length", 2000);
       kummerform.getSendButton().should('not.be.disabled');
     });
 
